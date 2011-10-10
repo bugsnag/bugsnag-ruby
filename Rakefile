@@ -15,13 +15,16 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "bugsnag"
-  gem.homepage = "http://github.com/loopj/bugsnag"
+  gem.homepage = "http://github.com/bugsnag/bugsnag-ruby"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
-  gem.email = "james@loopj.com"
+  gem.summary = %Q{Ruby notifier for bugsnag.com}
+  gem.description = %Q{Ruby notifier for bugsnag.com}
+  gem.email = "james@bugsnag.com"
   gem.authors = ["James Smith"]
+  
   # dependencies defined in Gemfile
+  gem.add_dependency "multi_json"
+  gem.add_dependency "httparty"
 end
 Jeweler::RubygemsDotOrgTasks.new
 
