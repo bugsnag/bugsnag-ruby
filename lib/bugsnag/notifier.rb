@@ -18,7 +18,7 @@ module Bugsnag
     def notify(exception, meta_data={})
       Bugsnag.log("Notifying #{@configuration.endpoint} of exception")
 
-      event = Bugsnag::Event.new(exception, "TODO USER ID", {
+      event = Bugsnag::Event.new(exception, "TODO USER ID", @configuration.project_root, {
         :app_environment => build_app_environment,
         :web_environment => build_web_environment,
         :meta_data => meta_data
@@ -34,9 +34,10 @@ module Bugsnag
         :errors => [event.as_hash]
       }
 
-      self.class.post(@configuration.endpoint, {:body => MultiJson.encode(payload)})
-      
+      response = self.class.post(@configuration.endpoint, {:body => MultiJson.encode(payload)})
       Bugsnag.log("Notified #{@configuration.endpoint} of exception")
+      
+      return response
     end
     
     private

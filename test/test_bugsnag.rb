@@ -1,29 +1,21 @@
 require 'helper'
 
+class BugsnagTestException < RuntimeError; end
+
 class TestBugsnag < Test::Unit::TestCase
-  should "get a 200 response from bugsnag.com for basic exceptions" do
-    flunk "oh my" if lets.code != 200
-  end
-  
-  private
-  def lets
-    begin
-      go
-    rescue Exception => e
-      event = Bugsnag::Event.new(e, "12345", {:app_environment => {:releaseStage => "production"}})
-
-      # Bugsnag::Notifier.set_endpoint("http://localhost:8000")
-      # Bugsnag::Notifier.notify("145260904aa22d52bf2a82076d157c38", event)
-
-      return Bugsnag::Notifier.notify("d6db01214d22ac808ce6afdfa4c3f148", event)
+  should "get a 200 response from bugsnag for exceptions" do
+    Bugsnag.configure do |config|
+      config.api_key = "a799e9c27c3fb3017e4a556fd815317e"
+      config.endpoint = "http://localhost:8000/notify"
+      config.release_stage = "production"
+      config.project_root = File.dirname(__FILE__)
     end
-  end
-
-  def go
-    deep
-  end
-
-  def deep
-    raise RuntimeError.new("Stuff happens")
+    
+    begin
+      raise BugsnagTestException.new("Exception test from bugsnag gem")
+    rescue Exception => e
+      response = Bugsnag.notify(e)
+      flunk "oh my" if response.code != 200
+    end
   end
 end
