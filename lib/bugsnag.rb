@@ -8,10 +8,10 @@ require "rubygems"
 #   require "activesupport/core_ext"
 # end
 
+require "bugsnag/version"
 require "bugsnag/configuration"
 require "bugsnag/event"
 require "bugsnag/notifier"
-require "bugsnag/version"
 
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
@@ -26,22 +26,23 @@ module Bugsnag
       yield(configuration)
       self.notifier = Notifier.new(configuration)
       
-      log "Bugsnag exception handler #{VERSION} ready, #{configuration.to_hash.inspect}"
+      log "Bugsnag exception handler #{VERSION} ready, api_key=#{configuration.api_key}" if configuration.api_key
     end
 
-    def notify(exception)
-      notifier.notify(exception)
+    def notify(exception, options={})
+      notifier.notify(exception, options)
     end
 
-    def log(message)
+    def log(message)      
+      puts "BUGSNAG: #{message}"
       logger.info(LOG_PREFIX + message) if logger
     end
 
-    private
     def configuration
       @configuration ||= Bugsnag::Configuration.new
     end
-    
+
+    private
     def logger
       configuration.logger
     end

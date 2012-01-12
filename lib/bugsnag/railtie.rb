@@ -1,3 +1,5 @@
+# Rails 3.x support
+
 require "bugsnag"
 require "rails"
 

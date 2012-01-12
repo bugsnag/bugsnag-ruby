@@ -8,20 +8,20 @@ module Bugsnag
     headers  "Content-Type" => "application/json"
     
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
-    NOTIFIER_VERSION = "1.0.0"
+    NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
 
     def initialize(configuration)
       @configuration = configuration
     end
 
-    def notify(exception, meta_data={})
+    def notify(exception, options={})
       Bugsnag.log("Notifying #{@configuration.endpoint} of exception")
 
       event = Bugsnag::Event.new(exception, @configuration.user_id, @configuration.project_root, {
         :app_environment => build_app_environment,
-        :web_environment => build_web_environment,
-        :meta_data => meta_data
+        :web_environment => options[:request_data],
+        :meta_data => options[:meta_data]
       })
       
       payload = {
@@ -36,7 +36,6 @@ module Bugsnag
 
       begin
         response = self.class.post(@configuration.endpoint, {:body => MultiJson.encode(payload)})
-        Bugsnag.log("Notified #{@configuration.endpoint} of exception")
       rescue Exception => e
         Bugsnag.log("Notification to #{@configuration.endpoint} failed, #{e.inspect}")
       end
@@ -49,13 +48,7 @@ module Bugsnag
       {
         :releaseStage => @configuration.release_stage,
         :projectRoot => @configuration.project_root.to_s
-        # TODO: Add in environmental variables
-      }
-    end
-    
-    def build_web_environment
-      {
-        
+        # TODO: Add in environmental variables?
       }
     end
   end
