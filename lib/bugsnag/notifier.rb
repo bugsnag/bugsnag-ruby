@@ -34,8 +34,12 @@ module Bugsnag
         :errors => [event.as_hash]
       }
 
-      response = self.class.post(@configuration.endpoint, {:body => MultiJson.encode(payload)})
-      Bugsnag.log("Notified #{@configuration.endpoint} of exception")
+      begin
+        response = self.class.post(@configuration.endpoint, {:body => MultiJson.encode(payload)})
+        Bugsnag.log("Notified #{@configuration.endpoint} of exception")
+      rescue Exception => e
+        Bugsnag.log("Notification to #{@configuration.endpoint} failed, #{e.inspect}")
+      end
       
       return response
     end
