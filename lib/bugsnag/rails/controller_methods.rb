@@ -4,7 +4,11 @@ module Bugsnag
       private
       def notify_bugsnag(exception, meta_data=nil)
         unless bugsnag_local_request?
-          Bugsnag.notify(exception, :request_data => bugsnag_request_data, :meta_data => meta_data)
+          Bugsnag.notify(exception, {
+            :user_id => bugsnag_session_id,
+            :web_environment => bugsnag_request_data,
+            :meta_data => meta_data
+          })
         end
       end
       
@@ -16,15 +20,21 @@ module Bugsnag
         end
       end
 
+      def bugsnag_session_id
+        session = bugsnag_session_data
+        session[:session_id] || session["session_id"]
+      end
+
       def bugsnag_request_data
-        # TODO: Re-enable the env when the event-server can cope with . in keys
-        env = request.env.inject({}) {|hash, (k, v) | hash[k] = v.inspect; hash}
-        { :parameters       => bugsnag_filter_if_filtering(params.to_hash),
+        env = request.env.inject({}) {|hash, (k, v) | hash[k.gsub(/\./, "-")] = v.inspect; hash}
+        {
+          :parameters       => bugsnag_filter_if_filtering(params.to_hash),
           :session_data     => bugsnag_filter_if_filtering(bugsnag_session_data),
           :controller       => params[:controller],
           :action           => params[:action],
           :url              => bugsnag_request_url,
-          :cgi_data         => bugsnag_filter_if_filtering(env) }
+          :cgi_data         => bugsnag_filter_if_filtering(env)
+        }
       end
 
       def bugsnag_filter_if_filtering(hash)

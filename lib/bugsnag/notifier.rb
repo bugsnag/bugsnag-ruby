@@ -18,9 +18,9 @@ module Bugsnag
     def notify(exception, options={})
       Bugsnag.log("Notifying #{@configuration.endpoint} of exception")
 
-      event = Bugsnag::Event.new(exception, @configuration.user_id, @configuration.project_root, {
+      event = Bugsnag::Event.new(exception, options[:user_id], @configuration.project_root, {
         :app_environment => build_app_environment,
-        :web_environment => options[:request_data],
+        :web_environment => options[:web_environment],
         :meta_data => options[:meta_data]
       })
       

@@ -1,6 +1,6 @@
 module Bugsnag
   class Configuration
-    @@options = :api_key, :release_stage, :endpoint, :user_id, :project_root, :logger, :disable_auto
+    @@options = :api_key, :release_stage, :endpoint, :user_id, :project_root, :logger, :disable_auto_notification
     @@options.each do |attribute|
       attr_accessor attribute
     end

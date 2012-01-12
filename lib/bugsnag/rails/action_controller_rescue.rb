@@ -11,13 +11,20 @@ module Bugsnag
 
       private
       def rescue_action_in_public_with_bugsnag(exception)
-        Bugsnag.notify(exception, :request_data => bugsnag_request_data) unless Bugsnag.configuration.disable_auto
+        auto_notify(exception) unless Bugsnag.configuration.disable_auto_notification
         rescue_action_in_public_without_bugsnag(exception)
       end
       
       def rescue_action_locally_with_bugsnag(exception)
-        Bugsnag.notify(exception, :request_data => bugsnag_request_data) unless Bugsnag.configuration.disable_auto
+        auto_notify(exception) unless Bugsnag.configuration.disable_auto_notification
         rescue_action_locally_without_bugsnag(exception)
+      end
+      
+      def auto_notify(exception)
+        Bugsnag.notify(exception, {
+          :user_id => bugsnag_session_id,
+          :web_environment => bugsnag_request_data
+        })
       end
     end
   end
