@@ -12,7 +12,9 @@ module Bugsnag
     include HTTParty
     headers  "Content-Type" => "application/json"
 
-    attr_accessor :apiKey, :exception, :endpoint, :appVersion, :releaseStage, :projectRoot, :userId, :context, :metaData
+    attr_accessor :apiKey, :exception, :endpoint,
+                  :appVersion, :releaseStage, :projectRoot,
+                  :userId, :context, :metaData
 
     def initialize(api_key, exception, opts={})
       self.apiKey = api_key

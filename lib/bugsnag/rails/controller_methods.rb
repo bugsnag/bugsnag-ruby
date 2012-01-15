@@ -65,7 +65,7 @@ module Bugsnag
     
       def bugsnag_environment
         request.env.inject({}) do |hash, (k, v)|
-          hash[k.gsub(/\./, "-")] = v.inspect
+          hash[k.gsub(/\./, "-")] = v.to_s
           hash
         end
       end

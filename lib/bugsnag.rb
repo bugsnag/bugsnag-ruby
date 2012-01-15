@@ -3,6 +3,7 @@ require "rubygems"
 require "bugsnag/version"
 require "bugsnag/configuration"
 require "bugsnag/notification"
+require "bugsnag/helpers"
 
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)

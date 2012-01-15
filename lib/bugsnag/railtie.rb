@@ -15,9 +15,10 @@ module Bugsnag
 
     config.after_initialize do
       Bugsnag.configure do |config|
-        config.logger        ||= Rails.logger
+        config.logger ||= Rails.logger
         config.release_stage ||= Rails.env
-        config.project_root  ||= Rails.root
+        config.project_root ||= Rails.root
+        config.framework = "Rails: #{::Rails::VERSION::STRING}"
       end
 
       if defined?(::ActionController::Base)
