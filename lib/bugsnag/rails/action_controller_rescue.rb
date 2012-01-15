@@ -21,10 +21,7 @@ module Bugsnag
       end
       
       def auto_notify(exception)
-        Bugsnag.notify(exception, {
-          :user_id => bugsnag_session_id,
-          :web_environment => bugsnag_request_data
-        })
+        notify_bugsnag
       end
     end
   end

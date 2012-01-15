@@ -10,8 +10,7 @@ require "rubygems"
 
 require "bugsnag/version"
 require "bugsnag/configuration"
-require "bugsnag/event"
-require "bugsnag/notifier"
+require "bugsnag/notification"
 
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
@@ -29,12 +28,30 @@ module Bugsnag
       log "Bugsnag exception handler #{VERSION} ready, api_key=#{configuration.api_key}" if configuration.api_key
     end
 
-    def notify(exception, options={})
-      notifier.notify(exception, options)
+    def notify(exception, session_data={})
+      # Optionally provide session_data when you have it
+      # session_data = {
+      #   :userId => "...",
+      #   :context => "...",
+      #   :metadata => {
+      #     :environment => {},
+      #     :session => {},
+      #     :params => {}
+      #   }
+      # }
+
+      opts = {
+        :releaseStage => configuration.release_stage,
+        :projectRoot => configuration.project_root,
+        :appVersion => configuration.app_version
+      }.merge(session_data)
+
+      # Send the notification
+      notification = Notification.new(configuration.api_key, exception, opts)
+      notification.send
     end
 
-    def log(message)      
-      puts "BUGSNAG: #{message}"
+    def log(message)
       logger.info(LOG_PREFIX + message) if logger
     end
 
