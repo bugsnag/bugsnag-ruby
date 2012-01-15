@@ -13,7 +13,7 @@ module Bugsnag
       def bugsnag_request_data
         {
           :userId => bugsnag_session_id,
-          :context => bugsnag_context,
+          :context => Bugsnag::Helpers.param_context(params),
           :metaData => {
             :request => {
               :url => bugsnag_request_url,
@@ -22,7 +22,7 @@ module Bugsnag
               :params => bugsnag_filter_if_filtering(params.to_hash),
             },
             :session => bugsnag_filter_if_filtering(bugsnag_session_data),
-            :environment => bugsnag_filter_if_filtering(bugsnag_environment)
+            :environment => bugsnag_filter_if_filtering(Bugsnag::Helpers.cleanup_hash(request.env))
           }
         }
       end
@@ -60,13 +60,6 @@ module Bugsnag
           session.to_hash
         else
           session.data
-        end
-      end
-    
-      def bugsnag_environment
-        request.env.inject({}) do |hash, (k, v)|
-          hash[k.gsub(/\./, "-")] = v.to_s
-          hash
         end
       end
     

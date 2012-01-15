@@ -1,22 +1,4 @@
 module Bugsnag
-  # Middleware for Rack applications. Any errors raised by the upstream
-  # application will be delivered to Airbrake and re-raised.
-  #
-  # Synopsis:
-  #
-  #   require 'rack'
-  #   require 'airbrake'
-  #
-  #   Airbrake.configure do |config|
-  #     config.api_key = 'my_api_key'
-  #   end
-  #
-  #   app = Rack::Builder.app do
-  #     use Airbrake::Rack
-  #     run lambda { |env| raise "Rack down" }
-  #   end
-  #
-  # Use a standard Airbrake.configure call to configure your api key.
   class Rack
     def initialize(app)
       @app = app
@@ -46,7 +28,7 @@ module Bugsnag
 
       {
         :userId => session[:session_id] || session["session_id"],
-        :context => "#{params[:controller]}##{params[:action]}",
+        :context => Bugsnag::Helpers.param_context(params),
         :metaData => {
           :request => {
             :url => request.url,

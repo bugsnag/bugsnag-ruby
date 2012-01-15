@@ -18,5 +18,9 @@ module Bugsnag
         end
       end
     end
+    
+    def self.param_context(params)
+      "#{params[:controller]}##{params[:action]}"
+    end
   end
 end
