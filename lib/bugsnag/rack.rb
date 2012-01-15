@@ -27,9 +27,9 @@ module Bugsnag
       params = env['action_dispatch.request.parameters'] || request.params || {}
 
       {
-        :userId => session[:session_id] || session["session_id"],
+        :user_id => session[:session_id] || session["session_id"],
         :context => Bugsnag::Helpers.param_context(params),
-        :metaData => {
+        :meta_data => {
           :request => {
             :url => request.url,
             :controller => params[:controller],

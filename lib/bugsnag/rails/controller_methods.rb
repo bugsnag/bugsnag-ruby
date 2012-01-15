@@ -5,16 +5,16 @@ module Bugsnag
       def notify_bugsnag(exception, custom_data=nil)
         unless bugsnag_local_request?
           request_data = bugsnag_request_data
-          request_data[:metaData][:custom] = custom_data if custom_data
+          request_data[:meta_data][:custom] = custom_data if custom_data
           Bugsnag.notify(exception, request_data)
         end
       end
 
       def bugsnag_request_data
         {
-          :userId => bugsnag_session_id,
+          :user_id => bugsnag_session_id,
           :context => Bugsnag::Helpers.param_context(params),
-          :metaData => {
+          :meta_data => {
             :request => {
               :url => bugsnag_request_url,
               :controller => params[:controller],
@@ -40,10 +40,6 @@ module Bugsnag
         session[:session_id] || session["session_id"]
       end
       
-      def bugsnag_context
-        "#{params[:controller]}##{params[:action]}"
-      end
-
       def bugsnag_request_url
         url = "#{request.protocol}#{request.host}"
 

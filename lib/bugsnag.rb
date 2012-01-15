@@ -18,15 +18,8 @@ module Bugsnag
     end
 
     def notify(exception, session_data={})
-      opts = {
-        :releaseStage => configuration.release_stage,
-        :projectRoot => configuration.project_root.to_s,
-        :appVersion => configuration.app_version
-      }.merge(session_data)
-
-      # Send the notification
-      notification = Notification.new(configuration.api_key, exception, opts)
-      notification.deliver
+      notification = Notification.new(exception, configuration.merge(session_data))
+      notification.deliver unless notification.ignore?
     end
 
     def log(message)

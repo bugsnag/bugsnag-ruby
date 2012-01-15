@@ -12,31 +12,37 @@ module Bugsnag
     include HTTParty
     headers  "Content-Type" => "application/json"
 
-    attr_accessor :apiKey, :exception, :endpoint,
-                  :appVersion, :releaseStage, :projectRoot,
-                  :userId, :context, :metaData
+    # Basic notification attributes
+    attr_accessor :exception
 
-    def initialize(api_key, exception, opts={})
-      self.apiKey = api_key
+    # Attributes from session
+    attr_accessor :user_id, :context, :meta_data
+
+    # Attributes from configuration
+    attr_accessor :api_key, :params_filters, :stacktrace_filters, 
+                  :ignore_classes, :endpoint, :app_version, :release_stage, 
+                  :project_root
+
+    def initialize(exception, opts={})
       self.exception = exception
-      self.endpoint = DEFAULT_ENDPOINT
-
-      opts.reject! {|k,v| v.nil?}.each {|k,v| self.send("#{k}=", v)}
+      opts.reject! {|k,v| v.nil?}.each do |k,v|
+        self.send("#{k}=", v) if self.respond_to?("#{k}=")
+      end
     end
 
     def deliver
       Bugsnag.log("Notifying #{self.endpoint} of exception")
 
       payload = {
-        :apiKey => self.apiKey,
+        :apiKey => self.api_key,
         :notifier => notifier_identification,
         :errors => [{
-          :userId => self.userId,
-          :appVersion => self.appVersion,
-          :releaseStage => self.releaseStage,
+          :userId => self.user_id,
+          :appVersion => self.app_version,
+          :releaseStage => self.release_stage,
           :context => self.context,
           :exceptions => [exception_hash],
-          :metaData => self.metaData
+          :metaData => self.meta_data
         }.reject {|k,v| v.nil? }]
       }
 
@@ -47,6 +53,10 @@ module Bugsnag
       end
       
       return response
+    end
+
+    def ignore?
+      self.ignore_classes.include?(self.exception.class.to_s)
     end
 
 
@@ -69,21 +79,25 @@ module Bugsnag
         method = nil
         file, line_str, method_str = trace.split(":")
 
-        trace_hash = {
-          :file => file,
-          :lineNumber => line_str.to_i
-        }
+        # Generate the stacktrace line hash
+        trace_hash = {}
+        trace_hash[:inProject] = true if self.project_root && file.match(/^#{self.project_root}/)
+        trace_hash[:file] = self.stacktrace_filters.inject(file) {|file, proc| proc.call(file) }
+        trace_hash[:lineNumber] = line_str.to_i
 
+        # Add a method if we have it
         if method_str
           method_match = /in `([^']+)'/.match(method_str)
           method = method_match.captures.first if method_match
         end
-
         trace_hash[:method] = method if method
-        trace_hash[:inProject] = true if self.projectRoot && file.match(/^#{self.projectRoot}/)
 
-        trace_hash
-      end
+        if trace_hash[:file] && !trace_hash[:file].empty?
+          trace_hash
+        else
+          nil
+        end
+      end.compact
     end
 
     def exception_hash

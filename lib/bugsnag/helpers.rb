@@ -20,7 +20,7 @@ module Bugsnag
     end
     
     def self.param_context(params)
-      "#{params[:controller]}##{params[:action]}"
+      "#{params[:controller]}##{params[:action]}" if params && params[:controller] && params[:action]
     end
   end
 end
