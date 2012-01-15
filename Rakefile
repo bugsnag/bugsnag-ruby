@@ -21,10 +21,6 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{Ruby notifier for bugsnag.com}
   gem.email = "james@bugsnag.com"
   gem.authors = ["James Smith"]
-  
-  # dependencies defined in Gemfile
-  gem.add_dependency "multi_json"
-  gem.add_dependency "httparty"
 end
 Jeweler::RubygemsDotOrgTasks.new
 
