@@ -19,16 +19,10 @@ module Bugsnag
       self.exception = exception
       self.endpoint = DEFAULT_ENDPOINT
 
-      opts.reject! {|k,v| v.nil?}
-      
-      opts.each do |k,v|
-        puts "sending #{v} to #{k}="
-        self.send("#{k}=", v)
-        puts "sent #{v} to #{k}="
-      end
+      opts.reject! {|k,v| v.nil?}.each {|k,v| self.send("#{k}=", v)}
     end
 
-    def send
+    def deliver
       Bugsnag.log("Notifying #{self.endpoint} of exception")
 
       payload = {
@@ -41,7 +35,7 @@ module Bugsnag
           :context => self.context,
           :exceptions => [exception_hash],
           :metaData => self.metaData
-        }]
+        }.reject {|k,v| v.nil? }]
       }
 
       begin

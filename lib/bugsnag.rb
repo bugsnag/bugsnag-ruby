@@ -22,13 +22,10 @@ module Bugsnag
         :projectRoot => configuration.project_root.to_s,
         :appVersion => configuration.app_version
       }.merge(session_data)
-      
-      puts "SESSION DATA " + session_data.inspect
-      puts "OPTS " + opts.inspect
 
       # Send the notification
       notification = Notification.new(configuration.api_key, exception, opts)
-      notification.send
+      notification.deliver
     end
 
     def log(message)

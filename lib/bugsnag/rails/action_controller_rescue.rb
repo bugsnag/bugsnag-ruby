@@ -21,7 +21,7 @@ module Bugsnag
       end
       
       def auto_notify(exception)
-        notify_bugsnag
+        notify_bugsnag(exception)
       end
     end
   end
