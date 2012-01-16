@@ -74,8 +74,8 @@ module Bugsnag
     end
 
     def stacktrace_hash
-      return [] unless self.exception.backtrace
-      self.exception.backtrace.map do |trace|
+      stacktrace = self.exception.backtrace || caller
+      stacktrace.map do |trace|
         method = nil
         file, line_str, method_str = trace.split(":")
 

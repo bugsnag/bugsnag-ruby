@@ -11,17 +11,13 @@ module Bugsnag
 
       private
       def rescue_action_in_public_with_bugsnag(exception)
-        auto_notify(exception) unless Bugsnag.configuration.disable_auto_notification
+        notify_bugsnag(exception) unless Bugsnag.configuration.disable_auto_notification
         rescue_action_in_public_without_bugsnag(exception)
       end
       
       def rescue_action_locally_with_bugsnag(exception)
-        auto_notify(exception) unless Bugsnag.configuration.disable_auto_notification
+        notify_bugsnag(exception) unless Bugsnag.configuration.disable_auto_notification
         rescue_action_locally_without_bugsnag(exception)
-      end
-      
-      def auto_notify(exception)
-        notify_bugsnag(exception)
       end
     end
   end
