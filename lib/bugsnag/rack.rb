@@ -23,12 +23,13 @@ module Bugsnag
     def bugsnag_request_data(env)
       request = ::Rack::Request.new(env)
 
-      session = env['rack.session'] || {}
-      params = env['action_dispatch.request.parameters'] || request.params || {}
+      session = env["rack.session"]
+      params = env["action_dispatch.request.parameters"] || request.params
+      user_id = session[:session_id] || session["session_id"] if session
 
       {
-        :user_id => session[:session_id] || session["session_id"],
-        :context => Bugsnag::Helpers.param_context(params),
+        :user_id => user_id,
+        :context => Bugsnag::Helpers.param_context(params) || Bugsnag::Helpers.request_context(request),
         :meta_data => {
           :request => {
             :url => request.url,
