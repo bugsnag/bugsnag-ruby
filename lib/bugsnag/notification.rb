@@ -23,6 +23,15 @@ module Bugsnag
                   :ignore_classes, :endpoint, :app_version, :release_stage, 
                   :project_root
 
+
+    def self.deliver_exception_payload(endpoint, payload_string)
+      begin
+        response = post(endpoint, {:body => payload_string})
+      rescue Exception => e
+        Bugsnag.log("Notification to #{self.endpoint} failed, #{e.inspect}")
+      end
+    end
+
     def initialize(exception, opts={})
       self.exception = exception
       opts.reject! {|k,v| v.nil?}.each do |k,v|
@@ -46,13 +55,7 @@ module Bugsnag
         }.reject {|k,v| v.nil? }]
       }
 
-      begin
-        response = self.class.post(self.endpoint, {:body => MultiJson.encode(payload)})
-      rescue Exception => e
-        Bugsnag.log("Notification to #{self.endpoint} failed, #{e.inspect}")
-      end
-      
-      return response
+      self.class.deliver_exception_payload(self.endpoint, MultiJson.encode(payload))
     end
 
     def ignore?
