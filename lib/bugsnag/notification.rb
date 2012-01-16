@@ -3,14 +3,15 @@ require "multi_json"
 
 module Bugsnag
   class Notification
-    DEFAULT_ENDPOINT = "http://api.bugsnag.com/notify"
+    include HTTParty
 
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
     
-    include HTTParty
+    # HTTParty settings
     headers  "Content-Type" => "application/json"
+    default_timeout 5
 
     # Basic notification attributes
     attr_accessor :exception
@@ -28,7 +29,7 @@ module Bugsnag
       begin
         response = post(endpoint, {:body => payload_string})
       rescue Exception => e
-        Bugsnag.log("Notification to #{self.endpoint} failed, #{e.inspect}")
+        Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
       end
     end
 
