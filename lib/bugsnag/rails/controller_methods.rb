@@ -3,11 +3,9 @@ module Bugsnag
     module ControllerMethods
       private
       def notify_bugsnag(exception, custom_data=nil)
-        unless bugsnag_local_request?
-          request_data = bugsnag_request_data
-          request_data[:meta_data][:custom] = custom_data if custom_data
-          Bugsnag.notify(exception, request_data)
-        end
+        request_data = bugsnag_request_data
+        request_data[:meta_data][:custom] = custom_data if custom_data
+        Bugsnag.notify(exception, request_data)
       end
 
       def bugsnag_request_data
@@ -21,18 +19,10 @@ module Bugsnag
               :action => params[:action],
               :params => bugsnag_filter_if_filtering(params.to_hash),
             },
-            :session => bugsnag_filter_if_filtering(bugsnag_session_data),
+            :session => bugsnag_filter_if_filtering(Bugsnag::Helpers.cleanup_hash(bugsnag_session_data),
             :environment => bugsnag_filter_if_filtering(Bugsnag::Helpers.cleanup_hash(request.env))
           }
         }
-      end
-
-      def bugsnag_local_request?
-        if defined?(::Rails.application.config)
-          ::Rails.application.config.consider_all_requests_local || request.local?
-        else
-          consider_all_requests_local || local_request?
-        end
       end
 
       def bugsnag_session_id
