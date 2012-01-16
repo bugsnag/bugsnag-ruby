@@ -2,7 +2,7 @@ module Bugsnag
   module Helpers
     def self.cleanup_hash(hash)
       hash.inject({}) do |h, (k, v)|
-        h[k.gsub(/\./, "-")] = v.to_s
+        h[k.to_s.gsub(/\./, "-")] = v.to_s
         h
       end
     end
