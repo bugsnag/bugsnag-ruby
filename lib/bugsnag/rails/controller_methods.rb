@@ -17,9 +17,9 @@ module Bugsnag
               :url => bugsnag_request_url,
               :controller => params[:controller],
               :action => params[:action],
-              :params => bugsnag_filter_if_filtering(params.to_hash),
+              :params => bugsnag_filter_if_filtering(Bugsnag::Helpers.cleanup_hash(params.to_hash)),
             },
-            :session => bugsnag_filter_if_filtering(Bugsnag::Helpers.cleanup_hash(bugsnag_session_data),
+            :session => bugsnag_filter_if_filtering(Bugsnag::Helpers.cleanup_hash(bugsnag_session_data)),
             :environment => bugsnag_filter_if_filtering(Bugsnag::Helpers.cleanup_hash(request.env))
           }
         }

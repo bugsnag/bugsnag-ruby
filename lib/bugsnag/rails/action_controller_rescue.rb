@@ -11,12 +11,14 @@ module Bugsnag
 
       private
       def rescue_action_in_public_with_bugsnag(exception)
-        notify_bugsnag(exception) unless Bugsnag.configuration.disable_auto_notification
+        # bugsnag_request_data is defined in controller_methods.rb
+        Bugsnag.auto_notify(exception, bugsnag_request_data)
         rescue_action_in_public_without_bugsnag(exception)
       end
       
       def rescue_action_locally_with_bugsnag(exception)
-        notify_bugsnag(exception) unless Bugsnag.configuration.disable_auto_notification
+        # bugsnag_request_data is defined in controller_methods.rb
+        Bugsnag.auto_notify(exception, bugsnag_request_data)
         rescue_action_locally_without_bugsnag(exception)
       end
     end

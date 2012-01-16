@@ -8,12 +8,12 @@ module Bugsnag
       begin
         response = @app.call(env)
       rescue Exception => raised
-        error_id = Bugsnag.notify(raised, bugsnag_request_data(env))
+        Bugsnag.auto_notify(raised, bugsnag_request_data(env))
         raise
       end
 
       if env['rack.exception']
-        error_id = Bugsnag.notify(env['rack.exception'], bugsnag_request_data(env))
+        Bugsnag.auto_notify(env['rack.exception'], bugsnag_request_data(env))
       end
 
       response
