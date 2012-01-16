@@ -2,17 +2,18 @@ module Bugsnag
   class Resque
     @queue = "bugsnag"
     def self.perform(*args)
-      puts "performing #{args.inspect}"
+      Bugsnag::Notification.deliver_exception_payload_without_resque(*args)
     end
   end
 end
 
 Bugsnag::Notification.class_eval do
-  def deliver_exception_payload_with_resque(*args)
-    Resque.enqueue(Bugsnag::Resque, *args)
-    puts "delivering with resque"
-  end
+  class << self
+    def deliver_exception_payload_with_resque(*args)
+      Resque.enqueue(Bugsnag::Resque, *args)
+    end
   
-  alias_method :deliver_exception_payload_without_resque, :deliver_exception_payload
-  alias_method :deliver_exception_payload, :deliver_exception_payload_with_resque
+    alias_method :deliver_exception_payload_without_resque, :deliver_exception_payload
+    alias_method :deliver_exception_payload, :deliver_exception_payload_with_resque
+  end
 end

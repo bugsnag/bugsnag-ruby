@@ -3,7 +3,8 @@ module Bugsnag
     OPTIONS = [
       :api_key, :release_stage, :project_root, :app_version,
       :framework, :endpoint, :logger, :disable_auto_notification,
-      :params_filters, :stacktrace_filters, :ignore_classes
+      :params_filters, :stacktrace_filters, :ignore_classes,
+      :use_resque
     ]
     OPTIONS.each {|o| attr_accessor o }
 

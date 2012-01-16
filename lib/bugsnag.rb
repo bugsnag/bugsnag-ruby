@@ -4,7 +4,6 @@ require "bugsnag/version"
 require "bugsnag/configuration"
 require "bugsnag/notification"
 require "bugsnag/helpers"
-require "bugsnag/resque"
 
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
@@ -17,6 +16,10 @@ module Bugsnag
     def configure
       yield(configuration)
 
+      # Use resque for asynchronous notification if required
+      require "bugsnag/resque" if configuration.use_resque && defined?(Resque)
+
+      # Log that we are ready to rock
       if configuration.api_key && !@logged_ready
         log "Bugsnag exception handler #{VERSION} ready, api_key=#{configuration.api_key}" 
         @logged_ready = true
