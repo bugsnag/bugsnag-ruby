@@ -1,5 +1,6 @@
 module Bugsnag
   class Resque
+    @queue = "bugsnag"
     def self.perform(*args)
       puts "performing #{args.inspect}"
     end
