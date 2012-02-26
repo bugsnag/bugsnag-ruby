@@ -60,7 +60,7 @@ module Bugsnag
     end
 
     def ignore?
-      self.ignore_classes.include?(self.exception.class.to_s)
+      self.ignore_classes.include?(self.exception.class.name)
     end
 
 
@@ -106,7 +106,7 @@ module Bugsnag
 
     def exception_hash
       {
-        :errorClass => self.exception.class.to_s,
+        :errorClass => self.exception.class.name,
         :message => self.exception.message,
         :stacktrace => stacktrace_hash
       }
