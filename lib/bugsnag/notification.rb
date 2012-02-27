@@ -60,7 +60,7 @@ module Bugsnag
     end
 
     def ignore?
-      self.ignore_classes.include?(self.exception.class.name)
+      self.ignore_classes.include?(error_class(self.exception))
     end
 
 
@@ -106,10 +106,16 @@ module Bugsnag
 
     def exception_hash
       {
-        :errorClass => self.exception.class.name,
+        :errorClass => error_class(self.exception),
         :message => self.exception.message,
         :stacktrace => stacktrace_hash
       }
+    end
+    
+    def error_class(exception)
+      # The "Class" check is for some strange exceptions like Timeout::Error 
+      # which throw the error class instead of an instance
+      (exception.is_a? Class) ? exception.name : exception.class.name
     end
   end
 end
