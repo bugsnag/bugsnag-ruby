@@ -6,8 +6,15 @@
 #
 module Bugsnag
   class Resque < ::Resque::Failure::Base
-    def self.configure
-      Resque::Failure.backend = self
+    def self.configure(&block)
+      unless ::Resque::Failure.backend < ::Resque::Failure::Multiple
+        original_backend = ::Resque::Failure.backend
+        ::Resque::Failure.backend = ::Resque::Failure::Multiple
+        ::Resque::Failure.backend.classes ||= []
+        ::Resque::Failure.backend.classes << original_backend
+      end
+
+      ::Resque::Failure.backend.classes << self
       ::Bugsnag.configure(&block)
     end
 
