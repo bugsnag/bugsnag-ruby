@@ -7,6 +7,7 @@ require "bugsnag/helpers"
 
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
+require "bugsnag/resque" if defined?(Resque)
 
 module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
