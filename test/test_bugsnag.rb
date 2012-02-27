@@ -1,14 +1,15 @@
 require 'helper'
+require 'logger'
 
 class BugsnagTestException < RuntimeError; end
 
 class TestBugsnag < Test::Unit::TestCase
-  should "get a 200 response from bugsnag for exceptions" do
+  should "send a normal exception" do
     Bugsnag.configure do |config|
-      config.api_key = "a799e9c27c3fb3017e4a556fd815317e"
-      config.endpoint = "http://localhost:8000/notify"
+      config.api_key = "2dd3f9aaef927b88be4e3c713b663354"
       config.release_stage = "production"
       config.project_root = File.dirname(__FILE__)
+      config.logger = Logger.new(STDOUT)
     end
     
     begin

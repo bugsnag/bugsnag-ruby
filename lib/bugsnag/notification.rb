@@ -101,7 +101,7 @@ module Bugsnag
           method_match = /in `([^']+)'/.match(method_str)
           method = method_match.captures.first if method_match
         end
-        trace_hash[:method] = method if method
+        trace_hash[:method] = method if method && (method =~ /^__bind/).nil?
 
         if trace_hash[:file] && !trace_hash[:file].empty?
           trace_hash
