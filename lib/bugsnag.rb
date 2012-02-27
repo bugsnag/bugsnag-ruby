@@ -17,7 +17,7 @@ module Bugsnag
       yield(configuration)
 
       # Use resque for asynchronous notification if required
-      require "bugsnag/resque" if configuration.use_resque && defined?(Resque)
+      require "bugsnag/delay/resque" if configuration.delay_with_resque && defined?(Resque)
 
       # Log that we are ready to rock
       if configuration.api_key && !@logged_ready

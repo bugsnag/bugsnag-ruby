@@ -9,7 +9,6 @@ class TestBugsnag < Test::Unit::TestCase
       config.endpoint = "http://localhost:8000/notify"
       config.release_stage = "production"
       config.project_root = File.dirname(__FILE__)
-      config.user_id = "static_user_id"
     end
     
     begin

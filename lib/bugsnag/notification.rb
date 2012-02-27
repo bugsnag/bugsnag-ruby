@@ -8,7 +8,9 @@ module Bugsnag
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
-    
+
+    DEFAULT_ENDPOINT = "api.bugsnag.com/notify"
+
     # HTTParty settings
     headers  "Content-Type" => "application/json"
     default_timeout 5
@@ -22,7 +24,7 @@ module Bugsnag
     # Attributes from configuration
     attr_accessor :api_key, :params_filters, :stacktrace_filters, 
                   :ignore_classes, :endpoint, :app_version, :release_stage, 
-                  :project_root
+                  :project_root, :use_ssl
 
 
     def self.deliver_exception_payload(endpoint, payload_string)
@@ -41,6 +43,11 @@ module Bugsnag
     end
 
     def deliver
+      # Unless we are using a custom endpoint, use api.bugsnag.com, and work out protocol
+      unless self.endpoint
+        self.endpoint = (self.use_ssl ? "https://" : "http://") + DEFAULT_ENDPOINT
+      end
+
       Bugsnag.log("Notifying #{self.endpoint} of exception")
 
       payload = {

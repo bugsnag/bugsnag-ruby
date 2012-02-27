@@ -1,15 +1,13 @@
 module Bugsnag
   class Configuration
     OPTIONS = [
-      :api_key, :release_stage, :project_root, :app_version,
+      :api_key, :release_stage, :use_ssl, :project_root, :app_version,
       :framework, :endpoint, :logger, :disable_auto_notification,
       :params_filters, :stacktrace_filters, :ignore_classes,
-      :use_resque
+      :delay_with_resque
     ]
     OPTIONS.each {|o| attr_accessor o }
 
-
-    DEFAULT_ENDPOINT = "http://api.bugsnag.com/notify"
     DEFAULT_PARAMS_FILTERS = %w(password password_confirmation).freeze
 
     DEFAULT_STACKTRACE_FILTERS = [
@@ -42,7 +40,6 @@ module Bugsnag
 
 
     def initialize
-      @endpoint = DEFAULT_ENDPOINT
       @params_filters = DEFAULT_PARAMS_FILTERS.dup
       @stacktrace_filters = DEFAULT_STACKTRACE_FILTERS.dup
       @ignore_classes = DEFAULT_IGNORE_CLASSES.dup
