@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "bugsnag"
-  s.version = "1.0.7"
+  s.version = "1.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
-  s.date = "2012-01-16"
+  s.date = "2012-02-27"
   s.description = "Ruby notifier for bugsnag.com"
   s.email = "james@bugsnag.com"
   s.extra_rdoc_files = [
@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     "bugsnag.gemspec",
     "lib/bugsnag.rb",
     "lib/bugsnag/configuration.rb",
+    "lib/bugsnag/delay/resque.rb",
     "lib/bugsnag/helpers.rb",
     "lib/bugsnag/notification.rb",
     "lib/bugsnag/rack.rb",
@@ -34,7 +35,6 @@ Gem::Specification.new do |s|
     "lib/bugsnag/rails/action_controller_rescue.rb",
     "lib/bugsnag/rails/controller_methods.rb",
     "lib/bugsnag/railtie.rb",
-    "lib/bugsnag/resque.rb",
     "lib/bugsnag/version.rb",
     "rails/init.rb",
     "test/helper.rb",
@@ -43,7 +43,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/bugsnag/bugsnag-ruby"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.10"
+  s.rubygems_version = "1.8.15"
   s.summary = "Ruby notifier for bugsnag.com"
 
   if s.respond_to? :specification_version then
