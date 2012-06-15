@@ -36,7 +36,13 @@ module Bugsnag
     end
 
     def initialize(exception, opts={})
-      self.exception = exception
+      if exception.respond_to?(:original_exception) && exception.original_exception
+        self.exception = exception.original_exception
+      elsif exception.respond_to?(:continued_exception) && exception.continued_exception
+        self.exception = exception.continued_exception
+      else
+        self.exception = exception
+      end
       opts.reject! {|k,v| v.nil?}.each do |k,v|
         self.send("#{k}=", v) if self.respond_to?("#{k}=")
       end
