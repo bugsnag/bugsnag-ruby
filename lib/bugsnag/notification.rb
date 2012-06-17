@@ -9,7 +9,7 @@ module Bugsnag
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
 
-    DEFAULT_ENDPOINT = "api.bugsnag.com/notify"
+    DEFAULT_ENDPOINT = "notify.bugsnag.com"
 
     # HTTParty settings
     headers  "Content-Type" => "application/json"
@@ -49,7 +49,7 @@ module Bugsnag
     end
 
     def deliver
-      # Unless we are using a custom endpoint, use api.bugsnag.com, and work out protocol
+      # Unless we are using a custom endpoint, use notify.bugsnag.com, and work out protocol
       unless self.endpoint
         self.endpoint = (self.use_ssl ? "https://" : "http://") + DEFAULT_ENDPOINT
       end
