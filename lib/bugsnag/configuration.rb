@@ -1,6 +1,5 @@
 module Bugsnag
   class Configuration
-    # TODO:JS enforce notify_release_stages
     OPTIONS = [
       :api_key, :release_stage, :notify_release_stages, :auto_notify,
       :use_ssl, :project_root, :app_version,
