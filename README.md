@@ -110,8 +110,8 @@ you can set the `release_stage` that is reported to Bugsnag.
 config.release_stage = "development"
 ```
     
-In rails apps this value is automatically set from RAILS_ENV, and in rack
-apps it is automatically set to RACK_ENV. Otherwise the default is 
+In rails apps this value is automatically set from `RAILS_ENV`, and in rack
+apps it is automatically set to `RACK_ENV`. Otherwise the default is 
 "production".
 
 ###notify_release_stages
@@ -148,7 +148,7 @@ By default, `use_ssl` is set to false.
 ###project_root
 
 We mark stacktrace lines as `inProject` if they come from files inside your
-`project_root`. In rails apps we set `project_root` automatically, but
+`project_root`. In rails apps this value is automatically set to `RAILS_ROOT`,
 otherwise you should set it manually:
 
 ```ruby
