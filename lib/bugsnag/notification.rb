@@ -16,15 +16,15 @@ module Bugsnag
     default_timeout 5
 
     # Basic notification attributes
-    attr_accessor :exception
+    attr_accessor :exceptions
 
     # Attributes from session
     attr_accessor :user_id, :context, :meta_data
 
     # Attributes from configuration
     attr_accessor :api_key, :params_filters, :stacktrace_filters, 
-                  :ignore_classes, :endpoint, :app_version, :release_stage, 
-                  :project_root, :use_ssl
+                  :ignore_classes, :endpoint, :app_version, :release_stage,
+                  :notify_release_stages, :project_root, :use_ssl
 
 
     def self.deliver_exception_payload(endpoint, payload_string)
@@ -36,25 +36,31 @@ module Bugsnag
     end
 
     def initialize(exception, opts={})
-      if exception.respond_to?(:original_exception) && exception.original_exception
-        self.exception = exception.original_exception
-      elsif exception.respond_to?(:continued_exception) && exception.continued_exception
-        self.exception = exception.continued_exception
-      else
-        self.exception = exception
+      self.exceptions = []
+      ex = exception
+      while ex != nil
+        self.exceptions << ex
+
+        if ex.respond_to?(:continued_exception) && ex.continued_exception
+          ex = ex.continued_exception
+        elsif ex.respond_to?(:original_exception) && ex.original_exception
+          ex = ex.original_exception
+        else
+          ex = nil
+        end
       end
+
       opts.reject! {|k,v| v.nil?}.each do |k,v|
         self.send("#{k}=", v) if self.respond_to?("#{k}=")
       end
     end
 
     def deliver
-      # Unless we are using a custom endpoint, use notify.bugsnag.com, and work out protocol
-      unless self.endpoint
-        self.endpoint = (self.use_ssl ? "https://" : "http://") + DEFAULT_ENDPOINT
-      end
+      return unless self.notify_release_stages.include?(self.release_stage)
+      
+      endpoint = (self.use_ssl ? "https://" : "http://") + (self.endpoint || DEFAULT_ENDPOINT)
 
-      Bugsnag.log("Notifying #{self.endpoint} of exception")
+      Bugsnag.log("Notifying #{endpoint} of exception")
 
       payload = {
         :apiKey => self.api_key,
@@ -64,16 +70,16 @@ module Bugsnag
           :appVersion => self.app_version,
           :releaseStage => self.release_stage,
           :context => self.context,
-          :exceptions => [exception_hash],
+          :exceptions => exception_list,
           :metaData => self.meta_data
         }.reject {|k,v| v.nil? }]
       }
 
-      self.class.deliver_exception_payload(self.endpoint, MultiJson.encode(payload))
+      self.class.deliver_exception_payload(endpoint, MultiJson.encode(payload))
     end
 
     def ignore?
-      self.ignore_classes.include?(error_class(self.exception))
+      self.ignore_classes.include?(error_class(self.exceptions.last))
     end
 
 
@@ -90,15 +96,30 @@ module Bugsnag
       @notifier
     end
 
-    def stacktrace_hash
-      stacktrace = self.exception.backtrace || caller
-      stacktrace.map do |trace|
+    def exception_list
+      self.exceptions.map do |exception|
+        {
+          :errorClass => error_class(exception),
+          :message => exception.message,
+          :stacktrace => stacktrace(exception)
+        }
+      end
+    end
+    
+    def error_class(exception)
+      # The "Class" check is for some strange exceptions like Timeout::Error 
+      # which throw the error class instead of an instance
+      (exception.is_a? Class) ? exception.name : exception.class.name
+    end
+
+    def stacktrace(exception)
+      (exception.backtrace || caller).map do |trace|
         method = nil
         file, line_str, method_str = trace.split(":")
 
         # Generate the stacktrace line hash
         trace_hash = {}
-        trace_hash[:inProject] = true if self.project_root && file.match(/^#{self.project_root}/)
+        trace_hash[:inProject] = true if self.project_root && file.match(/^#{self.project_root}/) && !file.match(/vendor\//)
         trace_hash[:file] = self.stacktrace_filters.inject(file) {|file, proc| proc.call(file) }
         trace_hash[:lineNumber] = line_str.to_i
 
@@ -115,20 +136,6 @@ module Bugsnag
           nil
         end
       end.compact
-    end
-
-    def exception_hash
-      {
-        :errorClass => error_class(self.exception),
-        :message => self.exception.message,
-        :stacktrace => stacktrace_hash
-      }
-    end
-    
-    def error_class(exception)
-      # The "Class" check is for some strange exceptions like Timeout::Error 
-      # which throw the error class instead of an instance
-      (exception.is_a? Class) ? exception.name : exception.class.name
     end
   end
 end

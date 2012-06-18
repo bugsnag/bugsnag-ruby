@@ -43,7 +43,7 @@ module Bugsnag
     # rescuers, unless auto notification is disabled, or we should ignore this
     # error class
     def auto_notify(exception, session_data={})
-      notify_or_ignore(exception, session_data) unless configuration.disable_auto_notification
+      notify_or_ignore(exception, session_data) if configuration.auto_notify
     end
 
     # Log wrapper
