@@ -224,7 +224,5 @@ Contributing
 License
 -------
 
-The Bugsnag ruby notifier is released under the
-Apache License, Version 2.0. Read the full license here:
-
-<http://www.apache.org/licenses/LICENSE-2.0>
+The Bugsnag ruby notifier is free software released under the MIT License. 
+See LICENSE.txt for details.
