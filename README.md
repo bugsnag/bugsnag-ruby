@@ -8,7 +8,8 @@ Bugsnag project.
 
 [Bugsnag](http://bugsnag.com) captures errors in real-time from your web, 
 mobile and desktop applications, helping you to understand and resolve them 
-as fast as possible. [Create a free account](http://bugsnag.com).
+as fast as possible. [Create a free account](http://bugsnag.com) to start 
+capturing exceptions from your applications.
 
 
 How to Install (Rails)
