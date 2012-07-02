@@ -1,14 +1,10 @@
-Official Bugsnag Notifier for Ruby
-==================================
+Bugsnag Notifier for Ruby
+=========================
 
 The Bugsnag Notifier for Ruby gives you instant notification of exceptions
 thrown from your **Rails**, **Sinatra**, **Rack** or **plain Ruby** app.
 Any uncaught exceptions will trigger a notification to be sent to your 
 Bugsnag project.
-
-
-What is Bugsnag?
-----------------
 
 [Bugsnag](http://bugsnag.com) captures errors in real-time from your web, 
 mobile and desktop applications, helping you to understand and resolve them 
@@ -210,14 +206,10 @@ project here:
 
 Contributing
 ------------
- 
--   Check out the latest master to make sure the feature hasn't been 
-    implemented or the bug hasn't been fixed yet
--   Check out the issue tracker to make sure someone already hasn't requested
-    it and/or contributed it
--   Fork the project
--   Start a feature/bugfix branch
+
+-   [Fork](https://help.github.com/articles/fork-a-repo) the [notifier on github](https://github.com/bugsnag/bugsnag-ruby)
 -   Commit and push until you are happy with your contribution
+-   [Make a pull request](https://help.github.com/articles/using-pull-requests)
 -   Thanks!
 
 
@@ -225,4 +217,4 @@ License
 -------
 
 The Bugsnag ruby notifier is free software released under the MIT License. 
-See LICENSE.txt for details.
+See [LICENSE.txt](https://github.com/bugsnag/bugsnag-ruby/blob/master/LICENSE.txt) for details.
