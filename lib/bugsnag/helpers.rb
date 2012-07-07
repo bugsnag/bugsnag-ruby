@@ -1,9 +1,11 @@
 module Bugsnag
   module Helpers
+    MAX_STRING_LENGTH = 1024
+
     def self.cleanup_hash(hash)
       return nil unless hash
       hash.inject({}) do |h, (k, v)|
-        h[k.to_s.gsub(/\./, "-")] = v.to_s
+        h[k.to_s.gsub(/\./, "-")] = v.to_s.slice(0, MAX_STRING_LENGTH)
         h
       end
     end
