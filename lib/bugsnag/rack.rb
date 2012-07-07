@@ -2,6 +2,9 @@ module Bugsnag
   class Rack
     def initialize(app)
       @app = app
+      if defined?(settings) && (Bugsnag.configuration.project_root.nil? || Bugsnag.configuration.project_root.empty?)
+        Bugsnag.configuration.project_root = settings.root
+      end
     end
 
     def call(env)
