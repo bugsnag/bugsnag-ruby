@@ -7,7 +7,7 @@ module Bugsnag
           Bugsnag.configuration.project_root = settings.root
         else
           caller.each do |c|
-            if c =~ /config.ru/
+            if c =~ /[\\/]?config.ru$/
               Bugsnag.configuration.project_root = File.dirname(c.split(":").first)
               break
             end
