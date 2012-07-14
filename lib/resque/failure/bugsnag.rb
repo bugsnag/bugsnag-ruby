@@ -35,8 +35,7 @@ module Resque
       private
       def bugsnag_job_data
         {
-          :user_id => nil, # TODO: How to infer a user id in resque?
-          :context => "resque: #{queue}",
+          :context => "resque##{queue}",
           :meta_data => {
             :payload => payload
           }
