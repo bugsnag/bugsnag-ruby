@@ -81,8 +81,7 @@ Deploy Tracking with Capistrano
 Bugsnag allows you to track deploys of your apps. By sending the 
 source revision or application version to bugsnag.com when you deploy a new
 version of your app, you'll be able to see which deploy each error was
-introduced in, and allows for further features such as batch error resolving
-on deploys.
+introduced in.
 
 If you use [capistrano](https://github.com/capistrano/capistrano) to deploy
 your apps, you can enable deploy tracking by adding the following line to your
