@@ -20,7 +20,7 @@ namespace :bugsnag do
 
       HTTParty.post(endpoint, {
         :body => MultiJson.dump(payload),
-        :headers => "Content-Type" => "application/json"
+        :headers => {"Content-Type" => "application/json"}
       })
     rescue Exception => e
       Bugsnag.log("Deploy notification failed, #{e.inspect}")
