@@ -38,7 +38,8 @@ module Bugsnag
       "ActionController::InvalidAuthenticityToken",
       "CGI::Session::CookieStore::TamperedWithCookie",
       "ActionController::UnknownAction",
-      "AbstractController::ActionNotFound"
+      "AbstractController::ActionNotFound",
+      "Mongoid::Errors::DocumentNotFound"
     ]
 
 
