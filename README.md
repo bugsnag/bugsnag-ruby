@@ -98,6 +98,9 @@ your deploy scripts.
 rake bugsnag:deploy BUGSNAG_APP_VERSION=app-version-here BUGSNAG_RELEASE_STAGE=production
 ```
 
+For more information, check out the [deploy tracking api](https://bugsnag.com/docs/deploy-tracking-api)
+documentation.
+
 
 Configuration
 -------------
