@@ -6,7 +6,7 @@ require "rails"
 module Bugsnag
   class Railtie < Rails::Railtie
     rake_tasks do
-      # TODO: Add in rake tasks
+      load "tasks/bugsnag.rake"
     end
 
     initializer "bugsnag.use_rack_middleware" do |app|

@@ -196,6 +196,77 @@ By default, `ignore_classes` contains the following classes:
 ```
 
 
+Deploy Tracking
+---------------
+
+Bugsnag allows you to track deploys of your apps. By sending the 
+source revision or application version to bugsnag.com when you deploy a new
+version of your app, you'll be able to see which deploy each error was
+introduced in.
+
+### Using Capistrano
+
+If you use [capistrano](https://github.com/capistrano/capistrano) to deploy
+your apps, you can enable deploy tracking by adding the following line to your
+app's `deploy.rb`:
+
+```ruby
+require "bugsnag/capistrano"
+```
+
+### Using Rake
+
+If you aren't using capistrano, you can run the following rake command from
+your deploy scripts.
+
+```shell
+rake bugsnag:deploy BUGSNAG_REVISION=source-control-revision BUGSNAG_RELEASE_STAGE=production
+```
+
+The bugsnag rake tasks will be automatically available for Rails 3 
+apps, to make the rake tasks available in other apps, add the following to 
+your `Rakefile`:
+
+```ruby
+require "bugsnag/tasks"
+```
+
+### Configuring Deploy Tracking
+
+You can set the following environmental variables to override or specify
+additional deploy information:
+
+-   **BUGSNAG_RELEASE_STAGE** - 
+    The release stage (eg, production, staging) currently being deployed.
+    This is set automatically from your Bugsnag settings or rails/rack
+    environment.
+
+-   **BUGSNAG_API_KEY** - 
+    Your Bugsnag API key. This is set automatically from your Bugsnag
+    settings in your app.
+    
+-   **BUGSNAG_REPOSITORY** - 
+    The repository from which you are deploying the code. This is set 
+    automatically if you are using capistrano.
+
+-   **BUGSNAG_BRANCH** - 
+    The source control branch from which you are deploying the code.
+    This is set automatically if you are using capistrano.
+
+-   **BUGSNAG_REVISION** - 
+    The source control revision for the code you are currently deploying.
+    This is set automatically if you are using capistrano.
+
+-   **BUGSNAG_APP_VERSION** -
+    The app version of the code you are currently deploying. Only set this
+    if you tag your releases with [semantic version numbers](http://semver.org/)
+    and deploy infrequently.
+
+For more information, check out the [deploy tracking api](https://bugsnag.com/docs/deploy-tracking-api)
+documentation.
+
+
+
 Reporting Bugs or Feature Requests
 ----------------------------------
 
