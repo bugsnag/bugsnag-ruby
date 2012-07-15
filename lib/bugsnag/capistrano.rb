@@ -3,6 +3,8 @@ require "multi_json"
 
 module Bugsnag
   module Capistrano
+    ALLOWED_ENV_SETTINGS = %w{BUGSNAG_RELEASE_STAGE BUGSNAG_REPOSITORY BUGSNAG_REVISION BUGSNAG_BRANCH BUGSNAG_API_KEY BUGSNAG_APP_VERSION}
+
     def self.load_into(configuration)
       configuration.load do
         after "deploy",            "bugsnag:deploy"
@@ -16,20 +18,19 @@ module Bugsnag
             rails_env = fetch(:rails_env, "production")
             rake_command = "cd '#{current_path}' && #{rake} bugsnag:deploy RAILS_ENV=#{rails_env}"
 
-            # Extract the release stage from env vars or use the rails env
-            release_stage = ENV["BUGSNAG_RELEASE_STAGE"] || rails_env
-            rake_command << " BUGSNAG_RELEASE_STAGE=#{release_stage}" if release_stage
+            # Build the new environment to pass through to rake
+            new_env = {
+              "BUGSNAG_RELEASE_STAGE" => rails_env,
+              "BUGSNAG_REVISION" => fetch(:current_revision, nil),
+              "BUGSNAG_REPOSITORY" => fetch(:repository, nil),
+              "BUGSNAG_BRANCH" => fetch(:branch, nil)
+            }.reject {|k,v| v.nil? }
 
-            # Extract the app version from env vars or capistrano
-            app_version = ENV["BUGSNAG_APP_VERSION"] || current_revision
-            rake_command << " BUGSNAG_APP_VERSION=#{app_version}" if app_version
+            # Pass through any existing env variables
+            ALLOWED_ENV_SETTINGS.each { |opt| new_env[opt] = ENV[opt] if ENV[opt] }
 
-            # Extract the repo from env vars or capistrano
-            repo = ENV["BUGSNAG_REPOSITORY"] || fetch(:repository)
-            rake_command << " BUGSNAG_REPOSITORY=#{repo}" if repo
-
-            # Pass through the API key to override the defaults
-            rake_command << " BUGSNAG_API_KEY=#{ENV['BUGSNAG_API_KEY']}" if ENV["BUGSNAG_API_KEY"]
+            # Append the env to the rake command
+            rake_command << " #{new_env.map{|k,v| "#{k}=#{v}"}.join(" ")}"
 
             # Run the rake command (only on one server)
             run(rake_command, :once => true)

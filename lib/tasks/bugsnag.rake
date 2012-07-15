@@ -15,7 +15,9 @@ namespace :bugsnag do
       :releaseStage => ENV["BUGSNAG_RELEASE_STAGE"] || Bugsnag.configuration.release_stage
     }
     payload[:appVersion] = ENV["BUGSNAG_APP_VERSION"] if ENV["BUGSNAG_APP_VERSION"]
+    payload[:revision] = ENV["BUGSNAG_REVISION"] if ENV["BUGSNAG_REVISION"]
     payload[:repository] = ENV["BUGSNAG_REPOSITORY"] if ENV["BUGSNAG_REPOSITORY"]
+    payload[:branch] = ENV["BUGSNAG_BRANCH"] if ENV["BUGSNAG_BRANCH"]
 
     # Post the deploy notification
     begin
