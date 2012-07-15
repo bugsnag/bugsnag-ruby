@@ -2,6 +2,18 @@ module Bugsnag
   class Rack
     def initialize(app)
       @app = app
+      if Bugsnag.configuration.project_root.nil? || Bugsnag.configuration.project_root.empty?
+        if defined?(settings)
+          Bugsnag.configuration.project_root = settings.root
+        else
+          caller.each do |c|
+            if c =~ /[\/\\]config.ru$/
+              Bugsnag.configuration.project_root = File.dirname(c.split(":").first)
+              break
+            end
+          end
+        end
+      end
     end
 
     def call(env)
