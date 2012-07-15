@@ -65,7 +65,7 @@ module Bugsnag
       payload = {
         :apiKey => self.api_key,
         :notifier => notifier_identification,
-        :errors => [{
+        :events => [{
           :userId => self.user_id,
           :appVersion => self.app_version,
           :releaseStage => self.release_stage,
