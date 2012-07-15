@@ -110,39 +110,33 @@ your `Rakefile`:
 require "bugsnag/tasks"
 ```
 
-### Configuration
+### Configuring Deploy Tracking
 
 You can set the following environmental variables to override or specify
 additional deploy information:
 
--   **BUGSNAG_RELEASE_STAGE**
-
+-   **BUGSNAG_RELEASE_STAGE** - 
     The release stage (eg, production, staging) currently being deployed.
     This is set automatically from your Bugsnag settings or rails/rack
     environment.
 
--   **BUGSNAG_API_KEY**
-
+-   **BUGSNAG_API_KEY** - 
     Your Bugsnag API key. This is set automatically from your Bugsnag
     settings in your app.
     
--   **BUGSNAG_REPOSITORY**
-
+-   **BUGSNAG_REPOSITORY** - 
     The repository from which you are deploying the code. This is set 
     automatically if you are using capistrano.
 
--   **BUGSNAG_BRANCH**
-
+-   **BUGSNAG_BRANCH** - 
     The source control branch from which you are deploying the code.
     This is set automatically if you are using capistrano.
 
--   **BUGSNAG_REVISION**
-
+-   **BUGSNAG_REVISION** - 
     The source control revision for the code you are currently deploying.
     This is set automatically if you are using capistrano.
 
--   **BUGSNAG_APP_VERSION**
-
+-   **BUGSNAG_APP_VERSION** -
     The app version of the code you are currently deploying. Only set this
     if you tag your releases with [semantic version numbers](http://semver.org/)
     and deploy infrequently.
