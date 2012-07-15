@@ -75,10 +75,29 @@ Bugsnag.notify(RuntimeError.new("Something broke"));
 ```
 
 
-Deploy Tracking
----------------
+Deploy Tracking with Capistrano
+-------------------------------
 
-TODO
+Bugsnag allows you to track deploys of your apps. By sending the 
+source revision or application version to bugsnag.com when you deploy a new
+version of your app, you'll be able to see which deploy each error was
+introduced in, and allows for further features such as batch error resolving
+on deploys.
+
+If you use [capistrano](https://github.com/capistrano/capistrano) to deploy
+your apps, you can enable deploy tracking by adding the following line to your
+app's `deploy.rb`:
+
+```ruby
+require "bugsnag/capistrano"
+```
+
+If you aren't using capistrano, you can run the following rake command from
+your deploy scripts.
+
+```shell
+rake bugsnag:deploy BUGSNAG_APP_VERSION=app-version-here BUGSNAG_RELEASE_STAGE=production
+```
 
 
 Configuration
