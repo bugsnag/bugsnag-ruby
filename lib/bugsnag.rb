@@ -51,6 +51,15 @@ module Bugsnag
       configuration.logger.info(LOG_PREFIX + message) if configuration.logger
     end
 
+    # Warning logger
+    def warn(message)
+      if configuration.logger
+        configuration.logger.warn(LOG_PREFIX + message)
+      else
+        puts "#{LOG_PREFIX}#{message}"
+      end
+    end
+
     # Configuration getter
     def configuration
       @configuration ||= Bugsnag::Configuration.new
