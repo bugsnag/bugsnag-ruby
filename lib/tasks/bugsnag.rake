@@ -1,9 +1,10 @@
+require "bugsnag"
 require "httparty"
 require "multi_json"
 
 namespace :bugsnag do
   desc "Notify Bugsnag of a new deploy."
-  task :deploy => :environment do
+  task :deploy => :load do
     # Fetch and check the api key
     api_key = ENV["BUGSNAG_API_KEY"] || Bugsnag.configuration.api_key
     raise RuntimeError.new("No API key found when notifying deploy") if !api_key || api_key.empty?
@@ -32,11 +33,18 @@ namespace :bugsnag do
   end
 
   desc "Send a test exception to Bugsnag."
-  task :test_exception => :environment do 
+  task :test_exception => :load do 
     begin
       raise RuntimeError.new("Bugsnag test exception")
     rescue => e
       Bugsnag.notify(e, {:context => "rake#test_exception"})
     end
+  end
+end
+
+task :load do
+  begin 
+    Rake::Task["environment"].invoke
+  rescue
   end
 end

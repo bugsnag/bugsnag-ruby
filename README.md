@@ -103,7 +103,7 @@ apps, to make the rake tasks available in other apps, add the following to
 your `Rakefile`:
 
 ```ruby
-Dir["#{Gem.searcher.find('bugsnag').full_gem_path}/lib/tasks/*.rake"].each {|e| load e}
+require "bugsnag/tasks"
 ```
 
 For more information, check out the [deploy tracking api](https://bugsnag.com/docs/deploy-tracking-api)

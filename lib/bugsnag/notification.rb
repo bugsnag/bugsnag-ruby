@@ -57,6 +57,7 @@ module Bugsnag
 
     def deliver
       return unless self.notify_release_stages.include?(self.release_stage)
+      Bugsnag.warn "No API key configured, couldn't notify" and return unless self.api_key
       
       endpoint = (self.use_ssl ? "https://" : "http://") + (self.endpoint || DEFAULT_ENDPOINT)
 
