@@ -14,7 +14,11 @@ namespace :bugsnag do
 
     # Post the deploy notification
     begin
-      HTTParty.post("https://notify.bugsnag.com/deploy", {:body => MultiJson.dump(payload)})
+      endpoint = (Bugsnag.configuration.use_ssl ? "https://" : "http://") \
+               + (Bugsnag.configuration.endpoint || Bugsnag::Notification::DEFAULT_ENDPOINT) \
+               + "/deploy"
+
+      HTTParty.post(endpoint, {:body => MultiJson.dump(payload)})
     rescue Exception => e
       Bugsnag.log("Deploy notification failed, #{e.inspect}")
     end
