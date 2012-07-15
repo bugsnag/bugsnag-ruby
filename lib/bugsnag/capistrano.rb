@@ -28,10 +28,8 @@ module Bugsnag
             repo = ENV["BUGSNAG_REPOSITORY"] || fetch(:repository)
             rake_command << " BUGSNAG_REPOSITORY=#{repo}" if repo
 
-            # Pass through any other env variables
-            ["BUGSNAG_API_KEY", "BUGSNAG_RELEASE_STAGE"].each do |env|
-              rake_command << " #{env}=#{ENV[env]}" if ENV[env]
-            end
+            # Pass through the API key to override the defaults
+            rake_command << " BUGSNAG_API_KEY=#{ENV['BUGSNAG_API_KEY']}" if ENV["BUGSNAG_API_KEY"]
 
             # Run the rake command (only on one server)
             run(rake_command, :once => true)
