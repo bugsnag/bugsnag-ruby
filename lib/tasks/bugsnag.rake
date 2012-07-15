@@ -4,10 +4,14 @@ require "multi_json"
 namespace :bugsnag do
   desc "Notify Bugsnag of a new deploy."
   task :deploy => :environment do
+    # Fetch and check the api key
+    api_key = ENV["BUGSNAG_API_KEY"] || Bugsnag.configuration.api_key
+    raise RuntimeError.new("No API key found when notifying deploy") if !api_key || api_key.empty?
+
     # Build the deploy payload
     payload = {
-      :apiKey => ENV["BUGSNAG_API_KEY"] || Bugsnag.configuration.api_key,
-      :releaseStage => ENV["BUGSNAG_RELEASE_STAGE"] || ENV["RAILS_ENV"] || ENV["RACK_ENV"] || Bugsnag.configuration.release_stage
+      :apiKey => api_key,
+      :releaseStage => ENV["BUGSNAG_RELEASE_STAGE"] || Bugsnag.configuration.release_stage
     }
     payload[:appVersion] = ENV["BUGSNAG_APP_VERSION"] if ENV["BUGSNAG_APP_VERSION"]
     payload[:repository] = ENV["BUGSNAG_REPOSITORY"] if ENV["BUGSNAG_REPOSITORY"]
