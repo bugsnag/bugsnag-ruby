@@ -16,9 +16,17 @@ module Bugsnag
             rails_env = fetch(:rails_env, "production")
             rake_command = "cd '#{current_path}' && #{rake} bugsnag:deploy RAILS_ENV=#{rails_env}"
 
-            # Extract the app version from env vars or the current revision
+            # Extract the release stage from env vars or use the rails env
+            release_stage = ENV["BUGSNAG_RELEASE_STAGE"] || rails_env
+            rake_command << " BUGSNAG_RELEASE_STAGE=#{release_stage}" if release_stage
+
+            # Extract the app version from env vars or capistrano
             app_version = ENV["BUGSNAG_APP_VERSION"] || current_revision
             rake_command << " BUGSNAG_APP_VERSION=#{app_version}" if app_version
+
+            # Extract the repo from env vars or capistrano
+            repo = ENV["BUGSNAG_REPOSITORY"] || fetch(:repository)
+            rake_command << " BUGSNAG_REPOSITORY=#{repo}" if repo
 
             # Pass through any other env variables
             ["BUGSNAG_API_KEY", "BUGSNAG_RELEASE_STAGE"].each do |env|
