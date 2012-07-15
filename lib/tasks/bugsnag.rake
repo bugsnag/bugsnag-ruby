@@ -18,7 +18,10 @@ namespace :bugsnag do
                + (Bugsnag.configuration.endpoint || Bugsnag::Notification::DEFAULT_ENDPOINT) \
                + "/deploy"
 
-      HTTParty.post(endpoint, {:body => MultiJson.dump(payload)})
+      HTTParty.post(endpoint, {
+        :body => MultiJson.dump(payload),
+        :headers  "Content-Type" => "application/json"
+      })
     rescue Exception => e
       Bugsnag.log("Deploy notification failed, #{e.inspect}")
     end
