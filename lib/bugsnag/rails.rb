@@ -24,7 +24,6 @@ module Bugsnag
         config.logger = rails_logger
         config.release_stage = RAILS_ENV  if defined?(RAILS_ENV)
         config.project_root = RAILS_ROOT if defined?(RAILS_ROOT)
-        config.framework = "Rails: #{::Rails::VERSION::STRING}" if defined?(::Rails::VERSION)
       end
     end
   end

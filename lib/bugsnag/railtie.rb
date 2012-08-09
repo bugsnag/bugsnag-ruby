@@ -17,7 +17,6 @@ module Bugsnag
       Bugsnag.configure do |config|
         config.release_stage = ::Rails.env
         config.project_root = ::Rails.root
-        config.framework = "Rails: #{::Rails::VERSION::STRING}"
 
         config.logger ||= ::Rails.logger
       end

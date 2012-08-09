@@ -1,35 +1,21 @@
 module Bugsnag
   class Configuration
-    OPTIONS = [
-      :api_key, :release_stage, :notify_release_stages, :auto_notify,
-      :use_ssl, :project_root, :app_version,
-      :params_filters, :ignore_classes,
-      
-      :stacktrace_filters,
-      :framework, :endpoint, :logger,
-      :delay_with_resque
-    ]
-    OPTIONS.each {|o| attr_accessor o }
+    attr_accessor :api_key
+    attr_accessor :release_stage
+    attr_accessor :notify_release_stages
+    attr_accessor :auto_notify
+    attr_accessor :use_ssl
+    attr_accessor :project_root
+    attr_accessor :app_version
+    attr_accessor :params_filters
+    attr_accessor :ignore_classes
+    attr_accessor :endpoint
+    attr_accessor :logger
+    attr_accessor :delay_with
 
-    DEFAULT_PARAMS_FILTERS = %w(password password_confirmation).freeze
-
-    DEFAULT_STACKTRACE_FILTERS = [
-      lambda { |line|
-        if defined?(Bugsnag.configuration.project_root) && Bugsnag.configuration.project_root.to_s != '' 
-          line.sub(/#{Bugsnag.configuration.project_root}\//, "")
-        else
-          line
-        end
-      },
-      lambda { |line| line.gsub(/^\.\//, "") },
-      lambda { |line|
-        if defined?(Gem)
-          Gem.path.inject(line) do |line, path|
-            line.gsub(/#{path}\//, "")
-          end
-        end
-      },
-      lambda { |line| line if line !~ %r{lib/bugsnag} }
+    DEFAULT_PARAMS_FILTERS = [
+      "password",
+      "password_confirmation"
     ].freeze
 
     DEFAULT_IGNORE_CLASSES = [
@@ -40,26 +26,28 @@ module Bugsnag
       "ActionController::UnknownAction",
       "AbstractController::ActionNotFound",
       "Mongoid::Errors::DocumentNotFound"
-    ]
-
+    ].freeze
 
     def initialize
-      @params_filters = DEFAULT_PARAMS_FILTERS.dup
-      @stacktrace_filters = DEFAULT_STACKTRACE_FILTERS.dup
-      @ignore_classes = DEFAULT_IGNORE_CLASSES.dup
-      @auto_notify = true
+      # Set up the defaults
       @release_stage = "production"
       @notify_release_stages = ["production"]
-    end
-    
-    def to_hash
-      OPTIONS.inject({}) do |hash, option|
-        hash.merge(option.to_sym => send(option))
-      end
+      @auto_notify = true
+      @use_ssl = false
+      @params_filters = DEFAULT_PARAMS_FILTERS.dup
+      @ignore_classes = DEFAULT_IGNORE_CLASSES.dup
+      @endpoint = "notify.bugsnag.com"
     end
 
-    def merge(hash)
-      to_hash.merge(hash)
+    def should_notify?
+      @notify_release_stages.include?(@release_stage)
     end
+  end
+  
+  class RequestConfiguration
+    attr_accessor :context
+    attr_accessor :user_id
+    attr_accessor :meta_data
+    attr_accessor :extra_data
   end
 end

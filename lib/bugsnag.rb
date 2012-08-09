@@ -14,12 +14,12 @@ module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
 
   class << self
-    # Configure the gem to send notifications, at the very least an api_key is required
+    # Configure the Bugsnag notifier application-wide settings.
     def configure
       yield(configuration)
 
       # Use resque for asynchronous notification if required
-      require "bugsnag/delay/resque" if configuration.delay_with_resque && defined?(Resque)
+      require "bugsnag/delay/resque" if configuration.delay_with == :resque && defined?(Resque)
 
       # Log that we are ready to rock
       if configuration.api_key && !@logged_ready
@@ -28,22 +28,32 @@ module Bugsnag
       end
     end
 
+    # Configure the Bugsnag notifier per-request settings.
+    def configure_request
+      yield(request_configuration)
+    end
+
+    # Clears the per-request settings.
+    def clear_request_config
+      Thread.current["bugsnag"] = nil
+    end
+
     # Explicitly notify of an exception
-    def notify(exception, session_data={})
-      Notification.new(exception, configuration.merge(session_data)).deliver
+    def notify(exception, overrides={})
+      Notification.new(exception, configuration, request_configuration, overrides).deliver
     end
 
     # Notify of an exception unless it should be ignored
-    def notify_or_ignore(exception, session_data={})
-      notification = Notification.new(exception, configuration.merge(session_data))
+    def notify_or_ignore(exception, overrides={})
+      notification = Notification.new(exception, configuration, request_configuration, overrides)
       notification.deliver unless notification.ignore?
     end
 
     # Auto notify of an exception, called from rails and rack exception 
     # rescuers, unless auto notification is disabled, or we should ignore this
     # error class
-    def auto_notify(exception, session_data={})
-      notify_or_ignore(exception, session_data) if configuration.auto_notify
+    def auto_notify(exception, overrides={})
+      notify_or_ignore(exception, overrides) if configuration.auto_notify
     end
 
     # Log wrapper
@@ -60,9 +70,13 @@ module Bugsnag
       end
     end
 
-    # Configuration getter
+    # Configuration getters
     def configuration
       @configuration ||= Bugsnag::Configuration.new
+    end
+
+    def request_configuration
+      Thread.current["bugsnag"] ||= Bugsnag::RequestConfiguration.new
     end
   end
 end

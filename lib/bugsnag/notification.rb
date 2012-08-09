@@ -9,37 +9,75 @@ module Bugsnag
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
 
-    DEFAULT_ENDPOINT = "notify.bugsnag.com"
-
     # HTTParty settings
     headers  "Content-Type" => "application/json"
     default_timeout 5
 
-    # Basic notification attributes
-    attr_accessor :exceptions
+    def initialize(exception, configuration, request_configuration, opts={})
+      @exception = exception
+      @configuration = configuration
+      @request_configuration = request_configuration
+    end
 
-    # Attributes from session
-    attr_accessor :user_id, :context, :meta_data
+    def deliver
+      return unless @configuration.should_notify?
+      
+      unless @configuration.api_key
+        Bugsnag.warn "No API key configured, couldn't notify"
+        return
+      end
+      
+      endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
 
-    # Attributes from configuration
-    attr_accessor :api_key, :params_filters, :stacktrace_filters, 
-                  :ignore_classes, :endpoint, :app_version, :release_stage,
-                  :notify_release_stages, :project_root, :use_ssl
+      Bugsnag.log("Notifying #{endpoint} of exception")
 
+      payload = {
+        :apiKey => @configuration.api_key,
+        :notifier => {
+          :name => NOTIFIER_NAME,
+          :version => NOTIFIER_VERSION,
+          :url => NOTIFIER_URL
+        },
+        :events => [{
+          :releaseStage => @configuration.release_stage,
+          :appVersion => @configuration.app_version,
+          :context => @request_configuration.context,
+          :userId => @request_configuration.user_id,
+          :exceptions => exception_list,
+          :metaData => @request_configuration.meta_data
+        }.reject {|k,v| v.nil? }]
+      }
 
-    def self.deliver_exception_payload(endpoint, payload_string)
+      if @request_configuration.extra_data
+        payload[:metaData] ||= {}
+        payload[:metaData].merge!({
+          :extraData => @request_configuration.extra_data
+        })
+      end
+
+      puts payload.inspect
       begin
-        response = post(endpoint, {:body => payload_string})
+        response = self.class.post(endpoint, {:body => MultiJson.dump(payload)})
+        puts response
       rescue Exception => e
         Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
+        puts e.inspect
       end
     end
 
-    def initialize(exception, opts={})
-      self.exceptions = []
-      ex = exception
+    def ignore?
+      false # TODO
+      # @configuration.ignore_classes.include?(error_class(@exceptions.last))
+    end
+
+
+    private
+    def exception_list
+      # Unwrap exceptions
+      exceptions = []
+      ex = @exception
       while ex != nil
-        self.exceptions << ex
+        exceptions << ex
 
         if ex.respond_to?(:continued_exception) && ex.continued_exception
           ex = ex.continued_exception
@@ -49,60 +87,8 @@ module Bugsnag
           ex = nil
         end
       end
-
-      opts.reject! {|k,v| v.nil?}.each do |k,v|
-        self.send("#{k}=", v) if self.respond_to?("#{k}=")
-      end
-    end
-
-    def deliver
-      return unless self.notify_release_stages.include?(self.release_stage)
       
-      unless self.api_key
-        Bugsnag.warn "No API key configured, couldn't notify"
-        return
-      end
-      
-      endpoint = (self.use_ssl ? "https://" : "http://") + (self.endpoint || DEFAULT_ENDPOINT)
-
-      Bugsnag.log("Notifying #{endpoint} of exception")
-
-      payload = {
-        :apiKey => self.api_key,
-        :notifier => notifier_identification,
-        :events => [{
-          :userId => self.user_id,
-          :appVersion => self.app_version,
-          :releaseStage => self.release_stage,
-          :context => self.context,
-          :exceptions => exception_list,
-          :metaData => self.meta_data
-        }.reject {|k,v| v.nil? }]
-      }
-
-      self.class.deliver_exception_payload(endpoint, MultiJson.dump(payload))
-    end
-
-    def ignore?
-      self.ignore_classes.include?(error_class(self.exceptions.last))
-    end
-
-
-    private
-    def notifier_identification
-      unless @notifier
-        @notifier = {
-          :name => NOTIFIER_NAME,
-          :version => NOTIFIER_VERSION,
-          :url => NOTIFIER_URL
-        }
-      end
-
-      @notifier
-    end
-
-    def exception_list
-      self.exceptions.map do |exception|
+      exceptions.map do |exception|
         {
           :errorClass => error_class(exception),
           :message => exception.message,
@@ -118,15 +104,31 @@ module Bugsnag
     end
 
     def stacktrace(exception)
-      (exception.backtrace || caller).map do |trace|
+      (exception.backtrace || caller).map do |trace|        
         method = nil
         file, line_str, method_str = trace.split(":")
 
+        next(nil) if file =~ %r{lib/bugsnag}
+
         # Generate the stacktrace line hash
         trace_hash = {}
-        trace_hash[:inProject] = true if self.project_root && file.match(/^#{self.project_root}/) && !file.match(/vendor\//)
-        trace_hash[:file] = self.stacktrace_filters.inject(file) {|file, proc| proc.call(file) }
+        trace_hash[:inProject] = true if @configuration.project_root && file.match(/^#{@configuration.project_root}/) && !file.match(/vendor\//)
         trace_hash[:lineNumber] = line_str.to_i
+
+        # Strip relative path prefixes (./)
+        file.sub!(/^\.\//, "")
+
+        # Clean up the file path in the stacktrace
+        if defined?(Bugsnag.configuration.project_root) && Bugsnag.configuration.project_root.to_s != '' 
+          file.sub!(/#{Bugsnag.configuration.project_root}\//, "")
+        end
+
+        # Strip common gem path prefixes
+        if defined?(Gem)
+          file = Gem.path.inject(file) {|line, path| line.sub(/#{path}\//, "") }
+        end
+
+        trace_hash[:file] = file
 
         # Add a method if we have it
         if method_str
