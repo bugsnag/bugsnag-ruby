@@ -42,7 +42,7 @@ module Bugsnag
 
         session = env["rack.session"]
         params = env["action_dispatch.request.parameters"] || request.params
-        user_id = session[:session_id] || session["session_id"] if session
+        user_id = session[:session_id] || session["session_id"] rescue nil
 
         {
           :user_id => user_id,
