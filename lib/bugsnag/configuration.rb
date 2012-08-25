@@ -45,9 +45,29 @@ module Bugsnag
   end
   
   class RequestConfiguration
+    THREAD_LOCAL_NAME = "bugsnag"
+
     attr_accessor :context
     attr_accessor :user_id
-    attr_accessor :meta_data
-    attr_accessor :extra_data
+    attr_accessor :custom_data
+    
+    attr_accessor :meta_data_callback
+
+    def self.get_instance
+      Thread.current[THREAD_LOCAL_NAME] ||= Bugsnag::RequestConfiguration.new
+    end
+    
+    def self.clear_instance
+      Thread.current[THREAD_LOCAL_NAME] = nil
+    end
+
+    def set_meta_data(tab_name, metadata)
+      @meta_data ||= {}
+      @meta_data[tab_name] = Bugsnag::Helpers.cleanup_hash(Bugsnag::Helpers.apply_filters(metadata, Bugsnag.configuration.params_filters))
+    end
+    
+    def meta_data
+      @meta_data
+    end
   end
 end

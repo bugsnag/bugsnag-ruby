@@ -14,70 +14,14 @@ module Bugsnag
     default_timeout 5
 
     def initialize(exception, configuration, request_configuration, opts={})
-      @exception = exception
       @configuration = configuration
       @request_configuration = request_configuration
-    end
 
-    def deliver
-      return unless @configuration.should_notify?
-      
-      unless @configuration.api_key
-        Bugsnag.warn "No API key configured, couldn't notify"
-        return
-      end
-      
-      endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
-
-      Bugsnag.log("Notifying #{endpoint} of exception")
-
-      payload = {
-        :apiKey => @configuration.api_key,
-        :notifier => {
-          :name => NOTIFIER_NAME,
-          :version => NOTIFIER_VERSION,
-          :url => NOTIFIER_URL
-        },
-        :events => [{
-          :releaseStage => @configuration.release_stage,
-          :appVersion => @configuration.app_version,
-          :context => @request_configuration.context,
-          :userId => @request_configuration.user_id,
-          :exceptions => exception_list,
-          :metaData => @request_configuration.meta_data
-        }.reject {|k,v| v.nil? }]
-      }
-
-      if @request_configuration.extra_data
-        payload[:metaData] ||= {}
-        payload[:metaData].merge!({
-          :extraData => @request_configuration.extra_data
-        })
-      end
-
-      puts payload.inspect
-      begin
-        response = self.class.post(endpoint, {:body => MultiJson.dump(payload)})
-        puts response
-      rescue Exception => e
-        Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
-        puts e.inspect
-      end
-    end
-
-    def ignore?
-      false # TODO
-      # @configuration.ignore_classes.include?(error_class(@exceptions.last))
-    end
-
-
-    private
-    def exception_list
       # Unwrap exceptions
-      exceptions = []
-      ex = @exception
+      @exceptions = []
+      ex = exception
       while ex != nil
-        exceptions << ex
+        @exceptions << ex
 
         if ex.respond_to?(:continued_exception) && ex.continued_exception
           ex = ex.continued_exception
@@ -87,8 +31,73 @@ module Bugsnag
           ex = nil
         end
       end
-      
-      exceptions.map do |exception|
+    end
+
+    def deliver
+      return unless @configuration.should_notify?
+
+      # Check we have at least and api_key
+      unless @configuration.api_key
+        Bugsnag.warn "No API key configured, couldn't notify"
+        return
+      end
+
+      # Get request meta-data via callbacks if available, cleanup and filter hashes
+      meta_data = Bugsnag.request_configuration.meta_data_callback.call if Bugsnag.request_configuration.meta_data_callback
+      meta_data = meta_data.inject({}) do |hash, (k,v)|
+        hash[k] = Bugsnag::Helpers.cleanup_hash(v, Bugsnag.configuration.params_filters)
+        hash
+      end if meta_data
+
+      # Build the endpoint url
+      endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
+      Bugsnag.log("Notifying #{endpoint} of exception")
+
+      # Build the payload's exception event
+      payload_event = {
+        :releaseStage => @configuration.release_stage,
+        :appVersion => @configuration.app_version,
+        :context => @request_configuration.context,
+        :userId => @request_configuration.user_id,
+        :exceptions => exception_list,
+        :metaData => meta_data
+      }.reject {|k,v| v.nil? }
+
+      # Augment exception event with custom per-request data (if available)
+      if @request_configuration.custom_data
+        payload_event[:metaData] ||= {}
+        payload_event[:metaData][:custom] = @request_configuration.custom_data
+      end
+
+      # Build the payload hash
+      payload = {
+        :apiKey => @configuration.api_key,
+        :notifier => {
+          :name => NOTIFIER_NAME,
+          :version => NOTIFIER_VERSION,
+          :url => NOTIFIER_URL
+        },
+        :events => [payload_event]
+      }
+
+      puts payload.inspect
+
+      # Send the payload to bugsnag
+      # begin
+        self.class.post(endpoint, {:body => MultiJson.dump(payload)})
+      # rescue Exception => e
+      #   Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
+      # end
+    end
+
+    def ignore?
+      @configuration.ignore_classes.include?(error_class(@exceptions.last))
+    end
+
+
+    private
+    def exception_list      
+      @exceptions.map do |exception|
         {
           :errorClass => error_class(exception),
           :message => exception.message,

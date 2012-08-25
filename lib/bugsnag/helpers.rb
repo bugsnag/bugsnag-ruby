@@ -1,28 +1,27 @@
+module HTTParty
+  class Parser
+    def json
+      MultiJson.decode(body)
+    end
+  end
+end
+
 module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 1024
 
-    def self.cleanup_hash(hash)
-      return nil unless hash
-      hash.inject({}) do |h, (k, v)|
-        h[k.to_s.gsub(/\./, "-")] = v.to_s.slice(0, MAX_STRING_LENGTH)
-        h
-      end
-    end
-    
-    def self.apply_filters(hash, filters)
-      return nil unless hash
-      return hash unless filters
-
-      hash.each do |k, v|
-        if filters.any? {|f| k.to_s.include?(f.to_s) }
+    def self.cleanup_hash(hash, filters=nil)
+      hash.each do |k,v|
+        if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
           hash[k] = "[FILTERED]"
-        elsif v.respond_to?(:to_hash)
-          apply_filters(hash[k])
+        elsif v.is_a?(Hash)
+          cleanup_hash(v, filters)
+        else
+          hash[k] = v.to_s.slice(0, MAX_STRING_LENGTH)
         end
       end
     end
-    
+
     def self.param_context(params)
       "#{params[:controller]}##{params[:action]}" if params && params[:controller] && params[:action]
     end

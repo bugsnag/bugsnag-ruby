@@ -35,7 +35,7 @@ module Bugsnag
 
     # Clears the per-request settings.
     def clear_request_config
-      Thread.current["bugsnag"] = nil
+      Bugsnag::RequestConfiguration.clear_instance
     end
 
     # Explicitly notify of an exception
@@ -76,7 +76,7 @@ module Bugsnag
     end
 
     def request_configuration
-      Thread.current["bugsnag"] ||= Bugsnag::RequestConfiguration.new
+      Bugsnag::RequestConfiguration.get_instance
     end
   end
 end
