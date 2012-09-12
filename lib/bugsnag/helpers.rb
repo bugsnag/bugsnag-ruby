@@ -30,5 +30,14 @@ module Bugsnag
     def self.request_context(request)
       "#{request.request_method} #{request.path}" if request
     end
+
+    # Helper function to work around MultiJson changes in 1.3+
+    def self.dump_json(object, options={})
+      if MultiJson.respond_to?(:adapter)
+        MultiJson.dump(object, options)
+      else
+        MultiJson.encode(object, options)
+      end
+    end
   end
 end

@@ -26,7 +26,7 @@ namespace :bugsnag do
                + "/deploy"
 
       HTTParty.post(endpoint, {
-        :body => MultiJson.dump(payload),
+        :body => Bugsnag::Helpers.dump_json(payload),
         :headers => {"Content-Type" => "application/json"}
       })
     rescue Exception => e
