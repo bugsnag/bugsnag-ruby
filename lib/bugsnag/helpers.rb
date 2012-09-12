@@ -31,12 +31,20 @@ module Bugsnag
       "#{request.request_method} #{request.path}" if request
     end
 
-    # Helper function to work around MultiJson changes in 1.3+
+    # Helper functions to work around MultiJson changes in 1.3+
     def self.dump_json(object, options={})
       if MultiJson.respond_to?(:adapter)
         MultiJson.dump(object, options)
       else
         MultiJson.encode(object, options)
+      end
+    end
+
+    def self.load_json(json, options={})
+      if MultiJson.respond_to?(:adapter)
+        MultiJson.load(json, options)
+      else
+        MultiJson.decode(json, options)
       end
     end
   end
