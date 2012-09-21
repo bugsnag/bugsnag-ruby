@@ -11,7 +11,7 @@ module Bugsnag
 
     initializer "bugsnag.use_rack_middleware" do |app|
       begin
-        app.config.middleware.insert_after ActionDispatch::ShowExceptions, "Bugsnag::Rack"
+        app.config.middleware.insert_after ActionDispatch::DebugExceptions, "Bugsnag::Rack"
       rescue
         app.config.middleware.use "Bugsnag::Rack"
       end
