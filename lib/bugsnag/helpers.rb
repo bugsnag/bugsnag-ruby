@@ -1,6 +1,6 @@
 module Bugsnag
   module Helpers
-    MAX_STRING_LENGTH = 1024
+    MAX_STRING_LENGTH = 4096
 
     def self.cleanup_hash(hash)
       return nil unless hash
