@@ -30,6 +30,6 @@ PLATFORMS
 DEPENDENCIES
   httparty (~> 0.8.3)
   jeweler (~> 1.6.4)
-  multi_json (~> 1.3.4)
+  multi_json (~> 1.0)
   rcov
   shoulda

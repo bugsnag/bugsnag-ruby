@@ -80,7 +80,7 @@ module Bugsnag
         }.reject {|k,v| v.nil? }]
       }
 
-      self.class.deliver_exception_payload(endpoint, MultiJson.dump(payload))
+      self.class.deliver_exception_payload(endpoint, Bugsnag::Helpers.dump_json(payload))
     end
 
     def ignore?
