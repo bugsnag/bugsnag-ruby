@@ -30,13 +30,13 @@ module Bugsnag
 
     def initialize
       # Set up the defaults
-      @release_stage = "production"
-      @notify_release_stages = ["production"]
-      @auto_notify = true
-      @use_ssl = false
-      @params_filters = DEFAULT_PARAMS_FILTERS.dup
-      @ignore_classes = DEFAULT_IGNORE_CLASSES.dup
-      @endpoint = "notify.bugsnag.com"
+      self.release_stage = "production"
+      self.notify_release_stages = ["production"]
+      self.auto_notify = true
+      self.use_ssl = false
+      self.params_filters = DEFAULT_PARAMS_FILTERS.dup
+      self.ignore_classes = DEFAULT_IGNORE_CLASSES.dup
+      self.endpoint = "notify.bugsnag.com"
     end
 
     def should_notify?
@@ -45,13 +45,34 @@ module Bugsnag
   end
   
   class RequestConfiguration
-    THREAD_LOCAL_NAME = "bugsnag"
+    THREAD_LOCAL_NAME = "bugsnag_req_conf"
+    #TODO:SM Having this in two places sucks
+    REQUEST_CONFIGURATION_NAMES = [:meta_data, :context, :user_id]
 
+    attr_accessor :meta_data
     attr_accessor :context
     attr_accessor :user_id
-    attr_accessor :custom_data
     
-    attr_accessor :meta_data_callback
+    def initialize
+      # Set up the defaults
+      self.meta_data = {}
+    end
+    
+    def method_missing(method, *args, &block)
+      method = method.to_s  
+      if args.length == 1 && method.ends_with?("=")
+        method = method[0...-1]
+        if args[0].is_a? Hash
+          self.meta_data[method] = args[0]
+        else
+          self.meta_data[:custom] ||= {}
+          self.meta_data[:custom][method] = args[0]
+        end
+      else
+        # Warn the user that did nothing
+        Bugsnag.warn "Can't configure #{method} with multiple parameters. Dropping #{method} from payload."
+      end
+    end
 
     def self.get_instance
       Thread.current[THREAD_LOCAL_NAME] ||= Bugsnag::RequestConfiguration.new
@@ -59,15 +80,6 @@ module Bugsnag
     
     def self.clear_instance
       Thread.current[THREAD_LOCAL_NAME] = nil
-    end
-
-    def set_meta_data(tab_name, metadata)
-      @meta_data ||= {}
-      @meta_data[tab_name] = Bugsnag::Helpers.cleanup_hash(Bugsnag::Helpers.apply_filters(metadata, Bugsnag.configuration.params_filters))
-    end
-    
-    def meta_data
-      @meta_data
     end
   end
 end

@@ -14,6 +14,8 @@ module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
 
   class << self
+    attr_accessor :before_notify
+    
     # Configure the Bugsnag notifier application-wide settings.
     def configure
       yield(configuration)
@@ -40,13 +42,13 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, overrides={})
-      Notification.new(exception, configuration, request_configuration, overrides).deliver
+      Notification.new(exception, configuration, request_configuration).deliver(overrides)
     end
 
     # Notify of an exception unless it should be ignored
     def notify_or_ignore(exception, overrides={})
-      notification = Notification.new(exception, configuration, request_configuration, overrides)
-      notification.deliver unless notification.ignore?
+      notification = Notification.new(exception, configuration, request_configuration)
+      notification.deliver(overrides) unless notification.ignore?
     end
 
     # Auto notify of an exception, called from rails and rack exception 

@@ -10,12 +10,22 @@ module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096
 
-    def self.cleanup_hash(hash, filters=nil)
+    def self.cleanup_hash(hash, filters = nil)
       hash.each do |k,v|
         if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
           hash[k] = "[FILTERED]"
         elsif v.is_a?(Hash)
           cleanup_hash(v, filters)
+        else
+          hash[k] = v.to_s
+        end
+      end
+    end
+    
+    def self.reduce_hash_size(hash)
+      hash.each do |k,v|
+        if v.is_a?(Hash)
+          reduce_hash_size(v)
         else
           hash[k] = v.to_s.slice(0, MAX_STRING_LENGTH)
         end

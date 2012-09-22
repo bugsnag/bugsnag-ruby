@@ -22,20 +22,19 @@ module Bugsnag
     end
 
     def call(env)
-      begin
+      # Automatically set any params_filters from the rack env (once only)
+      unless @rack_filters
+        @rack_filters = env["action_dispatch.parameter_filter"]
+        Bugsnag.configuration.params_filters += @rack_filters
+      end
+      
         # Set up the callback for extracting the rack request data
         # This callback is only excecuted when Bugsnag.notify is called
-        Bugsnag.request_configuration.meta_data_callback = lambda {
+        Bugsnag.before_notify = lambda {
           request = ::Rack::Request.new(env)
 
           session = env["rack.session"]
           params = env["action_dispatch.request.parameters"] || request.params
-
-          # Automatically set any params_filters from the rack env (once only)
-          unless @rack_filters
-            @rack_filters = env["action_dispatch.parameter_filter"]
-            Bugsnag.configuration.params_filters += @rack_filters
-          end
 
           # Automatically set user_id and context if possible
           if session
@@ -45,18 +44,16 @@ module Bugsnag
           Bugsnag.request_configuration.context ||= Bugsnag::Helpers.param_context(params) || Bugsnag::Helpers.request_context(request)
           
           # Fill in the request meta-data
-          {
-            :request => {
+          Bugsnag.request_configuration.meta_data[:request] = {
               :url => request.url,
               :controller => params[:controller],
               :action => params[:action],
-              :params => params.to_hash,
-            },
-            :session => session,
-            :environment => env
-          }
+              :params => params.to_hash
+            }
+          Bugsnag.request_configuration.meta_data[:session] = session
+          Bugsnag.request_configuration.meta_data[:environment] = env
         }
-
+          
         begin
           response = @app.call(env)
         rescue Exception => raised
@@ -71,12 +68,11 @@ module Bugsnag
         if env["rack.exception"]
           Bugsnag.auto_notify(env["rack.exception"])
         end
-      ensure
-        # Clear per-request data after processing the each request
-        Bugsnag.clear_request_config
-      end
-
-      response
+        
+        response
+    ensure
+      # Clear per-request data after processing the each request
+      Bugsnag.clear_request_config
     end
   end
 end

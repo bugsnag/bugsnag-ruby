@@ -12,11 +12,24 @@ module Bugsnag
     # HTTParty settings
     headers  "Content-Type" => "application/json"
     default_timeout 5
+    
+    def self.deliver_exception_payload(endpoint, payload)
+      begin
+        payload_string = Bugsnag::Helpers.dump_json(payload)
+        if payload_string.length > 512000
+          Bugsnag::Helpers.reduce_hash_size(payload)
+          payload_string = Bugsnag::Helpers.dump_json(payload)
+        end
+        response = post(endpoint, {:body => payload_string})
+      rescue Exception => e
+        Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
+      end
+    end
 
-    def initialize(exception, configuration, request_configuration, opts={})
+    def initialize(exception, configuration, request_configuration)
       @configuration = configuration
       @request_configuration = request_configuration
-
+      
       # Unwrap exceptions
       @exceptions = []
       ex = exception
@@ -33,7 +46,9 @@ module Bugsnag
       end
     end
 
-    def deliver
+    def deliver(overrides = {})
+      overrides = overrides.with_indifferent_access
+      
       return unless @configuration.should_notify?
 
       # Check we have at least and api_key
@@ -41,13 +56,8 @@ module Bugsnag
         Bugsnag.warn "No API key configured, couldn't notify"
         return
       end
-
-      # Get request meta-data via callbacks if available, cleanup and filter hashes
-      meta_data = Bugsnag.request_configuration.meta_data_callback.call if Bugsnag.request_configuration.meta_data_callback
-      meta_data = meta_data.inject({}) do |hash, (k,v)|
-        hash[k] = Bugsnag::Helpers.cleanup_hash(v, Bugsnag.configuration.params_filters)
-        hash
-      end if meta_data
+      
+      Bugsnag.before_notify.call if Bugsnag.before_notify
 
       # Build the endpoint url
       endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
@@ -55,19 +65,13 @@ module Bugsnag
 
       # Build the payload's exception event
       payload_event = {
-        :releaseStage => @configuration.release_stage,
-        :appVersion => @configuration.app_version,
-        :context => @request_configuration.context,
-        :userId => @request_configuration.user_id,
+        :releaseStage => overrides[:release_stage] || @configuration.release_stage,
+        :appVersion => overrides[:app_version] || @configuration.app_version,
+        :context => overrides[:context] || @request_configuration.context,
+        :userId => overrides[:user_id] || @request_configuration.user_id,
         :exceptions => exception_list,
-        :metaData => meta_data
+        :metaData => Bugsnag::Helpers.cleanup_hash(generate_meta_data(overrides), @configuration.params_filters)
       }.reject {|k,v| v.nil? }
-
-      # Augment exception event with custom per-request data (if available)
-      if @request_configuration.custom_data
-        payload_event[:metaData] ||= {}
-        payload_event[:metaData][:custom] = @request_configuration.custom_data
-      end
 
       # Build the payload hash
       payload = {
@@ -80,7 +84,7 @@ module Bugsnag
         :events => [payload_event]
       }
 
-      self.class.deliver_exception_payload(endpoint, Bugsnag::Helpers.dump_json(payload))
+      self.class.deliver_exception_payload(endpoint, payload)
     end
 
     def ignore?
@@ -89,6 +93,27 @@ module Bugsnag
 
 
     private
+    # Generate the meta data from both the request configuration and the overrides for this notification
+    def generate_meta_data(overrides)
+      return overrides[:meta_data] if overrides[:meta_data]
+      
+      meta_data = @request_configuration.meta_data.dup
+      
+      overrides.each do |key, value|
+        key = key.to_sym
+        unless RequestConfiguration::REQUEST_CONFIGURATION_NAMES.include? key
+          if value.is_a? Hash
+            meta_data[key] = value
+          else
+            meta_data[:custom] ||= {}.with_indifferent_access
+            meta_data[:custom][key] = value
+          end
+        end
+      end
+      
+      meta_data
+    end
+    
     def exception_list      
       @exceptions.map do |exception|
         {

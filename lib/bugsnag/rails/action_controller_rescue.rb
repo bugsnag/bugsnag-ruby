@@ -16,7 +16,7 @@ module Bugsnag
       def initialize_bugsnag_request
         # Set up the callback for extracting the rack request data
         # This callback is only excecuted when Bugsnag.notify is called
-        Bugsnag.request_configuration.meta_data_callback = lambda {
+        Bugsnag.before_notify = lambda {
           # Get session data
           session_data = session.respond_to?(:to_hash) ? session.to_hash : session.data
           session_id = session_data[:session_id] || session_data["session_id"]
@@ -31,16 +31,14 @@ module Bugsnag
           Bugsnag.request_configuration.context ||= Bugsnag::Helpers.param_context(params)
 
           # Fill in the request meta-data
-          {
-            :request => {
+          Bugsnag.request_configuration.meta_data[:request] = {
               :url => url,
               :controller => params[:controller],
               :action => params[:action],
               :params => params.to_hash,
-            },
-            :session => session_data,
-            :environment => request.env
-          }
+            }
+          Bugsnag.request_configuration.meta_data[:session] = session_data
+          Bugsnag.request_configuration.meta_data[:environment] = request.env
         }
       end
 
