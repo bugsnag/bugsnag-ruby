@@ -8,7 +8,7 @@ end
 
 module Bugsnag
   module Helpers
-    MAX_STRING_LENGTH = 1024
+    MAX_STRING_LENGTH = 4096
 
     def self.cleanup_hash(hash, filters=nil)
       hash.each do |k,v|
@@ -28,6 +28,23 @@ module Bugsnag
 
     def self.request_context(request)
       "#{request.request_method} #{request.path}" if request
+    end
+
+    # Helper functions to work around MultiJson changes in 1.3+
+    def self.dump_json(object, options={})
+      if MultiJson.respond_to?(:adapter)
+        MultiJson.dump(object, options)
+      else
+        MultiJson.encode(object, options)
+      end
+    end
+
+    def self.load_json(json, options={})
+      if MultiJson.respond_to?(:adapter)
+        MultiJson.load(json, options)
+      else
+        MultiJson.decode(json, options)
+      end
     end
   end
 end

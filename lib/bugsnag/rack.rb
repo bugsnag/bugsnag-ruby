@@ -38,9 +38,12 @@ module Bugsnag
           end
 
           # Automatically set user_id and context if possible
-          Bugsnag.request_configuration.user_id ||= session[:session_id] || session["session_id"] if session
+          if session
+            Bugsnag.request_configuration.user_id ||= session[:session_id] || session["session_id"] rescue nil
+          end
+          
           Bugsnag.request_configuration.context ||= Bugsnag::Helpers.param_context(params) || Bugsnag::Helpers.request_context(request)
-
+          
           # Fill in the request meta-data
           {
             :request => {

@@ -80,14 +80,7 @@ module Bugsnag
         :events => [payload_event]
       }
 
-      puts payload.inspect
-
-      # Send the payload to bugsnag
-      # begin
-        self.class.post(endpoint, {:body => MultiJson.dump(payload)})
-      # rescue Exception => e
-      #   Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
-      # end
+      self.class.deliver_exception_payload(endpoint, Bugsnag::Helpers.dump_json(payload))
     end
 
     def ignore?
