@@ -1,12 +1,13 @@
 require "rubygems"
 
 require "bugsnag/version"
-require "bugsnag/configuration"
+require "bugsnag/configuration/configuration"
+require "bugsnag/configuration/request_data"
 require "bugsnag/notification"
 require "bugsnag/helpers"
 
-require "bugsnag/rack"
-require "bugsnag/railtie" if defined?(Rails::Railtie)
+require "bugsnag/middleware/rack"
+require "bugsnag/rails/railtie" if defined?(Rails::Railtie)
 
 require "resque/failure/bugsnag" if defined?(Resque)
 
@@ -14,8 +15,6 @@ module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
 
   class << self
-    attr_accessor :before_notify
-    
     # Configure the Bugsnag notifier application-wide settings.
     def configure
       yield(configuration)
@@ -30,25 +29,15 @@ module Bugsnag
       end
     end
 
-    # Configure the Bugsnag notifier per-request settings.
-    def configure_request
-      yield(request_configuration)
-    end
-
-    # Clears the per-request settings.
-    def clear_request_config
-      Bugsnag::RequestConfiguration.clear_instance
-    end
-
     # Explicitly notify of an exception
     def notify(exception, overrides={})
-      Notification.new(exception, configuration, request_configuration).deliver(overrides)
+      Notification.new(exception, configuration, overrides).deliver
     end
 
     # Notify of an exception unless it should be ignored
     def notify_or_ignore(exception, overrides={})
-      notification = Notification.new(exception, configuration, request_configuration)
-      notification.deliver(overrides) unless notification.ignore?
+      notification = Notification.new(exception, configuration, overrides)
+      notification.deliver unless notification.ignore?
     end
 
     # Auto notify of an exception, called from rails and rack exception 
@@ -76,9 +65,13 @@ module Bugsnag
     def configuration
       @configuration ||= Bugsnag::Configuration.new
     end
-
-    def request_configuration
-      Bugsnag::RequestConfiguration.get_instance
+    
+    def set_request_data(key, value)
+      Bugsnag::RequestData.get_instance.set_request_data key, value
+    end
+    
+    def clear_request_data
+      Bugsnag::RequestData.clear_instance
     end
   end
 end

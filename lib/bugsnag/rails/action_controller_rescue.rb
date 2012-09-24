@@ -31,6 +31,7 @@ module Bugsnag
           Bugsnag.request_configuration.context ||= Bugsnag::Helpers.param_context(params)
 
           # Fill in the request meta-data
+          # TODO:SM should add_tab
           Bugsnag.request_configuration.meta_data[:request] = {
               :url => url,
               :controller => params[:controller],

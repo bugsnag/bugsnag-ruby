@@ -13,22 +13,31 @@ module Bugsnag
     headers  "Content-Type" => "application/json"
     default_timeout 5
     
-    def self.deliver_exception_payload(endpoint, payload)
-      begin
-        payload_string = Bugsnag::Helpers.dump_json(payload)
-        if payload_string.length > 512000
-          Bugsnag::Helpers.reduce_hash_size(payload)
+    attr_accessor :context
+    attr_accessor :user_id
+    
+    class << self
+      def deliver_exception_payload(endpoint, payload)
+        begin
           payload_string = Bugsnag::Helpers.dump_json(payload)
+        
+          # If the payload is going to be too long, we trim the hashes to send 
+          # a minimal payload instead
+          if payload_string.length > 512000
+            Bugsnag::Helpers.reduce_hash_size(payload)
+            payload_string = Bugsnag::Helpers.dump_json(payload)
+          end
+        
+          response = post(endpoint, {:body => payload_string})
+        rescue Exception => e
+          Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
         end
-        response = post(endpoint, {:body => payload_string})
-      rescue Exception => e
-        Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
       end
     end
 
-    def initialize(exception, configuration, request_configuration)
+    def initialize(exception, configuration, overrides = {})
       @configuration = configuration
-      @request_configuration = request_configuration
+      @overrides = overrides.with_indifferent_access
       
       # Unwrap exceptions
       @exceptions = []
@@ -45,10 +54,25 @@ module Bugsnag
         end
       end
     end
+    
+    # Add a single value as custom data, to this notification
+    def add_custom_data(name, value)
+      @metadata[:custom] ||= {}
+      @metadata[:custom][name] = value
+    end
 
-    def deliver(overrides = {})
-      overrides = overrides.with_indifferent_access
-      
+    # Add a new tab to this notification
+    def add_tab(name, value)
+      if value.is_a? Hash
+        @metadata[name] = value
+      else
+        self.add_custom_data(name, value)
+        Bugsnag.warn "Adding a tab requires a hash, adding to custom tab instead"
+      end
+    end
+
+    # Deliver this notification to bugsnag.com Also runs through the middleware as required.
+    def deliver
       return unless @configuration.should_notify?
 
       # Check we have at least and api_key
@@ -57,7 +81,22 @@ module Bugsnag
         return
       end
       
-      Bugsnag.before_notify.call if Bugsnag.before_notify
+      @metadata = {}.with_indifferent_access
+      
+      # Run the middleware here - the final middleware will always call self.send
+      @configuration.middleware.run Bugsnag::RequestData.get_instance.request_data, @exceptions, self
+    end
+    
+    def send
+      puts @metadata.inspect
+      
+      # Now override the required fields
+      [:user_id, :context].each do |symbol|
+        if @overrides[symbol]
+          self.send("context=", @overrides[symbol] )
+          @overrides.delete symbol
+        end
+      end
 
       # Build the endpoint url
       endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
@@ -65,12 +104,12 @@ module Bugsnag
 
       # Build the payload's exception event
       payload_event = {
-        :releaseStage => overrides[:release_stage] || @configuration.release_stage,
-        :appVersion => overrides[:app_version] || @configuration.app_version,
-        :context => overrides[:context] || @request_configuration.context,
-        :userId => overrides[:user_id] || @request_configuration.user_id,
+        :releaseStage => @configuration.release_stage,
+        :appVersion => @configuration.app_version,
+        :context => self.context,
+        :userId => self.user_id,
         :exceptions => exception_list,
-        :metaData => Bugsnag::Helpers.cleanup_hash(generate_meta_data(overrides), @configuration.params_filters)
+        :metaData => Bugsnag::Helpers.cleanup_hash(generate_meta_data(@overrides), @configuration.params_filters)
       }.reject {|k,v| v.nil? }
 
       # Build the payload hash
@@ -95,19 +134,24 @@ module Bugsnag
     private
     # Generate the meta data from both the request configuration and the overrides for this notification
     def generate_meta_data(overrides)
-      return overrides[:meta_data] if overrides[:meta_data]
-      
-      meta_data = @request_configuration.meta_data.dup
+      # Copy the request meta data so we dont edit it by mistake
+      meta_data = (@meta_data.try(:dup) || {}).with_indifferent_access
       
       overrides.each do |key, value|
-        key = key.to_sym
-        unless RequestConfiguration::REQUEST_CONFIGURATION_NAMES.include? key
-          if value.is_a? Hash
-            meta_data[key] = value
+        # If its a hash, its a tab so we can just add it providing its not reserved
+        if value.is_a? Hash
+          key = key.to_sym
+          
+          if meta_data[key]
+            # If its a clash, merge with the existing data
+            meta_data[key].merge! value
           else
-            meta_data[:custom] ||= {}.with_indifferent_access
-            meta_data[:custom][key] = value
+            # Add it as is if its not special
+            meta_data[key] = value
           end
+        else
+          meta_data[:custom] ||= {}.with_indifferent_access
+          meta_data[:custom][key] = value
         end
       end
       
