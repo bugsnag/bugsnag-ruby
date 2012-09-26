@@ -10,35 +10,33 @@ module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096
 
-    def self.cleanup_hash(hash, filters = nil)
-      new_hash = {}
-
-      hash.each do |k,v|
-        if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
-          new_hash[k] = "[FILTERED]"
-        elsif v.is_a?(Hash)
-          new_hash[k] = cleanup_hash(v, filters)
-        else
-          val = v.to_s
-          new_hash[k] = val unless val =~ /^#<.*>$/
+    def self.cleanup_obj(obj, filters = nil)
+      if obj.is_a?(Hash)
+        obj.inject({}) do |h, (k,v)| 
+          if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
+            h[k] = "[FILTERED]"
+          else
+            h[k] = cleanup_obj(v, filters)
+          end
+          h
         end
+      elsif obj.is_a?(Array) || obj.is_a?(Set)
+        obj.map { |el| cleanup_obj(el, filters) }
+      else
+        obj.to_s
       end
-
-      new_hash
     end
     
     def self.reduce_hash_size(hash)
-      new_hash = {}
-
-      hash.each do |k,v|
+      hash.inject({}) do |h, (k,v)|
         if v.is_a?(Hash)
-          new_hash[k] = reduce_hash_size(v)
+          h[k] = reduce_hash_size(v)
         else
-          new_hash[k] = v.to_s.slice(0, MAX_STRING_LENGTH)
+          h[k] = v.to_s.slice(0, MAX_STRING_LENGTH)
         end
-      end
 
-      new_hash
+        h
+      end
     end
 
     # Helper functions to work around MultiJson changes in 1.3+

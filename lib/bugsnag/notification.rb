@@ -116,7 +116,7 @@ module Bugsnag
           :context => self.context,
           :userId => self.user_id,
           :exceptions => exception_list,
-          :metaData => Bugsnag::Helpers.cleanup_hash(generate_meta_data(@overrides), @configuration.params_filters)
+          :metaData => Bugsnag::Helpers.cleanup_obj(generate_meta_data(@overrides), @configuration.params_filters)
         }.reject {|k,v| v.nil? }
 
         # Build the payload hash
