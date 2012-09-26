@@ -5,7 +5,7 @@ module Bugsnag
     def self.cleanup_hash(hash)
       return nil unless hash
       hash.inject({}) do |h, (k, v)|
-        h[k.to_s.gsub(/\./, "-")] = v.to_s.slice(0, MAX_STRING_LENGTH)
+        h[k.to_s.gsub(/\./, "-")] = v.respond_to?(:to_hash) ? cleanup_hash(v) : v.to_s.slice(0, MAX_STRING_LENGTH)
         h
       end
     end
