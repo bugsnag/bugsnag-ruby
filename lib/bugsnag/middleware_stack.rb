@@ -32,25 +32,24 @@ module Bugsnag
       request_data = Bugsnag.configuration.request_data
 
       # The final lambda is the termination of the middleware stack. It calls deliver on the notification
-      #TODO:SM Deliver should be what it calls, but we should rename the other deliver
       lambda_has_run = false
-      final_lambda = lambda {|request_data, exception, notification| lambda_has_run = true; notification.send}
-      
+      notify_lambda = lambda do |request_data, exception, notification|
+        lambda_has_run = true        
+        yield
+      end
+
       begin
         # We reverse them, so we can call "call" on the first middleware
-        middleware_procs.reverse.inject(final_lambda) { |n,e| e[n] }.call(request_data, exception, notification)
+        middleware_procs.reverse.inject(notify_lambda) { |n,e| e[n] }.call(request_data, exception, notification)
       rescue Exception => e
         # We dont notify, as we dont want to loop forever in the case of really broken middleware, we will
         # still send this notify
-        # TODO:SM We could send a notify for this, just skipping the middleware
         Bugsnag.warn "Bugsnag middleware error: #{e}"
-        puts e.backtrace.inspect
+        Bugsnag.log "Middleware error stacktrace: #{e.backtrace.inspect}"
       end
       
       # Ensure that the deliver has been performed, and no middleware has botched it
-      unless lambda_has_run
-        final_lambda.call(request_data, exception, notification)
-      end
+      notify_lambda.call(request_data, exception, notification) unless lambda_has_run
     end
 
     private

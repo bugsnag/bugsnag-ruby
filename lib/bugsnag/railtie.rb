@@ -3,6 +3,7 @@
 require "rails"
 require "bugsnag"
 require "bugsnag/middleware/rails3_request"
+require "bugsnag/middleware/rails_callbacks"
 
 module Bugsnag
   class Railtie < Rails::Railtie
@@ -14,9 +15,14 @@ module Bugsnag
       # Configure bugsnag rails defaults
       Bugsnag.configure do |config|
         config.logger = Rails.logger
-        config.release_stage = Rails.env
-        config.project_root = Rails.root
+        config.release_stage = Rails.env.to_s
+        config.project_root = Rails.root.to_s
         config.params_filters += Rails.configuration.filter_parameters
+      end
+      
+      if defined?(::ActionController::Base)
+        require "bugsnag/rails/controller_methods"
+        ::ActionController::Base.send(:include, Bugsnag::Rails::ControllerMethods)
       end
     end
 
@@ -31,11 +37,7 @@ module Bugsnag
     config.after_initialize do
       Bugsnag.configure do |config|
         config.middleware.use Bugsnag::Middleware::Rails3Request
-      end
-
-      if defined?(::ActionController::Base)
-        require "bugsnag/rails/controller_methods"
-        ::ActionController::Base.send(:include, Bugsnag::Rails::ControllerMethods)
+        config.middleware.use Bugsnag::Middleware::RailsCallbacks
       end
     end
   end

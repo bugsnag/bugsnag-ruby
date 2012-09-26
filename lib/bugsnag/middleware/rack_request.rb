@@ -21,7 +21,9 @@ module Bugsnag::Middleware
         # Add a request tab
         notification.add_tab(:request, {
           :url => url,
-          :params => params.to_hash
+          :params => params.to_hash,
+          :userAgent => request.user_agent,
+          :clientIp => request.ip
         })
           
         # Add an environment tab

@@ -9,11 +9,13 @@ module Bugsnag::Middleware
         env = request_data[:rack_env]
         params = env["action_dispatch.request.parameters"]
 
+        # Set the context
+        notification.context = "#{params[:controller]}##{params[:action]}"
+
+        # Augment the request tab
         if params
-          # Add a request tab
           notification.add_tab(:request, {
-            :controller => params[:controller],
-            :action => params[:action],
+            :railsAction => "#{params[:controller]}##{params[:action]}",
             :params => params
           })
         end

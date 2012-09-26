@@ -5,6 +5,7 @@ require "bugsnag"
 require "bugsnag/rails/controller_methods"
 require "bugsnag/rails/action_controller_rescue"
 require "bugsnag/middleware/rails2_request"
+require "bugsnag/middleware/rails_callbacks"
 
 module Bugsnag
   module Rails
@@ -26,7 +27,9 @@ module Bugsnag
         config.logger ||= rails_logger
         config.release_stage = RAILS_ENV  if defined?(RAILS_ENV)
         config.project_root = RAILS_ROOT if defined?(RAILS_ROOT)
-        config.middleware.use ::Bugsnag::Middleware::Rails2Request
+
+        config.middleware.use Bugsnag::Middleware::Rails2Request
+        config.middleware.use Bugsnag::Middleware::RailsCallbacks
       end
     end
   end

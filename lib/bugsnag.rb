@@ -66,7 +66,8 @@ module Bugsnag
     def set_request_data(key, value)
       Bugsnag.configuration.set_request_data(key, value)
     end
-    
+
+    # Clear all "per-request" data, temporal data for use in bugsnag middleware    
     def clear_request_data
       Bugsnag.configuration.clear_request_data
     end

@@ -95,46 +95,43 @@ module Bugsnag
       
       @meta_data = {}
       
-      # Run the middleware here - the final middleware will always call self.send
-      # TODO: Make self.send be a block passed to middleware.run
-      @configuration.middleware.run @exceptions, self
-    end
-    
-    def send
-      # Now override the required fields
-      [:user_id, :context].each do |symbol|
-        if @overrides[symbol]
-          self.send("#{symbol}=", @overrides[symbol] )
-          @overrides.delete symbol
+      # Run the middleware here, at the end of the middleware stack, execute the actual delivery
+      @configuration.middleware.run(@exceptions, self) do
+        # Now override the required fields
+        [:user_id, :context].each do |symbol|
+          if @overrides[symbol]
+            self.send("#{symbol}=", @overrides[symbol] )
+            @overrides.delete symbol
+          end
         end
+
+        # Build the endpoint url
+        endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
+        Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class}")
+
+        # Build the payload's exception event
+        payload_event = {
+          :releaseStage => @configuration.release_stage,
+          :appVersion => @configuration.app_version,
+          :context => self.context,
+          :userId => self.user_id,
+          :exceptions => exception_list,
+          :metaData => Bugsnag::Helpers.cleanup_hash(generate_meta_data(@overrides), @configuration.params_filters)
+        }.reject {|k,v| v.nil? }
+
+        # Build the payload hash
+        payload = {
+          :apiKey => @configuration.api_key,
+          :notifier => {
+            :name => NOTIFIER_NAME,
+            :version => NOTIFIER_VERSION,
+            :url => NOTIFIER_URL
+          },
+          :events => [payload_event]
+        }
+
+        self.class.deliver_exception_payload(endpoint, payload)
       end
-
-      # Build the endpoint url
-      endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
-      Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class}")
-
-      # Build the payload's exception event
-      payload_event = {
-        :releaseStage => @configuration.release_stage,
-        :appVersion => @configuration.app_version,
-        :context => self.context,
-        :userId => self.user_id,
-        :exceptions => exception_list,
-        :metaData => Bugsnag::Helpers.cleanup_hash(generate_meta_data(@overrides), @configuration.params_filters)
-      }.reject {|k,v| v.nil? }
-
-      # Build the payload hash
-      payload = {
-        :apiKey => @configuration.api_key,
-        :notifier => {
-          :name => NOTIFIER_NAME,
-          :version => NOTIFIER_VERSION,
-          :url => NOTIFIER_URL
-        },
-        :events => [payload_event]
-      }
-
-      self.class.deliver_exception_payload(endpoint, payload)
     end
 
     def ignore?
