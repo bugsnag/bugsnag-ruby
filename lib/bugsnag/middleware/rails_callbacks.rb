@@ -10,6 +10,10 @@ module Bugsnag::Middleware
       end
 
       @bugsnag.call(request_data, exception, notification)
+
+      if request_data[:rails_after_callbacks]
+        request_data[:rails_after_callbacks].each {|c| c.call(notification, exception) }
+      end
     end
   end
 end

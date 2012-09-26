@@ -23,7 +23,7 @@ module Bugsnag
       elsif obj.is_a?(Array) || obj.is_a?(Set)
         obj.map { |el| cleanup_obj(el, filters) }
       else
-        obj.to_s
+        obj.to_s unless obj.to_s =~ /#<.*>/
       end
     end
     

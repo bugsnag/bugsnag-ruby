@@ -13,6 +13,8 @@ module Bugsnag::Middleware
         # Set the context
         notification.context = "#{request.request_method} #{request.path}"
 
+        # TODO: set notification.user_id to a sensible default
+
         # Build the clean url (hide the port if it is obvious)
         url = "#{request.scheme}://#{request.host}"
         url << ":#{request.port}" unless [80, 443].include?(request.port)

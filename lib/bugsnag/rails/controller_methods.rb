@@ -5,23 +5,31 @@ module Bugsnag::Rails
     end
     
     module ClassMethods
-      private
+      private      
       def before_bugsnag_notify(*methods, &block)
+        _add_bugsnag_notify_callback(:rails_before_callbacks, *methods, &block)
+      end
+
+      def after_bugsnag_notify(*methods, &block)
+        _add_bugsnag_notify_callback(:rails_after_callbacks, *methods, &block)
+      end
+
+      def _add_bugsnag_notify_callback(callback_key, *methods, &block)
         options = methods.last.is_a?(Hash) ? methods.pop : {}
 
         before_filter(options) do |controller|
           request_data = Bugsnag.configuration.request_data
-          request_data[:rails_before_callbacks] ||= []
+          request_data[callback_key] ||= []
 
           # Set up "method symbol" callbacks
           methods.each do |method_symbol|
-            request_data[:rails_before_callbacks] << lambda { |notification, exceptions|
+            request_data[callback_key] << lambda { |notification, exceptions|
               self.send(method_symbol, notification, exceptions)
             }
           end
 
           # Set up "block" callbacks
-          request_data[:rails_before_callbacks] << lambda { |notification, exceptions|
+          request_data[callback_key] << lambda { |notification, exceptions|
             controller.instance_exec(notification, exceptions, &block)
           } if block_given?
         end
