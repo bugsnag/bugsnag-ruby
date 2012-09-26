@@ -1,12 +1,23 @@
-# Rails 3.x support
+# Rails 3.x hooks
 
-require "bugsnag"
 require "rails"
+require "bugsnag"
+require "bugsnag/middleware/rails3_request"
 
 module Bugsnag
   class Railtie < Rails::Railtie
     rake_tasks do
-      load "tasks/bugsnag.rake"
+      load "bugsnag/tasks/bugsnag.rake"
+    end
+
+    config.before_initialize do 
+      # Configure bugsnag rails defaults
+      Bugsnag.configure do |config|
+        config.logger = Rails.logger
+        config.release_stage = Rails.env
+        config.project_root = Rails.root
+        config.params_filters += Rails.configuration.filter_parameters
+      end
     end
 
     initializer "bugsnag.use_rack_middleware" do |app|
@@ -19,9 +30,7 @@ module Bugsnag
 
     config.after_initialize do
       Bugsnag.configure do |config|
-        config.logger ||= ::Rails.logger
-        config.release_stage = ::Rails.env
-        config.project_root = ::Rails.root
+        config.middleware.use Bugsnag::Middleware::Rails3Request
       end
 
       if defined?(::ActionController::Base)

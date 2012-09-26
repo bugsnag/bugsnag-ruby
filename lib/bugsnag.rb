@@ -1,13 +1,12 @@
 require "rubygems"
 
 require "bugsnag/version"
-require "bugsnag/configuration/configuration"
-require "bugsnag/configuration/request_data"
+require "bugsnag/configuration"
 require "bugsnag/notification"
 require "bugsnag/helpers"
 
-require "bugsnag/middleware/rack"
-require "bugsnag/rails/railtie" if defined?(Rails::Railtie)
+require "bugsnag/rack"
+require "bugsnag/railtie" if defined?(Rails::Railtie)
 
 require "resque/failure/bugsnag" if defined?(Resque)
 
@@ -18,9 +17,6 @@ module Bugsnag
     # Configure the Bugsnag notifier application-wide settings.
     def configure
       yield(configuration)
-
-      # Use resque for asynchronous notification if required
-      require "bugsnag/delay/resque" if configuration.delay_with == :resque && defined?(Resque)
 
       # Log that we are ready to rock
       if configuration.api_key && !@logged_ready
@@ -65,13 +61,14 @@ module Bugsnag
     def configuration
       @configuration ||= Bugsnag::Configuration.new
     end
-    
+
+    # Set "per-request" data, temporal data for use in bugsnag middleware
     def set_request_data(key, value)
-      Bugsnag::RequestData.get_instance.set_request_data key, value
+      Bugsnag.configuration.set_request_data(key, value)
     end
     
     def clear_request_data
-      Bugsnag::RequestData.clear_instance
+      Bugsnag.configuration.clear_request_data
     end
   end
 end

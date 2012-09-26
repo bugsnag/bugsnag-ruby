@@ -11,33 +11,34 @@ module Bugsnag
     MAX_STRING_LENGTH = 4096
 
     def self.cleanup_hash(hash, filters = nil)
+      new_hash = {}
+
       hash.each do |k,v|
         if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
-          hash[k] = "[FILTERED]"
+          new_hash[k] = "[FILTERED]"
         elsif v.is_a?(Hash)
-          cleanup_hash(v, filters)
+          new_hash[k] = cleanup_hash(v, filters)
         else
-          hash[k] = v.to_s
+          val = v.to_s
+          new_hash[k] = val unless val =~ /^#<.*>$/
         end
       end
+
+      new_hash
     end
     
     def self.reduce_hash_size(hash)
+      new_hash = {}
+
       hash.each do |k,v|
         if v.is_a?(Hash)
-          reduce_hash_size(v)
+          new_hash[k] = reduce_hash_size(v)
         else
-          hash[k] = v.to_s.slice(0, MAX_STRING_LENGTH)
+          new_hash[k] = v.to_s.slice(0, MAX_STRING_LENGTH)
         end
       end
-    end
 
-    def self.param_context(params)
-      "#{params[:controller]}##{params[:action]}" if params && params[:controller] && params[:action]
-    end
-
-    def self.request_context(request)
-      "#{request.request_method} #{request.path}" if request
+      new_hash
     end
 
     # Helper functions to work around MultiJson changes in 1.3+

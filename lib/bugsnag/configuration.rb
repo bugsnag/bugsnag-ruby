@@ -1,4 +1,5 @@
-require "bugsnag/configuration/middleware_configuration"
+require "set"
+require "bugsnag/middleware_stack"
 
 module Bugsnag
   class Configuration
@@ -13,8 +14,9 @@ module Bugsnag
     attr_accessor :ignore_classes
     attr_accessor :endpoint
     attr_accessor :logger
-    attr_accessor :delay_with
     attr_accessor :middleware
+
+    THREAD_LOCAL_NAME = "bugsnag_req_data"
 
     DEFAULT_PARAMS_FILTERS = [
       "password",
@@ -37,14 +39,33 @@ module Bugsnag
       self.notify_release_stages = ["production"]
       self.auto_notify = true
       self.use_ssl = false
-      self.params_filters = DEFAULT_PARAMS_FILTERS.dup
-      self.ignore_classes = DEFAULT_IGNORE_CLASSES.dup
+      self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
+      self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.endpoint = "notify.bugsnag.com"
-      self.middleware = Bugsnag::MiddlewareConfiguration
+
+      # Configure the bugsnag middleware stack
+      self.middleware = Bugsnag::MiddlewareStack.new
     end
 
     def should_notify?
       @notify_release_stages.include?(@release_stage)
+    end
+
+    def request_data
+      Thread.current[THREAD_LOCAL_NAME] ||= {}
+    end
+
+    def set_request_data(key, value)
+      Bugsnag.warn "Overwriting request data for key #{key.to_s}" if self.request_data[key]
+      self.request_data[key] = value
+    end
+    
+    def unset_request_data(key, value)
+      self.request_data.delete(key)
+    end
+
+    def clear_request_data
+      Thread.current[THREAD_LOCAL_NAME] = nil
     end
   end
 end

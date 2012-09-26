@@ -6,7 +6,7 @@ module Bugsnag
     
     def initialize
       # Set up the defaults
-      self.request_data = {}.with_indifferent_access
+      self.request_data = {}
     end
     
     def set_request_data(key, value)

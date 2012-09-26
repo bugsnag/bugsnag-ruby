@@ -1,5 +1,6 @@
 require "httparty"
 require "multi_json"
+require "pathname"
 
 module Bugsnag
   class Notification
@@ -24,10 +25,10 @@ module Bugsnag
           # If the payload is going to be too long, we trim the hashes to send 
           # a minimal payload instead
           if payload_string.length > 512000
-            Bugsnag::Helpers.reduce_hash_size(payload)
+            payload = Bugsnag::Helpers.reduce_hash_size(payload)
             payload_string = Bugsnag::Helpers.dump_json(payload)
           end
-        
+
           response = post(endpoint, {:body => payload_string})
         rescue Exception => e
           Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
@@ -37,7 +38,8 @@ module Bugsnag
 
     def initialize(exception, configuration, overrides = {})
       @configuration = configuration
-      @overrides = overrides.with_indifferent_access
+      @overrides = overrides
+      @meta_data = {}
       
       # Unwrap exceptions
       @exceptions = []
@@ -57,18 +59,28 @@ module Bugsnag
     
     # Add a single value as custom data, to this notification
     def add_custom_data(name, value)
-      @metadata[:custom] ||= {}
-      @metadata[:custom][name] = value
+      @meta_data[:custom] ||= {}
+      @meta_data[:custom][name.to_sym] = value
     end
 
     # Add a new tab to this notification
     def add_tab(name, value)
+      return if name.nil?
+
       if value.is_a? Hash
-        @metadata[name] = value
+        @meta_data[name.to_sym] ||= {}
+        @meta_data[name.to_sym].merge! value
       else
         self.add_custom_data(name, value)
-        Bugsnag.warn "Adding a tab requires a hash, adding to custom tab instead"
+        Bugsnag.warn "Adding a tab requires a hash, adding to custom tab instead (name=#{name})"
       end
+    end
+
+    # Remove a tab from this notification
+    def remove_tab(name)
+      return if name.nil?
+
+      @meta_data.delete(name.to_sym)
     end
 
     # Deliver this notification to bugsnag.com Also runs through the middleware as required.
@@ -81,26 +93,25 @@ module Bugsnag
         return
       end
       
-      @metadata = {}.with_indifferent_access
+      @meta_data = {}
       
       # Run the middleware here - the final middleware will always call self.send
-      @configuration.middleware.run Bugsnag::RequestData.get_instance.request_data, @exceptions, self
+      # TODO: Make self.send be a block passed to middleware.run
+      @configuration.middleware.run @exceptions, self
     end
     
     def send
-      puts @metadata.inspect
-      
       # Now override the required fields
       [:user_id, :context].each do |symbol|
         if @overrides[symbol]
-          self.send("context=", @overrides[symbol] )
+          self.send("#{symbol}=", @overrides[symbol] )
           @overrides.delete symbol
         end
       end
 
       # Build the endpoint url
       endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
-      Bugsnag.log("Notifying #{endpoint} of exception")
+      Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class}")
 
       # Build the payload's exception event
       payload_event = {
@@ -135,7 +146,7 @@ module Bugsnag
     # Generate the meta data from both the request configuration and the overrides for this notification
     def generate_meta_data(overrides)
       # Copy the request meta data so we dont edit it by mistake
-      meta_data = (@meta_data.try(:dup) || {}).with_indifferent_access
+      meta_data = @meta_data.dup
       
       overrides.each do |key, value|
         # If its a hash, its a tab so we can just add it providing its not reserved
@@ -150,7 +161,7 @@ module Bugsnag
             meta_data[key] = value
           end
         else
-          meta_data[:custom] ||= {}.with_indifferent_access
+          meta_data[:custom] ||= {}
           meta_data[:custom][key] = value
         end
       end
@@ -181,13 +192,13 @@ module Bugsnag
 
         next(nil) if file =~ %r{lib/bugsnag}
 
+        # Expand relative paths
+        file = Pathname.new(file).realpath.to_s rescue file
+
         # Generate the stacktrace line hash
         trace_hash = {}
         trace_hash[:inProject] = true if @configuration.project_root && file.match(/^#{@configuration.project_root}/) && !file.match(/vendor\//)
         trace_hash[:lineNumber] = line_str.to_i
-
-        # Strip relative path prefixes (./)
-        file.sub!(/^\.\//, "")
 
         # Clean up the file path in the stacktrace
         if defined?(Bugsnag.configuration.project_root) && Bugsnag.configuration.project_root.to_s != '' 
