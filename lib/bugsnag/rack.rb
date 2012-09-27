@@ -1,4 +1,5 @@
 require "bugsnag/middleware/rack_request"
+require "bugsnag/middleware/warden_user"
 
 module Bugsnag
   class Rack
@@ -21,6 +22,7 @@ module Bugsnag
 
         # Hook up out notification middleware
         config.middleware.use ::Bugsnag::Middleware::RackRequest
+        config.middleware.use ::Bugsnag::Middleware::WardenUser if defined?(Warden)
       end
     end
 
