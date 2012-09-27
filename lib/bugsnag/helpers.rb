@@ -12,16 +12,20 @@ module Bugsnag
 
     def self.cleanup_obj(obj, filters = nil)
       if obj.is_a?(Hash)
-        obj.inject({}) do |h, (k,v)| 
+        clean_hash = {}
+        obj.each do |k,v| 
           if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
-            h[k] = "[FILTERED]"
+            clean_hash[k] = "[FILTERED]"
           else
-            h[k] = cleanup_obj(v, filters)
+            clean_obj = cleanup_obj(v, filters)
+            clean_hash[k] = clean_obj unless clean_obj.nil?
           end
-          h
         end
+        clean_hash
       elsif obj.is_a?(Array) || obj.is_a?(Set)
-        obj.map { |el| cleanup_obj(el, filters) }
+        obj.map { |el| cleanup_obj(el, filters) }.compact
+      elsif obj.is_a?(Integer) || obj.is_a?(Float)
+        obj
       else
         obj.to_s unless obj.to_s =~ /#<.*>/
       end

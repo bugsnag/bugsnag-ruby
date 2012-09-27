@@ -9,11 +9,13 @@ module Bugsnag::Middleware
         env = request_data[:rack_env]
         request = ::Rack::Request.new(env)
         params = request.params
+        session = env["rack.session"]
 
         # Set the context
         notification.context = "#{request.request_method} #{request.path}"
 
-        # TODO: set notification.user_id to a sensible default
+        # Set a sensible default for user_id
+        notification.user_id = request.ip
 
         # Build the clean url (hide the port if it is obvious)
         url = "#{request.scheme}://#{request.host}"
@@ -32,7 +34,6 @@ module Bugsnag::Middleware
         notification.add_tab(:environment, env)
 
         # Add a session tab
-        session = env["rack.session"]
         notification.add_tab(:session, session) if session
 
         # Add a cookies tab

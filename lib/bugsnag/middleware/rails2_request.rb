@@ -8,11 +8,13 @@ module Bugsnag::Middleware
       if request_data[:rails2_request]
         request = request_data[:rails2_request]
         params = request.parameters || {}
+        session_data = request.session.respond_to?(:to_hash) ? request.session.to_hash : request.session.data
 
         # Set the context
         notification.context = "#{params[:controller]}##{params[:action]}"
 
-        # TODO: set notification.user_id to a sensible default
+        # Set a sensible default for user_id
+        notification.user_id = request.remote_ip if request.respond_to?(:remote_ip)
 
         # Build the clean url
         url = "#{request.protocol}#{request.host}"
@@ -31,7 +33,6 @@ module Bugsnag::Middleware
         notification.add_tab(:environment, request.env) if request.env
 
         # Add a session tab
-        session_data = request.session.respond_to?(:to_hash) ? request.session.to_hash : request.session.data
         notification.add_tab(:session, session_data) if session_data
 
         # Add a cookies tab
