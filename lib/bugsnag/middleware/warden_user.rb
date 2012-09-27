@@ -14,7 +14,6 @@ module Bugsnag::Middleware
           begin
             notification.user_id = session["warden.user.user.key"][1][0]
           rescue; end
-          raise notification.user_id.inspect
         end
       end
 
