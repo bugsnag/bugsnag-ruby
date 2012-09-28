@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
-  s.date = "2012-09-21"
+  s.date = "2012-09-28"
   s.description = "Ruby notifier for bugsnag.com"
   s.email = "james@bugsnag.com"
   s.extra_rdoc_files = [
@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
     "lib/bugsnag.rb",
     "lib/bugsnag/capistrano.rb",
     "lib/bugsnag/configuration.rb",
-    "lib/bugsnag/delay/resque.rb",
     "lib/bugsnag/helpers.rb",
     "lib/bugsnag/notification.rb",
     "lib/bugsnag/rack.rb",
@@ -39,7 +38,6 @@ Gem::Specification.new do |s|
     "lib/bugsnag/tasks.rb",
     "lib/bugsnag/version.rb",
     "lib/resque/failure/bugsnag.rb",
-    "lib/tasks/bugsnag.rake",
     "rails/init.rb",
     "test/helper.rb",
     "test/test_bugsnag.rb"
@@ -55,20 +53,20 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<multi_json>, ["~> 1.0"])
-      s.add_runtime_dependency(%q<httparty>, ["~> 0.8.3"])
+      s.add_runtime_dependency(%q<httparty>, ["~> 0.9"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.6.4"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
     else
       s.add_dependency(%q<multi_json>, ["~> 1.0"])
-      s.add_dependency(%q<httparty>, ["~> 0.8.3"])
+      s.add_dependency(%q<httparty>, ["~> 0.9"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
       s.add_dependency(%q<rcov>, [">= 0"])
     end
   else
     s.add_dependency(%q<multi_json>, ["~> 1.0"])
-    s.add_dependency(%q<httparty>, ["~> 0.8.3"])
+    s.add_dependency(%q<httparty>, ["~> 0.9"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
     s.add_dependency(%q<rcov>, [">= 0"])
