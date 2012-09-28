@@ -1,7 +1,7 @@
 module HTTParty
   class Parser
     def json
-      MultiJson.decode(body)
+      Bugsnag::Helpers.load_json(body)
     end
   end
 end
@@ -11,6 +11,8 @@ module Bugsnag
     MAX_STRING_LENGTH = 4096
 
     def self.cleanup_obj(obj, filters = nil)
+      return nil unless obj
+
       if obj.is_a?(Hash)
         clean_hash = {}
         obj.each do |k,v| 

@@ -79,7 +79,7 @@ module Bugsnag
       Bugsnag.configuration.request_data[:before_callbacks] ||= []
     end
 
-    # Allow access to "before notify" callbacks
+    # Allow access to "after notify" callbacks
     def after_notify_callbacks
       Bugsnag.configuration.request_data[:after_callbacks] ||= []
     end

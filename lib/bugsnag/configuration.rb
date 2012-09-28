@@ -18,10 +18,9 @@ module Bugsnag
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
-    DEFAULT_PARAMS_FILTERS = [
-      "password",
-      "password_confirmation"
-    ].freeze
+    DEFAULT_ENDPOINT = "notify.bugsnag.com"
+
+    DEFAULT_PARAMS_FILTERS = ["password"].freeze
 
     DEFAULT_IGNORE_CLASSES = [
       "ActiveRecord::RecordNotFound",
@@ -41,7 +40,7 @@ module Bugsnag
       self.use_ssl = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
-      self.endpoint = "notify.bugsnag.com"
+      self.endpoint = DEFAULT_ENDPOINT
 
       # Configure the bugsnag middleware stack
       self.middleware = Bugsnag::MiddlewareStack.new
