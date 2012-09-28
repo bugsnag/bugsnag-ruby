@@ -7,6 +7,10 @@ module Bugsnag
     def use(new_middleware)
       @middlewares << new_middleware
     end
+
+    def delete(middleware)
+      @middlewares.delete(middleware)
+    end
   
     def insert_after(after, new_middleware)
       index = (@middlewares.rindex(after) + 1)
