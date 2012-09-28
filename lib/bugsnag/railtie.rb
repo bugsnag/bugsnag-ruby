@@ -3,7 +3,6 @@
 require "rails"
 require "bugsnag"
 require "bugsnag/middleware/rails3_request"
-require "bugsnag/middleware/rails_callbacks"
 
 module Bugsnag
   class Railtie < Rails::Railtie
@@ -37,7 +36,6 @@ module Bugsnag
     config.after_initialize do
       Bugsnag.configure do |config|
         config.middleware.use Bugsnag::Middleware::Rails3Request
-        config.middleware.use Bugsnag::Middleware::RailsCallbacks
       end
     end
   end

@@ -68,8 +68,20 @@ module Bugsnag
     end
 
     # Clear all "per-request" data, temporal data for use in bugsnag middleware    
+    # This method should be called after each distinct request or session ends
+    # Eg. After completing a page request in a web app
     def clear_request_data
       Bugsnag.configuration.clear_request_data
+    end
+
+    # Allow access to "before notify" callbacks
+    def before_notify_callbacks
+      Bugsnag.configuration.request_data[:before_callbacks] ||= []
+    end
+
+    # Allow access to "before notify" callbacks
+    def after_notify_callbacks
+      Bugsnag.configuration.request_data[:after_callbacks] ||= []
     end
   end
 end

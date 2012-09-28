@@ -49,29 +49,51 @@ use Bugsnag::Rack
 ```
 
 
+Adding Application Specific Metadata
+------------------------------------
+
+It is often useful to send additional meta-data about your app, such as 
+information about the currently logged in user, along with any
+exceptions, to help debug problems. In any rails controller you can define a
+`before_bugsnag_notify` filter, which allows you to add this additional data.
+
+```ruby
+class MyController < ApplicationController
+  # Define the filter
+  before_bugsnag_notify :add_user_info_to_bugsnag
+
+  # Your controller code here
+
+  private
+  def add_user_info_to_bugsnag(notif, exceptions)
+    notif.add_tab(:user_info, {
+      name: current_user.name
+    })
+  end
+end
+```
+
+You can read more about how this works in the [Bugsnag Middleware](#bugsnag-middleware)
+documentation below.
+
+
 Send Non-Fatal Exceptions to Bugsnag
 ------------------------------------
 
-If you would like to send non-fatal exceptions to Bugsnag, there are two 
-ways of doing so. From a rails controller, you can call `notify_bugsnag`:
+If you would like to send non-fatal exceptions to Bugsnag, you can call
+`Bugsnag.notify`:
 
 ```ruby
-notify_bugsnag(RuntimeError.new("Something broke"))
+Bugsnag.notify(RuntimeError.new("Something broke"))
 ```
 
 You can also send additional meta-data with your exception:
 
 ```ruby
-notify_bugsnag(RuntimeError.new("Something broke"), {
+Bugsnag.notify(RuntimeError.new("Something broke"), {
   :username => "bob-hoskins",
   :registered_user => true
 })
-```
-
-Anywhere else in your ruby code, you can call `Bugsnag.notify`:
-
-```ruby
-Bugsnag.notify(RuntimeError.new("Something broke"));
 ```
 
 
@@ -194,6 +216,13 @@ By default, `ignore_classes` contains the following classes:
   "AbstractController::ActionNotFound"
 ]
 ```
+
+
+Bugsnag Middleware
+------------------
+
+TODO
+
 
 
 Deploy Tracking

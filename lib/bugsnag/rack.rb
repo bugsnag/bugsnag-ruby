@@ -1,5 +1,6 @@
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
+require "bugsnag/middleware/callbacks"
 
 module Bugsnag
   class Rack
@@ -21,14 +22,15 @@ module Bugsnag
         end
 
         # Hook up rack-based notification middlewares
-        config.middleware.use ::Bugsnag::Middleware::RackRequest
-        config.middleware.use ::Bugsnag::Middleware::WardenUser if defined?(Warden)
+        config.middleware.use Bugsnag::Middleware::RackRequest
+        config.middleware.use Bugsnag::Middleware::WardenUser if defined?(Warden)
+        config.middleware.use Bugsnag::Middleware::Callbacks
       end
     end
 
     def call(env)
       # Set the request data for bugsnag middleware to use
-      Bugsnag.set_request_data :rack_env, env
+      Bugsnag.set_request_data(:rack_env, env)
 
       begin
         response = @app.call(env)
