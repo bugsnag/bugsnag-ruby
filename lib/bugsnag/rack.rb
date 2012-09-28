@@ -20,7 +20,7 @@ module Bugsnag
           end
         end
 
-        # Hook up out notification middleware
+        # Hook up rack-based notification middlewares
         config.middleware.use ::Bugsnag::Middleware::RackRequest
         config.middleware.use ::Bugsnag::Middleware::WardenUser if defined?(Warden)
       end
