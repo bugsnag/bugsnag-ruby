@@ -38,7 +38,7 @@ module Bugsnag
 
     def initialize(exception, configuration, overrides = nil, request_data = nil)
       @configuration = configuration
-      @overrides = overrides || {}
+      @overrides = Bugsnag::Helpers.flatten_meta_data(overrides) || {}
       @request_data = request_data
       @meta_data = {}
       

@@ -44,6 +44,11 @@ module Bugsnag
         h
       end
     end
+    
+    def self.flatten_meta_data(overrides)
+      meta_data = overrides.delete(:meta_data)
+      overrides.merge(meta_data)
+    end
 
     # Helper functions to work around MultiJson changes in 1.3+
     def self.dump_json(object, options={})

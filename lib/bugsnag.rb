@@ -9,6 +9,7 @@ require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
 
 require "resque/failure/bugsnag" if defined?(Resque)
+require "bugsnag/sidekiq" if defined?(Sidekiq)
 
 module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
@@ -33,23 +34,11 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, overrides=nil, request_data=nil)
-      # Backwards compat
-      if overrides[:meta_data]
-        overrides.merge(overrides[:meta_data])
-        overrides.delete(:meta_data)
-      end
-      
       Notification.new(exception, configuration, overrides, request_data).deliver
     end
 
     # Notify of an exception unless it should be ignored
     def notify_or_ignore(exception, overrides=nil, request_data=nil)
-      # Backwards compat
-      if overrides[:meta_data]
-        overrides.merge(overrides[:meta_data])
-        overrides.delete(:meta_data)
-      end
-      
       notification = Notification.new(exception, configuration, overrides, request_data)
       notification.deliver unless notification.ignore?
     end
