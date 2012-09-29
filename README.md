@@ -250,6 +250,17 @@ By default, `ignore_classes` contains the following classes:
 ]
 ```
 
+###logger
+
+Sets which logger to use for Bugsnag log messages. In rails apps, this is 
+automatically set to use `Rails.logger`, otherwise it will be set to
+`Logger.new(STDOUT)`.
+
+###middleware
+
+Provides access to the middleware stack, see the
+[Bugsnag Middleware](#bugsnag-middleware) section below for details.
+
 
 Bugsnag Middleware
 ------------------

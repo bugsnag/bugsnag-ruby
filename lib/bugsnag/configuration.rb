@@ -41,6 +41,7 @@ module Bugsnag
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.endpoint = DEFAULT_ENDPOINT
+      self.logger = Logger.new(STDOUT)
 
       # Configure the bugsnag middleware stack
       self.middleware = Bugsnag::MiddlewareStack.new
