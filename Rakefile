@@ -37,7 +37,7 @@ end
 # RSpec tasks
 require "rspec/core/rake_task"
 RSpec::Core::RakeTask.new(:spec) do |spec|
-  spec.rspec_opts = ['--backtrace --color']
+  spec.rspec_opts = ['--backtrace --color --format doc']
 end
 
 task :default  => :spec

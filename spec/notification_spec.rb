@@ -28,7 +28,7 @@ describe Bugsnag::Notification do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       payload[:apiKey].should be == "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
@@ -53,7 +53,7 @@ describe Bugsnag::Notification do
       exception = get_exception_from_payload(payload)
       exception[:errorClass].should be == "BugsnagTestException"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
@@ -62,7 +62,7 @@ describe Bugsnag::Notification do
       exception = get_exception_from_payload(payload)
       exception[:message].should be == "It crashed"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
@@ -71,7 +71,7 @@ describe Bugsnag::Notification do
       exception = get_exception_from_payload(payload)
       exception[:stacktrace].length.should be > 0
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
@@ -82,7 +82,7 @@ describe Bugsnag::Notification do
       event[:metaData][:some_tab][:info].should be == "here"
       event[:metaData][:some_tab][:data].should be == "also here"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
       :some_tab => {
         :info => "here",
@@ -90,7 +90,7 @@ describe Bugsnag::Notification do
       }
     })
   end
-  
+
   it "should accept non-hash overrides and add them to the custom tab in metaData" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
@@ -98,7 +98,7 @@ describe Bugsnag::Notification do
       event[:metaData][:custom][:info].should be == "here"
       event[:metaData][:custom][:data].should be == "also here"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
       :info => "here",
       :data => "also here"
@@ -112,7 +112,7 @@ describe Bugsnag::Notification do
       event[:metaData][:some_tab][:info].should be == "here"
       event[:metaData][:some_tab][:data].should be == "also here"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
       :meta_data => {
         :some_tab => {
@@ -129,7 +129,7 @@ describe Bugsnag::Notification do
       # 2 truncated hashes (4096*2) + rest of payload (5000)
       opts[:body].length.should be < 4096*2 + 5000
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
       :meta_data => {
         :some_tab => {
@@ -145,30 +145,30 @@ describe Bugsnag::Notification do
       event = get_event_from_payload(payload)
       event[:context].should be == "test_context"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
       :context => "test_context"
     })
   end
-  
+
   it "should accept a user_id in overrides" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       event[:userId].should be == "test_user"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
       :user_id => "test_user"
     })
   end
-  
+
   it "should not send a notification if auto_notify is false" do
     Bugsnag.configure do |config|
       config.auto_notify = false
     end
 
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
-    
+
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
   end
 
@@ -181,22 +181,22 @@ describe Bugsnag::Notification do
       event = get_event_from_payload(payload)
       event[:releaseStage].should be == "production"
     end
-    
+
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
   end
 
   it "should respect the notify_release_stages setting by not sending in development" do
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
-    
+
     Bugsnag.configuration.release_stage = "development"
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
-  
+
   it "should respect the notify_release_stages setting when set" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
     end
-    
+
     Bugsnag.configuration.release_stage = "development"
     Bugsnag.configuration.notify_release_stages << "development"
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
@@ -206,35 +206,35 @@ describe Bugsnag::Notification do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       endpoint.should start_with "https://"
     end
-    
+
     Bugsnag.configuration.use_ssl = true
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
-  
+
   it "should not use ssl when use_ssl is false" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       endpoint.should start_with "http://"
     end
-    
+
     Bugsnag.configuration.use_ssl = false
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
-  
+
   it "should not use ssl when use_ssl is unset" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       endpoint.should start_with "http://"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
-  
+
   it "should not mark the top-most stacktrace line as inProject if out of project" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       exception[:stacktrace].should have_at_least(1).items
       exception[:stacktrace].first[:inProject].should be_nil
     end
-    
+
     Bugsnag.configuration.project_root = "/Random/location/here"
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
@@ -243,9 +243,9 @@ describe Bugsnag::Notification do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       exception[:stacktrace].should have_at_least(1).items
-      exception[:stacktrace].first[:inProject].should be == true 
+      exception[:stacktrace].first[:inProject].should be == true
     end
-    
+
     Bugsnag.configuration.project_root = File.expand_path File.dirname(__FILE__)
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
@@ -255,7 +255,7 @@ describe Bugsnag::Notification do
       event = get_event_from_payload(payload)
       event[:appVersion].should be == "1.1.1"
     end
-    
+
     Bugsnag.configuration.app_version = "1.1.1"
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
@@ -270,10 +270,10 @@ describe Bugsnag::Notification do
       event[:metaData][:request][:params][:other_password].should be == "[FILTERED]"
       event[:metaData][:request][:params][:other_data].should be == "123456"
     end
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "12345", :other_data => "123456"}}})
   end
-  
+
   it "should filter params from all payload hashes if they are added to params_filters" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
@@ -284,22 +284,22 @@ describe Bugsnag::Notification do
       event[:metaData][:request][:params][:other_password].should be == "[FILTERED]"
       event[:metaData][:request][:params][:other_data].should be == "[FILTERED]"
     end
-    
+
     Bugsnag.configuration.params_filters << "other_data"
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
   end
 
   it "should not notify if the exception class is in the default ignore_classes list" do
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
-    
+
     Bugsnag.notify_or_ignore(ActiveRecord::RecordNotFound.new("It crashed"))
   end
 
   it "should not notify if the non-default exception class is added to the ignore_classes" do
     Bugsnag.configuration.ignore_classes << "BugsnagTestException"
-    
+
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
-    
+
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
   end
 end
