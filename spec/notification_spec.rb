@@ -6,13 +6,13 @@ module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class BugsnagTestException < RuntimeError; end
 
 def get_event_from_payload(payload)
-  payload[:events].count.should be == 1
+  payload[:events].should have(1).items
   payload[:events].first
 end
 
 def get_exception_from_payload(payload)
   event = get_event_from_payload(payload)
-  event[:exceptions].count.should be == 1
+  event[:exceptions].should have(1).items
   event[:exceptions].last
 end
 
@@ -158,15 +158,57 @@ describe Bugsnag::Notification do
   end
 
   it "should use ssl when use_ssl is true" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      endpoint.should start_with "https://"
+    end
+    
+    Bugsnag.configuration.use_ssl = true
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+  end
+  
+  it "should not use ssl when use_ssl is false" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      endpoint.should start_with "http://"
+    end
+    
+    Bugsnag.configuration.use_ssl = false
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+  end
+  
+  it "should not use ssl when use_ssl is unset" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      endpoint.should start_with "http://"
+    end
+    
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+  end
+  
+  it "should not mark the top-most stacktrace line as inProject if out of project" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:stacktrace].should have_at_least(1).items
+      exception[:stacktrace].first[:inProject].should be_nil
+    end
+    
+    Bugsnag.configuration.project_root = "/Random/location/here"
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
   it "should mark the top-most stacktrace line as inProject if necessary" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:stacktrace].should have_at_least(1).items
+      exception[:stacktrace].first[:inProject].should be == true 
+    end
+    
+    Bugsnag.configuration.project_root = File.expand_path File.dirname(__FILE__)
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
   it "should add app_version to the payload if it is set" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
-      exception = get_exception_from_payload(payload)
-      exception.should_not be_nil
+      payload[:events].should_not be_nil
+      payload[:events].count.should be == 1
       payload[:events].first[:appVersion].should be == "1.1.1"
     end
     
@@ -177,6 +219,7 @@ describe Bugsnag::Notification do
   it "should filter params from all payload hashes if they are set in default params_filters" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       payload[:events].should_not be_nil
+      payload[:events].count.should be == 1
       payload[:events].first[:metaData].should_not be_nil
       payload[:events].first[:metaData][:request].should_not be_nil
       payload[:events].first[:metaData][:request][:params].should_not be_nil
@@ -191,6 +234,7 @@ describe Bugsnag::Notification do
   it "should filter params from all payload hashes if they are added to params_filters" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       payload[:events].should_not be_nil
+      payload[:events].count.should be == 1
       payload[:events].first[:metaData].should_not be_nil
       payload[:events].first[:metaData][:request].should_not be_nil
       payload[:events].first[:metaData][:request][:params].should_not be_nil
