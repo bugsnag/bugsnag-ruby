@@ -12,6 +12,17 @@ as fast as possible. [Create a free account](http://bugsnag.com) to start
 capturing exceptions from your applications.
 
 
+Contents
+--------
+
+- [How to Install](#how-to-install)
+- [Sending Custom Data With Exceptions](#sending-custom-data-with-exceptions)
+- [Sending Non-Fatal Exceptions](sending-non-fatal-exceptions)
+- [Configuration](#configuration)
+- [Bugsnag Middleware](#bugsnag-middleware)
+- [Deploy Tracking](#deploy-tracking)
+
+
 How to Install
 --------------
 
@@ -44,8 +55,8 @@ How to Install
     ```
 
 
-Adding Application Specific Metadata
-------------------------------------
+Sending Custom Data With Exceptions
+-----------------------------------
 
 It is often useful to send additional meta-data about your app, such as 
 information about the currently logged in user, along with any
@@ -99,8 +110,8 @@ You can read more about how callbacks work in the
 [Bugsnag Middleware](#bugsnag-middleware) documentation below.
 
 
-Send Non-Fatal Exceptions to Bugsnag
-------------------------------------
+Sending Non-Fatal Exceptions
+----------------------------
 
 If you would like to send non-fatal exceptions to Bugsnag, you can call
 `Bugsnag.notify`:
