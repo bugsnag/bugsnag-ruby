@@ -10,6 +10,8 @@ module Bugsnag
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
 
+    API_KEY_REGEX = /[0-9a-f]{32}/i
+
     # HTTParty settings
     headers  "Content-Type" => "application/json"
     default_timeout 5
@@ -89,8 +91,11 @@ module Bugsnag
       return unless @configuration.should_notify?
 
       # Check we have at least and api_key
-      unless @configuration.api_key
+      if @configuration.api_key.nil?
         Bugsnag.warn "No API key configured, couldn't notify"
+        return
+      elsif (@configuration.api_key =~ API_KEY_REGEX).nil?
+        Bugsnag.warn "Your API key (#{@configuration.api_key}) is not valid, couldn't notify"
         return
       end
       
