@@ -46,6 +46,7 @@ module Bugsnag
     end
     
     def self.flatten_meta_data(overrides)
+      return nil unless overrides
       meta_data = overrides.delete(:meta_data)
       overrides.merge(meta_data)
     end
