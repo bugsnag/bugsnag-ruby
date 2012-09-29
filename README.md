@@ -223,8 +223,11 @@ Bugsnag Middleware
 
 The ruby notifier provides its own middleware system, similar to the one used 
 in Rack applications. Middleware allows you to execute code before and after
-an exception is sent to bugsnag.com, allowing you to send application-specific
-data along with your exceptions.
+an exception is sent to bugsnag.com, so you can do things such as:
+
+-   Send application-specific information along with exceptions, eg. the name 
+    of the currently logged in user,
+-   Write exception information to your internal logging system.
 
 To make your own middleware, create a class that looks like this:
 
