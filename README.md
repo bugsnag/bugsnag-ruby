@@ -65,7 +65,7 @@ class MyController < ApplicationController
   # Your controller code here
 
   private
-  def add_user_info_to_bugsnag(notif, exceptions)
+  def add_user_info_to_bugsnag(notif)
     notif.add_tab(:user_info, {
       name: current_user.name
     })
@@ -221,8 +221,41 @@ By default, `ignore_classes` contains the following classes:
 Bugsnag Middleware
 ------------------
 
-TODO
+The ruby notifier provides its own middleware system, similar to the one used 
+in Rack applications. Middleware allows you to execute code before and after
+an exception is sent to bugsnag.com, allowing you to send application-specific
+data along with your exceptions.
 
+To make your own middleware, create a class that looks like this:
+
+```ruby
+class MyMiddleware
+  def initialize(bugsnag)
+    @bugsnag = bugsnag
+  end
+
+  def call(notification)
+    # Your custom "before notify" code
+
+    @bugsnag.call(notification)
+
+    # Your custom "after notify" code
+  end
+end
+```
+
+You can then add your middleware to the middleware stack as follows:
+
+```ruby
+Bugsnag.configure do |config|
+  config.middleware.use MyMiddleware
+end
+```
+
+You can also view the order of the currently activated middleware by running `rake bugsnag:middleware`.
+
+Check out Bugsnag's [built in middleware classes](https://github.com/bugsnag/bugsnag-ruby/tree/master/lib/bugsnag/middleware)
+for some real examples of middleware in action.
 
 
 Deploy Tracking
