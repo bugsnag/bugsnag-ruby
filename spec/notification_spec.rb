@@ -140,16 +140,36 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "should convert or strip json-unsafe metadata" do
-  end
-
   it "should accept a context in overrides" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:context].should be == "test_context"
+    end
+    
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
+      :context => "test_context"
+    })
   end
   
   it "should accept a user_id in overrides" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:userId].should be == "test_user"
+    end
+    
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
+      :user_id => "test_user"
+    })
   end
   
   it "should not send a notification if auto_notify is false" do
+    Bugsnag.configure do |config|
+      config.auto_notify = false
+    end
+
+    Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+    
+    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
   end
 
   it "should contain a release_stage" do
