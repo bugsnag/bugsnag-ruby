@@ -1,6 +1,8 @@
 require 'spec_helper'
 require 'bugsnag'
+require 'securerandom'
 
+module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class BugsnagTestException < RuntimeError; end
 
 def get_event_from_payload(payload)
@@ -121,54 +123,97 @@ describe Bugsnag::Notification do
   end
 
   it "should truncate large meta_data before sending" do
-    raise "fail"
+    Bugsnag::Notification.should_receive(:post) do |endpoint, opts|
+      # Truncated body should be no bigger than
+      # 2 truncated hashes (4096*2) + rest of payload (5000)
+      opts[:body].length.should be < 4096*2 + 5000
+    end
+    
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
+      :meta_data => {
+        :some_tab => {
+          :giant => SecureRandom.hex(500_000/2),
+          :mega => SecureRandom.hex(500_000/2)
+        }
+      }
+    })
   end
 
   it "should convert or strip json-unsafe metadata" do
-    raise "fail"
   end
 
   it "should accept a context in overrides" do
-    raise "fail"
   end
   
   it "should accept a user_id in overrides" do
-    raise "fail"
   end
   
   it "should not send a notification if auto_notify is false" do
-    raise "fail"
   end
 
   it "should contain a release_stage" do
-    raise "fail"
   end
 
   it "should respect the notify_release_stages setting" do
-    raise "fail"
   end
 
   it "should use ssl when use_ssl is true" do
-    raise "fail"
   end
 
   it "should mark the top-most stacktrace line as inProject if necessary" do
-    raise "fail"
   end
 
   it "should add app_version to the payload if it is set" do
-    raise "fail"
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception.should_not be_nil
+      payload[:events].first[:appVersion].should be == "1.1.1"
+    end
+    
+    Bugsnag.configuration.app_version = "1.1.1"
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should filter params from all payload hashes if they are set in params_filters" do
-    raise "fail"
+  it "should filter params from all payload hashes if they are set in default params_filters" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      payload[:events].should_not be_nil
+      payload[:events].first[:metaData].should_not be_nil
+      payload[:events].first[:metaData][:request].should_not be_nil
+      payload[:events].first[:metaData][:request][:params].should_not be_nil
+      payload[:events].first[:metaData][:request][:params][:password].should be == "[FILTERED]"
+      payload[:events].first[:metaData][:request][:params][:other_password].should be == "[FILTERED]"
+      payload[:events].first[:metaData][:request][:params][:other_data].should be == "123456"
+    end
+    
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "12345", :other_data => "123456"}}})
+  end
+  
+  it "should filter params from all payload hashes if they are added to params_filters" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      payload[:events].should_not be_nil
+      payload[:events].first[:metaData].should_not be_nil
+      payload[:events].first[:metaData][:request].should_not be_nil
+      payload[:events].first[:metaData][:request][:params].should_not be_nil
+      payload[:events].first[:metaData][:request][:params][:password].should be == "[FILTERED]"
+      payload[:events].first[:metaData][:request][:params][:other_password].should be == "[FILTERED]"
+      payload[:events].first[:metaData][:request][:params][:other_data].should be == "[FILTERED]"
+    end
+    
+    Bugsnag.configuration.params_filters << "other_data"
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
   end
 
   it "should not notify if the exception class is in the default ignore_classes list" do
-    raise "fail"
+    Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+    
+    Bugsnag.notify_or_ignore(ActiveRecord::RecordNotFound.new("It crashed"))
   end
 
   it "should not notify if the non-default exception class is added to the ignore_classes" do
-    raise "fail"
+    Bugsnag.configuration.ignore_classes << "BugsnagTestException"
+    
+    Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+    
+    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
   end
 end

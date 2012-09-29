@@ -26,14 +26,17 @@ module Bugsnag
         
           # If the payload is going to be too long, we trim the hashes to send 
           # a minimal payload instead
-          if payload_string.length > 512000
-            payload = Bugsnag::Helpers.reduce_hash_size(payload)
+          if payload_string.length > 128000
+            payload[:events].each {|e| e[:metaData] = Bugsnag::Helpers.reduce_hash_size(e[:metaData])}
             payload_string = Bugsnag::Helpers.dump_json(payload)
           end
 
           response = post(endpoint, {:body => payload_string})
-        rescue Exception => e
-          Bugsnag.log("Notification to #{endpoint} failed, #{e.inspect}")
+        rescue StandardError => e
+          # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
+          raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
+
+          Bugsnag.warn("Notification to #{endpoint} failed, #{e.inspect}")
         end
       end
     end

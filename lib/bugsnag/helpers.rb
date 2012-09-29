@@ -37,8 +37,10 @@ module Bugsnag
       hash.inject({}) do |h, (k,v)|
         if v.is_a?(Hash)
           h[k] = reduce_hash_size(v)
+        elsif v.is_a?(Array) || v.is_a?(Set)
+          h[k] = v.map {|el| reduce_hash_size(el) }
         else
-          h[k] = v.to_s.slice(0, MAX_STRING_LENGTH)
+          h[k] = v.to_s.slice(0, MAX_STRING_LENGTH) + "[TRUNCATED]"
         end
 
         h
