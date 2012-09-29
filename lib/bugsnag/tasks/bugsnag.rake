@@ -42,6 +42,11 @@ namespace :bugsnag do
       Bugsnag.notify(e, {:context => "rake#test_exception"})
     end
   end
+
+  desc "Show the bugsnag middleware stack"
+  task :middleware => :load do
+    Bugsnag.configuration.middleware.each {|m| puts m.to_s}
+  end
 end
 
 task :load do

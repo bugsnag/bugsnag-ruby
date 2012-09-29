@@ -1,8 +1,11 @@
-# Rails 2.x support
+# Rails 2.x hooks
+# For Rails 3+ hooks, see railtie.rb
 
 require "bugsnag"
 require "bugsnag/rails/controller_methods"
 require "bugsnag/rails/action_controller_rescue"
+require "bugsnag/middleware/rails2_request"
+require "bugsnag/middleware/callbacks"
 
 module Bugsnag
   module Rails
@@ -21,10 +24,11 @@ module Bugsnag
       end
 
       Bugsnag.configure do |config|
-        config.logger = rails_logger
+        config.logger ||= rails_logger
         config.release_stage = RAILS_ENV  if defined?(RAILS_ENV)
         config.project_root = RAILS_ROOT if defined?(RAILS_ROOT)
-        config.framework = "Rails: #{::Rails::VERSION::STRING}" if defined?(::Rails::VERSION)
+
+        config.middleware.use Bugsnag::Middleware::Rails2Request
       end
     end
   end
