@@ -207,9 +207,8 @@ describe Bugsnag::Notification do
 
   it "should add app_version to the payload if it is set" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
-      payload[:events].should_not be_nil
-      payload[:events].count.should be == 1
-      payload[:events].first[:appVersion].should be == "1.1.1"
+      event = get_event_from_payload(payload)
+      event[:appVersion].should be == "1.1.1"
     end
     
     Bugsnag.configuration.app_version = "1.1.1"
@@ -218,14 +217,13 @@ describe Bugsnag::Notification do
 
   it "should filter params from all payload hashes if they are set in default params_filters" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
-      payload[:events].should_not be_nil
-      payload[:events].count.should be == 1
-      payload[:events].first[:metaData].should_not be_nil
-      payload[:events].first[:metaData][:request].should_not be_nil
-      payload[:events].first[:metaData][:request][:params].should_not be_nil
-      payload[:events].first[:metaData][:request][:params][:password].should be == "[FILTERED]"
-      payload[:events].first[:metaData][:request][:params][:other_password].should be == "[FILTERED]"
-      payload[:events].first[:metaData][:request][:params][:other_data].should be == "123456"
+      event = get_event_from_payload(payload)
+      event[:metaData].should_not be_nil
+      event[:metaData][:request].should_not be_nil
+      event[:metaData][:request][:params].should_not be_nil
+      event[:metaData][:request][:params][:password].should be == "[FILTERED]"
+      event[:metaData][:request][:params][:other_password].should be == "[FILTERED]"
+      event[:metaData][:request][:params][:other_data].should be == "123456"
     end
     
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "12345", :other_data => "123456"}}})
@@ -233,14 +231,13 @@ describe Bugsnag::Notification do
   
   it "should filter params from all payload hashes if they are added to params_filters" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
-      payload[:events].should_not be_nil
-      payload[:events].count.should be == 1
-      payload[:events].first[:metaData].should_not be_nil
-      payload[:events].first[:metaData][:request].should_not be_nil
-      payload[:events].first[:metaData][:request][:params].should_not be_nil
-      payload[:events].first[:metaData][:request][:params][:password].should be == "[FILTERED]"
-      payload[:events].first[:metaData][:request][:params][:other_password].should be == "[FILTERED]"
-      payload[:events].first[:metaData][:request][:params][:other_data].should be == "[FILTERED]"
+      event = get_event_from_payload(payload)
+      event[:metaData].should_not be_nil
+      event[:metaData][:request].should_not be_nil
+      event[:metaData][:request][:params].should_not be_nil
+      event[:metaData][:request][:params][:password].should be == "[FILTERED]"
+      event[:metaData][:request][:params][:other_password].should be == "[FILTERED]"
+      event[:metaData][:request][:params][:other_data].should be == "[FILTERED]"
     end
     
     Bugsnag.configuration.params_filters << "other_data"
