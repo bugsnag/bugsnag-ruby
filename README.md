@@ -54,8 +54,12 @@ Adding Application Specific Metadata
 
 It is often useful to send additional meta-data about your app, such as 
 information about the currently logged in user, along with any
-exceptions, to help debug problems. In any rails controller you can define a
-`before_bugsnag_notify` filter, which allows you to add this additional data.
+exceptions, to help debug problems.
+
+### Rails
+
+In any rails controller you can define a `before_bugsnag_notify` filter, 
+which allows you to add this additional data.
 
 ```ruby
 class MyController < ApplicationController
@@ -73,8 +77,26 @@ class MyController < ApplicationController
 end
 ```
 
-You can read more about how this works in the [Bugsnag Middleware](#bugsnag-middleware)
-documentation below.
+### Other Ruby Apps
+
+In other ruby apps, you can provide
+
+```ruby
+# Set a before notify callback
+Bugsnag.before_notify_callbacks << lambda {|notif|
+  notif.add_tab(:user_info, {
+    name: current_user.name
+  })
+}
+
+# Your app code here
+
+# Clear the callbacks
+Bugsnag.before_notify_callbacks.clear
+```
+
+You can read more about how callbacks work in the
+[Bugsnag Middleware](#bugsnag-middleware) documentation below.
 
 
 Send Non-Fatal Exceptions to Bugsnag
