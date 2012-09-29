@@ -1,36 +1,26 @@
+require "set"
+require "bugsnag/middleware_stack"
+
 module Bugsnag
   class Configuration
-    OPTIONS = [
-      :api_key, :release_stage, :notify_release_stages, :auto_notify,
-      :use_ssl, :project_root, :app_version,
-      :params_filters, :ignore_classes,
-      
-      :stacktrace_filters,
-      :framework, :endpoint, :logger,
-      :delay_with_resque
-    ]
-    OPTIONS.each {|o| attr_accessor o }
+    attr_accessor :api_key
+    attr_accessor :release_stage
+    attr_accessor :notify_release_stages
+    attr_accessor :auto_notify
+    attr_accessor :use_ssl
+    attr_accessor :project_root
+    attr_accessor :app_version
+    attr_accessor :params_filters
+    attr_accessor :ignore_classes
+    attr_accessor :endpoint
+    attr_accessor :logger
+    attr_accessor :middleware
 
-    DEFAULT_PARAMS_FILTERS = %w(password password_confirmation).freeze
+    THREAD_LOCAL_NAME = "bugsnag_req_data"
 
-    DEFAULT_STACKTRACE_FILTERS = [
-      lambda { |line|
-        if defined?(Bugsnag.configuration.project_root) && Bugsnag.configuration.project_root.to_s != '' 
-          line.sub(/#{Bugsnag.configuration.project_root}\//, "")
-        else
-          line
-        end
-      },
-      lambda { |line| line.gsub(/^\.\//, "") },
-      lambda { |line|
-        if defined?(Gem)
-          Gem.path.inject(line) do |line, path|
-            line.gsub(/#{path}\//, "")
-          end
-        end
-      },
-      lambda { |line| line if line !~ %r{lib/bugsnag} }
-    ].freeze
+    DEFAULT_ENDPOINT = "notify.bugsnag.com"
+
+    DEFAULT_PARAMS_FILTERS = ["password"].freeze
 
     DEFAULT_IGNORE_CLASSES = [
       "ActiveRecord::RecordNotFound",
@@ -40,26 +30,42 @@ module Bugsnag
       "ActionController::UnknownAction",
       "AbstractController::ActionNotFound",
       "Mongoid::Errors::DocumentNotFound"
-    ]
-
+    ].freeze
 
     def initialize
-      @params_filters = DEFAULT_PARAMS_FILTERS.dup
-      @stacktrace_filters = DEFAULT_STACKTRACE_FILTERS.dup
-      @ignore_classes = DEFAULT_IGNORE_CLASSES.dup
-      @auto_notify = true
-      @release_stage = "production"
-      @notify_release_stages = ["production"]
-    end
-    
-    def to_hash
-      OPTIONS.inject({}) do |hash, option|
-        hash.merge(option.to_sym => send(option))
-      end
+      # Set up the defaults
+      self.release_stage = "production"
+      self.notify_release_stages = ["production"]
+      self.auto_notify = true
+      self.use_ssl = false
+      self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
+      self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
+      self.endpoint = DEFAULT_ENDPOINT
+
+      # Configure the bugsnag middleware stack
+      self.middleware = Bugsnag::MiddlewareStack.new
+      self.middleware.use Bugsnag::Middleware::Callbacks
     end
 
-    def merge(hash)
-      to_hash.merge(hash)
+    def should_notify?
+      @notify_release_stages.include?(@release_stage)
+    end
+
+    def request_data
+      Thread.current[THREAD_LOCAL_NAME] ||= {}
+    end
+
+    def set_request_data(key, value)
+      Bugsnag.warn "Overwriting request data for key #{key.to_s}" if self.request_data[key]
+      self.request_data[key] = value
+    end
+    
+    def unset_request_data(key, value)
+      self.request_data.delete(key)
+    end
+
+    def clear_request_data
+      Thread.current[THREAD_LOCAL_NAME] = nil
     end
   end
 end

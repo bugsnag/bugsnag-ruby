@@ -1,34 +1,48 @@
+module HTTParty
+  class Parser
+    def json
+      Bugsnag::Helpers.load_json(body)
+    end
+  end
+end
+
 module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096
 
-    def self.cleanup_hash(hash)
-      return nil unless hash
-      hash.inject({}) do |h, (k, v)|
-        h[k.to_s.gsub(/\./, "-")] = v.to_s.slice(0, MAX_STRING_LENGTH)
+    def self.cleanup_obj(obj, filters = nil)
+      return nil unless obj
+
+      if obj.is_a?(Hash)
+        clean_hash = {}
+        obj.each do |k,v| 
+          if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
+            clean_hash[k] = "[FILTERED]"
+          else
+            clean_obj = cleanup_obj(v, filters)
+            clean_hash[k] = clean_obj unless clean_obj.nil?
+          end
+        end
+        clean_hash
+      elsif obj.is_a?(Array) || obj.is_a?(Set)
+        obj.map { |el| cleanup_obj(el, filters) }.compact
+      elsif obj.is_a?(Integer) || obj.is_a?(Float)
+        obj
+      else
+        obj.to_s unless obj.to_s =~ /#<.*>/
+      end
+    end
+    
+    def self.reduce_hash_size(hash)
+      hash.inject({}) do |h, (k,v)|
+        if v.is_a?(Hash)
+          h[k] = reduce_hash_size(v)
+        else
+          h[k] = v.to_s.slice(0, MAX_STRING_LENGTH)
+        end
+
         h
       end
-    end
-    
-    def self.apply_filters(hash, filters)
-      return nil unless hash
-      return hash unless filters
-
-      hash.each do |k, v|
-        if filters.any? {|f| k.to_s.include?(f.to_s) }
-          hash[k] = "[FILTERED]"
-        elsif v.respond_to?(:to_hash)
-          apply_filters(hash[k])
-        end
-      end
-    end
-    
-    def self.param_context(params)
-      "#{params[:controller]}##{params[:action]}" if params && params[:controller] && params[:action]
-    end
-
-    def self.request_context(request)
-      "#{request.request_method} #{request.path}" if request
     end
 
     # Helper functions to work around MultiJson changes in 1.3+

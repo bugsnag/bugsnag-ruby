@@ -12,8 +12,19 @@ as fast as possible. [Create a free account](http://bugsnag.com) to start
 capturing exceptions from your applications.
 
 
-How to Install (Rails)
-----------------------
+Contents
+--------
+
+- [How to Install](#how-to-install)
+- [Sending Custom Data With Exceptions](#sending-custom-data-with-exceptions)
+- [Sending Non-Fatal Exceptions](#sending-non-fatal-exceptions)
+- [Configuration](#configuration)
+- [Bugsnag Middleware](#bugsnag-middleware)
+- [Deploy Tracking](#deploy-tracking)
+
+
+How to Install
+--------------
 
 1.  Add the `bugsnag` gem to your `Gemfile`
 
@@ -27,7 +38,9 @@ How to Install (Rails)
     bundle install
     ```
 
-3.  Copy the following code to a new file at `config/initializers/bugsnag.rb`
+3.  Configure the Bugsnag module with your API key.
+
+    In rails apps, put this code to a new file at `config/initializers/bugsnag.rb`
 
     ```ruby
     Bugsnag.configure do |config|
@@ -35,43 +48,85 @@ How to Install (Rails)
     end
     ```
 
-How to Install (Sinatra)
-------------------------
+4.  **Rack/Sinatra apps only**: Activate the Bugsnag Rack middleware
+
+    ```ruby
+    use Bugsnag::Rack
+    ```
+
+
+Sending Custom Data With Exceptions
+-----------------------------------
+
+It is often useful to send additional meta-data about your app, such as 
+information about the currently logged in user, along with any
+exceptions, to help debug problems. 
+
+### Rails Apps
+
+In any rails controller you can define a `before_bugsnag_notify` callback, 
+which allows you to add this additional data by calling `add_tab` on the
+exception notification object.
 
 ```ruby
-require "bugsnag"
+class MyController < ApplicationController
+  # Define the filter
+  before_bugsnag_notify :add_user_info_to_bugsnag
 
-Bugsnag.configure do |config|
-  config.api_key = "YOUR_API_KEY_HERE"
+  # Your controller code here
+
+  private
+  def add_user_info_to_bugsnag(notif)
+    # Add some app-specific data which will be displayed on a custom
+    # "User Info" tab on each error page on bugsnag.com
+    notif.add_tab(:user_info, {
+      name: current_user.name
+    })
+  end
 end
-
-use Bugsnag::Rack
 ```
 
+### Other Ruby Apps
 
-Send Non-Fatal Exceptions to Bugsnag
-------------------------------------
-
-If you would like to send non-fatal exceptions to Bugsnag, there are two 
-ways of doing so. From a rails controller, you can call `notify_bugsnag`:
+In other ruby apps, you can provide lambda functions to execute before any 
+`Bugsnag.notify` calls as follows. Don't forget to clear the callbacks at the
+end of each request or session.
 
 ```ruby
-notify_bugsnag(RuntimeError.new("Something broke"))
+# Set a before notify callback
+Bugsnag.before_notify_callbacks << lambda {|notif|
+  notif.add_tab(:user_info, {
+    name: current_user.name
+  })
+}
+
+# Your app code here
+
+# Clear the callbacks
+Bugsnag.before_notify_callbacks.clear
+```
+
+You can read more about how callbacks work in the
+[Bugsnag Middleware](#bugsnag-middleware) documentation below.
+
+
+Sending Non-Fatal Exceptions
+----------------------------
+
+If you would like to send non-fatal exceptions to Bugsnag, you can call
+`Bugsnag.notify`:
+
+```ruby
+Bugsnag.notify(RuntimeError.new("Something broke"))
 ```
 
 You can also send additional meta-data with your exception:
 
 ```ruby
-notify_bugsnag(RuntimeError.new("Something broke"), {
+Bugsnag.notify(RuntimeError.new("Something broke"), {
   :username => "bob-hoskins",
   :registered_user => true
 })
-```
-
-Anywhere else in your ruby code, you can call `Bugsnag.notify`:
-
-```ruby
-Bugsnag.notify(RuntimeError.new("Something broke"));
 ```
 
 
@@ -194,6 +249,50 @@ By default, `ignore_classes` contains the following classes:
   "AbstractController::ActionNotFound"
 ]
 ```
+
+
+Bugsnag Middleware
+------------------
+
+The Bugsnag Notifier for Ruby provides its own middleware system, similar to 
+the one used in Rack applications. Middleware allows you to execute code 
+before and after an exception is sent to bugsnag.com, so you can do things 
+such as:
+
+-   Send application-specific information along with exceptions, eg. the name 
+    of the currently logged in user,
+-   Write exception information to your internal logging system.
+
+To make your own middleware, create a class that looks like this:
+
+```ruby
+class MyMiddleware
+  def initialize(bugsnag)
+    @bugsnag = bugsnag
+  end
+
+  def call(notification)
+    # Your custom "before notify" code
+
+    @bugsnag.call(notification)
+
+    # Your custom "after notify" code
+  end
+end
+```
+
+You can then add your middleware to the middleware stack as follows:
+
+```ruby
+Bugsnag.configure do |config|
+  config.middleware.use MyMiddleware
+end
+```
+
+You can also view the order of the currently activated middleware by running `rake bugsnag:middleware`.
+
+Check out Bugsnag's [built in middleware classes](https://github.com/bugsnag/bugsnag-ruby/tree/master/lib/bugsnag/middleware)
+for some real examples of middleware in action.
 
 
 Deploy Tracking
