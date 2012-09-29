@@ -27,8 +27,9 @@ How to Install
     bundle install
     ```
 
-3.  Configure the Bugsnag module with your API key. In rails apps, copy the 
-    following code to a new file at `config/initializers/bugsnag.rb`
+3.  Configure the Bugsnag module with your API key.
+
+    In rails apps, put this code to a new file at `config/initializers/bugsnag.rb`.
 
     ```ruby
     Bugsnag.configure do |config|
