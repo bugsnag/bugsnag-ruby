@@ -44,6 +44,7 @@ module Bugsnag
 
       # Configure the bugsnag middleware stack
       self.middleware = Bugsnag::MiddlewareStack.new
+      self.middleware.use Bugsnag::Middleware::Callbacks
     end
 
     def should_notify?

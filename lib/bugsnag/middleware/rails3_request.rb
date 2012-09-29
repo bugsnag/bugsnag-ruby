@@ -4,9 +4,9 @@ module Bugsnag::Middleware
       @bugsnag = bugsnag
     end
       
-    def call(request_data, exception, notification)
-      if request_data[:rack_env]
-        env = request_data[:rack_env]
+    def call(notification)
+      if notification.request_data[:rack_env]
+        env = notification.request_data[:rack_env]
         params = env["action_dispatch.request.parameters"]
 
         # Set the context
@@ -21,7 +21,7 @@ module Bugsnag::Middleware
         end
       end
 
-      @bugsnag.call(request_data, exception, notification)
+      @bugsnag.call(notification)
     end
   end
 end

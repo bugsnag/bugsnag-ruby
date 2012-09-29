@@ -23,14 +23,14 @@ module Bugsnag::Rails
 
           # Set up "method symbol" callbacks
           methods.each do |method_symbol|
-            request_data[callback_key] << lambda { |notification, exceptions|
-              self.send(method_symbol, notification, exceptions)
+            request_data[callback_key] << lambda { |notification|
+              self.send(method_symbol, notification)
             }
           end
 
           # Set up "block" callbacks
-          request_data[callback_key] << lambda { |notification, exceptions|
-            controller.instance_exec(notification, exceptions, &block)
+          request_data[callback_key] << lambda { |notification|
+            controller.instance_exec(notification, &block)
           } if block_given?
         end
       end

@@ -4,9 +4,9 @@ module Bugsnag::Middleware
       @bugsnag = bugsnag
     end
       
-    def call(request_data, exception, notification)
-      if request_data[:rails2_request]
-        request = request_data[:rails2_request]
+    def call(notification)
+      if notification.request_data[:rails2_request]
+        request = notification.request_data[:rails2_request]
         params = request.parameters || {}
         session_data = request.session.respond_to?(:to_hash) ? request.session.to_hash : request.session.data
 
@@ -39,7 +39,7 @@ module Bugsnag::Middleware
         notification.add_tab(:cookies, request.cookies) if request.cookies
       end
 
-      @bugsnag.call(request_data, exception, notification)
+      @bugsnag.call(notification)
     end
   end
 end
