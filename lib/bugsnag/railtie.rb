@@ -10,7 +10,7 @@ module Bugsnag
       load "bugsnag/tasks/bugsnag.rake"
     end
 
-    config.before_initialize do 
+    config.before_initialize do
       # Configure bugsnag rails defaults
       Bugsnag.configure do |config|
         config.logger = Rails.logger
@@ -18,7 +18,12 @@ module Bugsnag
         config.project_root = Rails.root.to_s
         config.params_filters += Rails.configuration.filter_parameters
       end
-      
+
+      # Auto-load configuration settings from config/bugsnag.yml if it exists
+      config_file = Rails.root.join("config", "bugsnag.yml")
+      config = YAML.load_file(config_file) if File.exists?(config_file)
+      Bugsnag.configure(config[Rails.env] ? config[Rails.env] : config) if config
+
       if defined?(::ActionController::Base)
         require "bugsnag/rails/controller_methods"
         ::ActionController::Base.send(:include, Bugsnag::Rails::ControllerMethods)
