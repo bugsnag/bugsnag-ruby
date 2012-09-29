@@ -17,7 +17,7 @@ Contents
 
 - [How to Install](#how-to-install)
 - [Sending Custom Data With Exceptions](#sending-custom-data-with-exceptions)
-- [Sending Non-Fatal Exceptions](sending-non-fatal-exceptions)
+- [Sending Non-Fatal Exceptions](#sending-non-fatal-exceptions)
 - [Configuration](#configuration)
 - [Bugsnag Middleware](#bugsnag-middleware)
 - [Deploy Tracking](#deploy-tracking)
