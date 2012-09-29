@@ -12,8 +12,8 @@ as fast as possible. [Create a free account](http://bugsnag.com) to start
 capturing exceptions from your applications.
 
 
-How to Install (Rails)
-----------------------
+How to Install (Rails Apps)
+---------------------------
 
 1.  Add the `bugsnag` gem to your `Gemfile`
 
@@ -35,8 +35,9 @@ How to Install (Rails)
     end
     ```
 
-How to Install (Sinatra)
-------------------------
+
+How to Install (Rack Apps)
+--------------------------
 
 ```ruby
 require "bugsnag"
@@ -56,7 +57,7 @@ It is often useful to send additional meta-data about your app, such as
 information about the currently logged in user, along with any
 exceptions, to help debug problems.
 
-### Rails
+### Rails Apps
 
 In any rails controller you can define a `before_bugsnag_notify` filter, 
 which allows you to add this additional data.
