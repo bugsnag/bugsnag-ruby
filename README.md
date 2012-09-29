@@ -12,8 +12,8 @@ as fast as possible. [Create a free account](http://bugsnag.com) to start
 capturing exceptions from your applications.
 
 
-How to Install (Rails Apps)
----------------------------
+How to Install
+--------------
 
 1.  Add the `bugsnag` gem to your `Gemfile`
 
@@ -27,7 +27,8 @@ How to Install (Rails Apps)
     bundle install
     ```
 
-3.  Copy the following code to a new file at `config/initializers/bugsnag.rb`
+3.  Configure the Bugsnag module with your API key. In rails apps, copy the 
+    following code to a new file at `config/initializers/bugsnag.rb`
 
     ```ruby
     Bugsnag.configure do |config|
@@ -35,19 +36,11 @@ How to Install (Rails Apps)
     end
     ```
 
+4.  *Rack/Sinatra apps only* activate the Bugsnag Rack middleware
 
-How to Install (Rack Apps)
---------------------------
-
-```ruby
-require "bugsnag"
-
-Bugsnag.configure do |config|
-  config.api_key = "YOUR_API_KEY_HERE"
-end
-
-use Bugsnag::Rack
-```
+    ```ruby
+    use Bugsnag::Rack
+    ```
 
 
 Adding Application Specific Metadata
