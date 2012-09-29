@@ -173,6 +173,16 @@ describe Bugsnag::Notification do
   end
 
   it "should contain a release_stage" do
+    Bugsnag.configure do |config|
+      config.release_stage = "fakeduction"
+    end
+
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:releaseStage].should be == "fakeduction"
+    end
+    
+    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
   end
 
   it "should respect the notify_release_stages setting by not sending in development" do
