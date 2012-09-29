@@ -37,7 +37,7 @@ How to Install
     end
     ```
 
-4.  *Rack/Sinatra apps only* activate the Bugsnag Rack middleware
+4.  **Rack/Sinatra apps only**: Activate the Bugsnag Rack middleware
 
     ```ruby
     use Bugsnag::Rack
