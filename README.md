@@ -29,7 +29,7 @@ How to Install
 
 3.  Configure the Bugsnag module with your API key.
 
-    In rails apps, put this code to a new file at `config/initializers/bugsnag.rb`.
+    In rails apps, put this code to a new file at `config/initializers/bugsnag.rb`
 
     ```ruby
     Bugsnag.configure do |config|
@@ -74,7 +74,9 @@ end
 
 ### Other Ruby Apps
 
-In other ruby apps, you can provide
+In other ruby apps, you can provide lambda functions to execute before any 
+`Bugsnag.notify` calls as follows. Don't forget to clear the callbacks at the
+end of each request or session.
 
 ```ruby
 # Set a before notify callback
