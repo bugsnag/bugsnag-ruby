@@ -29,7 +29,6 @@ module Bugsnag
         config.project_root = RAILS_ROOT if defined?(RAILS_ROOT)
 
         config.middleware.use Bugsnag::Middleware::Rails2Request
-        config.middleware.use Bugsnag::Middleware::Callbacks
       end
     end
   end

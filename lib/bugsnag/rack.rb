@@ -24,7 +24,6 @@ module Bugsnag
         # Hook up rack-based notification middlewares
         config.middleware.use Bugsnag::Middleware::RackRequest
         config.middleware.use Bugsnag::Middleware::WardenUser if defined?(Warden)
-        config.middleware.use Bugsnag::Middleware::Callbacks
       end
     end
 
