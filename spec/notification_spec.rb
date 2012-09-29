@@ -174,12 +174,12 @@ describe Bugsnag::Notification do
 
   it "should contain a release_stage" do
     Bugsnag.configure do |config|
-      config.release_stage = "fakeduction"
+      config.release_stage = "production"
     end
 
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:releaseStage].should be == "fakeduction"
+      event[:releaseStage].should be == "production"
     end
     
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
