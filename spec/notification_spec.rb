@@ -36,62 +36,62 @@ describe Bugsnag::Notification do
   end
 
   it "should have a valid stacktrace" do
-
+    raise "fail"
   end
 
   it "should accept hash overrides and add them to metadata" do
-
+    raise "fail"
   end
   
   it "should accept non-hash overrides and add them to custom metadata" do
-
+    raise "fail"
   end
 
   it "should accept meta_data in overrides and merge it into overrides" do
-
+    raise "fail"
   end
   
   it "should accept a context in overrides" do
-
+    raise "fail"
   end
   
   it "should accept a user_id in overrides" do
-
+    raise "fail"
   end
   
   it "should not send a notification if auto_notify is false" do
-
+    raise "fail"
   end
 
   it "should contain a release_stage" do
-
+    raise "fail"
   end
 
   it "should respect the notify_release_stages setting" do
-
+    raise "fail"
   end
 
   it "should use ssl when use_ssl is true" do
-
+    raise "fail"
   end
 
   it "should mark the top-most stacktrace line as inProject if necessary" do
-
+    raise "fail"
   end
 
   it "should add app_version to the payload if it is set" do
-
+    raise "fail"
   end
 
   it "should filter params from all payload hashes if they are set in params_filters" do
-
+    raise "fail"
   end
 
   it "should not notify if the exception class is in the default ignore_classes list" do
-
+    raise "fail"
   end
 
   it "should not notify if the non-default exception class is added to the ignore_classes" do
-
+    raise "fail"
   end
 end
