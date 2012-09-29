@@ -27,11 +27,23 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, overrides={})
+      # Backwards compat
+      if overrides[:meta_data]
+        overrides.merge(overrides[:meta_data])
+        overrides.delete(:meta_data)
+      end
+      
       Notification.new(exception, configuration, overrides).deliver
     end
 
     # Notify of an exception unless it should be ignored
     def notify_or_ignore(exception, overrides={})
+      # Backwards compat
+      if overrides[:meta_data]
+        overrides.merge(overrides[:meta_data])
+        overrides.delete(:meta_data)
+      end
+      
       notification = Notification.new(exception, configuration, overrides)
       notification.deliver unless notification.ignore?
     end
