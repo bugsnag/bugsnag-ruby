@@ -26,21 +26,21 @@ module Bugsnag
     end
 
     # Explicitly notify of an exception
-    def notify(exception, overrides={})
-      Notification.new(exception, configuration, overrides).deliver
+    def notify(exception, overrides=nil, request_data=nil)
+      Notification.new(exception, configuration, overrides, request_data).deliver
     end
 
     # Notify of an exception unless it should be ignored
-    def notify_or_ignore(exception, overrides={})
-      notification = Notification.new(exception, configuration, overrides)
+    def notify_or_ignore(exception, overrides=nil, request_data=nil)
+      notification = Notification.new(exception, configuration, overrides, request_data)
       notification.deliver unless notification.ignore?
     end
 
     # Auto notify of an exception, called from rails and rack exception 
     # rescuers, unless auto notification is disabled, or we should ignore this
     # error class
-    def auto_notify(exception, overrides={})
-      notify_or_ignore(exception, overrides) if configuration.auto_notify
+    def auto_notify(exception, overrides=nil, request_data=nil)
+      notify_or_ignore(exception, overrides, request_data) if configuration.auto_notify
     end
 
     # Log wrapper

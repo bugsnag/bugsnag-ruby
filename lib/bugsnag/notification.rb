@@ -36,9 +36,10 @@ module Bugsnag
       end
     end
 
-    def initialize(exception, configuration, overrides = {})
+    def initialize(exception, configuration, overrides = nil, request_data = nil)
       @configuration = configuration
-      @overrides = overrides
+      @overrides = overrides || {}
+      @request_data = request_data
       @meta_data = {}
       
       # Unwrap exceptions
@@ -96,7 +97,7 @@ module Bugsnag
       @meta_data = {}
       
       # Run the middleware here, at the end of the middleware stack, execute the actual delivery
-      @configuration.middleware.run(@exceptions, self) do
+      @configuration.middleware.run(self) do
         # Now override the required fields
         [:user_id, :context].each do |symbol|
           if @overrides[symbol]
@@ -138,6 +139,13 @@ module Bugsnag
       @configuration.ignore_classes.include?(error_class(@exceptions.last))
     end
 
+    def request_data
+      @request_data || Bugsnag.configuration.request_data
+    end
+    
+    def exceptions
+      @exceptions
+    end
 
     private
     # Generate the meta data from both the request configuration and the overrides for this notification
