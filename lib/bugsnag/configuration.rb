@@ -1,4 +1,5 @@
 require "set"
+require "logger"
 require "bugsnag/middleware_stack"
 
 module Bugsnag
@@ -41,7 +42,10 @@ module Bugsnag
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.endpoint = DEFAULT_ENDPOINT
+
+      # Set up logging
       self.logger = Logger.new(STDOUT)
+      self.logger.level = Logger::WARN if self.release_stage == "production"
 
       # Configure the bugsnag middleware stack
       self.middleware = Bugsnag::MiddlewareStack.new

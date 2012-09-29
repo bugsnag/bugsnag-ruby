@@ -15,8 +15,14 @@ module Bugsnag
 
   class << self
     # Configure the Bugsnag notifier application-wide settings.
-    def configure
-      yield(configuration)
+    def configure(config_hash=nil)
+      if config_hash
+        config_hash.each do |k,v|
+          configuration.send("#{k}=", v) rescue nil if configuration.respond_to?("#{k}=")
+        end
+      end
+
+      yield(configuration) if block_given?
 
       # Log that we are ready to rock
       if configuration.api_key && !@logged_ready
@@ -45,16 +51,12 @@ module Bugsnag
 
     # Log wrapper
     def log(message)
-      configuration.logger.info(LOG_PREFIX + message) if configuration.logger
+      configuration.logger.info("#{LOG_PREFIX}#{message}")
     end
 
     # Warning logger
     def warn(message)
-      if configuration.logger
-        configuration.logger.warn(LOG_PREFIX + message)
-      else
-        puts "#{LOG_PREFIX}#{message}"
-      end
+      configuration.logger.warn("#{LOG_PREFIX}#{message}")
     end
 
     # Configuration getters
