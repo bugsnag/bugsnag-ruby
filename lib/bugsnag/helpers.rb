@@ -47,8 +47,13 @@ module Bugsnag
     
     def self.flatten_meta_data(overrides)
       return nil unless overrides
+
       meta_data = overrides.delete(:meta_data)
-      overrides.merge(meta_data)
+      if meta_data.is_a?(Hash)
+        overrides.merge(meta_data) 
+      else
+        overrides
+      end
     end
 
     # Helper functions to work around MultiJson changes in 1.3+
