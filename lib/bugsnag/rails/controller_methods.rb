@@ -7,11 +7,11 @@ module Bugsnag::Rails
     module ClassMethods
       private      
       def before_bugsnag_notify(*methods, &block)
-        _add_bugsnag_notify_callback(:rails_before_callbacks, *methods, &block)
+        _add_bugsnag_notify_callback(:before_callbacks, *methods, &block)
       end
 
       def after_bugsnag_notify(*methods, &block)
-        _add_bugsnag_notify_callback(:rails_after_callbacks, *methods, &block)
+        _add_bugsnag_notify_callback(:after_callbacks, *methods, &block)
       end
 
       def _add_bugsnag_notify_callback(callback_key, *methods, &block)
