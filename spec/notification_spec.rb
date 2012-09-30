@@ -182,6 +182,14 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
+  it "should use the http://notify.bugsnag.com endpoint by default" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      endpoint.should be == "http://notify.bugsnag.com"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+  end
+
   it "should use ssl when use_ssl is true" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       endpoint.should start_with "https://"
