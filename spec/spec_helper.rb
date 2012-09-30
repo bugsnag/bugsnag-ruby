@@ -22,4 +22,8 @@ RSpec.configure do |config|
       config.api_key = "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
     end
   end
+  
+  config.after(:each) do
+    Bugsnag.configuration.clear_request_data
+  end
 end
