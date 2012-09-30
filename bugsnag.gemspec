@@ -5,9 +5,9 @@
 
 Gem::Specification.new do |s|
   s.name = "bugsnag"
-  s.version = "1.2.0.beta"
+  s.version = "1.2.0"
 
-  s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
+  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
   s.date = "2012-09-30"
   s.description = "Ruby notifier for bugsnag.com"
@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".document",
+    ".rspec",
     "Gemfile",
     "Gemfile.lock",
     "LICENSE.txt",
