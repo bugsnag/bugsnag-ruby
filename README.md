@@ -391,8 +391,14 @@ Contributing
 
 -   [Fork](https://help.github.com/articles/fork-a-repo) the [notifier on github](https://github.com/bugsnag/bugsnag-ruby)
 -   Commit and push until you are happy with your contribution
+-   Run the tests with `rake spec` and make sure they all pass
 -   [Make a pull request](https://help.github.com/articles/using-pull-requests)
 -   Thanks!
+
+
+Build Status
+------------
+[![Build Status](https://secure.travis-ci.org/bugsnag/bugsnag-ruby.png)](http://travis-ci.org/bugsnag/bugsnag-ruby)
 
 
 License
