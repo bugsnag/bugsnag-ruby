@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "bugsnag"
-  s.version = "1.2.1"
+  s.version = "1.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
-  s.date = "2012-09-30"
+  s.date = "2012-10-01"
   s.description = "Ruby notifier for bugsnag.com"
   s.email = "james@bugsnag.com"
   s.extra_rdoc_files = [
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
     ".rspec",
+    ".travis.yml",
     "Gemfile",
     "Gemfile.lock",
     "LICENSE.txt",
@@ -48,10 +49,10 @@ Gem::Specification.new do |s|
     "lib/bugsnag/version.rb",
     "lib/resque/failure/bugsnag.rb",
     "rails/init.rb",
+    "spec/middleware_spec.rb",
     "spec/notification_spec.rb",
-    "spec/spec_helper.rb",
-    "test/helper.rb",
-    "test/test_bugsnag.rb"
+    "spec/rack_spec.rb",
+    "spec/spec_helper.rb"
   ]
   s.homepage = "http://github.com/bugsnag/bugsnag-ruby"
   s.licenses = ["MIT"]
@@ -66,21 +67,21 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<multi_json>, ["~> 1.0"])
       s.add_runtime_dependency(%q<httparty>, ["< 1.0", ">= 0.5"])
       s.add_development_dependency(%q<rspec>, ["~> 2.11.0"])
-      s.add_development_dependency(%q<rdoc>, [">= 0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 1.6.4"])
+      s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_development_dependency(%q<jeweler>, ["~> 1.8.4"])
     else
       s.add_dependency(%q<multi_json>, ["~> 1.0"])
       s.add_dependency(%q<httparty>, ["< 1.0", ">= 0.5"])
       s.add_dependency(%q<rspec>, ["~> 2.11.0"])
-      s.add_dependency(%q<rdoc>, [">= 0"])
-      s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
+      s.add_dependency(%q<rdoc>, ["~> 3.12"])
+      s.add_dependency(%q<jeweler>, ["~> 1.8.4"])
     end
   else
     s.add_dependency(%q<multi_json>, ["~> 1.0"])
     s.add_dependency(%q<httparty>, ["< 1.0", ">= 0.5"])
     s.add_dependency(%q<rspec>, ["~> 2.11.0"])
-    s.add_dependency(%q<rdoc>, [">= 0"])
-    s.add_dependency(%q<jeweler>, ["~> 1.6.4"])
+    s.add_dependency(%q<rdoc>, ["~> 3.12"])
+    s.add_dependency(%q<jeweler>, ["~> 1.8.4"])
   end
 end
 
