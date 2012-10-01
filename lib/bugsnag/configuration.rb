@@ -61,7 +61,6 @@ module Bugsnag
     end
 
     def set_request_data(key, value)
-      Bugsnag.warn "Overwriting request data for key #{key.to_s}" if self.request_data[key]
       self.request_data[key] = value
     end
     
