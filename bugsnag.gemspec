@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "bugsnag"
-  s.version = "1.2.2"
+  s.version = "1.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
-  s.date = "2012-10-01"
+  s.date = "2012-10-03"
   s.description = "Ruby notifier for bugsnag.com"
   s.email = "james@bugsnag.com"
   s.extra_rdoc_files = [
@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
     "lib/bugsnag.rb",
     "lib/bugsnag/capistrano.rb",
     "lib/bugsnag/configuration.rb",
+    "lib/bugsnag/delay/resque.rb",
     "lib/bugsnag/helpers.rb",
     "lib/bugsnag/middleware/callbacks.rb",
     "lib/bugsnag/middleware/rack_request.rb",
