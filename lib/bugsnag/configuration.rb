@@ -16,6 +16,7 @@ module Bugsnag
     attr_accessor :endpoint
     attr_accessor :logger
     attr_accessor :middleware
+    attr_accessor :delay_with_resque
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
