@@ -25,7 +25,7 @@ module Bugsnag
 
       Bugsnag.configure do |config|
         config.logger ||= rails_logger
-        config.release_stage = RAILS_ENV  if defined?(RAILS_ENV)
+        config.release_stage = RAILS_ENV if defined?(RAILS_ENV)
         config.project_root = RAILS_ROOT if defined?(RAILS_ROOT)
 
         config.middleware.use Bugsnag::Middleware::Rails2Request

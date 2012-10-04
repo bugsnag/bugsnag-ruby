@@ -38,7 +38,7 @@ module Bugsnag
         Bugsnag.auto_notify(raised)
 
         # Re-raise the exception
-        raise
+        raised
       end
 
       # Notify bugsnag of rack exceptions

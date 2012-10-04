@@ -36,7 +36,7 @@ module Bugsnag
 
     def initialize
       # Set up the defaults
-      self.release_stage = "production"
+      self.release_stage = nil
       self.notify_release_stages = ["production"]
       self.auto_notify = true
       self.use_ssl = false
@@ -46,7 +46,7 @@ module Bugsnag
 
       # Set up logging
       self.logger = Logger.new(STDOUT)
-      self.logger.level = Logger::WARN if self.release_stage == "production"
+      self.logger.level = Logger::WARN
 
       # Configure the bugsnag middleware stack
       self.middleware = Bugsnag::MiddlewareStack.new
@@ -54,7 +54,7 @@ module Bugsnag
     end
 
     def should_notify?
-      @notify_release_stages.include?(@release_stage)
+      @release_stage.nil? || @notify_release_stages.include?(@release_stage)
     end
 
     def request_data
