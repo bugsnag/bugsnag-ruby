@@ -93,7 +93,7 @@ module Bugsnag
     def deliver
       return unless @configuration.should_notify?
 
-      # Check we have at least and api_key
+      # Check we have at least an api_key
       if @configuration.api_key.nil?
         Bugsnag.warn "No API key configured, couldn't notify"
         return
@@ -101,7 +101,11 @@ module Bugsnag
         Bugsnag.warn "Your API key (#{@configuration.api_key}) is not valid, couldn't notify"
         return
       end
-      
+
+      # Warn if no release_stage is set
+      Bugsnag.warn "You should set your app's release_stage (see https://bugsnag.com/docs/notifiers/ruby#release_stage)." unless @configuration.release_stage
+
+
       @meta_data = {}
       
       # Run the middleware here, at the end of the middleware stack, execute the actual delivery

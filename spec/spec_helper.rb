@@ -20,6 +20,7 @@ RSpec.configure do |config|
     Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
     Bugsnag.configure do |config|
       config.api_key = "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
+      config.release_stage = "production"
     end
   end
   
