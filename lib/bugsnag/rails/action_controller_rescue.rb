@@ -10,17 +10,13 @@ module Bugsnag::Rails
       base.send(:alias_method, :rescue_action_locally, :rescue_action_locally_with_bugsnag)
 
       # Run filters on requests to capture request data
-      base.send(:before_filter, :set_bugsnag_request_data)
-      base.send(:after_filter, :clear_bugsnag_request_data)
+      base.send(:prepend_before_filter, :set_bugsnag_request_data)
     end
 
     private
     def set_bugsnag_request_data
-      Bugsnag.set_request_data(:rails2_request, request)
-    end
-    
-    def clear_bugsnag_request_data
       Bugsnag.clear_request_data
+      Bugsnag.set_request_data(:rails2_request, request)
     end
 
     def rescue_action_in_public_with_bugsnag(exception)
