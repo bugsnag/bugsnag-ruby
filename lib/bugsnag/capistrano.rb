@@ -14,17 +14,18 @@ module Bugsnag
           desc "Notify Bugsnag that new production code has been deployed"
           task :deploy, :except => { :no_release => true }, :on_error => :continue do
             # Build the rake command
-            rake = fetch(:rake, "rake")
-            rails_env = fetch(:rails_env, "production")
-            rake_command = "cd '#{current_path}' && #{rake} bugsnag:deploy RAILS_ENV=#{rails_env}"
+            rake         = fetch(:rake, "rake")
+            rails_env    = fetch(:rails_env, "production")
+            bugsnag_env  = fetch(:bugsnag_env, rails_env)
+            rake_command = "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} bugsnag:deploy"
 
             # Build the new environment to pass through to rake
             new_env = {
-              "BUGSNAG_RELEASE_STAGE" => rails_env,
-              "BUGSNAG_REVISION" => fetch(:current_revision, nil),
-              "BUGSNAG_REPOSITORY" => fetch(:repository, nil),
-              "BUGSNAG_BRANCH" => fetch(:branch, nil)
-            }.reject {|k,v| v.nil? }
+              "BUGSNAG_RELEASE_STAGE" => bugsnag_env,
+              "BUGSNAG_REVISION"      => fetch(:current_revision, nil),
+              "BUGSNAG_REPOSITORY"    => fetch(:repository, nil),
+              "BUGSNAG_BRANCH"        => fetch(:branch, nil)
+            }.reject { |_, v| v.nil? }
 
             # Pass through any existing env variables
             ALLOWED_ENV_SETTINGS.each { |opt| new_env[opt] = ENV[opt] if ENV[opt] }
