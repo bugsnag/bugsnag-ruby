@@ -13,11 +13,11 @@ module Bugsnag
     end
   
     def insert_after(after, new_middleware)
-      index = (@middlewares.rindex(after) + 1)
-      if index >= @middlewares.length
+      index = @middlewares.rindex(after)
+      if index.nil?
         @middlewares << new_middleware
       else
-        @middlewares.insert index, new_middleware
+        @middlewares.insert index + 1, new_middleware
       end
     end
   
