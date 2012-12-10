@@ -2,14 +2,7 @@ require 'spec_helper'
 require 'securerandom'
 
 module ActiveRecord; class RecordNotFound < RuntimeError; end; end
-
-class RecursiveException < StandardError
-  attr_accessor :original_exception
-  def initialize(*args)
-    self.original_exception = self
-    super(message)
-  end
-end
+class NestedException < StandardError; attr_accessor :original_exception; end
 
 describe Bugsnag::Notification do
   it "should contain an api_key if one is set" do
@@ -301,10 +294,14 @@ describe Bugsnag::Notification do
 
   it "should not unwrap the same exception twice" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
-      get_exception_from_payload(payload)
+      event = get_event_from_payload(payload)
+      event[:exceptions].should have(1).items
     end
 
-    Bugsnag.notify_or_ignore(RecursiveException.new("Self-referential exception"))
+    ex = NestedException.new("Self-referential exception")
+    ex.original_exception = ex
+
+    Bugsnag.notify_or_ignore(ex)
   end
   
   it "should not unwrap more than 5 exceptions" do
@@ -313,9 +310,9 @@ describe Bugsnag::Notification do
       event[:exceptions].should have(5).items
     end
 
-    first_ex = ex = RecursiveException.new("Deep exception")
+    first_ex = ex = NestedException.new("Deep exception")
     10.times do |idx|
-      ex = ex.original_exception = RecursiveException.new("Deep exception #{idx}")
+      ex = ex.original_exception = NestedException.new("Deep exception #{idx}")
     end
 
     Bugsnag.notify_or_ignore(first_ex)
