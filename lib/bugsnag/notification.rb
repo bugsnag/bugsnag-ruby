@@ -12,6 +12,8 @@ module Bugsnag
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
 
+    MAX_EXCEPTIONS_TO_UNWRAP = 5
+
     # HTTParty settings
     headers  "Content-Type" => "application/json"
     default_timeout 5
@@ -50,7 +52,7 @@ module Bugsnag
       # Unwrap exceptions
       @exceptions = []
       ex = exception
-      while ex != nil
+      while ex != nil && !@exceptions.include?(ex) && @exceptions.length < MAX_EXCEPTIONS_TO_UNWRAP
         @exceptions << ex
 
         if ex.respond_to?(:continued_exception) && ex.continued_exception

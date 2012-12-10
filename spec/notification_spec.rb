@@ -3,6 +3,14 @@ require 'securerandom'
 
 module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 
+class RecursiveException < StandardError
+  attr_accessor :original_exception
+  def initialize(*args)
+    self.original_exception = self
+    super(message)
+  end
+end
+
 describe Bugsnag::Notification do
   it "should contain an api_key if one is set" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
@@ -289,5 +297,27 @@ describe Bugsnag::Notification do
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
 
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
+  end
+
+  it "should not unwrap the same exception twice" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      get_exception_from_payload(payload)
+    end
+
+    Bugsnag.notify_or_ignore(RecursiveException.new("Self-referential exception"))
+  end
+  
+  it "should not unwrap more than 5 exceptions" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:exceptions].should have(5).items
+    end
+
+    first_ex = ex = RecursiveException.new("Deep exception")
+    10.times do |idx|
+      ex = ex.original_exception = RecursiveException.new("Deep exception #{idx}")
+    end
+
+    Bugsnag.notify_or_ignore(first_ex)
   end
 end
