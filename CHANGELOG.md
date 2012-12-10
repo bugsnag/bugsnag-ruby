@@ -3,7 +3,8 @@ Changelog
 
 1.2.7
 -----
--   Protect against rare exception-unwrapping loop
+-   Protect against rare exception-unwrapping infinite loop 
+    (only in some exceptions using the `original_exception` pattern)
 
 1.2.6
 -----
