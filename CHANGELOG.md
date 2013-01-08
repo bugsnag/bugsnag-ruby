@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.2.8
+-----
+-   Added `disable` method to Bugsnag middleware, allows you to force-disable
+    built-in Bugsnag middleware.
+
 1.2.7
 -----
 -   Protect against rare exception-unwrapping infinite loop 
