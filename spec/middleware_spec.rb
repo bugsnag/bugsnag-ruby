@@ -87,4 +87,18 @@ describe Bugsnag::MiddlewareStack do
     
     callback_run_count.should be == 1
   end
+
+  it "should not execute disabled bugsnag middleware" do
+    callback_run_count = 0
+    Bugsnag.configure do |config|
+      config.middleware.disable(Bugsnag::Middleware::Callbacks)
+    end
+    
+    Bugsnag.before_notify_callbacks << lambda {|notif|
+      callback_run_count += 1
+    }
+    
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+    callback_run_count.should be == 0
+  end
 end
