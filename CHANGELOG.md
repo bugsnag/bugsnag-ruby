@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.2.9
+-----
+-   Fixed an issue with Warden userIds not being reported properly.
+
 1.2.8
 -----
 -   Added `disable` method to Bugsnag middleware, allows you to force-disable
