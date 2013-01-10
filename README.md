@@ -388,7 +388,8 @@ EventMachine.error_handler{|e|
 }
 ```
 
-If you want more fine-grained error handling, you can use the `errback` 
+If you want more fine-grained error handling, you can use the
+[errback](http://eventmachine.rubyforge.org/EventMachine/Deferrable.html#errback-instance_method)
 function, for example:
 
 ```ruby
