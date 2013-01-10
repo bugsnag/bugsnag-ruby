@@ -20,7 +20,8 @@ module Bugsnag::Middleware
 
           # Set the user_id
           if best_scope
-            user_id = session[best_scope][1][0] rescue nil
+            scope_key = "warden.user.#{best_scope}.key"
+            user_id = session[scope_key][1][0] rescue nil
             notification.user_id = user_id unless user_id.nil?
           end
 
