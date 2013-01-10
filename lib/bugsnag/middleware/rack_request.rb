@@ -26,6 +26,7 @@ module Bugsnag::Middleware
         # Add a request tab
         notification.add_tab(:request, {
           :url => url,
+          :httpMethod => request.request_method,
           :params => params.to_hash,
           :userAgent => request.user_agent,
           :clientIp => request.ip
