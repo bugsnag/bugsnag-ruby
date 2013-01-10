@@ -21,6 +21,7 @@ Contents
 - [Configuration](#configuration)
 - [Bugsnag Middleware](#bugsnag-middleware)
 - [Deploy Tracking](#deploy-tracking)
+- [EventMachine Apps](#eventmachine-apps)
 
 
 How to Install
@@ -375,7 +376,32 @@ additional deploy information:
 For more information, check out the [deploy tracking api](https://bugsnag.com/docs/deploy-tracking-api)
 documentation.
 
+### EventMachine Apps
 
+If your app uses [EventMachine](http://rubyeventmachine.com/) you'll need to 
+manually notify Bugsnag of errors. There are two ways to do this in your 
+EventMachine apps, first you should implement `EventMachine.error_handler`:
+
+```ruby
+EventMachine.error_handler{|e|
+  Bugsnag.notify(e)
+}
+```
+
+If you want more fine-grained error handling, you can use the `errback` 
+function, for example:
+
+```ruby
+EventMachine::run do
+  server = EventMachine::start_server('0.0.0.0', PORT, MyServer)
+  server.errback {
+    Bugsnag.notify(RuntimeError.new("Something bad happened"))
+  }
+end
+```
+
+For this to work, include [Deferrable](http://eventmachine.rubyforge.org/EventMachine/Deferrable.html)
+in your `MyServer`, then whenever you want to raise an error, call `fail`.
 
 Reporting Bugs or Feature Requests
 ----------------------------------
