@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.2.10
+------
+-   Added Rack HTTP method (GET, POST, etc) to request tab
+
 1.2.9
 -----
 -   Fixed an issue with Warden userIds not being reported properly.
