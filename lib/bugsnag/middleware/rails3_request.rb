@@ -19,6 +19,11 @@ module Bugsnag::Middleware
             :params => params
           })
         end
+
+        # Add the rails version
+        notification.add_tab(:environment, {
+          :railsVersion => Rails::VERSION::STRING
+        })
       end
 
       @bugsnag.call(notification)

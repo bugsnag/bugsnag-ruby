@@ -37,6 +37,11 @@ module Bugsnag::Middleware
 
         # Add a cookies tab
         notification.add_tab(:cookies, request.cookies) if request.cookies
+
+        # Add the rails version
+        notification.add_tab(:environment, {
+          :railsVersion => Rails::VERSION::STRING
+        })
       end
 
       @bugsnag.call(notification)
