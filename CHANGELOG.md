@@ -1,6 +1,10 @@
 Changelog
 =========
 
+HEAD
+----
+-   Send rails version with exceptions
+
 1.2.10
 ------
 -   Added Rack HTTP method (GET, POST, etc) to request tab
