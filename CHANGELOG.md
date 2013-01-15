@@ -1,9 +1,10 @@
 Changelog
 =========
 
-HEAD
-----
+1.2.11
+------
 -   Send rails version with exceptions
+-   Protect against nil params object when errors happen in rack
 
 1.2.10
 ------
