@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.2.12
+------
+-   Fixed minor HTTParty dependency issue
+
 1.2.11
 ------
 -   Send rails version with exceptions

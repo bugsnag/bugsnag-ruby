@@ -30,7 +30,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  httparty (>= 0.5, < 1.0)
+  httparty (>= 0.6, < 1.0)
   jeweler (~> 1.8.4)
   multi_json (~> 1.0)
   rdoc (~> 3.12)
