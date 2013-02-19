@@ -31,6 +31,8 @@ module Bugsnag
       else
         obj.to_s unless obj.to_s =~ /#<.*>/
       end
+    rescue
+      return nil
     end
     
     def self.reduce_hash_size(hash)
