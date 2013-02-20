@@ -122,7 +122,7 @@ module Bugsnag
 
         # Build the endpoint url
         endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
-        Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class}")
+        Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class} from api_key #{@configuration.api_key}")
 
         # Build the payload's exception event
         payload_event = {
