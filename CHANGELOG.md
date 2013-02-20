@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.2.14
+------
+-   Add debug method, configuration option to help debug issues
+-   Better protection against bad unicode strings in metadata
+
+1.2.13
+------
+-   Protect against invalid unicode strings in metadata
+
 1.2.12
 ------
 -   Fixed minor HTTParty dependency issue
