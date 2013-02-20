@@ -34,6 +34,7 @@ module Bugsnag
           end
 
           response = post(endpoint, {:body => payload_string})
+          Bugsnag.debug("Notification to #{endpoint} finished, response was #{response.code}, payload was #{payload_string}")
         rescue StandardError => e
           # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
           raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
