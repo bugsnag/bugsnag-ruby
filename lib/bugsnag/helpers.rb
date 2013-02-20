@@ -26,13 +26,11 @@ module Bugsnag
         clean_hash
       elsif obj.is_a?(Array) || obj.is_a?(Set)
         obj.map { |el| cleanup_obj(el, filters) }.compact
-      elsif obj.is_a?(Integer) || obj.is_a?(Float)
+      elsif obj.is_a?(Integer) || obj.is_a?(Float) || obj.is_a?(String)
         obj
       else
         obj.to_s unless obj.to_s =~ /#<.*>/
       end
-    rescue
-      return nil
     end
     
     def self.reduce_hash_size(hash)
