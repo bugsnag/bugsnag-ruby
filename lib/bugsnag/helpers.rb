@@ -34,6 +34,7 @@ module Bugsnag
     end
     
     def self.reduce_hash_size(hash)
+      return {} unless hash.is_a?(Hash)
       hash.inject({}) do |h, (k,v)|
         if v.is_a?(Hash)
           h[k] = reduce_hash_size(v)
