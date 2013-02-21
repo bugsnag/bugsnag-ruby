@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.2.15
+------
+-   Add stacktrace to internal bugsnag logging output
+-   Protect against metadata not being a hash when truncation takes place
+
 1.2.14
 ------
 -   Add debug method, configuration option to help debug issues
