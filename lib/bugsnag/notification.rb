@@ -40,6 +40,7 @@ module Bugsnag
           raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
 
           Bugsnag.warn("Notification to #{endpoint} failed, #{e.inspect}")
+          Bugsnag.warn(e.backtrace)
         end
       end
     end
@@ -107,7 +108,6 @@ module Bugsnag
 
       # Warn if no release_stage is set
       Bugsnag.warn "You should set your app's release_stage (see https://bugsnag.com/docs/notifiers/ruby#release_stage)." unless @configuration.release_stage
-
 
       @meta_data = {}
       
