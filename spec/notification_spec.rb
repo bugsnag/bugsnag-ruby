@@ -285,9 +285,33 @@ describe Bugsnag::Notification do
   end
 
   it "should not notify if the non-default exception class is added to the ignore_classes" do
-    Bugsnag.configuration.ignore_classes << "BugsnagTestException"
+    Bugsnag.configuration.ignore_classes.merge! "BugsnagTestException" => nil
 
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+
+    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
+  end
+
+   it "should not notify if the non-default exception class is added to the ignore_classes and nil is passed as the regex" do
+    Bugsnag.configuration.ignore_classes.merge! "BugsnagTestException" => nil
+
+    Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+
+    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
+  end
+  
+  it "should not notify if the non-default exception class is added to the ignore_classes and the message matches the regex" do
+    Bugsnag.configuration.ignore_classes.merge! "BugsnagTestException" => /^It crashed$/
+
+    Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+
+    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
+  end
+
+  it "should notify if the non-default exception class is added to the ignore_classes and the message does not match the regex" do
+    Bugsnag.configuration.ignore_classes.merge! "BugsnagTestException" => /Not found/
+
+    Bugsnag::Notification.should_receive(:deliver_exception_payload)
 
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
   end
