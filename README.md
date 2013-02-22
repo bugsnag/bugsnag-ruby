@@ -233,22 +233,24 @@ By default, `params_filters` is set to `["password", "password_confirmation"]`
 ###ignore_classes
 
 Sets for which exception classes we should not send exceptions to bugsnag.com.
+Key is exception class, Value is regex to match for exception message or nil for all.
 
 ```ruby
-config.ignore_classes << "ActiveRecord::StatementInvalid"
+config.ignore_classes.merge! "Net::IMAP::Error" => /^connection closed$/
 ```
 
 By default, `ignore_classes` contains the following classes:
 
 ```ruby
-[
-  "ActiveRecord::RecordNotFound",
-  "ActionController::RoutingError",
-  "ActionController::InvalidAuthenticityToken",
-  "CGI::Session::CookieStore::TamperedWithCookie",
-  "ActionController::UnknownAction",
-  "AbstractController::ActionNotFound"
-]
+{
+  "ActiveRecord::RecordNotFound" => nil,
+  "ActionController::RoutingError" => nil,
+  "ActionController::InvalidAuthenticityToken" => nil,
+  "CGI::Session::CookieStore::TamperedWithCookie" => nil,
+  "ActionController::UnknownAction" => nil,
+  "AbstractController::ActionNotFound" => nil,
+  "Mongoid::Errors::DocumentNotFound" => nil
+}
 ```
 
 ###logger

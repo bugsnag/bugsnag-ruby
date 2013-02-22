@@ -25,15 +25,15 @@ module Bugsnag
 
     DEFAULT_PARAMS_FILTERS = ["password"].freeze
 
-    DEFAULT_IGNORE_CLASSES = [
-      "ActiveRecord::RecordNotFound",
-      "ActionController::RoutingError",
-      "ActionController::InvalidAuthenticityToken",
-      "CGI::Session::CookieStore::TamperedWithCookie",
-      "ActionController::UnknownAction",
-      "AbstractController::ActionNotFound",
-      "Mongoid::Errors::DocumentNotFound"
-    ].freeze
+    DEFAULT_IGNORE_CLASSES = {
+      "ActiveRecord::RecordNotFound" => nil,
+      "ActionController::RoutingError" => nil,
+      "ActionController::InvalidAuthenticityToken" => nil,
+      "CGI::Session::CookieStore::TamperedWithCookie" => nil,
+      "ActionController::UnknownAction" => nil,
+      "AbstractController::ActionNotFound" => nil,
+      "Mongoid::Errors::DocumentNotFound" => nil
+    }.freeze
 
     def initialize
       # Set up the defaults
@@ -42,7 +42,7 @@ module Bugsnag
       self.auto_notify = true
       self.use_ssl = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
-      self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
+      self.ignore_classes = DEFAULT_IGNORE_CLASSES.dup
       self.endpoint = DEFAULT_ENDPOINT
 
       # Set up logging

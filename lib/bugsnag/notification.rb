@@ -150,8 +150,15 @@ module Bugsnag
       end
     end
 
+    # Ignore any exceptions whose class names are keys in the ignore_classes Hash and whose message matches the Regex in the value.
+    # If the hash value is nil, ignore all exceptions of that class. 
     def ignore?
-      @configuration.ignore_classes.include?(error_class(@exceptions.last))
+      if @configuration.ignore_classes.has_key?(error_class(@exceptions.last))
+        message_regex = @configuration.ignore_classes[error_class(@exceptions.last)]
+        message_regex.nil? ? true : !!(@exceptions.last.message =~ message_regex)
+      else 
+        false
+      end
     end
 
     def request_data
