@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.2.16
+------
+-   Allow lambda functions in config.ignore_classes
+
 1.2.15
 ------
 -   Add stacktrace to internal bugsnag logging output
