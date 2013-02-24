@@ -151,7 +151,10 @@ module Bugsnag
     end
 
     def ignore?
-      @configuration.ignore_classes.include?(error_class(@exceptions.last))
+      ex = @exceptions.last
+      @configuration.ignore_classes.any? do |to_ignore|
+        to_ignore.is_a?(Proc) ? to_ignore.call(ex) : to_ignore == error_class(ex)
+      end
     end
 
     def request_data

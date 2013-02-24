@@ -238,7 +238,14 @@ Sets for which exception classes we should not send exceptions to bugsnag.com.
 config.ignore_classes << "ActiveRecord::StatementInvalid"
 ```
 
-By default, `ignore_classes` contains the following classes:
+You can also provide a lambda function here to ignore by other exception 
+attributes or by a regex:
+
+```ruby
+config.ignore_classes << lambda {|ex| ex.message =~ /timeout/}
+```
+
+By default, `ignore_classes` contains the following:
 
 ```ruby
 [
