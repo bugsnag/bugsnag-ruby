@@ -8,7 +8,6 @@ module Bugsnag
         raise
       ensure
         Bugsnag.clear_request_data
-        Bugsnag.before_notify_callbacks.clear
       end
     end
   end
