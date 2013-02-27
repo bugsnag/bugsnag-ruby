@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.2.17
+------
+-   Clear the before bugsnag notify callbacks on sidekiq when a job is complete
+
 1.2.16
 ------
 -   Allow lambda functions in config.ignore_classes
