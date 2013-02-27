@@ -6,6 +6,9 @@ module Bugsnag
       rescue => ex
         Bugsnag.notify(ex, :meta_data => {:sidekiq => msg })
         raise
+      ensure
+        Bugsnag.clear_request_data
+        Bugsnag.before_notify_callbacks.clear
       end
     end
   end
