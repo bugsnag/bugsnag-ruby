@@ -116,10 +116,10 @@ module Bugsnag
         # Now override the required fields
         exceptions.each do |exception|
           if exception.class.include?(Bugsnag::MetaData)
-            if exception.bugsnag_user_id && exception.bugsnag_user_id.is_a?(String)
+            if exception.bugsnag_user_id.is_a?(String)
               self.user_id = exception.bugsnag_user_id
             end
-            if exception.bugsnag_context && exception.bugsnag_context.is_a?(String)
+            if exception.bugsnag_context.is_a?(String)
               self.context = exception.bugsnag_context
             end
           end
