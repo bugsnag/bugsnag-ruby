@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.2.18
+------
+-   Add support for bugsnag meta data in exceptions.
+
 1.2.17
 ------
 -   Clear the before bugsnag notify callbacks on sidekiq when a job is complete
