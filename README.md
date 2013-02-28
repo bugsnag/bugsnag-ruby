@@ -3,12 +3,12 @@ Bugsnag Notifier for Ruby
 
 The Bugsnag Notifier for Ruby gives you instant notification of exceptions
 thrown from your **Rails**, **Sinatra**, **Rack** or **plain Ruby** app.
-Any uncaught exceptions will trigger a notification to be sent to your 
+Any uncaught exceptions will trigger a notification to be sent to your
 Bugsnag project.
 
-[Bugsnag](http://bugsnag.com) captures errors in real-time from your web, 
-mobile and desktop applications, helping you to understand and resolve them 
-as fast as possible. [Create a free account](http://bugsnag.com) to start 
+[Bugsnag](http://bugsnag.com) captures errors in real-time from your web,
+mobile and desktop applications, helping you to understand and resolve them
+as fast as possible. [Create a free account](http://bugsnag.com) to start
 capturing exceptions from your applications.
 
 
@@ -59,13 +59,13 @@ How to Install
 Sending Custom Data With Exceptions
 -----------------------------------
 
-It is often useful to send additional meta-data about your app, such as 
+It is often useful to send additional meta-data about your app, such as
 information about the currently logged in user, along with any
-exceptions, to help debug problems. 
+exceptions, to help debug problems.
 
 ### Rails Apps
 
-In any rails controller you can define a `before_bugsnag_notify` callback, 
+In any rails controller you can define a `before_bugsnag_notify` callback,
 which allows you to add this additional data by calling `add_tab` on the
 exception notification object.
 
@@ -89,7 +89,7 @@ end
 
 ### Other Ruby Apps
 
-In other ruby apps, you can provide lambda functions to execute before any 
+In other ruby apps, you can provide lambda functions to execute before any
 `Bugsnag.notify` calls as follows. Don't forget to clear the callbacks at the
 end of each request or session.
 
@@ -105,6 +105,26 @@ Bugsnag.before_notify_callbacks << lambda {|notif|
 
 # Clear the callbacks
 Bugsnag.before_notify_callbacks.clear
+```
+
+### Exceptions with Meta Data
+
+If you include the `Bugsnag::MetaData` module into your own exceptions, you can
+associate meta data with a paticular exception.
+
+```ruby
+class MyCustomException < Exception
+  include Bugsnag::MetaData
+end
+
+exception = MyCustomException.new("It broke!")
+exception.bugsnag_meta_data = {
+  :user_info => {
+    name: current_user.name
+  }
+}
+
+raise exception
 ```
 
 You can read more about how callbacks work in the
@@ -162,18 +182,18 @@ you can set the `release_stage` that is reported to Bugsnag.
 ```ruby
 config.release_stage = "development"
 ```
-    
+
 In rails apps this value is automatically set from `RAILS_ENV`, and in rack
-apps it is automatically set to `RACK_ENV`. Otherwise the default is 
+apps it is automatically set to `RACK_ENV`. Otherwise the default is
 "production".
 
 ###notify_release_stages
 
-By default, we will only notify Bugsnag of exceptions that happen when 
-your `release_stage` is set to be "production". If you would like to 
+By default, we will only notify Bugsnag of exceptions that happen when
+your `release_stage` is set to be "production". If you would like to
 change which release stages notify Bugsnag of exceptions you can
 set `notify_release_stages`:
-    
+
 ```ruby
 config.notify_release_stages = ["production", "development"]
 ```
@@ -183,7 +203,7 @@ config.notify_release_stages = ["production", "development"]
 By default, we will automatically notify Bugsnag of any fatal exceptions
 in your application. If you want to stop this from happening, you can set
 `auto_notify`:
-    
+
 ```ruby
 config.auto_notify = false
 ```
@@ -210,7 +230,7 @@ config.project_root = "/var/www/myproject"
 
 ###app_version
 
-If you want to track which versions of your application each exception 
+If you want to track which versions of your application each exception
 happens in, you can set `app_version`. This is set to `nil` by default.
 
 ```ruby
@@ -220,8 +240,8 @@ config.app_version = "2.5.1"
 ###params_filters
 
 Sets the strings to filter out from the `params` hashes before sending
-them to Bugsnag. Use this if you want to ensure you don't send 
-sensitive data such as passwords, and credit card numbers to our 
+them to Bugsnag. Use this if you want to ensure you don't send
+sensitive data such as passwords, and credit card numbers to our
 servers. Any keys which contain these strings will be filtered.
 
 ```ruby
@@ -238,7 +258,7 @@ Sets for which exception classes we should not send exceptions to bugsnag.com.
 config.ignore_classes << "ActiveRecord::StatementInvalid"
 ```
 
-You can also provide a lambda function here to ignore by other exception 
+You can also provide a lambda function here to ignore by other exception
 attributes or by a regex:
 
 ```ruby
@@ -260,7 +280,7 @@ By default, `ignore_classes` contains the following:
 
 ###logger
 
-Sets which logger to use for Bugsnag log messages. In rails apps, this is 
+Sets which logger to use for Bugsnag log messages. In rails apps, this is
 automatically set to use `Rails.logger`, otherwise it will be set to
 `Logger.new(STDOUT)`.
 
@@ -273,12 +293,12 @@ Provides access to the middleware stack, see the
 Bugsnag Middleware
 ------------------
 
-The Bugsnag Notifier for Ruby provides its own middleware system, similar to 
-the one used in Rack applications. Middleware allows you to execute code 
-before and after an exception is sent to bugsnag.com, so you can do things 
+The Bugsnag Notifier for Ruby provides its own middleware system, similar to
+the one used in Rack applications. Middleware allows you to execute code
+before and after an exception is sent to bugsnag.com, so you can do things
 such as:
 
--   Send application-specific information along with exceptions, eg. the name 
+-   Send application-specific information along with exceptions, eg. the name
     of the currently logged in user,
 -   Write exception information to your internal logging system.
 
@@ -317,7 +337,7 @@ for some real examples of middleware in action.
 Deploy Tracking
 ---------------
 
-Bugsnag allows you to track deploys of your apps. By sending the 
+Bugsnag allows you to track deploys of your apps. By sending the
 source revision or application version to bugsnag.com when you deploy a new
 version of your app, you'll be able to see which deploy each error was
 introduced in.
@@ -341,8 +361,8 @@ your deploy scripts.
 rake bugsnag:deploy BUGSNAG_REVISION=source-control-revision BUGSNAG_RELEASE_STAGE=production
 ```
 
-The bugsnag rake tasks will be automatically available for Rails 3 
-apps, to make the rake tasks available in other apps, add the following to 
+The bugsnag rake tasks will be automatically available for Rails 3
+apps, to make the rake tasks available in other apps, add the following to
 your `Rakefile`:
 
 ```ruby
@@ -354,24 +374,24 @@ require "bugsnag/tasks"
 You can set the following environmental variables to override or specify
 additional deploy information:
 
--   **BUGSNAG_RELEASE_STAGE** - 
+-   **BUGSNAG_RELEASE_STAGE** -
     The release stage (eg, production, staging) currently being deployed.
     This is set automatically from your Bugsnag settings or rails/rack
     environment.
 
--   **BUGSNAG_API_KEY** - 
+-   **BUGSNAG_API_KEY** -
     Your Bugsnag API key. This is set automatically from your Bugsnag
     settings in your app.
-    
--   **BUGSNAG_REPOSITORY** - 
-    The repository from which you are deploying the code. This is set 
+
+-   **BUGSNAG_REPOSITORY** -
+    The repository from which you are deploying the code. This is set
     automatically if you are using capistrano.
 
--   **BUGSNAG_BRANCH** - 
+-   **BUGSNAG_BRANCH** -
     The source control branch from which you are deploying the code.
     This is set automatically if you are using capistrano.
 
--   **BUGSNAG_REVISION** - 
+-   **BUGSNAG_REVISION** -
     The source control revision for the code you are currently deploying.
     This is set automatically if you are using capistrano.
 
@@ -385,8 +405,8 @@ documentation.
 
 ### EventMachine Apps
 
-If your app uses [EventMachine](http://rubyeventmachine.com/) you'll need to 
-manually notify Bugsnag of errors. There are two ways to do this in your 
+If your app uses [EventMachine](http://rubyeventmachine.com/) you'll need to
+manually notify Bugsnag of errors. There are two ways to do this in your
 EventMachine apps, first you should implement `EventMachine.error_handler`:
 
 ```ruby
@@ -438,5 +458,5 @@ Build Status
 License
 -------
 
-The Bugsnag ruby notifier is free software released under the MIT License. 
+The Bugsnag ruby notifier is free software released under the MIT License.
 See [LICENSE.txt](https://github.com/bugsnag/bugsnag-ruby/blob/master/LICENSE.txt) for details.

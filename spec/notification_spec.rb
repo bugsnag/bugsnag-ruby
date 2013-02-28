@@ -86,6 +86,29 @@ describe Bugsnag::Notification do
     })
   end
 
+  it "should accept meta data from an exception that mixes in Bugsnag::MetaData" do
+    class BugsnagTestExceptionWithMetaData < Exception
+      include Bugsnag::MetaData
+    end
+
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:metaData][:some_tab].should_not be_nil
+      event[:metaData][:some_tab][:info].should be == "here"
+      event[:metaData][:some_tab][:data].should be == "also here"
+    end
+
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_meta_data = {
+      :some_tab => {
+        :info => "here",
+        :data => "also here"
+      }
+    }
+
+    Bugsnag.notify(exception)
+  end
+
   it "should accept meta_data in overrides (for backwards compatibility) and merge it into metaData" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
@@ -311,7 +334,7 @@ describe Bugsnag::Notification do
 
     Bugsnag.notify_or_ignore(ex)
   end
-  
+
   it "should not unwrap more than 5 exceptions" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)

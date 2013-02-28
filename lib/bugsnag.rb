@@ -2,6 +2,7 @@ require "rubygems"
 
 require "bugsnag/version"
 require "bugsnag/configuration"
+require "bugsnag/meta_data"
 require "bugsnag/notification"
 require "bugsnag/helpers"
 
@@ -30,7 +31,7 @@ module Bugsnag
 
       # Log that we are ready to rock
       if configuration.api_key && !@logged_ready
-        log "Bugsnag exception handler #{VERSION} ready, api_key=#{configuration.api_key}" 
+        log "Bugsnag exception handler #{VERSION} ready, api_key=#{configuration.api_key}"
         @logged_ready = true
       end
     end
@@ -46,7 +47,7 @@ module Bugsnag
       notification.deliver unless notification.ignore?
     end
 
-    # Auto notify of an exception, called from rails and rack exception 
+    # Auto notify of an exception, called from rails and rack exception
     # rescuers, unless auto notification is disabled, or we should ignore this
     # error class
     def auto_notify(exception, overrides=nil, request_data=nil)
@@ -78,7 +79,7 @@ module Bugsnag
       Bugsnag.configuration.set_request_data(key, value)
     end
 
-    # Clear all "per-request" data, temporal data for use in bugsnag middleware    
+    # Clear all "per-request" data, temporal data for use in bugsnag middleware
     # This method should be called after each distinct request or session ends
     # Eg. After completing a page request in a web app
     def clear_request_data
