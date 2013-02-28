@@ -17,16 +17,16 @@ module Bugsnag
     # HTTParty settings
     headers  "Content-Type" => "application/json"
     default_timeout 5
-    
+
     attr_accessor :context
     attr_accessor :user_id
-    
+
     class << self
       def deliver_exception_payload(endpoint, payload)
         begin
           payload_string = Bugsnag::Helpers.dump_json(payload)
-        
-          # If the payload is going to be too long, we trim the hashes to send 
+
+          # If the payload is going to be too long, we trim the hashes to send
           # a minimal payload instead
           if payload_string.length > 128000
             payload[:events].each {|e| e[:metaData] = Bugsnag::Helpers.reduce_hash_size(e[:metaData])}
@@ -50,7 +50,7 @@ module Bugsnag
       @overrides = Bugsnag::Helpers.flatten_meta_data(overrides) || {}
       @request_data = request_data
       @meta_data = {}
-      
+
       # Unwrap exceptions
       @exceptions = []
       ex = exception
@@ -66,7 +66,7 @@ module Bugsnag
         end
       end
     end
-    
+
     # Add a single value as custom data, to this notification
     def add_custom_data(name, value)
       @meta_data[:custom] ||= {}
@@ -110,7 +110,7 @@ module Bugsnag
       Bugsnag.warn "You should set your app's release_stage (see https://bugsnag.com/docs/notifiers/ruby#release_stage)." unless @configuration.release_stage
 
       @meta_data = {}
-      
+
       # Run the middleware here, at the end of the middleware stack, execute the actual delivery
       @configuration.middleware.run(self) do
         # Now override the required fields
@@ -160,7 +160,7 @@ module Bugsnag
     def request_data
       @request_data || Bugsnag.configuration.request_data
     end
-    
+
     def exceptions
       @exceptions
     end
@@ -170,12 +170,12 @@ module Bugsnag
     def generate_meta_data(overrides)
       # Copy the request meta data so we dont edit it by mistake
       meta_data = @meta_data.dup
-      
+
       overrides.each do |key, value|
         # If its a hash, its a tab so we can just add it providing its not reserved
         if value.is_a? Hash
           key = key.to_sym
-          
+
           if meta_data[key]
             # If its a clash, merge with the existing data
             meta_data[key].merge! value
@@ -188,11 +188,11 @@ module Bugsnag
           meta_data[:custom][key] = value
         end
       end
-      
+
       meta_data
     end
-    
-    def exception_list      
+
+    def exception_list
       @exceptions.map do |exception|
         {
           :errorClass => error_class(exception),
@@ -201,15 +201,15 @@ module Bugsnag
         }
       end
     end
-    
+
     def error_class(exception)
-      # The "Class" check is for some strange exceptions like Timeout::Error 
+      # The "Class" check is for some strange exceptions like Timeout::Error
       # which throw the error class instead of an instance
       (exception.is_a? Class) ? exception.name : exception.class.name
     end
 
     def stacktrace(exception)
-      (exception.backtrace || caller).map do |trace|        
+      (exception.backtrace || caller).map do |trace|
         method = nil
         file, line_str, method_str = trace.split(":")
 
@@ -224,7 +224,7 @@ module Bugsnag
         trace_hash[:lineNumber] = line_str.to_i
 
         # Clean up the file path in the stacktrace
-        if defined?(Bugsnag.configuration.project_root) && Bugsnag.configuration.project_root.to_s != '' 
+        if defined?(Bugsnag.configuration.project_root) && Bugsnag.configuration.project_root.to_s != ''
           file.sub!(/#{Bugsnag.configuration.project_root}\//, "")
         end
 
