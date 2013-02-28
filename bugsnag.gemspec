@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{bugsnag}
-  s.version = "1.2.17"
+  s.version = "1.2.18"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
     "lib/bugsnag/configuration.rb",
     "lib/bugsnag/delay/resque.rb",
     "lib/bugsnag/helpers.rb",
+    "lib/bugsnag/meta_data.rb",
     "lib/bugsnag/middleware/callbacks.rb",
     "lib/bugsnag/middleware/rack_request.rb",
     "lib/bugsnag/middleware/rails2_request.rb",
