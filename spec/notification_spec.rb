@@ -3,6 +3,7 @@ require 'securerandom'
 
 module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class NestedException < StandardError; attr_accessor :original_exception; end
+class BugsnagTestExceptionWithMetaData < Exception; include Bugsnag::MetaData; end
 
 describe Bugsnag::Notification do
   it "should contain an api_key if one is set" do
@@ -87,10 +88,6 @@ describe Bugsnag::Notification do
   end
 
   it "should accept meta data from an exception that mixes in Bugsnag::MetaData" do
-    class BugsnagTestExceptionWithMetaData < Exception
-      include Bugsnag::MetaData
-    end
-
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       event[:metaData][:some_tab].should_not be_nil
@@ -107,6 +104,73 @@ describe Bugsnag::Notification do
     }
 
     Bugsnag.notify(exception)
+  end
+  
+  it "should accept meta data from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:metaData][:some_tab].should_not be_nil
+      event[:metaData][:some_tab][:info].should be == "overridden"
+      event[:metaData][:some_tab][:data].should be == "also here"
+    end
+
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_meta_data = {
+      :some_tab => {
+        :info => "here",
+        :data => "also here"
+      }
+    }
+
+    Bugsnag.notify(exception, {:some_tab => {:info => "overridden"}})
+  end
+  
+  it "should accept user_id from an exception that mixes in Bugsnag::MetaData" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:userId].should be == "exception_user_id"
+    end
+
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_user_id = "exception_user_id"
+
+    Bugsnag.notify(exception)
+  end
+  
+  it "should accept user_id from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:userId].should be == "override_user_id"
+    end
+
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_user_id = "exception_user_id"
+
+    Bugsnag.notify(exception, {:user_id => "override_user_id"})
+  end
+  
+  it "should accept context from an exception that mixes in Bugsnag::MetaData" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:context].should be == "exception_context"
+    end
+
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_context = "exception_context"
+
+    Bugsnag.notify(exception)
+  end
+  
+  it "should accept context from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:context].should be == "override_context"
+    end
+
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_context = "exception_context"
+
+    Bugsnag.notify(exception, {:context => "override_context"})
   end
 
   it "should accept meta_data in overrides (for backwards compatibility) and merge it into metaData" do

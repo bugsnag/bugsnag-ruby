@@ -114,9 +114,20 @@ module Bugsnag
       # Run the middleware here, at the end of the middleware stack, execute the actual delivery
       @configuration.middleware.run(self) do
         # Now override the required fields
+        exceptions.each do |exception|
+          if exception.class.include?(Bugsnag::MetaData)
+            if exception.bugsnag_user_id && exception.bugsnag_user_id.is_a?(String)
+              self.user_id = exception.bugsnag_user_id
+            end
+            if exception.bugsnag_context && exception.bugsnag_context.is_a?(String)
+              self.context = exception.bugsnag_context
+            end
+          end
+        end
+
         [:user_id, :context].each do |symbol|
           if @overrides[symbol]
-            self.send("#{symbol}=", @overrides[symbol] )
+            self.send("#{symbol}=", @overrides[symbol])
             @overrides.delete symbol
           end
         end
@@ -173,7 +184,7 @@ module Bugsnag
       meta_data = @meta_data.dup
 
       exceptions.each do |exception|
-        if exception.class.include?(Bugsnag::MetaData)
+        if exception.class.include?(Bugsnag::MetaData) && exception.bugsnag_meta_data
           exception.bugsnag_meta_data.each do |key, value|
             add_to_meta_data key, value, meta_data
           end
