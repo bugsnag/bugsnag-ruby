@@ -107,6 +107,26 @@ Bugsnag.before_notify_callbacks << lambda {|notif|
 Bugsnag.before_notify_callbacks.clear
 ```
 
+### Exceptions with Meta Data
+
+If you include the `Bugsnag::MetaData` module into your own exceptions, you can
+associate meta data with a paticular exception.
+
+```ruby
+class MyCustomException < Exception
+  include Bugsnag::MetaData
+end
+
+exception = MyCustomException.new("It broke!")
+exception.bugsnag_meta_data = {
+  :user_info => {
+    name: current_user.name
+  }
+}
+
+raise exception
+```
+
 You can read more about how callbacks work in the
 [Bugsnag Middleware](#bugsnag-middleware) documentation below.
 
