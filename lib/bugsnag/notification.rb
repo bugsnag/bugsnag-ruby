@@ -132,7 +132,7 @@ module Bugsnag
           :context => self.context,
           :userId => self.user_id,
           :exceptions => exception_list,
-          :metaData => Bugsnag::Helpers.cleanup_obj(generate_meta_data(@overrides), @configuration.params_filters)
+          :metaData => Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
         }.reject {|k,v| v.nil? }
 
         # Build the payload hash
@@ -166,30 +166,43 @@ module Bugsnag
     end
 
     private
-    # Generate the meta data from both the request configuration and the overrides for this notification
-    def generate_meta_data(overrides)
+
+    # Generate the meta data from both the request configuration, the overrides and the exceptions for this notification
+    def generate_meta_data(exceptions, overrides)
       # Copy the request meta data so we dont edit it by mistake
       meta_data = @meta_data.dup
 
-      overrides.each do |key, value|
-        # If its a hash, its a tab so we can just add it providing its not reserved
-        if value.is_a? Hash
-          key = key.to_sym
-
-          if meta_data[key]
-            # If its a clash, merge with the existing data
-            meta_data[key].merge! value
-          else
-            # Add it as is if its not special
-            meta_data[key] = value
+      exceptions.each do |exception|
+        if exception.class.include?(Bugsnag::MetaData)
+          exception.bugsnag_meta_data.each do |key, value|
+            add_to_meta_data key, value, meta_data
           end
-        else
-          meta_data[:custom] ||= {}
-          meta_data[:custom][key] = value
         end
       end
 
+      overrides.each do |key, value|
+        add_to_meta_data key, value, meta_data
+      end
+
       meta_data
+    end
+
+    def add_to_meta_data(key, value, meta_data)
+      # If its a hash, its a tab so we can just add it providing its not reserved
+      if value.is_a? Hash
+        key = key.to_sym
+
+        if meta_data[key]
+          # If its a clash, merge with the existing data
+          meta_data[key].merge! value
+        else
+          # Add it as is if its not special
+          meta_data[key] = value
+        end
+      else
+        meta_data[:custom] ||= {}
+        meta_data[:custom][key] = value
+      end
     end
 
     def exception_list
