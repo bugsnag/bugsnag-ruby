@@ -55,7 +55,7 @@ module Bugsnag
     end
 
     def should_notify?
-      @release_stage.nil? || @notify_release_stages || @notify_release_stages.include?(@release_stage)
+      @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
     end
 
     def request_data
