@@ -189,10 +189,9 @@ apps it is automatically set to `RACK_ENV`. Otherwise the default is
 
 ###notify_release_stages
 
-By default, we will only notify Bugsnag of exceptions that happen when
-your `release_stage` is set to be "production". If you would like to
-change which release stages notify Bugsnag of exceptions you can
-set `notify_release_stages`:
+By default, we will notify Bugsnag of exceptions that happen in any
+`release_stage`. If you would like to change which release stages 
+notify Bugsnag of exceptions you can set `notify_release_stages`:
 
 ```ruby
 config.notify_release_stages = ["production", "development"]

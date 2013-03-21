@@ -256,7 +256,9 @@ describe Bugsnag::Notification do
   it "should respect the notify_release_stages setting by not sending in development" do
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
 
+    Bugsnag.configuration.notify_release_stages = ["production"]
     Bugsnag.configuration.release_stage = "development"
+    
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
@@ -266,7 +268,7 @@ describe Bugsnag::Notification do
     end
 
     Bugsnag.configuration.release_stage = "development"
-    Bugsnag.configuration.notify_release_stages << "development"
+    Bugsnag.configuration.notify_release_stages = ["development"]
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
