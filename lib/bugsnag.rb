@@ -45,6 +45,7 @@ module Bugsnag
     def notify_or_ignore(exception, overrides=nil, request_data=nil)
       notification = Notification.new(exception, configuration, overrides, request_data)
       notification.deliver unless notification.ignore?
+      notification
     end
 
     # Auto notify of an exception, called from rails and rack exception
