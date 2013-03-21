@@ -38,7 +38,7 @@ module Bugsnag
     def initialize
       # Set up the defaults
       self.release_stage = nil
-      self.notify_release_stages = ["production"]
+      self.notify_release_stages = nil
       self.auto_notify = true
       self.use_ssl = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
@@ -55,7 +55,7 @@ module Bugsnag
     end
 
     def should_notify?
-      @release_stage.nil? || @notify_release_stages.include?(@release_stage)
+      @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
     end
 
     def request_data
