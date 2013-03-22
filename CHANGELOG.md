@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.3.0
+------
+-   By default we notify in all release stages now
+-   Return the notification in notify_or_ignore
+
 1.2.18
 ------
 -   Add support for bugsnag meta data in exceptions.
