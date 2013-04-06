@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{bugsnag}
-  s.version = "1.3.0"
+  s.version = "1.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
-  s.date = %q{2013-03-21}
+  s.date = %q{2013-04-06}
   s.description = %q{Ruby notifier for bugsnag.com}
   s.email = %q{james@bugsnag.com}
   s.extra_rdoc_files = [
@@ -47,6 +47,7 @@ Gem::Specification.new do |s|
     "lib/bugsnag/rails/action_controller_rescue.rb",
     "lib/bugsnag/rails/controller_methods.rb",
     "lib/bugsnag/railtie.rb",
+    "lib/bugsnag/rake.rb",
     "lib/bugsnag/sidekiq.rb",
     "lib/bugsnag/tasks.rb",
     "lib/bugsnag/tasks/bugsnag.rake",
