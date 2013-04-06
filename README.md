@@ -154,20 +154,22 @@ Rake Integration
 ----------------
 
 Bugsnag can automatically notify of all exceptions that happen in your rake tasks. In order
-to enable this, you need to `require "bugsnag/rake"`, like so:
+to enable this, you need to `require "bugsnag/rake"` in your Rakefile, like so:
 
 ```ruby
+require File.expand_path('../config/application', __FILE__)
+require 'rake'
 require "bugsnag/rake"
 
-desc "Sample task"
-task sample_task => :environment do
-  puts "doing work"
-  raise "Something went wrong" # Reported to bugsnag
+Bugsnag.configure do |config|
+  config.api_key = "YOUR_API_KEY_HERE"
 end
+
+YourApp::Application.load_tasks
 ```
 
-**NOTE**: If you dont load your rails environment as part of your rake task, you will still need
-to ensure that Bugsnag has been configured by manually running the Bugsnag.configure method.
+**NOTE**: We also configure Bugsnag in the Rakefile, so the tasks that do not load the full
+environment can still notify Bugsnag.
 
 Standard Ruby Scripts
 ---------------------
