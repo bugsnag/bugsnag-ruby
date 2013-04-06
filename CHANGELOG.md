@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.3.1
+-----
+-   Add support for Bugsnag rake integration
+
 1.3.0
 ------
 -   By default we notify in all release stages now
