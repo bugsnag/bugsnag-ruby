@@ -160,7 +160,7 @@ to enable this, you need to `require "bugsnag/rake"`, like so:
 require "bugsnag/rake"
 
 desc "Sample task"
-task sample_task => :environment do
+task :sample_task => :environment do
   puts "doing work"
   raise "Something went wrong" # Reported to bugsnag
 end
