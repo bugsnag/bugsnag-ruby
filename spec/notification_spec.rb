@@ -418,13 +418,11 @@ describe Bugsnag::Notification do
   it "should call to_exception on i18n error objects" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
-      exception[:errorClass].should be == "I18n::MissingTranslationData"
+      exception[:errorClass].should be == "BugsnagTestException"
+      exception[:message].should be == "message"
     end
 
-    I18n.exception_handler = lambda do |exception, locale, key, options|
-      Bugsnag.notify exception
-    end
-    I18n.t(:test)
+    Bugsnag.notify(OpenStruct.new(:to_exception => BugsnagTestException.new("message")))
   end
 
   it "should generate runtimeerror for non exceptions" do

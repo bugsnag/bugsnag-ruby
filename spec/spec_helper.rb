@@ -1,5 +1,4 @@
 require 'bugsnag'
-require 'i18n'
 
 class BugsnagTestException < RuntimeError; end
 
