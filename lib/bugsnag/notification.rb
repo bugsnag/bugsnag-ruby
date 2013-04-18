@@ -55,6 +55,17 @@ module Bugsnag
       @exceptions = []
       ex = exception
       while ex != nil && !@exceptions.include?(ex) && @exceptions.length < MAX_EXCEPTIONS_TO_UNWRAP
+        unless ex.is_a? Exception
+          if ex.respond_to?(:to_exception)
+            ex = ex.to_exception
+          elsif ex.respond_to?(:exception)
+            ex = ex.exception
+          end
+          unless ex.is_a? Exception
+            ex = RuntimeError.new(ex.to_s)
+          end
+        end
+
         @exceptions << ex
 
         if ex.respond_to?(:continued_exception) && ex.continued_exception
