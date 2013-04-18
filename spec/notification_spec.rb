@@ -414,4 +414,26 @@ describe Bugsnag::Notification do
 
     Bugsnag.notify_or_ignore(first_ex)
   end
+
+  it "should call to_exception on i18n error objects" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:errorClass].should be == "I18n::MissingTranslationData"
+    end
+
+    I18n.exception_handler = lambda do |exception, locale, key, options|
+      Bugsnag.notify exception
+    end
+    I18n.t(:test)
+  end
+
+  it "should generate runtimeerror for non exceptions" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:errorClass].should be == "RuntimeError"
+      exception[:message].should be == "test message"
+    end
+
+    Bugsnag.notify("test message")
+  end
 end
