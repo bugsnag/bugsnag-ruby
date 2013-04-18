@@ -62,6 +62,7 @@ module Bugsnag
             ex = ex.exception
           end
           unless ex.is_a? Exception
+            Bugsnag.warn("Converting non-Exception to RuntimeError: #{ex.inspect}")
             ex = RuntimeError.new(ex.to_s)
           end
         end
