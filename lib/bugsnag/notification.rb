@@ -254,7 +254,10 @@ module Bugsnag
         next(nil) if file =~ %r{lib/bugsnag}
 
         # Expand relative paths
-        file = Pathname.new(file).realpath.to_s rescue file
+        p = Pathname.new(file)
+        if p.relative?
+          file = p.realpath.to_s rescue file
+        end
 
         # Generate the stacktrace line hash
         trace_hash = {}
