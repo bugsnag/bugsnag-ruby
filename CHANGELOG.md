@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.3.2
+-----
+-   Notify will now build exceptions if a non-exception is passed in.
+
+1.3.1
+-----
+-   Add support for Bugsnag rake integration
+
 1.3.0
 ------
 -   By default we notify in all release stages now

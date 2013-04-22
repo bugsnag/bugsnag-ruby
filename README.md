@@ -150,6 +150,40 @@ Bugsnag.notify(RuntimeError.new("Something broke"), {
 })
 ```
 
+Rake Integration
+----------------
+
+Bugsnag can automatically notify of all exceptions that happen in your rake tasks. In order
+to enable this, you need to `require "bugsnag/rake"` in your Rakefile, like so:
+
+```ruby
+require File.expand_path('../config/application', __FILE__)
+require 'rake'
+require "bugsnag/rake"
+
+Bugsnag.configure do |config|
+  config.api_key = "YOUR_API_KEY_HERE"
+end
+
+YourApp::Application.load_tasks
+```
+
+**NOTE**: We also configure Bugsnag in the Rakefile, so the tasks that do not load the full
+environment can still notify Bugsnag.
+
+Standard Ruby Scripts
+---------------------
+
+If you are running a standard ruby script, you can ensure that all exceptions are sent to Bugsnag by
+adding the following code to your app:
+
+```ruby
+at_exit do
+  if $!
+    Bugsnag.notify($!)
+  end
+end
+```
 
 Configuration
 -------------

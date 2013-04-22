@@ -415,6 +415,26 @@ describe Bugsnag::Notification do
     Bugsnag.notify_or_ignore(first_ex)
   end
 
+  it "should call to_exception on i18n error objects" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:errorClass].should be == "BugsnagTestException"
+      exception[:message].should be == "message"
+    end
+
+    Bugsnag.notify(OpenStruct.new(:to_exception => BugsnagTestException.new("message")))
+  end
+
+  it "should generate runtimeerror for non exceptions" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:errorClass].should be == "RuntimeError"
+      exception[:message].should be == "test message"
+    end
+
+    Bugsnag.notify("test message")
+  end
+
   it "should support unix-style paths in backtraces" do
     ex = BugsnagTestException.new("It crashed")
     ex.set_backtrace([
