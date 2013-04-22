@@ -11,6 +11,7 @@ module Bugsnag
     NOTIFIER_URL = "http://www.bugsnag.com"
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
+    BACKTRACE_LINE_REGEX = /^((?:[a-zA-Z]:)?[^:]+):(\d+)(?::in `([^']+)')?$/
 
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
@@ -234,9 +235,10 @@ module Bugsnag
 
     def stacktrace(exception)
       (exception.backtrace || caller).map do |trace|
-        method = nil
-        file, line_str, method_str = trace.split(":")
+        # Parse the stacktrace line
+        _, file, line_str, method = trace.match(BACKTRACE_LINE_REGEX).to_a
 
+        # Skip stacktrace lines inside lib/bugsnag
         next(nil) if file =~ %r{lib/bugsnag}
 
         # Expand relative paths
@@ -260,10 +262,6 @@ module Bugsnag
         trace_hash[:file] = file
 
         # Add a method if we have it
-        if method_str
-          method_match = /in `([^']+)'/.match(method_str)
-          method = method_match.captures.first if method_match
-        end
         trace_hash[:method] = method if method && (method =~ /^__bind/).nil?
 
         if trace_hash[:file] && !trace_hash[:file].empty?

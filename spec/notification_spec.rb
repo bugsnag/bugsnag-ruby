@@ -414,4 +414,54 @@ describe Bugsnag::Notification do
 
     Bugsnag.notify_or_ignore(first_ex)
   end
+
+  it "should support unix-style paths in backtraces" do
+    ex = BugsnagTestException.new("It crashed")
+    ex.set_backtrace([
+      "/Users/james/app/spec/notification_spec.rb:419",
+      "/Some/path/rspec/example.rb:113:in `instance_eval'"
+    ])
+
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:stacktrace].length.should be == 2
+
+      line = exception[:stacktrace][0]
+      line[:file].should be == "/Users/james/app/spec/notification_spec.rb"
+      line[:lineNumber].should be == 419
+      line[:method].should be nil
+
+      line = exception[:stacktrace][1]
+      line[:file].should be == "/Some/path/rspec/example.rb"
+      line[:lineNumber].should be == 113
+      line[:method].should be == "instance_eval"
+    end
+
+    Bugsnag.notify(ex)
+  end
+
+  it "should support windows-style paths in backtraces" do
+    ex = BugsnagTestException.new("It crashed")
+    ex.set_backtrace([
+      "C:/projects/test/app/controllers/users_controller.rb:13:in `index'",
+      "C:/ruby/1.9.1/gems/actionpack-2.3.10/filters.rb:638:in `block in run_before_filters'"
+    ])
+
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:stacktrace].length.should be == 2
+
+      line = exception[:stacktrace][0]
+      line[:file].should be == "C:/projects/test/app/controllers/users_controller.rb"
+      line[:lineNumber].should be == 13
+      line[:method].should be == "index"
+
+      line = exception[:stacktrace][1]
+      line[:file].should be == "C:/ruby/1.9.1/gems/actionpack-2.3.10/filters.rb"
+      line[:lineNumber].should be == 638
+      line[:method].should be == "block in run_before_filters"
+    end
+
+    Bugsnag.notify(ex)
+  end
 end
