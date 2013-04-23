@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.3.3
+-----
+-   Support windows-style paths in backtraces
+-   Fix bug with `before_bugsnag_notify` in Rails 2
+
 1.3.2
 -----
 -   Notify will now build exceptions if a non-exception is passed in.
