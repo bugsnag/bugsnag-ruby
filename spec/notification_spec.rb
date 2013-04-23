@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'securerandom'
+require 'ostruct'
 
 module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class NestedException < StandardError; attr_accessor :original_exception; end
