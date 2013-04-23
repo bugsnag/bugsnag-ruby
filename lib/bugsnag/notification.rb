@@ -251,7 +251,7 @@ module Bugsnag
         _, file, line_str, method = trace.match(BACKTRACE_LINE_REGEX).to_a
 
         # Skip stacktrace lines inside lib/bugsnag
-        next(nil) if file =~ %r{lib/bugsnag}
+        next(nil) if file.nil? || file =~ %r{lib/bugsnag}
 
         # Expand relative paths
         p = Pathname.new(file)
