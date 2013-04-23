@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.3.4
+-----
+-   Fix nil bug in windows backtraces
+
 1.3.3
 -----
 -   Support windows-style paths in backtraces
