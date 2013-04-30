@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.3.5
+-----
+-   Fixed bug in rake integration with ruby 1.9 hash syntax
+
 1.3.4
 -----
 -   Fix nil bug in windows backtraces
