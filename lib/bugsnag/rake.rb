@@ -17,9 +17,9 @@ module Bugsnag::Rake
         begin
           Bugsnag.before_notify_callbacks << lambda {|notif|
             notif.add_tab(:rake_task, {
-              name: task.name,
-              description: task.full_comment,
-              arguments: task.arg_description
+              :name => task.name,
+              :description => task.full_comment,
+              :arguments => task.arg_description
             })
             notif.context ||= task.name
           }
