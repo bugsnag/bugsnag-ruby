@@ -175,10 +175,7 @@ module Bugsnag
     end
 
     def ignore?
-      ex = @exceptions.last
-      @configuration.ignore_classes.any? do |to_ignore|
-        to_ignore.is_a?(Proc) ? to_ignore.call(ex) : to_ignore == error_class(ex)
-      end
+      ignore_exception_class? || ignore_user_agent?
     end
 
     def request_data
@@ -190,6 +187,22 @@ module Bugsnag
     end
 
     private
+
+    def ignore_exception_class?
+      ex = @exceptions.last
+      @configuration.ignore_classes.any? do |to_ignore|
+        to_ignore.is_a?(Proc) ? to_ignore.call(ex) : to_ignore == error_class(ex)
+      end
+    end
+
+    def ignore_user_agent?
+      meta_data = generate_meta_data(@exceptions, @overrides)
+      if meta_data.has_key?(:request) && (agent = meta_data[:request][:userAgent])
+        @configuration.ignore_user_agents.any? do |to_ignore|
+          agent =~ to_ignore
+        end
+      end
+    end
 
     # Generate the meta data from both the request configuration, the overrides and the exceptions for this notification
     def generate_meta_data(exceptions, overrides)

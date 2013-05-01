@@ -311,6 +311,18 @@ By default, `ignore_classes` contains the following:
 ]
 ```
 
+###ignore_user_agents
+
+Sets an array of Regexps that can be used to ignore exceptions from
+certain user agents.
+
+```ruby
+config.ignore_user_agents << %r{SomeUserAgent}
+```
+
+By default, `ignore_user_agents` is empty, so exceptions caused by all
+user agents are reported.
+
 ###logger
 
 Sets which logger to use for Bugsnag log messages. In rails apps, this is
