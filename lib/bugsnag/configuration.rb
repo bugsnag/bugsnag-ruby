@@ -23,7 +23,7 @@ module Bugsnag
 
     DEFAULT_ENDPOINT = "notify.bugsnag.com"
 
-    DEFAULT_PARAMS_FILTERS = ["password"].freeze
+    DEFAULT_PARAMS_FILTERS = ["password", "secret"].freeze
 
     DEFAULT_IGNORE_CLASSES = [
       "ActiveRecord::RecordNotFound",
