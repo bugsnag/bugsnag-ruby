@@ -22,7 +22,6 @@ module Bugsnag::Middleware
           if best_scope
             scope_key = "warden.user.#{best_scope}.key"
             scope = session[scope_key]
-            puts "BUGSNAG SCOPE!!!!!!!!!!!!!!!!!!!! #{scope.inspect}"
             if scope.is_a? Array
               user_ids = scope.detect {|el| el.is_a? Array}
               if user_ids
