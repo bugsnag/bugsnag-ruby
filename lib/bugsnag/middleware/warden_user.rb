@@ -21,8 +21,14 @@ module Bugsnag::Middleware
           # Set the user_id
           if best_scope
             scope_key = "warden.user.#{best_scope}.key"
-            user_id = session[scope_key][1][0] rescue nil
-            notification.user_id = user_id unless user_id.nil?
+            scope = session[scope_key]
+            if scope.is_a? Array
+              user_ids = scope.detect {|el| el.is_a? Array}
+              if user_ids
+                user_id = user_ids.first
+                notification.user_id = user_id unless user_id.nil?
+              end
+            end
           end
 
           # Extract useful user information
