@@ -32,6 +32,14 @@ module Bugsnag
         obj.to_s unless obj.to_s =~ /#<.*>/
       end
     end
+
+    def self.cleanup_url(url, filters = nil)
+      return url unless filters && filters.is_a?(Array)
+
+      filter_regex = Regexp.new("([?&](?:[^&=]*#{filters.join('|[^&=]*')}[^&=]*)=)[^&]*")
+      
+      url.gsub(filter_regex, '\1[FILTERED]')
+    end
     
     def self.reduce_hash_size(hash)
       return {} unless hash.is_a?(Hash)
