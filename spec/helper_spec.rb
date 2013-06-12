@@ -1,6 +1,31 @@
 require 'spec_helper'
 
 describe Bugsnag::Helpers do
+  it "should reduce hash size correctly" do
+    meta_data = {
+      :key_one => "this should not be truncated",
+      :key_two => ""
+    }
+
+    1000.times {|i| meta_data[:key_two] += "this should be truncated " }
+
+    meta_data[:key_two].length.should > 4096
+
+    meta_data_return = Bugsnag::Helpers.reduce_hash_size meta_data
+
+    meta_data_return[:key_one].length.should == 28
+    meta_data_return[:key_one].should == "this should not be truncated"
+
+    meta_data_return[:key_two].length.should == 4107
+    meta_data_return[:key_two].match(/\[TRUNCATED\]$/).nil?.should == false
+
+    meta_data[:key_two].length.should > 4096
+    meta_data[:key_two].match(/\[TRUNCATED\]$/).nil?.should == true
+
+    meta_data[:key_one].length.should == 28
+    meta_data[:key_one].should == "this should not be truncated"
+  end
+
   it "should work with no filters configured" do
     url = Bugsnag::Helpers.cleanup_url "/dir/page?param1=value1&param2=value2"
 
