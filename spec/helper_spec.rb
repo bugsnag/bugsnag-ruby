@@ -14,10 +14,16 @@ describe Bugsnag::Helpers do
     meta_data_return = Bugsnag::Helpers.reduce_hash_size meta_data
 
     meta_data_return[:key_one].length.should == 28
+    meta_data_return[:key_one].should == "this should not be truncated"
+
     meta_data_return[:key_two].length.should == 4107
+    meta_data_return[:key_two].match(/\[TRUNCATED\]$/).nil?.should == false
 
     meta_data[:key_two].length.should > 4096
+    meta_data[:key_two].match(/\[TRUNCATED\]$/).nil?.should == true
+
     meta_data[:key_one].length.should == 28
+    meta_data[:key_one].should == "this should not be truncated"
   end
 
   it "should work with no filters configured" do
