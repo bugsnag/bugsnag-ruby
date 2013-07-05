@@ -368,6 +368,18 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
   end
 
+  it "should not filter params from payload hashes if their values are nil" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:metaData].should_not be_nil
+      event[:metaData][:request].should_not be_nil
+      event[:metaData][:request][:params].should_not be_nil
+      event[:metaData][:request][:params].should have_key(:nil_param)
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:nil_param => nil}}})
+  end
+
   it "should not notify if the exception class is in the default ignore_classes list" do
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
 
