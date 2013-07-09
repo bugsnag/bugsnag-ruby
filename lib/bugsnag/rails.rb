@@ -28,7 +28,7 @@ module Bugsnag
         config.release_stage = RAILS_ENV if defined?(RAILS_ENV)
         config.project_root = RAILS_ROOT if defined?(RAILS_ROOT)
 
-        config.middleware.use Bugsnag::Middleware::Rails2Request
+        insert_before(Bugsnag::Middleware::Callbacks,Bugsnag::Middleware::Rails2Request)
       end
 
       # Auto-load configuration settings from config/bugsnag.yml if it exists
