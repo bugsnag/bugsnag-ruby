@@ -23,8 +23,8 @@ module Bugsnag
         end
 
         # Hook up rack-based notification middlewares
-        config.middleware.insert_before(Bugsnag::Middleware::Rails3Request, Bugsnag::Middleware::RackRequest) if defined?(::Rack)
-        config.middleware.use Bugsnag::Middleware::WardenUser if defined?(Warden)
+        config.middleware.insert_before([Bugsnag::Middleware::Rails3Request,Bugsnag::Middleware::Callbacks], Bugsnag::Middleware::RackRequest) if defined?(::Rack)
+        config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::WardenUser) if defined?(Warden)
       end
     end
 
