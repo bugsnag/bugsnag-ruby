@@ -21,6 +21,7 @@ module Bugsnag
 
     attr_accessor :context
     attr_accessor :user_id
+    attr_accessor :configuration
 
     class << self
       def deliver_exception_payload(endpoint, payload)

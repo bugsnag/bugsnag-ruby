@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = "bugsnag"
-  s.version = "1.3.5"
+  s.name = %q{bugsnag}
+  s.version = "1.3.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
-  s.date = "2013-04-30"
-  s.description = "Ruby notifier for bugsnag.com"
-  s.email = "james@bugsnag.com"
+  s.date = %q{2013-06-12}
+  s.description = %q{Ruby notifier for bugsnag.com}
+  s.email = %q{james@bugsnag.com}
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md"
@@ -54,36 +54,38 @@ Gem::Specification.new do |s|
     "lib/bugsnag/version.rb",
     "lib/resque/failure/bugsnag.rb",
     "rails/init.rb",
+    "spec/helper_spec.rb",
     "spec/middleware_spec.rb",
     "spec/notification_spec.rb",
     "spec/rack_spec.rb",
     "spec/spec_helper.rb"
   ]
-  s.homepage = "http://github.com/bugsnag/bugsnag-ruby"
+  s.homepage = %q{http://github.com/bugsnag/bugsnag-ruby}
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.24"
-  s.summary = "Ruby notifier for bugsnag.com"
+  s.rubygems_version = %q{1.3.6}
+  s.summary = %q{Ruby notifier for bugsnag.com}
 
   if s.respond_to? :specification_version then
+    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<multi_json>, ["~> 1.0"])
-      s.add_runtime_dependency(%q<httparty>, ["< 1.0", ">= 0.6"])
+      s.add_runtime_dependency(%q<httparty>, [">= 0.6", "< 1.0"])
       s.add_development_dependency(%q<rspec>, ["~> 2.11.0"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.8.4"])
     else
       s.add_dependency(%q<multi_json>, ["~> 1.0"])
-      s.add_dependency(%q<httparty>, ["< 1.0", ">= 0.6"])
+      s.add_dependency(%q<httparty>, [">= 0.6", "< 1.0"])
       s.add_dependency(%q<rspec>, ["~> 2.11.0"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_dependency(%q<jeweler>, ["~> 1.8.4"])
     end
   else
     s.add_dependency(%q<multi_json>, ["~> 1.0"])
-    s.add_dependency(%q<httparty>, ["< 1.0", ">= 0.6"])
+    s.add_dependency(%q<httparty>, [">= 0.6", "< 1.0"])
     s.add_dependency(%q<rspec>, ["~> 2.11.0"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
     s.add_dependency(%q<jeweler>, ["~> 1.8.4"])

@@ -24,7 +24,7 @@ module Bugsnag::Rake
             notif.context ||= task.name
           }
 
-          yield
+          yield if block_given?
         rescue Exception => e
           Bugsnag.notify(e)
           raise

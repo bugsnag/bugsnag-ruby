@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.3.6
+-----
+-   Filter out meta-data keys containing the word 'secret' by default
+
 1.3.5
 -----
 -   Fixed bug in rake integration with ruby 1.9 hash syntax

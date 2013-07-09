@@ -275,13 +275,13 @@ config.app_version = "2.5.1"
 Sets the strings to filter out from the `params` hashes before sending
 them to Bugsnag. Use this if you want to ensure you don't send
 sensitive data such as passwords, and credit card numbers to our
-servers. Any keys which contain these strings will be filtered.
+servers. Any keys which *contain* these strings will be filtered.
 
 ```ruby
 config.params_filters << "credit_card_number"
 ```
 
-By default, `params_filters` is set to `["password", "password_confirmation"]`
+By default, `params_filters` is set to `["password", "secret"]`
 
 ###ignore_classes
 
