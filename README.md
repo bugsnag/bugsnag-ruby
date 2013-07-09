@@ -317,7 +317,7 @@ Sets an array of Regexps that can be used to ignore exceptions from
 certain user agents.
 
 ```ruby
-config.ignore_user_agents << %r{SomeUserAgent}
+config.ignore_user_agents << %r{Chrome}
 ```
 
 By default, `ignore_user_agents` is empty, so exceptions caused by all

@@ -197,7 +197,7 @@ module Bugsnag
     end
 
     def ignore_user_agent?
-      if @configuration.request_data[:rack_env] && (agent = @configuration.request_data[:rack_env]["HTTP_USER_AGENT"])
+      if @configuration.request_data && @configuration.request_data[:rack_env] && (agent = @configuration.request_data[:rack_env]["HTTP_USER_AGENT"])
         @configuration.ignore_user_agents.any? do |to_ignore|
           agent =~ to_ignore
         end
