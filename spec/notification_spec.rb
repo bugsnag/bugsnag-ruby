@@ -402,6 +402,14 @@ describe Bugsnag::Notification do
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
   end
 
+  it "should not notify if the user agent is present and matches a regex in ignore_user_agents" do
+    Bugsnag.configuration.ignore_user_agents << %r{BugsnagUserAgent}
+
+    Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+
+    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"), :request => { :userAgent => "BugsnagUserAgent" })
+  end
+
   it "should not unwrap the same exception twice" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
