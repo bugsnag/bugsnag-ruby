@@ -20,7 +20,7 @@ module Bugsnag
             clean_hash[k] = "[FILTERED]"
           else
             clean_obj = cleanup_obj(v, filters)
-            clean_hash[k] = clean_obj unless clean_obj.nil?
+            clean_hash[k] = clean_obj
           end
         end
         clean_hash
