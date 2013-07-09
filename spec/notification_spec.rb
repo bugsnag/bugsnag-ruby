@@ -407,7 +407,9 @@ describe Bugsnag::Notification do
 
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
 
-    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"), :request => { :userAgent => "BugsnagUserAgent" })
+    ((Thread.current["bugsnag_req_data"] ||= {})[:rack_env] ||= {})["HTTP_USER_AGENT"] = "BugsnagUserAgent"
+
+    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
   end
 
   it "should not unwrap the same exception twice" do

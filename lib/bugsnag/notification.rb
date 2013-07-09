@@ -197,8 +197,7 @@ module Bugsnag
     end
 
     def ignore_user_agent?
-      meta_data = generate_meta_data(@exceptions, @overrides)
-      if meta_data.has_key?(:request) && (agent = meta_data[:request][:userAgent])
+      if @configuration.request_data[:rack_env] && (agent = @configuration.request_data[:rack_env]["HTTP_USER_AGENT"])
         @configuration.ignore_user_agents.any? do |to_ignore|
           agent =~ to_ignore
         end
