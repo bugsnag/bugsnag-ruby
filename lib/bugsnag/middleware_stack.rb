@@ -14,7 +14,12 @@ module Bugsnag
     def insert_after(after, new_middleware)
       return if @disabled_middleware.include?(new_middleware)
 
-      index = @middlewares.rindex(after)
+      if after.is_a? Array
+        index = @middlewares.rindex {|el| after.include?(el)}
+      else
+        index = @middlewares.rindex(after)
+      end
+
       if index.nil?
         @middlewares << new_middleware
       else
@@ -25,8 +30,13 @@ module Bugsnag
     def insert_before(before, new_middleware)
       return if @disabled_middleware.include?(new_middleware)
 
-      index = @middlewares.index(before) || @middlewares.length
-      @middlewares.insert index, new_middleware
+      if before.is_a? Array
+        index = @middlewares.index {|el| before.include?(el)}
+      else
+        index = @middlewares.index(before)
+      end
+
+      @middlewares.insert index || @middlewares.length, new_middleware
     end
     
     def disable(*middlewares)

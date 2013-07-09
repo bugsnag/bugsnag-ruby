@@ -18,7 +18,7 @@ module Bugsnag
         config.release_stage = Rails.env.to_s
         config.project_root = Rails.root.to_s
         config.params_filters += Rails.configuration.filter_parameters
-        config.middleware.insert_after Bugsnag::Middleware::RackRequest, Bugsnag::Middleware::Rails3Request
+        config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
       end
 
       # Auto-load configuration settings from config/bugsnag.yml if it exists
