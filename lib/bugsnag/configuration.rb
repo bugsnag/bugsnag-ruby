@@ -13,6 +13,7 @@ module Bugsnag
     attr_accessor :app_version
     attr_accessor :params_filters
     attr_accessor :ignore_classes
+    attr_accessor :ignore_user_agents
     attr_accessor :endpoint
     attr_accessor :logger
     attr_accessor :middleware
@@ -35,6 +36,8 @@ module Bugsnag
       "Mongoid::Errors::DocumentNotFound"
     ].freeze
 
+    DEFAULT_IGNORE_USER_AGENTS = [].freeze
+
     def initialize
       # Set up the defaults
       self.release_stage = nil
@@ -43,6 +46,7 @@ module Bugsnag
       self.use_ssl = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
+      self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
 
       # Set up logging
