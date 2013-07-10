@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{bugsnag}
-  s.version = "1.3.8"
+  s.version = "1.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
-  s.date = %q{2013-06-12}
+  s.date = %q{2013-07-09}
   s.description = %q{Ruby notifier for bugsnag.com}
   s.email = %q{james@bugsnag.com}
   s.extra_rdoc_files = [
