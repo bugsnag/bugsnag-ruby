@@ -1,6 +1,21 @@
 Changelog
 =========
 
+1.4.0
+-----
+- 	Add ignore_user_agents to ignore certain user agents
+-  	Change bugsnag middleware order to have Callbacks last
+- 	Allow nil values to be sent to bugsnag
+
+1.3.8
+-----
+- 	Add truncated only when a field has been truncated
+
+1.3.7
+-----
+- 	Fix warden bug where user id is an array of ids
+- 	Filter get params from URLs as well as meta_data
+
 1.3.6
 -----
 -   Filter out meta-data keys containing the word 'secret' by default
