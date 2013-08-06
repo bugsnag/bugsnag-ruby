@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.4.1
+-----
+-   Add HTTP Referer to the request tab on rack apps
+
 1.4.0
 -----
 - 	Add ignore_user_agents to ignore certain user agents
