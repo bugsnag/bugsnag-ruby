@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.4.1
+1.4.2
 -----
 -   Add HTTP Referer to the request tab on rack apps
 
