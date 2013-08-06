@@ -29,6 +29,7 @@ module Bugsnag::Middleware
           :httpMethod => request.request_method,
           :params => params.to_hash,
           :userAgent => request.user_agent,
+          :referer => request.referer,
           :clientIp => request.ip
         })
           
