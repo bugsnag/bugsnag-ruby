@@ -80,8 +80,7 @@ module Bugsnag
         end
       end
 
-      proxy_arguments = [configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password].compact
-      self.class.http_proxy *(proxy_arguments) if proxy_arguments
+      self.class.http_proxy configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password if configuration.proxy_host
     end
 
     # Add a single value as custom data, to this notification
