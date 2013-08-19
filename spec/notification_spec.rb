@@ -31,6 +31,21 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
+  it "should use the env variable apiKey" do
+    ENV["BUGSNAG_API_KEY"] = "c9d60ae4c7e70c4b6c4ebd3e8056d2b9"
+
+    Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
+    Bugsnag.configure do |config|
+      config.release_stage = "production"
+    end
+
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      payload[:apiKey].should be == "c9d60ae4c7e70c4b6c4ebd3e8056d2b9"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+  end
+
   it "should have the right exception class" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
@@ -506,5 +521,52 @@ describe Bugsnag::Notification do
     end
 
     Bugsnag.notify(ex)
+  end
+
+  it "should use a proxy host if configured" do
+    Bugsnag.configure do |config|
+      config.proxy_host = "host_name"
+    end
+
+    Bugsnag::Notification.should_receive(:http_proxy) do |*args|
+      args.length.should be == 1
+      args.first.should be == "host_name"
+    end
+
+    Bugsnag.notify("test message")
+  end
+
+  it "should use a proxy host/port if configured" do
+    Bugsnag.configure do |config|
+      config.proxy_host = "host_name"
+      config.proxy_port = 1234
+    end
+
+    Bugsnag::Notification.should_receive(:http_proxy) do |*args|
+      args.length.should be == 2
+      args[0].should be == "host_name"
+      args[1].should be == 1234
+    end
+
+    Bugsnag.notify("test message")
+  end
+
+  it "should use a proxy host/port/user/pass if configured" do
+    Bugsnag.configure do |config|
+      config.proxy_host = "host_name"
+      config.proxy_port = 1234
+      config.proxy_user = "user"
+      config.proxy_password = "password"
+    end
+
+    Bugsnag::Notification.should_receive(:http_proxy) do |*args|
+      args.length.should be == 4
+      args[0].should be == "host_name"
+      args[1].should be == 1234
+      args[2].should be == "user"
+      args[3].should be == "password"
+    end
+
+    Bugsnag.notify("test message")
   end
 end

@@ -79,6 +79,9 @@ module Bugsnag
           ex = nil
         end
       end
+
+      proxy_arguments = [configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password].compact
+      self.class.http_proxy *(proxy_arguments) if proxy_arguments
     end
 
     # Add a single value as custom data, to this notification
