@@ -19,6 +19,10 @@ module Bugsnag
     attr_accessor :middleware
     attr_accessor :delay_with_resque
     attr_accessor :debug
+    attr_accessor :proxy_host
+    attr_accessor :proxy_port
+    attr_accessor :proxy_user
+    attr_accessor :proxy_password
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -40,8 +44,6 @@ module Bugsnag
 
     def initialize
       # Set up the defaults
-      self.release_stage = nil
-      self.notify_release_stages = nil
       self.auto_notify = true
       self.use_ssl = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
