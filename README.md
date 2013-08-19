@@ -49,6 +49,9 @@ How to Install
     end
     ```
 
+    If you don't configure the api_key, the Bugsnag module will read the `BUGSNAG_API_KEY`
+    environment variable.
+
 4.  **Rack/Sinatra apps only**: Activate the Bugsnag Rack middleware
 
     ```ruby
