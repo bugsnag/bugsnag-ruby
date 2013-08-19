@@ -529,8 +529,11 @@ describe Bugsnag::Notification do
     end
 
     Bugsnag::Notification.should_receive(:http_proxy) do |*args|
-      args.length.should be == 1
-      args.first.should be == "host_name"
+      args.length.should be == 4
+      args[0].should be == "host_name"
+      args[1].should be == nil
+      args[2].should be == nil
+      args[3].should be == nil
     end
 
     Bugsnag.notify("test message")
@@ -543,9 +546,11 @@ describe Bugsnag::Notification do
     end
 
     Bugsnag::Notification.should_receive(:http_proxy) do |*args|
-      args.length.should be == 2
+      args.length.should be == 4
       args[0].should be == "host_name"
       args[1].should be == 1234
+      args[2].should be == nil
+      args[3].should be == nil
     end
 
     Bugsnag.notify("test message")
