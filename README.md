@@ -326,6 +326,38 @@ config.ignore_user_agents << %r{Chrome}
 By default, `ignore_user_agents` is empty, so exceptions caused by all
 user agents are reported.
 
+###proxy_host
+
+Sets the address of the HTTP proxy that should be used for requests to bugsnag.
+
+```ruby
+config.proxy_host = "10.10.10.10"
+```
+
+###proxy_port
+
+Sets the port of the HTTP proxy that should be used for requests to bugsnag.
+
+```ruby
+config.proxy_port = 1089
+```
+
+###proxy_user
+
+Sets the user that should be used to send requests to the HTTP proxy for requests to bugsnag.
+
+```ruby
+config.proxy_host = "10.10.10.10"
+```
+
+###proxy_password
+
+Sets the password for the user that should be used to send requests to the HTTP proxy for requests to bugsnag.
+
+```ruby
+config.proxy_password = "10.10.10.10"
+```
+
 ###logger
 
 Sets which logger to use for Bugsnag log messages. In rails apps, this is
