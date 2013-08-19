@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.5.0
+-----
+-   Add proxy support for http requests to Bugsnag.
+-   Read the API key from the environment for Heroku users
+
 1.4.2
 -----
 -   Add HTTP Referer to the request tab on rack apps
