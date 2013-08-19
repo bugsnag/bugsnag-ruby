@@ -49,6 +49,9 @@ module Bugsnag
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
 
+      # Read the API key from the environment
+      self.api_key = ENV["BUGSNAG_API_KEY"]
+
       # Set up logging
       self.logger = Logger.new(STDOUT)
       self.logger.level = Logger::WARN
