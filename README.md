@@ -347,7 +347,7 @@ config.proxy_port = 1089
 Sets the user that should be used to send requests to the HTTP proxy for requests to bugsnag.
 
 ```ruby
-config.proxy_host = "10.10.10.10"
+config.proxy_user = "proxy_user"
 ```
 
 ###proxy_password
@@ -355,7 +355,7 @@ config.proxy_host = "10.10.10.10"
 Sets the password for the user that should be used to send requests to the HTTP proxy for requests to bugsnag.
 
 ```ruby
-config.proxy_password = "10.10.10.10"
+config.proxy_password = "proxy_secret_password_here"
 ```
 
 ###logger
