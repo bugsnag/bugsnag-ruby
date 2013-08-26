@@ -503,7 +503,9 @@ function, for example:
 EventMachine::run do
   server = EventMachine::start_server('0.0.0.0', PORT, MyServer)
   server.errback {
-    Bugsnag.notify(RuntimeError.new("Something bad happened"))
+    EM.defer do
+      Bugsnag.notify(RuntimeError.new("Something bad happened"))
+    end
   }
 end
 ```
