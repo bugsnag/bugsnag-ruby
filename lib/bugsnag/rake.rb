@@ -13,7 +13,7 @@ module Bugsnag::Rake
 
   module ClassMethods
     def bugsnag_define_task(*args, &block)
-      task = self.original_define_task *args do
+      task = self.original_define_task *args do |*block_args|
         begin
           Bugsnag.before_notify_callbacks << lambda {|notif|
             notif.add_tab(:rake_task, {
@@ -24,7 +24,7 @@ module Bugsnag::Rake
             notif.context ||= task.name
           }
 
-          yield if block_given?
+          yield(*block_args) if block_given?
         rescue Exception => e
           Bugsnag.notify(e)
           raise
