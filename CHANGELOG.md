@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.5.2
+-----
+-   Dont send rack.request.form_vars as it is a copy of form_hash and it may contain sensitive params.
+
+1.5.1
+-----
+-   Fix rake block arguments for tasks that need them.
+
 1.5.0
 -----
 -   Add proxy support for http requests to Bugsnag.
