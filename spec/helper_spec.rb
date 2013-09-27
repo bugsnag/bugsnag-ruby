@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe Bugsnag::Helpers do
+  it "should be able to clean up recursive objects" do
+    a = {:a => {}}
+    a[:a][:b] = a
+    Bugsnag::Helpers.cleanup_obj(a).should == {:a => {:b => "[RECURSION]"}}
+  end
+
   it "should reduce hash size correctly" do
     meta_data = {
       :key_one => "this should not be truncated",
