@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.5.3
+-----
+-   Deal with self-referential meta data correctly.
+
 1.5.2
 -----
 -   Dont send rack.request.form_vars as it is a copy of form_hash and it may contain sensitive params.
