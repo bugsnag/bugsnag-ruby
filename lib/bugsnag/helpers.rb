@@ -10,8 +10,10 @@ module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096
 
-    def self.cleanup_obj(obj, filters = nil)
+    def self.cleanup_obj(obj, filters = nil, seen={})
       return nil unless obj
+      return "[RECURSION]" if seen[obj]
+      seen[obj] = true
 
       if obj.is_a?(Hash)
         clean_hash = {}
@@ -19,13 +21,13 @@ module Bugsnag
           if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
             clean_hash[k] = "[FILTERED]"
           else
-            clean_obj = cleanup_obj(v, filters)
+            clean_obj = cleanup_obj(v, filters, seen)
             clean_hash[k] = clean_obj
           end
         end
         clean_hash
       elsif obj.is_a?(Array) || obj.is_a?(Set)
-        obj.map { |el| cleanup_obj(el, filters) }.compact
+        obj.map { |el| cleanup_obj(el, filters, seen) }.compact
       elsif obj.is_a?(Integer) || obj.is_a?(Float) || obj.is_a?(String)
         obj
       else
