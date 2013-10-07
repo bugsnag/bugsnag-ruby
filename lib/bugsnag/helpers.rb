@@ -10,10 +10,18 @@ module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096
 
-    def self.cleanup_obj(obj, filters = nil, seen={})
+    def self.cleanup_obj(obj, filters = nil, seen=Set.new)
       return nil unless obj
-      return "[RECURSION]" if seen[obj]
-      seen[obj] = true
+
+      # Protect against recursion of recursable items
+      if obj.is_a?(Hash) || obj.is_a?(Array) || obj.is_a?(Set)
+        return "[RECURSION]" if seen.include? obj
+
+        # We duplicate the seen set here so that no updates by further cleanup_obj calls
+        # are persisted beyond that call.
+        seen = seen.dup
+        seen << obj
+      end
 
       if obj.is_a?(Hash)
         clean_hash = {}
