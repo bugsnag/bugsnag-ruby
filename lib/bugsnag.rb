@@ -48,8 +48,7 @@ module Bugsnag
             yml_filename = Rails.root.join("config/bugsnag.yml")
             config = YAML.load_file(yml_filename) if File.exists?(yml_filename)
             
-            release_stage ||= Rails.env.to_s if defined?(Rails)
-            release_stage ||= "production"
+            release_stage = Rails.env || "production"
             
             Bugsnag.configure(config[release_stage] ? config[release_stage] : config) if config
           end
