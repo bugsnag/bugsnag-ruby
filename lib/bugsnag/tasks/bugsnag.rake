@@ -1,6 +1,8 @@
 require "bugsnag"
 require "httparty"
 require "multi_json"
+require "net/http"
+require "uri"
 
 namespace :bugsnag do
   desc "Notify Bugsnag of a new deploy."
@@ -17,9 +19,10 @@ namespace :bugsnag do
       branch = ENV["BUGSNAG_BRANCH"]
 
       begin
-        require './config/initializers/bugsnag'
+        require Rails.root.join('config/initializers/bugsnag')
       rescue Exception => e
-        config = YAML.load_file("./config/bugsnag.yml") if File.exists?("./config/bugsnag.yml")
+        yml_filename = Rails.root.join("config/bugsnag.yml")
+        config = YAML.load_file(yml_filename) if File.exists?(yml_filename)
         Bugsnag.configure(config[releaseStage] ? config[releaseStage] : config) if config
       end
 
@@ -30,6 +33,7 @@ namespace :bugsnag do
       endpoint = (Bugsnag.configuration.use_ssl ? "https://" : "http://") \
                  + (Bugsnag.configuration.endpoint || Bugsnag::Notification::DEFAULT_ENDPOINT) \
                  + "/deploy"
+      uri = URI.parse(endpoint)
 
       parameters = {
         "apiKey" => api_key,
@@ -40,9 +44,7 @@ namespace :bugsnag do
         "branch" => branch
       }
 
-      query = parameters.delete_if {|k,v| v.nil? }.map { |k,v| "#{k}=#{v}" }.join("&")
-
-      `curl -d \"#{query}\" #{endpoint} 2&>1 /dev/null`
+      Net::HTTP.post_form(uri, parameters)
 
     rescue Exception => e
       Bugsnag.warn("Deploy notification failed, #{e.inspect}")
