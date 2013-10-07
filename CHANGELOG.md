@@ -4,6 +4,7 @@ Changelog
 1.5.3
 -----
 -   Deal with self-referential meta data correctly.
+-   Dont load the environment when performing a deploy with capistrano.
 
 1.5.2
 -----
