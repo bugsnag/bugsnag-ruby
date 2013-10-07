@@ -36,6 +36,29 @@ module Bugsnag
       end
     end
 
+    # Tries to ensure bugsnag has been configured in the case where initializers etc
+    # have not been run. Returns a boolean to indicate whether bugsnag has been configured.
+    def ensure_configured
+      if configuration.api_key.nil? || configuration.api_key.empty?
+        # Try and load Rails initializer
+        if defined?(Rails) && Rails.root
+          begin
+            require Rails.root.join('config/initializers/bugsnag')
+          rescue Exception => e
+            yml_filename = Rails.root.join("config/bugsnag.yml")
+            config = YAML.load_file(yml_filename) if File.exists?(yml_filename)
+            
+            release_stage ||= Rails.env.to_s if defined?(Rails)
+            release_stage ||= "production"
+            
+            Bugsnag.configure(config[release_stage] ? config[release_stage] : config) if config
+          end
+        end
+      end
+
+      return !configuration.api_key.nil? && !configuration.api_key.empty?
+    end
+
     # Explicitly notify of an exception
     def notify(exception, overrides=nil, request_data=nil)
       Notification.new(exception, configuration, overrides, request_data).deliver
