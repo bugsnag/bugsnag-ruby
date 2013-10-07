@@ -14,10 +14,17 @@ describe Bugsnag::Helpers do
     Bugsnag::Helpers.cleanup_obj(a).should == ["[RECURSION]", "hello"]
   end
 
-  it "should allow multiple copies of the same object" do
+  it "should allow multiple copies of the same string" do
     a = {:name => "bugsnag"}
     a[:second] = a[:name]
     Bugsnag::Helpers.cleanup_obj(a).should == {:name => "bugsnag", :second => "bugsnag"}
+  end
+
+  it "should allow multiple copies of the same object" do
+    a = []
+    b = ["hello"]
+    a << b; a << b
+    Bugsnag::Helpers.cleanup_obj(a).should == [["hello"], ["hello"]]
   end
 
   it "should reduce hash size correctly" do

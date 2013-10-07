@@ -16,11 +16,11 @@ module Bugsnag
       # Protect against recursion of recursable items
       if obj.is_a?(Hash) || obj.is_a?(Array) || obj.is_a?(Set)
         return "[RECURSION]" if seen.include? obj
-        seen << obj
 
         # We duplicate the seen set here so that no updates by further cleanup_obj calls
         # are persisted beyond that call.
         seen = seen.dup
+        seen << obj
       end
 
       if obj.is_a?(Hash)
