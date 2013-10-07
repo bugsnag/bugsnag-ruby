@@ -21,7 +21,7 @@ module Bugsnag::Middleware
         # Build the clean url (hide the port if it is obvious)
         url = "#{request.scheme}://#{request.host}"
         url << ":#{request.port}" unless [80, 443].include?(request.port)
-        url << request.fullpath
+        url << Bugsnag::Helpers.cleanup_url(request.fullpath, notification.configuration.params_filters)
 
         # Add a request tab
         notification.add_tab(:request, {
@@ -29,6 +29,7 @@ module Bugsnag::Middleware
           :httpMethod => request.request_method,
           :params => params.to_hash,
           :userAgent => request.user_agent,
+          :referer => request.referer,
           :clientIp => request.ip
         })
           

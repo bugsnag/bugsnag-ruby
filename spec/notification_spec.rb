@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'securerandom'
+require 'ostruct'
 
 module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class NestedException < StandardError; attr_accessor :original_exception; end
@@ -26,6 +27,21 @@ describe Bugsnag::Notification do
     Bugsnag.configuration.api_key = ""
 
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+  end
+
+  it "should use the env variable apiKey" do
+    ENV["BUGSNAG_API_KEY"] = "c9d60ae4c7e70c4b6c4ebd3e8056d2b9"
+
+    Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
+    Bugsnag.configure do |config|
+      config.release_stage = "production"
+    end
+
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      payload[:apiKey].should be == "c9d60ae4c7e70c4b6c4ebd3e8056d2b9"
+    end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
@@ -256,7 +272,9 @@ describe Bugsnag::Notification do
   it "should respect the notify_release_stages setting by not sending in development" do
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
 
+    Bugsnag.configuration.notify_release_stages = ["production"]
     Bugsnag.configuration.release_stage = "development"
+    
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
@@ -266,7 +284,7 @@ describe Bugsnag::Notification do
     end
 
     Bugsnag.configuration.release_stage = "development"
-    Bugsnag.configuration.notify_release_stages << "development"
+    Bugsnag.configuration.notify_release_stages = ["development"]
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
@@ -365,6 +383,18 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
   end
 
+  it "should not filter params from payload hashes if their values are nil" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:metaData].should_not be_nil
+      event[:metaData][:request].should_not be_nil
+      event[:metaData][:request][:params].should_not be_nil
+      event[:metaData][:request][:params].should have_key(:nil_param)
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:nil_param => nil}}})
+  end
+
   it "should not notify if the exception class is in the default ignore_classes list" do
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
 
@@ -383,6 +413,16 @@ describe Bugsnag::Notification do
     Bugsnag.configuration.ignore_classes << lambda {|e| e.message =~ /crashed/}
 
     Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+
+    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
+  end
+
+  it "should not notify if the user agent is present and matches a regex in ignore_user_agents" do
+    Bugsnag.configuration.ignore_user_agents << %r{BugsnagUserAgent}
+
+    Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+
+    ((Thread.current["bugsnag_req_data"] ||= {})[:rack_env] ||= {})["HTTP_USER_AGENT"] = "BugsnagUserAgent"
 
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
   end
@@ -411,5 +451,127 @@ describe Bugsnag::Notification do
     end
 
     Bugsnag.notify_or_ignore(first_ex)
+  end
+
+  it "should call to_exception on i18n error objects" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:errorClass].should be == "BugsnagTestException"
+      exception[:message].should be == "message"
+    end
+
+    Bugsnag.notify(OpenStruct.new(:to_exception => BugsnagTestException.new("message")))
+  end
+
+  it "should generate runtimeerror for non exceptions" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:errorClass].should be == "RuntimeError"
+      exception[:message].should be == "test message"
+    end
+
+    Bugsnag.notify("test message")
+  end
+
+  it "should support unix-style paths in backtraces" do
+    ex = BugsnagTestException.new("It crashed")
+    ex.set_backtrace([
+      "/Users/james/app/spec/notification_spec.rb:419",
+      "/Some/path/rspec/example.rb:113:in `instance_eval'"
+    ])
+
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:stacktrace].length.should be == 2
+
+      line = exception[:stacktrace][0]
+      line[:file].should be == "/Users/james/app/spec/notification_spec.rb"
+      line[:lineNumber].should be == 419
+      line[:method].should be nil
+
+      line = exception[:stacktrace][1]
+      line[:file].should be == "/Some/path/rspec/example.rb"
+      line[:lineNumber].should be == 113
+      line[:method].should be == "instance_eval"
+    end
+
+    Bugsnag.notify(ex)
+  end
+
+  it "should support windows-style paths in backtraces" do
+    ex = BugsnagTestException.new("It crashed")
+    ex.set_backtrace([
+      "C:/projects/test/app/controllers/users_controller.rb:13:in `index'",
+      "C:/ruby/1.9.1/gems/actionpack-2.3.10/filters.rb:638:in `block in run_before_filters'"
+    ])
+
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      exception[:stacktrace].length.should be == 2
+
+      line = exception[:stacktrace][0]
+      line[:file].should be == "C:/projects/test/app/controllers/users_controller.rb"
+      line[:lineNumber].should be == 13
+      line[:method].should be == "index"
+
+      line = exception[:stacktrace][1]
+      line[:file].should be == "C:/ruby/1.9.1/gems/actionpack-2.3.10/filters.rb"
+      line[:lineNumber].should be == 638
+      line[:method].should be == "block in run_before_filters"
+    end
+
+    Bugsnag.notify(ex)
+  end
+
+  it "should use a proxy host if configured" do
+    Bugsnag.configure do |config|
+      config.proxy_host = "host_name"
+    end
+
+    Bugsnag::Notification.should_receive(:http_proxy) do |*args|
+      args.length.should be == 4
+      args[0].should be == "host_name"
+      args[1].should be == nil
+      args[2].should be == nil
+      args[3].should be == nil
+    end
+
+    Bugsnag.notify("test message")
+  end
+
+  it "should use a proxy host/port if configured" do
+    Bugsnag.configure do |config|
+      config.proxy_host = "host_name"
+      config.proxy_port = 1234
+    end
+
+    Bugsnag::Notification.should_receive(:http_proxy) do |*args|
+      args.length.should be == 4
+      args[0].should be == "host_name"
+      args[1].should be == 1234
+      args[2].should be == nil
+      args[3].should be == nil
+    end
+
+    Bugsnag.notify("test message")
+  end
+
+  it "should use a proxy host/port/user/pass if configured" do
+    Bugsnag.configure do |config|
+      config.proxy_host = "host_name"
+      config.proxy_port = 1234
+      config.proxy_user = "user"
+      config.proxy_password = "password"
+    end
+
+    Bugsnag::Notification.should_receive(:http_proxy) do |*args|
+      args.length.should be == 4
+      args[0].should be == "host_name"
+      args[1].should be == 1234
+      args[2].should be == "user"
+      args[3].should be == "password"
+    end
+
+    Bugsnag.notify("test message")
   end
 end

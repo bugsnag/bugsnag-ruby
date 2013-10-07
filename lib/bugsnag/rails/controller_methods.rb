@@ -24,7 +24,7 @@ module Bugsnag::Rails
           # Set up "method symbol" callbacks
           methods.each do |method_symbol|
             request_data[callback_key] << lambda { |notification|
-              self.send(method_symbol, notification)
+              controller.send(method_symbol, notification)
             }
           end
 

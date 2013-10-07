@@ -13,17 +13,22 @@ module Bugsnag
     attr_accessor :app_version
     attr_accessor :params_filters
     attr_accessor :ignore_classes
+    attr_accessor :ignore_user_agents
     attr_accessor :endpoint
     attr_accessor :logger
     attr_accessor :middleware
     attr_accessor :delay_with_resque
     attr_accessor :debug
+    attr_accessor :proxy_host
+    attr_accessor :proxy_port
+    attr_accessor :proxy_user
+    attr_accessor :proxy_password
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
     DEFAULT_ENDPOINT = "notify.bugsnag.com"
 
-    DEFAULT_PARAMS_FILTERS = ["password"].freeze
+    DEFAULT_PARAMS_FILTERS = ["password", "secret", "rack.request.form_vars"].freeze
 
     DEFAULT_IGNORE_CLASSES = [
       "ActiveRecord::RecordNotFound",
@@ -35,15 +40,19 @@ module Bugsnag
       "Mongoid::Errors::DocumentNotFound"
     ].freeze
 
+    DEFAULT_IGNORE_USER_AGENTS = [].freeze
+
     def initialize
       # Set up the defaults
-      self.release_stage = nil
-      self.notify_release_stages = ["production"]
       self.auto_notify = true
       self.use_ssl = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
+      self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
+
+      # Read the API key from the environment
+      self.api_key = ENV["BUGSNAG_API_KEY"]
 
       # Set up logging
       self.logger = Logger.new(STDOUT)
@@ -55,7 +64,7 @@ module Bugsnag
     end
 
     def should_notify?
-      @release_stage.nil? || @notify_release_stages.include?(@release_stage)
+      @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
     end
 
     def request_data

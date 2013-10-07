@@ -11,6 +11,7 @@ module Bugsnag
     NOTIFIER_URL = "http://www.bugsnag.com"
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
+    BACKTRACE_LINE_REGEX = /^((?:[a-zA-Z]:)?[^:]+):(\d+)(?::in `([^']+)')?$/
 
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
@@ -20,6 +21,7 @@ module Bugsnag
 
     attr_accessor :context
     attr_accessor :user_id
+    attr_accessor :configuration
 
     class << self
       def deliver_exception_payload(endpoint, payload)
@@ -55,6 +57,18 @@ module Bugsnag
       @exceptions = []
       ex = exception
       while ex != nil && !@exceptions.include?(ex) && @exceptions.length < MAX_EXCEPTIONS_TO_UNWRAP
+        unless ex.is_a? Exception
+          if ex.respond_to?(:to_exception)
+            ex = ex.to_exception
+          elsif ex.respond_to?(:exception)
+            ex = ex.exception
+          end
+          unless ex.is_a? Exception
+            Bugsnag.warn("Converting non-Exception to RuntimeError: #{ex.inspect}")
+            ex = RuntimeError.new(ex.to_s)
+          end
+        end
+
         @exceptions << ex
 
         if ex.respond_to?(:continued_exception) && ex.continued_exception
@@ -65,6 +79,8 @@ module Bugsnag
           ex = nil
         end
       end
+
+      self.class.http_proxy configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password if configuration.proxy_host
     end
 
     # Add a single value as custom data, to this notification
@@ -162,10 +178,7 @@ module Bugsnag
     end
 
     def ignore?
-      ex = @exceptions.last
-      @configuration.ignore_classes.any? do |to_ignore|
-        to_ignore.is_a?(Proc) ? to_ignore.call(ex) : to_ignore == error_class(ex)
-      end
+      ignore_exception_class? || ignore_user_agent?
     end
 
     def request_data
@@ -177,6 +190,21 @@ module Bugsnag
     end
 
     private
+
+    def ignore_exception_class?
+      ex = @exceptions.last
+      @configuration.ignore_classes.any? do |to_ignore|
+        to_ignore.is_a?(Proc) ? to_ignore.call(ex) : to_ignore == error_class(ex)
+      end
+    end
+
+    def ignore_user_agent?
+      if @configuration.request_data && @configuration.request_data[:rack_env] && (agent = @configuration.request_data[:rack_env]["HTTP_USER_AGENT"])
+        @configuration.ignore_user_agents.any? do |to_ignore|
+          agent =~ to_ignore
+        end
+      end
+    end
 
     # Generate the meta data from both the request configuration, the overrides and the exceptions for this notification
     def generate_meta_data(exceptions, overrides)
@@ -234,13 +262,17 @@ module Bugsnag
 
     def stacktrace(exception)
       (exception.backtrace || caller).map do |trace|
-        method = nil
-        file, line_str, method_str = trace.split(":")
+        # Parse the stacktrace line
+        _, file, line_str, method = trace.match(BACKTRACE_LINE_REGEX).to_a
 
-        next(nil) if file =~ %r{lib/bugsnag}
+        # Skip stacktrace lines inside lib/bugsnag
+        next(nil) if file.nil? || file =~ %r{lib/bugsnag}
 
         # Expand relative paths
-        file = Pathname.new(file).realpath.to_s rescue file
+        p = Pathname.new(file)
+        if p.relative?
+          file = p.realpath.to_s rescue file
+        end
 
         # Generate the stacktrace line hash
         trace_hash = {}
@@ -260,10 +292,6 @@ module Bugsnag
         trace_hash[:file] = file
 
         # Add a method if we have it
-        if method_str
-          method_match = /in `([^']+)'/.match(method_str)
-          method = method_match.captures.first if method_match
-        end
         trace_hash[:method] = method if method && (method =~ /^__bind/).nil?
 
         if trace_hash[:file] && !trace_hash[:file].empty?

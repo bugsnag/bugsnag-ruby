@@ -10,8 +10,10 @@ module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096
 
-    def self.cleanup_obj(obj, filters = nil)
+    def self.cleanup_obj(obj, filters = nil, seen={})
       return nil unless obj
+      return "[RECURSION]" if seen[obj]
+      seen[obj] = true
 
       if obj.is_a?(Hash)
         clean_hash = {}
@@ -19,18 +21,26 @@ module Bugsnag
           if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
             clean_hash[k] = "[FILTERED]"
           else
-            clean_obj = cleanup_obj(v, filters)
-            clean_hash[k] = clean_obj unless clean_obj.nil?
+            clean_obj = cleanup_obj(v, filters, seen)
+            clean_hash[k] = clean_obj
           end
         end
         clean_hash
       elsif obj.is_a?(Array) || obj.is_a?(Set)
-        obj.map { |el| cleanup_obj(el, filters) }.compact
+        obj.map { |el| cleanup_obj(el, filters, seen) }.compact
       elsif obj.is_a?(Integer) || obj.is_a?(Float) || obj.is_a?(String)
         obj
       else
         obj.to_s unless obj.to_s =~ /#<.*>/
       end
+    end
+
+    def self.cleanup_url(url, filters = nil)
+      return url unless filters
+
+      filter_regex = Regexp.new("([?&](?:[^&=]*#{filters.to_a.join('|[^&=]*')}[^&=]*)=)[^&]*")
+      
+      url.gsub(filter_regex, '\1[FILTERED]')
     end
     
     def self.reduce_hash_size(hash)
@@ -41,7 +51,9 @@ module Bugsnag
         elsif v.is_a?(Array) || v.is_a?(Set)
           h[k] = v.map {|el| reduce_hash_size(el) }
         else
-          h[k] = v.to_s.slice(0, MAX_STRING_LENGTH) + "[TRUNCATED]"
+          val = v.to_s
+          val = val.slice(0, MAX_STRING_LENGTH) + "[TRUNCATED]" if val.length > MAX_STRING_LENGTH
+          h[k] = val
         end
 
         h

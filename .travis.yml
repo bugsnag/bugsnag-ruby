@@ -1,4 +1,5 @@
 language: ruby
+
 rvm:
   - 1.9.3
   - jruby-18mode
@@ -6,3 +7,7 @@ rvm:
   - rbx-18mode
   - rbx-19mode
   - 1.8.7
+
+notifications:
+  hipchat:
+    secure: "OLw2B1ggBDSeyJYgnZ2Ezf2fXbu5BHWSNFEJF38+TB4hYv+Wp3rElROhnyP6IttftLYz68Q8n9SjEUXTX9zXwTNt2fGBHIDwLnjt1uw7BrIOIHCUheOJdPheV2XxdJv9yem5MQ0vF+y33auLpyrA53b+nCbI5UsCXKISLe+C8ME="

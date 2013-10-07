@@ -1,6 +1,72 @@
 Changelog
 =========
 
+1.5.3
+-----
+-   Deal with self-referential meta data correctly.
+
+1.5.2
+-----
+-   Dont send rack.request.form_vars as it is a copy of form_hash and it may contain sensitive params.
+
+1.5.1
+-----
+-   Fix rake block arguments for tasks that need them.
+
+1.5.0
+-----
+-   Add proxy support for http requests to Bugsnag.
+-   Read the API key from the environment for Heroku users
+
+1.4.2
+-----
+-   Add HTTP Referer to the request tab on rack apps
+
+1.4.0
+-----
+- 	Add ignore_user_agents to ignore certain user agents
+-  	Change bugsnag middleware order to have Callbacks last
+- 	Allow nil values to be sent to bugsnag
+
+1.3.8
+-----
+- 	Add truncated only when a field has been truncated
+
+1.3.7
+-----
+- 	Fix warden bug where user id is an array of ids
+- 	Filter get params from URLs as well as meta_data
+
+1.3.6
+-----
+-   Filter out meta-data keys containing the word 'secret' by default
+
+1.3.5
+-----
+-   Fixed bug in rake integration with ruby 1.9 hash syntax
+
+1.3.4
+-----
+-   Fix nil bug in windows backtraces
+
+1.3.3
+-----
+-   Support windows-style paths in backtraces
+-   Fix bug with `before_bugsnag_notify` in Rails 2
+
+1.3.2
+-----
+-   Notify will now build exceptions if a non-exception is passed in.
+
+1.3.1
+-----
+-   Add support for Bugsnag rake integration
+
+1.3.0
+------
+-   By default we notify in all release stages now
+-   Return the notification in notify_or_ignore
+
 1.2.18
 ------
 -   Add support for bugsnag meta data in exceptions.

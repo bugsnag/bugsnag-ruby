@@ -49,6 +49,9 @@ How to Install
     end
     ```
 
+    If you don't configure the api_key, the Bugsnag module will read the `BUGSNAG_API_KEY`
+    environment variable.
+
 4.  **Rack/Sinatra apps only**: Activate the Bugsnag Rack middleware
 
     ```ruby
@@ -150,6 +153,51 @@ Bugsnag.notify(RuntimeError.new("Something broke"), {
 })
 ```
 
+Rake Integration
+----------------
+
+Bugsnag can automatically notify of all exceptions that happen in your rake tasks. In order
+to enable this, you need to `require "bugsnag/rake"` in your Rakefile, like so:
+
+```ruby
+require File.expand_path('../config/application', __FILE__)
+require 'rake'
+require "bugsnag/rake"
+
+Bugsnag.configure do |config|
+  config.api_key = "YOUR_API_KEY_HERE"
+end
+
+YourApp::Application.load_tasks
+```
+
+**NOTE**: We also configure Bugsnag in the Rakefile, so the tasks that do not load the full
+environment can still notify Bugsnag.
+
+Standard Ruby Scripts
+---------------------
+
+If you are running a standard ruby script, you can ensure that all exceptions are sent to Bugsnag by
+adding the following code to your app:
+
+```ruby
+at_exit do
+  if $!
+    Bugsnag.notify($!)
+  end
+end
+```
+
+Testing Integration
+-------------------
+
+To test that bugsnag is properly configured, you can use the test_exception rake task like this,
+
+```bash
+rake bugsnag:test_exception
+```
+
+A test exception will be sent to your bugsnag dashboard if everything is configured correctly.
 
 Configuration
 -------------
@@ -189,10 +237,9 @@ apps it is automatically set to `RACK_ENV`. Otherwise the default is
 
 ###notify_release_stages
 
-By default, we will only notify Bugsnag of exceptions that happen when
-your `release_stage` is set to be "production". If you would like to
-change which release stages notify Bugsnag of exceptions you can
-set `notify_release_stages`:
+By default, we will notify Bugsnag of exceptions that happen in any
+`release_stage`. If you would like to change which release stages 
+notify Bugsnag of exceptions you can set `notify_release_stages`:
 
 ```ruby
 config.notify_release_stages = ["production", "development"]
@@ -242,13 +289,13 @@ config.app_version = "2.5.1"
 Sets the strings to filter out from the `params` hashes before sending
 them to Bugsnag. Use this if you want to ensure you don't send
 sensitive data such as passwords, and credit card numbers to our
-servers. Any keys which contain these strings will be filtered.
+servers. Any keys which *contain* these strings will be filtered.
 
 ```ruby
 config.params_filters << "credit_card_number"
 ```
 
-By default, `params_filters` is set to `["password", "password_confirmation"]`
+By default, `params_filters` is set to `["password", "secret"]`
 
 ###ignore_classes
 
@@ -276,6 +323,50 @@ By default, `ignore_classes` contains the following:
   "ActionController::UnknownAction",
   "AbstractController::ActionNotFound"
 ]
+```
+
+###ignore_user_agents
+
+Sets an array of Regexps that can be used to ignore exceptions from
+certain user agents.
+
+```ruby
+config.ignore_user_agents << %r{Chrome}
+```
+
+By default, `ignore_user_agents` is empty, so exceptions caused by all
+user agents are reported.
+
+###proxy_host
+
+Sets the address of the HTTP proxy that should be used for requests to bugsnag.
+
+```ruby
+config.proxy_host = "10.10.10.10"
+```
+
+###proxy_port
+
+Sets the port of the HTTP proxy that should be used for requests to bugsnag.
+
+```ruby
+config.proxy_port = 1089
+```
+
+###proxy_user
+
+Sets the user that should be used to send requests to the HTTP proxy for requests to bugsnag.
+
+```ruby
+config.proxy_user = "proxy_user"
+```
+
+###proxy_password
+
+Sets the password for the user that should be used to send requests to the HTTP proxy for requests to bugsnag.
+
+```ruby
+config.proxy_password = "proxy_secret_password_here"
 ```
 
 ###logger
@@ -423,7 +514,9 @@ function, for example:
 EventMachine::run do
   server = EventMachine::start_server('0.0.0.0', PORT, MyServer)
   server.errback {
-    Bugsnag.notify(RuntimeError.new("Something bad happened"))
+    EM.defer do
+      Bugsnag.notify(RuntimeError.new("Something bad happened"))
+    end
   }
 end
 ```
