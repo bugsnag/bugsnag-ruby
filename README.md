@@ -188,6 +188,17 @@ at_exit do
 end
 ```
 
+Testing Integration
+-------------------
+
+To test that bugsnag is properly configured, you can use the test_exception rake task like this,
+
+```bash
+rake bugsnag:test_exception
+```
+
+A test exception will be sent to your bugsnag dashboard if everything is configured correctly.
+
 Configuration
 -------------
 
