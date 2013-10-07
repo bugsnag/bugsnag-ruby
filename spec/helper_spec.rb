@@ -1,10 +1,30 @@
 require 'spec_helper'
 
 describe Bugsnag::Helpers do
-  it "should be able to clean up recursive objects" do
+  it "should be able to clean up recursive hashes" do
     a = {:a => {}}
     a[:a][:b] = a
     Bugsnag::Helpers.cleanup_obj(a).should == {:a => {:b => "[RECURSION]"}}
+  end
+
+  it "should be able to clean up recursive arrays" do
+    a = []
+    a << a
+    a << "hello"
+    Bugsnag::Helpers.cleanup_obj(a).should == ["[RECURSION]", "hello"]
+  end
+
+  it "should allow multiple copies of the same string" do
+    a = {:name => "bugsnag"}
+    a[:second] = a[:name]
+    Bugsnag::Helpers.cleanup_obj(a).should == {:name => "bugsnag", :second => "bugsnag"}
+  end
+
+  it "should allow multiple copies of the same object" do
+    a = []
+    b = ["hello"]
+    a << b; a << b
+    Bugsnag::Helpers.cleanup_obj(a).should == [["hello"], ["hello"]]
   end
 
   it "should reduce hash size correctly" do
