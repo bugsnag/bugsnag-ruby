@@ -9,7 +9,7 @@ require "bugsnag/helpers"
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
 
-require "resque/failure/bugsnag" if defined?(::Resque::Job)
+require "bugsnag/resque" if defined?(::Resque::Job)
 require "bugsnag/sidekiq" if defined?(Sidekiq)
 
 module Bugsnag
