@@ -20,13 +20,13 @@ module Bugsnag::Rake
               :name => task.name,
               :description => task.full_comment,
               :arguments => task.arg_description
-            })
+            }.delete_if {|k,v| v.nil? || v.empty?})
             notif.context ||= task.name
           }
 
           yield(*block_args) if block_given?
         rescue Exception => e
-          Bugsnag.notify(e)
+          Bugsnag.notify(e) if Bugsnag.configuration.auto_configure
           raise
         end
       end

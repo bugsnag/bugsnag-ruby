@@ -11,24 +11,13 @@ namespace :bugsnag do
     begin
       require 'bugsnag'
 
-      api_key = ENV["BUGSNAG_API_KEY"]
-      releaseStage = ENV["BUGSNAG_RELEASE_STAGE"] || "production"
-      appVersion = ENV["BUGSNAG_APP_VERSION"]
+      release_stage = ENV["BUGSNAG_RELEASE_STAGE"] || "production"
+      app_version = ENV["BUGSNAG_APP_VERSION"]
       revision = ENV["BUGSNAG_REVISION"]
       repository = ENV["BUGSNAG_REPOSITORY"]
       branch = ENV["BUGSNAG_BRANCH"]
 
-      begin
-        require Rails.root.join('config/initializers/bugsnag')
-      rescue Exception => e
-        yml_filename = Rails.root.join("config/bugsnag.yml")
-        config = YAML.load_file(yml_filename) if File.exists?(yml_filename)
-        Bugsnag.configure(config[releaseStage] ? config[releaseStage] : config) if config
-      end
-
-      # Fetch and check the api key
-      api_key ||= Bugsnag.configuration.api_key
-      raise RuntimeError.new("No API key found when notifying deploy") if !api_key || api_key.empty?
+      raise RuntimeError.new("No API key found when notifying deploy") unless bugsnag.configuration.auto_configure
 
       endpoint = (Bugsnag.configuration.use_ssl ? "https://" : "http://") \
                  + (Bugsnag.configuration.endpoint || Bugsnag::Notification::DEFAULT_ENDPOINT) \
@@ -36,9 +25,9 @@ namespace :bugsnag do
       uri = URI.parse(endpoint)
 
       parameters = {
-        "apiKey" => api_key,
-        "releaseStage" => releaseStage,
-        "appVersion" => appVersion,
+        "apiKey" => Bugsnag.configuration.api_key,
+        "releaseStage" => release_stage,
+        "appVersion" => app_version,
         "revision" => revision,
         "repository" => repository,
         "branch" => branch

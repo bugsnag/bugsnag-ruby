@@ -32,9 +32,7 @@ module Bugsnag
       end
 
       # Auto-load configuration settings from config/bugsnag.yml if it exists
-      config_file = File.join(RAILS_ROOT, "config", "bugsnag.yml")
-      config = YAML.load_file(config_file) if File.exists?(config_file)
-      Bugsnag.configure(config[RAILS_ENV] ? config[RAILS_ENV] : config) if config
+      Bugsnag.configuration.load_config_from_yaml
     end
   end
 end
