@@ -13,4 +13,4 @@ module Bugsnag
   end
 end
 
-Mailman.config.middleware.add ::Bugsnag::Mailman
+Mailman.config.middleware.add ::Bugsnag::Mailman if Mailman.config.respond_to?(:middleware)
