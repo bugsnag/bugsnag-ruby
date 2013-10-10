@@ -20,7 +20,7 @@ module Bugsnag::Rake
               :name => task.name,
               :description => task.full_comment,
               :arguments => task.arg_description
-            })
+            }.delete_if {|k,v| v.nil? || v.empty?})
             notif.context ||= task.name
           }
 

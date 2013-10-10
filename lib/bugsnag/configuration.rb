@@ -66,18 +66,20 @@ module Bugsnag
     # Tries to ensure bugsnag has been configured in the case where initializers etc
     # have not been run. Returns a boolean to indicate whether bugsnag has been configured.
     def auto_configure
-      if configuration.api_key.nil? || configuration.api_key.empty?
+      if self.api_key.nil? || self.api_key.empty?
         # Try and load Rails initializer
         if defined?(Rails) && Rails.root
-          begin
-            require Rails.root.join('config/initializers/bugsnag')
-          rescue Exception => e
-            load_config_from_yaml 
-          end
+          self.release_stage = Rails.env.to_s
+          self.project_root = Rails.root.to_s
+
+          load_config_from_yaml
+          require Rails.root.join('config/initializers/bugsnag')
         end
       end
 
-      return !configuration.api_key.nil? && !configuration.api_key.empty?
+      return !self.api_key.nil? && !self.api_key.empty?
+    rescue
+      return false
     end
 
     def load_config_from_yaml
