@@ -11,6 +11,7 @@ require "bugsnag/railtie" if defined?(Rails::Railtie)
 
 require "resque/failure/bugsnag" if defined?(::Resque::Job)
 require "bugsnag/sidekiq" if defined?(Sidekiq)
+require "bugsnag/mailman" if defined?(Mailman)
 
 module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
