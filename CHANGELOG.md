@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.6.0
+-----
+-   Add support for catching crashes in [mailman](https://github.com/titanous/mailman) apps
+-   Automatically enable Bugsnag's resque failure backend
+-   Add automatic rake integration for rails apps
+
 1.5.3
 -----
 -   Deal with self-referential meta data correctly.
