@@ -26,7 +26,7 @@ module Bugsnag::Rake
 
           yield(*block_args) if block_given?
         rescue Exception => e
-          Bugsnag.notify(e) if Bugsnag.ensure_configured
+          Bugsnag.notify(e) if Bugsnag.configuration.auto_configure
           raise
         end
       end

@@ -23,9 +23,7 @@ module Bugsnag
       end
 
       # Auto-load configuration settings from config/bugsnag.yml if it exists
-      config_file = Rails.root.join("config", "bugsnag.yml")
-      config = YAML.load_file(config_file) if File.exists?(config_file)
-      Bugsnag.configure(config[Rails.env] ? config[Rails.env] : config) if config
+      Bugsnag.configuration.load_config_from_yaml
 
       if defined?(::ActionController::Base)
         require "bugsnag/rails/controller_methods"

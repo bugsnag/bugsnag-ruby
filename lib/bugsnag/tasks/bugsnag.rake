@@ -17,7 +17,7 @@ namespace :bugsnag do
       repository = ENV["BUGSNAG_REPOSITORY"]
       branch = ENV["BUGSNAG_BRANCH"]
 
-      raise RuntimeError.new("No API key found when notifying deploy") unless bugsnag.ensure_configured
+      raise RuntimeError.new("No API key found when notifying deploy") unless bugsnag.configuration.auto_configure
 
       endpoint = (Bugsnag.configuration.use_ssl ? "https://" : "http://") \
                  + (Bugsnag.configuration.endpoint || Bugsnag::Notification::DEFAULT_ENDPOINT) \

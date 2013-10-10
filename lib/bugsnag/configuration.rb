@@ -63,6 +63,37 @@ module Bugsnag
       self.middleware.use Bugsnag::Middleware::Callbacks
     end
 
+    # Tries to ensure bugsnag has been configured in the case where initializers etc
+    # have not been run. Returns a boolean to indicate whether bugsnag has been configured.
+    def auto_configure
+      if configuration.api_key.nil? || configuration.api_key.empty?
+        # Try and load Rails initializer
+        if defined?(Rails) && Rails.root
+          begin
+            require Rails.root.join('config/initializers/bugsnag')
+          rescue Exception => e
+            load_config_from_yaml 
+          end
+        end
+      end
+
+      return !configuration.api_key.nil? && !configuration.api_key.empty?
+    end
+
+    def load_config_from_yaml
+      if defined?(RAILS_ROOT)
+        config_file = File.join(RAILS_ROOT, "config", "bugsnag.yml")
+        environment = RAILS_ENV
+      elsif defined?(Rails) && Rails.root
+        config_file = Rails.root.join("config", "bugsnag.yml")
+        environment = Rails.env
+      end
+      if config_file && environment
+        config = YAML.load_file(config_file) if File.exists?(config_file)
+        Bugsnag.configure(config[environment] ? config[environment] : config) if config
+      end
+    end
+
     def should_notify?
       @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
     end
