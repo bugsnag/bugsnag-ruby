@@ -1,4 +1,5 @@
 require "resque/failure/base"
+require "resque/failure/multiple"
 
 module Bugsnag
   class Resque < ::Resque::Failure::Base
