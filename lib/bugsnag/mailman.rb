@@ -4,7 +4,7 @@ module Bugsnag
       begin
         yield
       rescue => ex
-        Bugsnag.notify(ex)
+        Bugsnag.notify(ex, :mailman => {"message" => mail.to_s})
         raise
       ensure
         Bugsnag.clear_request_data
