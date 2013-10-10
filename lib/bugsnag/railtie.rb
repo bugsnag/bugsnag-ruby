@@ -8,6 +8,7 @@ require "bugsnag/middleware/rack_request"
 module Bugsnag
   class Railtie < Rails::Railtie
     rake_tasks do
+      require "bugsnag/rake"
       load "bugsnag/tasks/bugsnag.rake"
     end
 
