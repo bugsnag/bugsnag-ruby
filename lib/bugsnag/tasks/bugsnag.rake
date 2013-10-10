@@ -21,7 +21,7 @@ namespace :bugsnag do
       begin
         require Rails.root.join('config/initializers/bugsnag')
       rescue Exception => e
-        yml_filename = Rails.root.join("config/bugsnag.yml")
+        yml_filename = Rails.root.join("config","bugsnag.yml")
         config = YAML.load_file(yml_filename) if File.exists?(yml_filename)
         Bugsnag.configure(config[releaseStage] ? config[releaseStage] : config) if config
       end
