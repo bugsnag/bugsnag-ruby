@@ -4,7 +4,7 @@ module Bugsnag
   class Resque < ::Resque::Failure::Base
     def self.configure(&block)
       add_failure_backend
-      ::Bugsnag.configure(&block)
+      Bugsnag.configure(&block)
     end
 
     def self.add_failure_backend
@@ -25,7 +25,7 @@ module Bugsnag
     end
 
     def save
-      ::Bugsnag.auto_notify(exception, {:context => "resque##{queue}", :payload => payload})
+      Bugsnag.auto_notify(exception, {:context => "resque##{queue}", :payload => payload})
     end
   end
 end
