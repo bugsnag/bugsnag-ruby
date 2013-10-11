@@ -2,9 +2,13 @@ module Bugsnag
   class Mailman
     def call(mail)
       begin
+        Bugsnag.before_notify_callbacks << lambda {|notif|
+          notif.add_tab(:mailman, {"message" => mail.to_s})
+        }
+
         yield
       rescue => ex
-        Bugsnag.auto_notify(ex, :mailman => {"message" => mail.to_s})
+        Bugsnag.auto_notify(ex)
         raise
       ensure
         Bugsnag.clear_request_data
