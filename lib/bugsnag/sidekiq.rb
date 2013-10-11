@@ -2,9 +2,14 @@ module Bugsnag
   class Sidekiq
     def call(worker, msg, queue)
       begin
+        Bugsnag.before_notify_callbacks << lambda {|notif|
+          notif.add_tab(:sidekiq, msg)
+          notif.context ||= "sidekiq##{queue}"
+        }
+
         yield
       rescue => ex
-        Bugsnag.auto_notify(ex, {:context => "sidekiq##{queue}", :sidekiq => msg})
+        Bugsnag.auto_notify(ex)
         raise
       ensure
         Bugsnag.clear_request_data
