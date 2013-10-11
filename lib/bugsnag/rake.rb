@@ -26,7 +26,7 @@ module Bugsnag::Rake
 
           yield(*block_args) if block_given?
         rescue Exception => e
-          Bugsnag.notify(e)
+          Bugsnag.auto_notify(e)
           raise
         end
       end

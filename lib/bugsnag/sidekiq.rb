@@ -4,7 +4,7 @@ module Bugsnag
       begin
         yield
       rescue => ex
-        Bugsnag.notify(ex, :meta_data => {:sidekiq => msg })
+        Bugsnag.auto_notify(ex, {:context => "sidekiq##{queue}", :sidekiq => msg})
         raise
       ensure
         Bugsnag.clear_request_data
