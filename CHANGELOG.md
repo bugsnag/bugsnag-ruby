@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.6.1
+-----
+-   Ensure sidekiq, mailman and rake hooks respect the `ignore_classes` setting
+-   Persist sidekiq and mailman meta-data through each job, so it can show up
+    in manual Bugsnag.notify calls
+
 1.6.0
 -----
 -   Add support for catching crashes in [mailman](https://github.com/titanous/mailman) apps
