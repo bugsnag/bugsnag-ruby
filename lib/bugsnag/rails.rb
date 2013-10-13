@@ -4,6 +4,7 @@
 require "bugsnag"
 require "bugsnag/rails/controller_methods"
 require "bugsnag/rails/action_controller_rescue"
+require "bugsnag/rails/active_record_rescue"
 require "bugsnag/middleware/rails2_request"
 require "bugsnag/middleware/callbacks"
 
@@ -13,6 +14,9 @@ module Bugsnag
       if defined?(ActionController::Base)
         ActionController::Base.send(:include, Bugsnag::Rails::ActionControllerRescue)
         ActionController::Base.send(:include, Bugsnag::Rails::ControllerMethods)
+      end
+      if defined?(ActiveRecord::Base)
+        ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
       end
 
       # Try to find where to log to
