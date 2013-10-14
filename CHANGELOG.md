@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.6.2
+-----
+-   Notify about exceptions that occur in ActiveRecord `commit` and `rollback`
+    callbacks (these are usually swallowed silently by rails)
+
 1.6.1
 -----
 -   Ensure sidekiq, mailman and rake hooks respect the `ignore_classes` setting
