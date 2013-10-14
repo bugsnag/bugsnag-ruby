@@ -31,6 +31,10 @@ module Bugsnag
         require "bugsnag/rails/controller_methods"
         ::ActionController::Base.send(:include, Bugsnag::Rails::ControllerMethods)
       end
+      if defined?(ActiveRecord::Base)
+        require "bugsnag/rails/active_record_rescue"
+        ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
+      end
     end
 
     initializer "bugsnag.use_rack_middleware" do |app|
