@@ -31,7 +31,7 @@ namespace :bugsnag do
       raise RuntimeError.new("No API key found when notifying deploy") if !api_key || api_key.empty?
 
       endpoint = (Bugsnag.configuration.use_ssl ? "https://" : "http://") \
-                 + (Bugsnag.configuration.endpoint || Bugsnag::Notification::DEFAULT_ENDPOINT) \
+                 + (Bugsnag.configuration.endpoint || Bugsnag::Configuration::DEFAULT_ENDPOINT) \
                  + "/deploy"
       uri = URI.parse(endpoint)
 
@@ -44,7 +44,12 @@ namespace :bugsnag do
         "branch" => branch
       }
 
-      Net::HTTP.post_form(uri, parameters)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = uri.scheme == 'https'
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      request = Net::HTTP::Post.new(uri.request_uri)
+      request.set_form_data(parameters)
+      http.request(request)
 
     rescue Exception => e
       Bugsnag.warn("Deploy notification failed, #{e.inspect}")
