@@ -574,4 +574,17 @@ describe Bugsnag::Notification do
 
     Bugsnag.notify("test message")
   end
+
+  it "should set the timeout time to the value in the configuration" do |*args|
+    Bugsnag.configure do |config|
+      config.timeout_time = 10
+    end
+
+    Bugsnag::Notification.should_receive(:default_timeout) do |*args|
+      args.length.should be == 1
+      args[0].should be == 10
+    end
+
+    Bugsnag.notify("test message")
+  end
 end

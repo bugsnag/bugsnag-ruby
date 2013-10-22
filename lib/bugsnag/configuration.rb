@@ -23,6 +23,7 @@ module Bugsnag
     attr_accessor :proxy_port
     attr_accessor :proxy_user
     attr_accessor :proxy_password
+    attr_accessor :timeout_time
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -50,6 +51,7 @@ module Bugsnag
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
+      self.timeout_time = 5
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
