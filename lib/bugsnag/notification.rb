@@ -81,6 +81,7 @@ module Bugsnag
       end
 
       self.class.http_proxy configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password if configuration.proxy_host
+      self.class.default_timeout @configuration.timeout_time if configuration.timeout_time
     end
 
     # Add a single value as custom data, to this notification
