@@ -235,13 +235,6 @@ you can set the `release_stage` that is reported to Bugsnag.
 config.release_stage = "development"
 ```
 
-By default the timeout time is 5 seconds. To increase the timout time of the bugsnag
-notify call you can set the `timeout_time` to an integer value.
-
-```ruby
-config.timeout_time = 10
-```
-
 In rails apps this value is automatically set from `RAILS_ENV`, and in rack
 apps it is automatically set to `RACK_ENV`. Otherwise the default is
 "production".
@@ -378,6 +371,14 @@ Sets the password for the user that should be used to send requests to the HTTP 
 
 ```ruby
 config.proxy_password = "proxy_secret_password_here"
+```
+
+###timeout
+By default the timeout for posting errors to Bugsnag is 5 seconds, to change this
+you can set the `timeout`:
+
+```ruby
+config.timeout = 10
 ```
 
 ###logger
