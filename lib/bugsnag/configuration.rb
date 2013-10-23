@@ -28,7 +28,6 @@ module Bugsnag
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
     DEFAULT_ENDPOINT = "notify.bugsnag.com"
-    DEFAULT_TIMEOUT = 5
 
     DEFAULT_PARAMS_FILTERS = ["password", "secret", "rack.request.form_vars"].freeze
 
@@ -52,7 +51,6 @@ module Bugsnag
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
-      self.timeout = DEFAULT_TIMEOUT
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
