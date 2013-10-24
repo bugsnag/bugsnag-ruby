@@ -373,6 +373,14 @@ Sets the password for the user that should be used to send requests to the HTTP 
 config.proxy_password = "proxy_secret_password_here"
 ```
 
+###timeout
+By default the timeout for posting errors to Bugsnag is 5 seconds, to change this
+you can set the `timeout`:
+
+```ruby
+config.timeout = 10
+```
+
 ###logger
 
 Sets which logger to use for Bugsnag log messages. In rails apps, this is

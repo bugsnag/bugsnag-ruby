@@ -23,6 +23,7 @@ module Bugsnag
     attr_accessor :proxy_port
     attr_accessor :proxy_user
     attr_accessor :proxy_password
+    attr_accessor :timeout
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
