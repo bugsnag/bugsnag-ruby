@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "bugsnag"
-  s.version = "1.6.2"
+  s.version = "1.6.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
-  s.date = "2013-10-14"
+  s.date = "2013-10-28"
   s.description = "Ruby notifier for bugsnag.com"
   s.email = "james@bugsnag.com"
   s.extra_rdoc_files = [
@@ -19,7 +19,6 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
     ".rspec",
-    ".ruby-version",
     ".travis.yml",
     "CHANGELOG.md",
     "Gemfile",
