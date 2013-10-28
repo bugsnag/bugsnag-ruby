@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.6.3
+-----
+-   Deal with SSL properly for deploy notifications on ruby <2.0
+
 1.6.2
 -----
 -   Notify about exceptions that occur in ActiveRecord `commit` and `rollback`
