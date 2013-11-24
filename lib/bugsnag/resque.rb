@@ -1,4 +1,4 @@
-require "resque/failure/base"
+require "resque"
 require "resque/failure/multiple"
 
 module Bugsnag
