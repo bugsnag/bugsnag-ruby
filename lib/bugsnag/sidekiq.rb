@@ -1,3 +1,5 @@
+require 'sidekiq'
+
 module Bugsnag
   class Sidekiq
     def call(worker, msg, queue)

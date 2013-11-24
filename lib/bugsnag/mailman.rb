@@ -1,3 +1,5 @@
+require 'mailman'
+
 module Bugsnag
   class Mailman
     def call(mail)
