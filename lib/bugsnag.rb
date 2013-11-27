@@ -9,9 +9,12 @@ require "bugsnag/helpers"
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
 
-require "bugsnag/resque" if defined?(::Resque::Job)
-require "bugsnag/sidekiq" if defined?(Sidekiq)
-require "bugsnag/mailman" if defined?(Mailman)
+[:resque, :sidekiq, :mailman].each do |integration|
+  begin
+    require "bugsnag/#{integration}"
+  rescue LoadError
+  end
+end
 
 module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
