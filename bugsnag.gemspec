@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Smith"]
-  s.date = "2013-10-28"
+  s.date = "2013-11-27"
   s.description = "Ruby notifier for bugsnag.com"
   s.email = "james@bugsnag.com"
   s.extra_rdoc_files = [
@@ -54,6 +54,7 @@ Gem::Specification.new do |s|
     "lib/bugsnag/tasks.rb",
     "lib/bugsnag/tasks/bugsnag.rake",
     "lib/bugsnag/version.rb",
+    "lib/generators/bugsnag/bugsnag_generator.rb",
     "rails/init.rb",
     "spec/helper_spec.rb",
     "spec/middleware_spec.rb",
