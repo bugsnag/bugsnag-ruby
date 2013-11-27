@@ -39,9 +39,15 @@ How to Install
     bundle install
     ```
 
-3.  Configure the Bugsnag module with your API key.
+3. Configure the Bugsnag module with your API key.
 
-    In rails apps, put this code to a new file at `config/initializers/bugsnag.rb`
+    **Rails**: Use our generator
+
+    ```shell
+    rails generate bugsnag YOUR_API_KEY_HERE
+    ```
+
+    **Other Ruby/Rack/Sinatra apps**: Put this snippet in your initialization.
 
     ```ruby
     Bugsnag.configure do |config|
@@ -49,8 +55,8 @@ How to Install
     end
     ```
 
-    If you don't configure the api_key, the Bugsnag module will read the `BUGSNAG_API_KEY`
-    environment variable.
+    The Bugsnag module will read the `BUGSNAG_API_KEY` environment variable if you
+    do not configure one automatically.
 
 4.  **Rack/Sinatra apps only**: Activate the Bugsnag Rack middleware
 
