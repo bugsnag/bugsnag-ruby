@@ -1,4 +1,5 @@
 require "set"
+require "socket"
 require "logger"
 require "bugsnag/middleware_stack"
 
@@ -24,6 +25,7 @@ module Bugsnag
     attr_accessor :proxy_user
     attr_accessor :proxy_password
     attr_accessor :timeout
+    attr_accessor :hostname
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -51,6 +53,7 @@ module Bugsnag
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
+      self.hostname = default_hostname
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
@@ -75,13 +78,20 @@ module Bugsnag
     def set_request_data(key, value)
       self.request_data[key] = value
     end
-    
+
     def unset_request_data(key, value)
       self.request_data.delete(key)
     end
 
     def clear_request_data
       Thread.current[THREAD_LOCAL_NAME] = nil
+    end
+
+    private
+
+    def default_hostname
+      # Don't send the hostname on Heroku
+      Socket.gethostname unless ENV["DYNO"]
     end
   end
 end

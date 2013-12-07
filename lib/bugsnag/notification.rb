@@ -163,6 +163,8 @@ module Bugsnag
           :metaData => Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
         }.reject {|k,v| v.nil? }
 
+        payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
+
         # Build the payload hash
         payload = {
           :apiKey => @configuration.api_key,
