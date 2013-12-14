@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.6.5
+-----
+-   Send hostname to Bugsnag
+
+1.6.4
+-----
+-   Fix load order issue with Resque
+
 1.6.3
 -----
 -   Deal with SSL properly for deploy notifications on ruby <2.0
