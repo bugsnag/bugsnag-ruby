@@ -24,7 +24,8 @@ module Bugsnag
               "BUGSNAG_RELEASE_STAGE" => bugsnag_env,
               "BUGSNAG_REVISION"      => fetch(:current_revision, nil),
               "BUGSNAG_REPOSITORY"    => fetch(:repository, nil),
-              "BUGSNAG_BRANCH"        => fetch(:branch, nil)
+              "BUGSNAG_BRANCH"        => fetch(:branch, nil),
+              "BUGSNAG_API_KEY"       => fetch(:bugsnag_api_key, nil)
             }.reject { |_, v| v.nil? }
 
             # Pass through any existing env variables
