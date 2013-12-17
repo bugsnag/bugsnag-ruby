@@ -144,7 +144,7 @@ describe Bugsnag::Notification do
   it "should accept user_id from an exception that mixes in Bugsnag::MetaData" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:userId].should be == "exception_user_id"
+      event[:user][:id].should be == "exception_user_id"
     end
 
     exception = BugsnagTestExceptionWithMetaData.new("It crashed")
@@ -156,7 +156,7 @@ describe Bugsnag::Notification do
   it "should accept user_id from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:userId].should be == "override_user_id"
+      event[:user][:id].should be == "override_user_id"
     end
 
     exception = BugsnagTestExceptionWithMetaData.new("It crashed")
@@ -224,6 +224,46 @@ describe Bugsnag::Notification do
     })
   end
 
+  it "should accept a severity in overrides" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:severity].should be == "info"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
+      :severity => "info"
+    })
+  end
+
+  it "should default to error severity" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:severity].should be == "error"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+  end
+
+  it "should not accept a bad severity in overrides" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:severity].should be == "error"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
+      :severity => "infffo"
+    })
+  end
+
+  it "should autonotify fatal errors" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:severity].should be == "fatal"
+    end
+
+    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
+  end
+
   it "should accept a context in overrides" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
@@ -238,7 +278,7 @@ describe Bugsnag::Notification do
   it "should accept a user_id in overrides" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:userId].should be == "test_user"
+      event[:user][:id].should be == "test_user"
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
@@ -263,7 +303,7 @@ describe Bugsnag::Notification do
 
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:releaseStage].should be == "production"
+      event[:app][:releaseStage].should be == "production"
     end
 
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
@@ -347,7 +387,7 @@ describe Bugsnag::Notification do
   it "should add app_version to the payload if it is set" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:appVersion].should be == "1.1.1"
+      event[:app][:version].should be == "1.1.1"
     end
 
     Bugsnag.configuration.app_version = "1.1.1"

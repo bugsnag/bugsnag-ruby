@@ -15,12 +15,14 @@ module Bugsnag
 
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
+    SUPPORTED_SEVERITIES = ["fatal", "error", "warning", "info"]
+
     # HTTParty settings
     headers  "Content-Type" => "application/json"
     default_timeout 5
 
     attr_accessor :context
-    attr_accessor :user_id
+    attr_accessor :user
     attr_accessor :configuration
 
     class << self
@@ -52,6 +54,10 @@ module Bugsnag
       @overrides = Bugsnag::Helpers.flatten_meta_data(overrides) || {}
       @request_data = request_data
       @meta_data = {}
+      @user = {}
+      
+      self.severity = @overrides[:severity]
+      @overrides.delete :severity
 
       # Unwrap exceptions
       @exceptions = []
@@ -110,6 +116,26 @@ module Bugsnag
       @meta_data.delete(name.to_sym)
     end
 
+    def user_id=(user_id)
+      @user[:id] = user_id
+    end
+
+    def user_id
+      @user[:id]
+    end
+
+    def user=(user = {})
+      @user.merge!(user).delete_if{|k,v| v == nil}
+    end
+
+    def severity=(severity)
+      @severity = severity if SUPPORTED_SEVERITIES.include?(severity)
+    end
+
+    def severity
+      @severity || "error"
+    end
+
     # Deliver this notification to bugsnag.com Also runs through the middleware as required.
     def deliver
       return unless @configuration.should_notify?
@@ -142,7 +168,7 @@ module Bugsnag
           end
         end
 
-        [:user_id, :context].each do |symbol|
+        [:user_id, :context, :user].each do |symbol|
           if @overrides[symbol]
             self.send("#{symbol}=", @overrides[symbol])
             @overrides.delete symbol
@@ -155,11 +181,15 @@ module Bugsnag
 
         # Build the payload's exception event
         payload_event = {
-          :releaseStage => @configuration.release_stage,
-          :appVersion => @configuration.app_version,
+          :app => {
+            :version => @configuration.app_version,
+            :releaseStage => @configuration.release_stage,
+            :type => @configuration.app_type
+          },
           :context => self.context,
-          :userId => self.user_id,
+          :user => @user,
           :exceptions => exception_list,
+          :severity => self.severity,
           :metaData => Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
         }.reject {|k,v| v.nil? }
 
