@@ -87,10 +87,18 @@ class MyController < ApplicationController
 
   private
   def add_user_info_to_bugsnag(notif)
+    # Set the user that this bug affected
+    # Email, name and id are searchable on bugsnag.com
+    notif.user = {
+      email: current_user.email,
+      name: current_user.name,
+      id: current_user.id
+    }
+
     # Add some app-specific data which will be displayed on a custom
-    # "User Info" tab on each error page on bugsnag.com
-    notif.add_tab(:user_info, {
-      name: current_user.name
+    # "Diagnostics" tab on each error page on bugsnag.com
+    notif.add_tab(:diagnostics, {
+      product: current_product.name
     })
   end
 end

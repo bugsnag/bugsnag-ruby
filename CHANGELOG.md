@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.7.0
+-----
+-   Allow users to configure app type
+-   Send severity of error to bugsnag
+-   Allo users to configure users in a structured way for search etc.
+
 1.6.5
 -----
 -   Send hostname to Bugsnag
