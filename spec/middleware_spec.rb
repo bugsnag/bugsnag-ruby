@@ -41,6 +41,26 @@ describe Bugsnag::MiddlewareStack do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     callback_run_count.should be == 1
   end
+
+  it "should run before_bugsnag_notify callbacks, setting the user" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:user].should_not be_nil
+      event[:user][:id].should be == "here"
+      event[:user][:email].should be == "also here"
+      event[:user][:name].should be == "also here too"
+      event[:user][:random_key].should be == "also here too too"
+    end
+    
+    callback_run_count = 0
+    Bugsnag.before_notify_callbacks << lambda {|notif|
+      notif.add_to_user({:id => "here", :email => "also here", :name => "also here too", :random_key => "also here too too"})
+      callback_run_count += 1
+    }
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+    callback_run_count.should be == 1
+  end
   
   it "overrides should override data set in before_notify" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|

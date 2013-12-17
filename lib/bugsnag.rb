@@ -61,6 +61,8 @@ module Bugsnag
     # rescuers, unless auto notification is disabled, or we should ignore this
     # error class
     def auto_notify(exception, overrides=nil, request_data=nil)
+      overrides ||= {}
+      overrides.merge!({:severity => "fatal"})
       notify_or_ignore(exception, overrides, request_data) if configuration.auto_notify
     end
 
