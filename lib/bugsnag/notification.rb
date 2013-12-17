@@ -125,7 +125,7 @@ module Bugsnag
     end
 
     def user=(user = {})
-      @user.merge!(user).delete_if{|k,v| v.blank?}
+      @user.merge!(user).delete_if{|k,v| v == nil}
     end
 
     def severity=(severity)
