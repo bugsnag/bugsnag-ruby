@@ -44,7 +44,8 @@ module Bugsnag::Middleware
             end
           end
 
-          notification.add_tab(:user, warden_tab) unless warden_tab.empty?
+          # We merge the first warden scope down, so that it is the main "user" for the request
+          notification.user = warden_tab.merge(warden_tab.first[1]) unless warden_tab.empty?
         end
       end
 

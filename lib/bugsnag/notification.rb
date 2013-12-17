@@ -56,10 +56,8 @@ module Bugsnag
       @meta_data = {}
       @user = {}
       
-      if @overrides
-        self.severity = @overrides[:severity]
-        @overrides.delete :severity
-      end
+      self.severity = @overrides[:severity]
+      @overrides.delete :severity
 
       # Unwrap exceptions
       @exceptions = []
@@ -170,7 +168,7 @@ module Bugsnag
           end
         end
 
-        [:user_id, :context].each do |symbol|
+        [:user_id, :context, :user].each do |symbol|
           if @overrides[symbol]
             self.send("#{symbol}=", @overrides[symbol])
             @overrides.delete symbol
