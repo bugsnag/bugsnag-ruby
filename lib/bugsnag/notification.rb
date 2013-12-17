@@ -126,7 +126,7 @@ module Bugsnag
       @user[:id]
     end
 
-    def add_to_user(user = {})
+    def user=(user = {})
       @user.merge!(user).delete_if{|k,v| v.blank?}
     end
 

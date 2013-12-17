@@ -54,7 +54,7 @@ describe Bugsnag::MiddlewareStack do
     
     callback_run_count = 0
     Bugsnag.before_notify_callbacks << lambda {|notif|
-      notif.add_to_user({:id => "here", :email => "also here", :name => "also here too", :random_key => "also here too too"})
+      notif.user = {:id => "here", :email => "also here", :name => "also here too", :random_key => "also here too too"}
       callback_run_count += 1
     }
 
