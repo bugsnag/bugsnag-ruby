@@ -406,6 +406,16 @@ automatically set to use `Rails.logger`, otherwise it will be set to
 Provides access to the middleware stack, see the
 [Bugsnag Middleware](#bugsnag-middleware) section below for details.
 
+###app_type
+
+You can set the type of application executing the current code by using `app_type`:
+
+```ruby
+config.app_type = "resque"
+```
+
+This is usually used to represent if you are running in a Rails server, Sidekiq job or
+Rake task for example. Bugsnag will automatically detect most application types for you.
 
 Bugsnag Middleware
 ------------------
