@@ -87,10 +87,18 @@ class MyController < ApplicationController
 
   private
   def add_user_info_to_bugsnag(notif)
+    # Set the user that this bug affected
+    # Email, name and id are searchable on bugsnag.com
+    notif.user = {
+      email: current_user.email,
+      name: current_user.name,
+      id: current_user.id
+    }
+
     # Add some app-specific data which will be displayed on a custom
-    # "User Info" tab on each error page on bugsnag.com
-    notif.add_tab(:user_info, {
-      name: current_user.name
+    # "Diagnostics" tab on each error page on bugsnag.com
+    notif.add_tab(:diagnostics, {
+      product: current_product.name
     })
   end
 end
@@ -398,6 +406,16 @@ automatically set to use `Rails.logger`, otherwise it will be set to
 Provides access to the middleware stack, see the
 [Bugsnag Middleware](#bugsnag-middleware) section below for details.
 
+###app_type
+
+You can set the type of application executing the current code by using `app_type`:
+
+```ruby
+config.app_type = "resque"
+```
+
+This is usually used to represent if you are running in a Rails server, Sidekiq job or
+Rake task for example. Bugsnag will automatically detect most application types for you.
 
 Bugsnag Middleware
 ------------------

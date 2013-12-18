@@ -12,6 +12,7 @@ module Bugsnag
     attr_accessor :use_ssl
     attr_accessor :project_root
     attr_accessor :app_version
+    attr_accessor :app_type
     attr_accessor :params_filters
     attr_accessor :ignore_classes
     attr_accessor :ignore_user_agents
