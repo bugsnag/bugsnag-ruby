@@ -6,6 +6,15 @@ module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class NestedException < StandardError; attr_accessor :original_exception; end
 class BugsnagTestExceptionWithMetaData < Exception; include Bugsnag::MetaData; end
 
+class Ruby21Exception < RuntimeError
+  attr_accessor :cause
+  def self.raise!(msg)
+    e = new(msg)
+    e.cause = $!
+    raise e
+  end
+end
+
 describe Bugsnag::Notification do
   it "should contain an api_key if one is set" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
@@ -465,6 +474,23 @@ describe Bugsnag::Notification do
     ((Thread.current["bugsnag_req_data"] ||= {})[:rack_env] ||= {})["HTTP_USER_AGENT"] = "BugsnagUserAgent"
 
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
+  end
+
+  it "should send the cause of the exception" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:exceptions].should have(2).items
+    end
+
+    begin
+      begin
+        raise "jiminey"
+      rescue
+        Ruby21Exception.raise! "cricket"
+      end
+    rescue
+      Bugsnag.notify $!
+    end
   end
 
   it "should not unwrap the same exception twice" do
