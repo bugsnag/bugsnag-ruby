@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
     ".travis.yml",
     "CHANGELOG.md",
     "Gemfile",
-    "Gemfile.lock",
     "LICENSE.txt",
     "README.md",
     "Rakefile",
