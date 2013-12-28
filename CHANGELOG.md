@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.8.0
+-----
+-   Move away from Jeweler
+-   Support for Exception#cause in ruby 2.1.0
+
 1.7.0
 -----
 -   Allow users to configure app type
