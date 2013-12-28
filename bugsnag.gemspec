@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "bugsnag"
-  s.version = File.read("VERSION")
+  s.version = File.read("VERSION").strip
 
   s.authors = ["James Smith"]
   s.email = "james@bugsnag.com"
