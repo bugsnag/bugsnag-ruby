@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'bundler'
+require 'bundler/gem_tasks'
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -9,20 +10,6 @@ rescue Bundler::BundlerError => e
   $stderr.puts "Run `bundle install` to install missing gems"
   exit e.status_code
 end
-require 'rake'
-
-require 'jeweler'
-Jeweler::Tasks.new do |gem|
-  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.name = "bugsnag"
-  gem.homepage = "http://github.com/bugsnag/bugsnag-ruby"
-  gem.license = "MIT"
-  gem.summary = %Q{Ruby notifier for bugsnag.com}
-  gem.description = %Q{Ruby notifier for bugsnag.com}
-  gem.email = "james@bugsnag.com"
-  gem.authors = ["James Smith"]
-end
-Jeweler::RubygemsDotOrgTasks.new
 
 require 'rdoc/task'
 RDoc::Task.new do |rdoc|

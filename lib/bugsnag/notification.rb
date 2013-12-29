@@ -77,7 +77,9 @@ module Bugsnag
 
         @exceptions << ex
 
-        if ex.respond_to?(:continued_exception) && ex.continued_exception
+        if ex.respond_to?(:cause) && ex.cause
+          ex = ex.cause
+        elsif ex.respond_to?(:continued_exception) && ex.continued_exception
           ex = ex.continued_exception
         elsif ex.respond_to?(:original_exception) && ex.original_exception
           ex = ex.original_exception
