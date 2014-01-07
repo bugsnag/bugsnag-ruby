@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.8.1
+-----
+-   Fix Rails2 middleware issue that stopped automatic metadata collection
+
 1.8.0
 -----
 -   Move away from Jeweler
