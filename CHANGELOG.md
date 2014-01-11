@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.8.2
+-----
+-   Notify all exceptions in mailman and sidekiq
+
 1.8.1
 -----
 -   Fix Rails2 middleware issue that stopped automatic metadata collection
