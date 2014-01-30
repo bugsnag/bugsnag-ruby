@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.8.3
+-----
+
+- capistrano3 support
+- allow `set :bugsnag_api_key, foo` in capistrano
+
 1.8.2
 -----
 -   Notify all exceptions in mailman and sidekiq
