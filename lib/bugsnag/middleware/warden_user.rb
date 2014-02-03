@@ -1,7 +1,6 @@
 module Bugsnag::Middleware
   class WardenUser
     SCOPE_PATTERN = /^warden\.user\.([^.]+)\.key$/
-    COMMON_USER_FIELDS = [:email, :name, :first_name, :last_name, :created_at, :id]
 
     def initialize(bugsnag)
       @bugsnag = bugsnag
@@ -23,7 +22,7 @@ module Bugsnag::Middleware
           user_object = env["warden"].user({:scope => best_scope, :run_callbacks => false}) rescue nil
           if user_object
             # Build the user info for this scope
-            COMMON_USER_FIELDS.each do |field|
+            notification.configuration.user_fields.each do |field|
               user[field] = user_object.send(field) if user_object.respond_to?(field)
             end
           end

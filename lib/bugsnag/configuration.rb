@@ -27,12 +27,15 @@ module Bugsnag
     attr_accessor :proxy_password
     attr_accessor :timeout
     attr_accessor :hostname
+    attr_accessor :user_fields
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
     DEFAULT_ENDPOINT = "notify.bugsnag.com"
 
     DEFAULT_PARAMS_FILTERS = ["password", "secret", "rack.request.form_vars"].freeze
+
+    DEFAULT_USER_FIELDS = [:email, :name, :first_name, :last_name, :created_at, :id].freeze
 
     DEFAULT_IGNORE_CLASSES = [
       "ActiveRecord::RecordNotFound",
@@ -51,6 +54,7 @@ module Bugsnag
       self.auto_notify = true
       self.use_ssl = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
+      self.user_fields = Set.new(DEFAULT_USER_FIELDS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
