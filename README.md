@@ -460,6 +460,16 @@ You can also view the order of the currently activated middleware by running `ra
 Check out Bugsnag's [built in middleware classes](https://github.com/bugsnag/bugsnag-ruby/tree/master/lib/bugsnag/middleware)
 for some real examples of middleware in action.
 
+### Multiple projects
+
+If you want to divide errors into multiple Bugsnag projects, you can specify the API key as a parameter to `Bugsnag.notify`:
+
+```ruby
+rescue => e
+  Bugsnag.notify e, api_key: "your-api-key-here"
+end
+```
+
 
 Deploy Tracking
 ---------------

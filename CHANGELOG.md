@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.8.4
+-----
+
+- support for per-notification api keys
+
 1.8.3
 -----
 
