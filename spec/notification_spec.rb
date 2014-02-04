@@ -40,6 +40,14 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
+  it "should let you override the api_key" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      payload[:apiKey].should be == "9d84383f9be2ca94902e45c756a9979d"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), :api_key => "9d84383f9be2ca94902e45c756a9979d")
+  end
+
   it "should use the env variable apiKey" do
     ENV["BUGSNAG_API_KEY"] = "c9d60ae4c7e70c4b6c4ebd3e8056d2b9"
 
