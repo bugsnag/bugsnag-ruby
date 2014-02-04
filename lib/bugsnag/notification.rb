@@ -55,9 +55,14 @@ module Bugsnag
       @request_data = request_data
       @meta_data = {}
       @user = {}
-      
+
       self.severity = @overrides[:severity]
       @overrides.delete :severity
+
+      if @overrides.key? :api_key
+        self.api_key = @overrides[:api_key]
+        @overrides.delete :api_key
+      end
 
       # Unwrap exceptions
       @exceptions = []
@@ -138,16 +143,24 @@ module Bugsnag
       @severity || "error"
     end
 
+    def api_key=(api_key)
+      @api_key = api_key
+    end
+
+    def api_key
+      @api_key ||= @configuration.api_key
+    end
+
     # Deliver this notification to bugsnag.com Also runs through the middleware as required.
     def deliver
       return unless @configuration.should_notify?
 
       # Check we have at least an api_key
-      if @configuration.api_key.nil?
+      if api_key.nil?
         Bugsnag.warn "No API key configured, couldn't notify"
         return
-      elsif (@configuration.api_key =~ API_KEY_REGEX).nil?
-        Bugsnag.warn "Your API key (#{@configuration.api_key}) is not valid, couldn't notify"
+      elsif api_key !~ API_KEY_REGEX
+        Bugsnag.warn "Your API key (#{api_key}) is not valid, couldn't notify"
         return
       end
 
@@ -179,7 +192,7 @@ module Bugsnag
 
         # Build the endpoint url
         endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
-        Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class} from api_key #{@configuration.api_key}")
+        Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class} from api_key #{api_key}")
 
         # Build the payload's exception event
         payload_event = {
@@ -199,7 +212,7 @@ module Bugsnag
 
         # Build the payload hash
         payload = {
-          :apiKey => @configuration.api_key,
+          :apiKey => api_key,
           :notifier => {
             :name => NOTIFIER_NAME,
             :version => NOTIFIER_VERSION,
