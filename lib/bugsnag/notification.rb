@@ -59,7 +59,7 @@ module Bugsnag
       self.severity = @overrides[:severity]
       @overrides.delete :severity
 
-      if @overrides.has? :api_key
+      if @overrides.key? :api_key
         self.api_key = @overrides[:api_key]
         @overrides.delete :api_key
       end
