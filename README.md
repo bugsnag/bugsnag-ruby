@@ -170,7 +170,7 @@ Bugsnag.notify(RuntimeError.new("Something broke"), {
 Rake Integration
 ----------------
 
-Rake integration is automatically enabled in Rails 3 apps, so providing you load the environment
+Rake integration is automatically enabled in Rails 3/4 apps, so providing you load the environment
 in your Rake tasks you dont need to do anything to get Rake support. If you choose not to load
 your environment, you can manually configure Bugsnag with a `bugsnag.configure` block in the Rakefile.
 
@@ -498,7 +498,7 @@ your deploy scripts.
 rake bugsnag:deploy BUGSNAG_REVISION=source-control-revision BUGSNAG_RELEASE_STAGE=production
 ```
 
-The bugsnag rake tasks will be automatically available for Rails 3
+The bugsnag rake tasks will be automatically available for Rails 3/4
 apps, to make the rake tasks available in other apps, add the following to
 your `Rakefile`:
 
