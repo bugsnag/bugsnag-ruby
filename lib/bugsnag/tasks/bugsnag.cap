@@ -1,19 +1,40 @@
-ALLOWED_ENV_SETTINGS = %w{BUGSNAG_RELEASE_STAGE BUGSNAG_REPOSITORY BUGSNAG_REVISION BUGSNAG_BRANCH BUGSNAG_API_KEY BUGSNAG_APP_VERSION}
+namespace :load do
+
+  task :defaults do
+
+    set :bugsnag_default_hooks, ->{ true }
+
+  end
+
+end
+
+namespace :deploy do
+
+  before :starting, :bugsnag_hooks do
+    invoke 'bugsnag:add_default_hooks' if fetch(:bugsnag_default_hooks)
+  end
+
+end
+
 namespace :bugsnag do
-  desc "Notify Bugsnag that new production code has been deployed"
+
+  task :add_default_hooks do
+    after 'deploy:published', 'bugsnag:deploy'
+  end
+
+  desc 'Notify Bugsnag that new production code has been deployed'
   task :deploy do
-    on :primary, reject: ->(h) { h.properties.no_release }, on_error: :continue do
-      # Build the rake command
-      rake         = fetch(:rake, "rake")
-      rails_env    = fetch(:rails_env, "production")
+    on primary(:app) do
+      ALLOWED_ENV_SETTINGS = %w{BUGSNAG_RELEASE_STAGE BUGSNAG_REPOSITORY BUGSNAG_REVISION BUGSNAG_BRANCH BUGSNAG_API_KEY BUGSNAG_APP_VERSION}
+
+      rails_env    = fetch(:rails_env, 'production')
       bugsnag_env  = fetch(:bugsnag_env, rails_env)
-      rake_command = "cd '#{current_path}' && RAILS_ENV=#{rails_env} #{rake} bugsnag:deploy"
 
       # Build the new environment to pass through to rake
       new_env = {
         "BUGSNAG_RELEASE_STAGE" => bugsnag_env,
         "BUGSNAG_REVISION"      => fetch(:current_revision, nil),
-        "BUGSNAG_REPOSITORY"    => fetch(:repository, nil),
+        "BUGSNAG_REPOSITORY"    => fetch(:repo_url, nil),
         "BUGSNAG_BRANCH"        => fetch(:branch, nil),
         "BUGSNAG_API_KEY"       => fetch(:bugsnag_api_key, nil)
       }.reject { |_, v| v.nil? }
@@ -21,16 +42,14 @@ namespace :bugsnag do
       # Pass through any existing env variables
       ALLOWED_ENV_SETTINGS.each { |opt| new_env[opt] = ENV[opt] if ENV[opt] }
 
-      # Append the env to the rake command
-      rake_command << " #{new_env.map{|k,v| "#{k}=#{v}"}.join(" ")}"
+      within release_path do
+        with rails_env: rails_env do
+          execute :rake, "bugsnag:deploy #{new_env.map{|k,v| "#{k}=#{v}"}.join(" ")}"
+        end
+      end
 
-      # Run the rake command (only on one server)
-      run(rake_command, :once => true)
-
-      logger.info "Bugsnag deploy notification complete."
+      info 'Bugsnag deploy notification complete.'
     end
-
-    after "deploy", "bugsnag:deploy"
   end
+
 end
-# vi:ft=ruby
