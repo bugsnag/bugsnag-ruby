@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.8.5
+-----
+
+- capistrano3 support (for real)
+- delayed_job support
+
 1.8.4
 -----
 
