@@ -44,7 +44,7 @@ namespace :bugsnag do
 
       within release_path do
         with rails_env: rails_env do
-          execute :rake, "bugsnag:deploy #{new_env.map{|k,v| "#{k}=#{v}"}.join(" ")}"
+          execute rake, "bugsnag:deploy #{new_env.map{|k,v| "#{k}=#{v}"}.join(" ")}"
         end
       end
 
