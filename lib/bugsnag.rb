@@ -9,7 +9,7 @@ require "bugsnag/helpers"
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
 
-[:resque, :sidekiq, :mailman].each do |integration|
+[:resque, :sidekiq, :mailman, :delayed_job].each do |integration|
   begin
     require "bugsnag/#{integration}"
   rescue LoadError
