@@ -27,7 +27,7 @@ namespace :bugsnag do
     on primary(:app) do
       ALLOWED_ENV_SETTINGS = %w{BUGSNAG_RELEASE_STAGE BUGSNAG_REPOSITORY BUGSNAG_REVISION BUGSNAG_BRANCH BUGSNAG_API_KEY BUGSNAG_APP_VERSION}
 
-      rails_env    = fetch(:rails_env, 'production')
+      rails_env    = fetch(:rails_env) || fetch(:stage)
       bugsnag_env  = fetch(:bugsnag_env, rails_env)
 
       # Build the new environment to pass through to rake
