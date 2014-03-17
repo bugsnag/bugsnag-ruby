@@ -26,12 +26,14 @@ namespace :bugsnag do
         Bugsnag.configure(config[releaseStage] ? config[releaseStage] : config) if config
       end
 
+      config = Bugsnag.configuration
+
       # Fetch and check the api key
-      api_key ||= Bugsnag.configuration.api_key
+      api_key ||= config.api_key
       raise RuntimeError.new("No API key found when notifying deploy") if !api_key || api_key.empty?
 
-      endpoint = (Bugsnag.configuration.use_ssl ? "https://" : "http://") \
-                 + (Bugsnag.configuration.endpoint || Bugsnag::Configuration::DEFAULT_ENDPOINT) \
+      endpoint = (config.use_ssl ? "https://" : "http://") \
+                 + (config.endpoint || Bugsnag::Configuration::DEFAULT_ENDPOINT) \
                  + "/deploy"
 
       parameters = {
@@ -46,8 +48,15 @@ namespace :bugsnag do
       uri = URI.parse(endpoint)
       req = Net::HTTP::Post.new(uri.path)
       req.set_form_data(parameters)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true if Bugsnag.configuration.use_ssl
+      http = Net::HTTP.new(
+        uri.host,
+        uri.port,
+        config.proxy_host,
+        config.proxy_port,
+        config.proxy_user,
+        config.proxy_password
+      )
+      http.use_ssl = true if config.use_ssl
       http.request(req)
 
     rescue Exception => e
