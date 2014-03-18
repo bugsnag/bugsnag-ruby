@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.8.6
+-----
+
+- proxy support in the bugsnag deploy notification rake task
+
 1.8.5
 -----
 
