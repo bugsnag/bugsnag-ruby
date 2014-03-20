@@ -515,23 +515,18 @@ additional deploy information:
     The release stage (eg, production, staging) currently being deployed.
     This is set automatically from your Bugsnag settings or rails/rack
     environment.
-
 -   **BUGSNAG_API_KEY** -
     Your Bugsnag API key. This is set automatically from your Bugsnag
     settings in your app.
-
 -   **BUGSNAG_REPOSITORY** -
     The repository from which you are deploying the code. This is set
     automatically if you are using capistrano.
-
 -   **BUGSNAG_BRANCH** -
     The source control branch from which you are deploying the code.
     This is set automatically if you are using capistrano.
-
 -   **BUGSNAG_REVISION** -
     The source control revision for the code you are currently deploying.
     This is set automatically if you are using capistrano.
-
 -   **BUGSNAG_APP_VERSION** -
     The app version of the code you are currently deploying. Only set this
     if you tag your releases with [semantic version numbers](http://semver.org/)
