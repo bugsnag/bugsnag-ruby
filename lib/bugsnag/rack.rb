@@ -1,7 +1,6 @@
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
 require "bugsnag/middleware/callbacks"
-require "bugsnag/middleware/rails3_request"
 
 module Bugsnag
   class Rack
@@ -23,7 +22,14 @@ module Bugsnag
         end
 
         # Hook up rack-based notification middlewares
-        config.middleware.insert_before([Bugsnag::Middleware::Rails3Request,Bugsnag::Middleware::Callbacks], Bugsnag::Middleware::RackRequest) if defined?(::Rack)
+        if defined?(Rack)
+          if defined?(Rails)
+            require "bugsnag/middleware/rails3_request"
+            config.middleware.insert_before([Bugsnag::Middleware::Rails3Request,Bugsnag::Middleware::Callbacks], Bugsnag::Middleware::RackRequest)
+          else
+            config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::RackRequest)
+          end
+        end
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::WardenUser) if defined?(Warden)
       end
     end
@@ -46,7 +52,7 @@ module Bugsnag
       if env["rack.exception"]
         Bugsnag.auto_notify(env["rack.exception"])
       end
-        
+
       response
     ensure
       # Clear per-request data after processing the each request
