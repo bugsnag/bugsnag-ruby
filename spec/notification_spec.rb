@@ -16,6 +16,10 @@ class Ruby21Exception < RuntimeError
 end
 
 describe Bugsnag::Notification do
+  def notify_test_exception
+    Bugsnag.notify(RuntimeError.new("test message"))
+  end
+
   it "should contain an api_key if one is set" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       payload[:apiKey].should be == "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
@@ -138,7 +142,7 @@ describe Bugsnag::Notification do
 
     Bugsnag.notify(exception)
   end
-  
+
   it "should accept meta data from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
@@ -157,7 +161,7 @@ describe Bugsnag::Notification do
 
     Bugsnag.notify(exception, {:some_tab => {:info => "overridden"}})
   end
-  
+
   it "should accept user_id from an exception that mixes in Bugsnag::MetaData" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
@@ -169,7 +173,7 @@ describe Bugsnag::Notification do
 
     Bugsnag.notify(exception)
   end
-  
+
   it "should accept user_id from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
@@ -181,7 +185,7 @@ describe Bugsnag::Notification do
 
     Bugsnag.notify(exception, {:user_id => "override_user_id"})
   end
-  
+
   it "should accept context from an exception that mixes in Bugsnag::MetaData" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
@@ -193,7 +197,7 @@ describe Bugsnag::Notification do
 
     Bugsnag.notify(exception)
   end
-  
+
   it "should accept context from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
     Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
@@ -331,7 +335,7 @@ describe Bugsnag::Notification do
 
     Bugsnag.configuration.notify_release_stages = ["production"]
     Bugsnag.configuration.release_stage = "development"
-    
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
@@ -544,7 +548,7 @@ describe Bugsnag::Notification do
       exception[:message].should be == "test message"
     end
 
-    Bugsnag.notify("test message")
+    notify_test_exception
   end
 
   it "should support unix-style paths in backtraces" do
@@ -610,7 +614,7 @@ describe Bugsnag::Notification do
       args[3].should be == nil
     end
 
-    Bugsnag.notify("test message")
+    notify_test_exception
   end
 
   it "should use a proxy host/port if configured" do
@@ -627,7 +631,7 @@ describe Bugsnag::Notification do
       args[3].should be == nil
     end
 
-    Bugsnag.notify("test message")
+    notify_test_exception
   end
 
   it "should use a proxy host/port/user/pass if configured" do
@@ -646,7 +650,7 @@ describe Bugsnag::Notification do
       args[3].should be == "password"
     end
 
-    Bugsnag.notify("test message")
+    notify_test_exception
   end
 
   it "should set the timeout time to the value in the configuration" do |*args|
@@ -659,6 +663,6 @@ describe Bugsnag::Notification do
       args[0].should be == 10
     end
 
-    Bugsnag.notify("test message")
+    notify_test_exception
   end
 end
