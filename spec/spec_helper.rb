@@ -21,6 +21,8 @@ RSpec.configure do |config|
     Bugsnag.configure do |config|
       config.api_key = "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
       config.release_stage = "production"
+      # silence logger in tests
+      config.logger = Logger.new(StringIO.new)
     end
   end
   
