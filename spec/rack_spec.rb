@@ -8,7 +8,7 @@ describe Bugsnag::Rack do
   
     response = rack_stack.call(rack_env)
   
-    response.should be == ['response', {}, rack_env]
+    expect(response).to eq(['response', {}, rack_env])
   end
 
   context "when an exception is raised in rack middleware" do
@@ -23,9 +23,9 @@ describe Bugsnag::Rack do
     end
 
     it "should deliver an exception if auto_notify is enabled" do
-      Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
         exception_class = payload[:events].first[:exceptions].first[:errorClass]
-        exception_class.should be == exception.class.to_s
+        expect(exception_class).to eq(exception.class.to_s)
       end
 
       rack_stack.call(rack_env) rescue nil
@@ -36,7 +36,7 @@ describe Bugsnag::Rack do
         config.auto_notify = false
       end
 
-      Bugsnag::Notification.should_not_receive(:deliver_exception_payload)
+      expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
 
       rack_stack.call(rack_env) rescue nil
     end

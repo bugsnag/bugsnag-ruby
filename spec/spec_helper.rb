@@ -3,13 +3,13 @@ require 'bugsnag'
 class BugsnagTestException < RuntimeError; end
 
 def get_event_from_payload(payload)
-  payload[:events].should have(1).items
+  expect(payload[:events].size).to eq(1)
   payload[:events].first
 end
 
 def get_exception_from_payload(payload)
   event = get_event_from_payload(payload)
-  event[:exceptions].should have(1).items
+  expect(event[:exceptions].size).to eq(1)
   event[:exceptions].last
 end
 
