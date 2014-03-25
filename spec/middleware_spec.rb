@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Bugsnag::MiddlewareStack do
-  it "should run before_bugsnag_notify callbacks, adding a tab" do
+  it "runs before_bugsnag_notify callbacks, adding a tab" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData][:some_tab]).not_to be_nil
@@ -22,7 +22,7 @@ describe Bugsnag::MiddlewareStack do
     expect(callback_run_count).to eq(1)
   end
   
-  it "should run before_bugsnag_notify callbacks, adding custom data" do
+  it "runs before_bugsnag_notify callbacks, adding custom data" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData][:custom]).not_to be_nil
@@ -42,7 +42,7 @@ describe Bugsnag::MiddlewareStack do
     expect(callback_run_count).to eq(1)
   end
 
-  it "should run before_bugsnag_notify callbacks, setting the user" do
+  it "runs before_bugsnag_notify callbacks, setting the user" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:user]).not_to be_nil
@@ -62,7 +62,7 @@ describe Bugsnag::MiddlewareStack do
     expect(callback_run_count).to eq(1)
   end
   
-  it "overrides should override data set in before_notify" do
+  it "overrides data set in before_notify" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData][:custom]).not_to be_nil
@@ -82,7 +82,7 @@ describe Bugsnag::MiddlewareStack do
     expect(callback_run_count).to eq(1)
   end
   
-  it "should have no before or after callbacks by default" do
+  it "does not have have before or after callbacks by default" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData].size).to eq(0)
@@ -93,10 +93,8 @@ describe Bugsnag::MiddlewareStack do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
   
-  it "should run after_bugsnag_notify callbacks" do
-    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
-      event = get_event_from_payload(payload)
-    end
+  it "runs after_bugsnag_notify callbacks" do
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload)
     
     callback_run_count = 0
     Bugsnag.after_notify_callbacks << lambda {|notif|
@@ -108,7 +106,7 @@ describe Bugsnag::MiddlewareStack do
     expect(callback_run_count).to eq(1)
   end
 
-  it "should not execute disabled bugsnag middleware" do
+  it "does not execute disabled bugsnag middleware" do
     callback_run_count = 0
     Bugsnag.configure do |config|
       config.middleware.disable(Bugsnag::Middleware::Callbacks)

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Bugsnag::Rack do
-  it "should call the upstream rack app with the environment" do
+  it "calls the upstream rack app with the environment" do
     rack_env = {"key" => "value"}
     app = lambda { |env| ['response', {}, env] }
     rack_stack = Bugsnag::Rack.new(app)
@@ -18,11 +18,11 @@ describe Bugsnag::Rack do
     app = lambda { |env| raise exception }
     rack_stack = Bugsnag::Rack.new(app)
 
-    it "should re-raise the exception" do
+    it "re-raises the exception" do
       expect { rack_stack.call(rack_env) }.to raise_error(BugsnagTestException)
     end
 
-    it "should deliver an exception if auto_notify is enabled" do
+    it "delivers an exception if auto_notify is enabled" do
       expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
         exception_class = payload[:events].first[:exceptions].first[:errorClass]
         expect(exception_class).to eq(exception.class.to_s)
@@ -31,7 +31,7 @@ describe Bugsnag::Rack do
       rack_stack.call(rack_env) rescue nil
     end
     
-    it "should not deliver an exception if auto_notify is disabled" do
+    it "does not deliver an exception if auto_notify is disabled" do
       Bugsnag.configure do |config|
         config.auto_notify = false
       end

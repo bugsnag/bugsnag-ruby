@@ -28,7 +28,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should not notify if api_key is not set" do
+  it "does not notify if api_key is not set" do
     Bugsnag.configuration.api_key = nil
 
     expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
@@ -36,7 +36,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should not notify if api_key is empty" do
+  it "does not notify if api_key is empty" do
     Bugsnag.configuration.api_key = ""
 
     expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
@@ -44,7 +44,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should let you override the api_key" do
+  it "lets you override the api_key" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       expect(payload[:apiKey]).to eq("9d84383f9be2ca94902e45c756a9979d")
     end
@@ -52,7 +52,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), :api_key => "9d84383f9be2ca94902e45c756a9979d")
   end
 
-  it "should use the env variable apiKey" do
+  it "uses the env variable apiKey" do
     ENV["BUGSNAG_API_KEY"] = "c9d60ae4c7e70c4b6c4ebd3e8056d2b9"
 
     Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
@@ -67,7 +67,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should have the right exception class" do
+  it "has the right exception class" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       expect(exception[:errorClass]).to eq("BugsnagTestException")
@@ -76,7 +76,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should have the right exception message" do
+  it "has the right exception message" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       expect(exception[:message]).to eq("It crashed")
@@ -85,7 +85,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should have a valid stacktrace" do
+  it "has a valid stacktrace" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       expect(exception[:stacktrace].length).to be > 0
@@ -94,7 +94,9 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should accept tabs in overrides and add them to metaData" do
+  # TODO: nested context
+
+  it "accepts tabs in overrides and adds them to metaData" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData][:some_tab]).not_to be_nil
@@ -110,7 +112,7 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "should accept non-hash overrides and add them to the custom tab in metaData" do
+  it "accepts non-hash overrides and adds them to the custom tab in metaData" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData][:custom]).not_to be_nil
@@ -124,7 +126,7 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "should accept meta data from an exception that mixes in Bugsnag::MetaData" do
+  it "accepts meta data from an exception that mixes in Bugsnag::MetaData" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData][:some_tab]).not_to be_nil
@@ -143,7 +145,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(exception)
   end
 
-  it "should accept meta data from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
+  it "accepts meta data from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData][:some_tab]).not_to be_nil
@@ -162,7 +164,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(exception, {:some_tab => {:info => "overridden"}})
   end
 
-  it "should accept user_id from an exception that mixes in Bugsnag::MetaData" do
+  it "accepts user_id from an exception that mixes in Bugsnag::MetaData" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:user][:id]).to eq("exception_user_id")
@@ -174,7 +176,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(exception)
   end
 
-  it "should accept user_id from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
+  it "accepts user_id from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:user][:id]).to eq("override_user_id")
@@ -186,7 +188,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(exception, {:user_id => "override_user_id"})
   end
 
-  it "should accept context from an exception that mixes in Bugsnag::MetaData" do
+  it "accepts context from an exception that mixes in Bugsnag::MetaData" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:context]).to eq("exception_context")
@@ -198,7 +200,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(exception)
   end
 
-  it "should accept context from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
+  it "accept contexts from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:context]).to eq("override_context")
@@ -210,7 +212,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(exception, {:context => "override_context"})
   end
 
-  it "should accept meta_data in overrides (for backwards compatibility) and merge it into metaData" do
+  it "accepts meta_data in overrides (for backwards compatibility) and merge it into metaData" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData][:some_tab]).not_to be_nil
@@ -228,7 +230,7 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "should truncate large meta_data before sending" do
+  it "truncates large meta_data before sending" do
     expect(Bugsnag::Notification).to receive(:post) do |endpoint, opts|
       # Truncated body should be no bigger than
       # 2 truncated hashes (4096*2) + rest of payload (5000)
@@ -245,7 +247,7 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "should accept a severity in overrides" do
+  it "accepts a severity in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:severity]).to eq("info")
@@ -256,7 +258,7 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "should default to error severity" do
+  it "defaults to error severity" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:severity]).to eq("error")
@@ -265,7 +267,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should not accept a bad severity in overrides" do
+  it "does not accept a bad severity in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:severity]).to eq("error")
@@ -276,7 +278,7 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "should autonotify fatal errors" do
+  it "autonotifies fatal errors" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:severity]).to eq("fatal")
@@ -285,7 +287,7 @@ describe Bugsnag::Notification do
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should accept a context in overrides" do
+  it "accepts a context in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:context]).to eq("test_context")
@@ -296,7 +298,7 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "should accept a user_id in overrides" do
+  it "accepts a user_id in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:user][:id]).to eq("test_user")
@@ -307,7 +309,7 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "should not send a notification if auto_notify is false" do
+  it "does not send a notification if auto_notify is false" do
     Bugsnag.configure do |config|
       config.auto_notify = false
     end
@@ -317,7 +319,7 @@ describe Bugsnag::Notification do
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should contain a release_stage" do
+  it "contains a release_stage" do
     Bugsnag.configure do |config|
       config.release_stage = "production"
     end
@@ -330,7 +332,7 @@ describe Bugsnag::Notification do
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should respect the notify_release_stages setting by not sending in development" do
+  it "respects the notify_release_stages setting by not sending in development" do
     expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
 
     Bugsnag.configuration.notify_release_stages = ["production"]
@@ -339,7 +341,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should respect the notify_release_stages setting when set" do
+  it "respects the notify_release_stages setting when set" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
     end
@@ -349,7 +351,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should use the http://notify.bugsnag.com endpoint by default" do
+  it "uses the http://notify.bugsnag.com endpoint by default" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       expect(endpoint).to eq("http://notify.bugsnag.com")
     end
@@ -357,7 +359,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should use ssl when use_ssl is true" do
+  it "uses ssl when use_ssl is true" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       expect(endpoint).to start_with "https://"
     end
@@ -366,7 +368,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should not use ssl when use_ssl is false" do
+  it "does not use ssl when use_ssl is false" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       expect(endpoint).to start_with "http://"
     end
@@ -375,7 +377,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should not use ssl when use_ssl is unset" do
+  it "does not use ssl when use_ssl is unset" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       expect(endpoint).to start_with "http://"
     end
@@ -383,7 +385,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should not mark the top-most stacktrace line as inProject if out of project" do
+  it "does not mark the top-most stacktrace line as inProject if out of project" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       expect(exception[:stacktrace].size).to be >= 1
@@ -394,7 +396,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should mark the top-most stacktrace line as inProject if necessary" do
+  it "marks the top-most stacktrace line as inProject if necessary" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       expect(exception[:stacktrace].size).to be >= 1
@@ -405,7 +407,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should add app_version to the payload if it is set" do
+  it "adds app_version to the payload if it is set" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:app][:version]).to eq("1.1.1")
@@ -415,7 +417,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "should filter params from all payload hashes if they are set in default params_filters" do
+  it "filters params from all payload hashes if they are set in default params_filters" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData]).not_to be_nil
@@ -429,7 +431,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "12345", :other_data => "123456"}}})
   end
 
-  it "should filter params from all payload hashes if they are added to params_filters" do
+  it "filters params from all payload hashes if they are added to params_filters" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData]).not_to be_nil
@@ -444,7 +446,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
   end
 
-  it "should not filter params from payload hashes if their values are nil" do
+  it "does not filter params from payload hashes if their values are nil" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:metaData]).not_to be_nil
@@ -456,13 +458,13 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:nil_param => nil}}})
   end
 
-  it "should not notify if the exception class is in the default ignore_classes list" do
+  it "does not notify if the exception class is in the default ignore_classes list" do
     expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
 
     Bugsnag.notify_or_ignore(ActiveRecord::RecordNotFound.new("It crashed"))
   end
 
-  it "should not notify if the non-default exception class is added to the ignore_classes" do
+  it "does not notify if the non-default exception class is added to the ignore_classes" do
     Bugsnag.configuration.ignore_classes << "BugsnagTestException"
 
     expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
@@ -470,7 +472,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
   end
 
-  it "should not notify if the exception is matched by an ignore_classes lambda function" do
+  it "does not notify if the exception is matched by an ignore_classes lambda function" do
     Bugsnag.configuration.ignore_classes << lambda {|e| e.message =~ /crashed/}
 
     expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
@@ -478,7 +480,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
   end
 
-  it "should not notify if the user agent is present and matches a regex in ignore_user_agents" do
+  it "does not notify if the user agent is present and matches a regex in ignore_user_agents" do
     Bugsnag.configuration.ignore_user_agents << %r{BugsnagUserAgent}
 
     expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
@@ -488,7 +490,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
   end
 
-  it "should send the cause of the exception" do
+  it "sends the cause of the exception" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:exceptions].size).to eq(2)
@@ -505,7 +507,7 @@ describe Bugsnag::Notification do
     end
   end
 
-  it "should not unwrap the same exception twice" do
+  it "does not unwrap the same exception twice" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:exceptions].size).to eq(1)
@@ -517,7 +519,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify_or_ignore(ex)
   end
 
-  it "should not unwrap more than 5 exceptions" do
+  it "does not unwrap more than 5 exceptions" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
       expect(event[:exceptions].size).to eq(5)
@@ -531,7 +533,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify_or_ignore(first_ex)
   end
 
-  it "should call to_exception on i18n error objects" do
+  it "calls to_exception on i18n error objects" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       expect(exception[:errorClass]).to eq("BugsnagTestException")
@@ -541,7 +543,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(OpenStruct.new(:to_exception => BugsnagTestException.new("message")))
   end
 
-  it "should generate runtimeerror for non exceptions" do
+  it "generates runtimeerror for non exceptions" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       expect(exception[:errorClass]).to eq("RuntimeError")
@@ -551,7 +553,7 @@ describe Bugsnag::Notification do
     notify_test_exception
   end
 
-  it "should support unix-style paths in backtraces" do
+  it "supports unix-style paths in backtraces" do
     ex = BugsnagTestException.new("It crashed")
     ex.set_backtrace([
       "/Users/james/app/spec/notification_spec.rb:419",
@@ -576,7 +578,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(ex)
   end
 
-  it "should support windows-style paths in backtraces" do
+  it "supports windows-style paths in backtraces" do
     ex = BugsnagTestException.new("It crashed")
     ex.set_backtrace([
       "C:/projects/test/app/controllers/users_controller.rb:13:in `index'",
@@ -601,7 +603,7 @@ describe Bugsnag::Notification do
     Bugsnag.notify(ex)
   end
 
-  it "should use a proxy host if configured" do
+  it "uses a proxy host if configured" do
     Bugsnag.configure do |config|
       config.proxy_host = "host_name"
     end
@@ -617,7 +619,7 @@ describe Bugsnag::Notification do
     notify_test_exception
   end
 
-  it "should use a proxy host/port if configured" do
+  it "uses a proxy host/port if configured" do
     Bugsnag.configure do |config|
       config.proxy_host = "host_name"
       config.proxy_port = 1234
@@ -634,7 +636,7 @@ describe Bugsnag::Notification do
     notify_test_exception
   end
 
-  it "should use a proxy host/port/user/pass if configured" do
+  it "uses a proxy host/port/user/pass if configured" do
     Bugsnag.configure do |config|
       config.proxy_host = "host_name"
       config.proxy_port = 1234
@@ -653,7 +655,7 @@ describe Bugsnag::Notification do
     notify_test_exception
   end
 
-  it "should set the timeout time to the value in the configuration" do |*args|
+  it "sets the timeout time to the value in the configuration" do 
     Bugsnag.configure do |config|
       config.timeout = 10
     end
