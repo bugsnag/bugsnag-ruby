@@ -53,3 +53,4 @@ namespace :bugsnag do
   end
 
 end
+# vi:ft=ruby
