@@ -48,6 +48,15 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), :api_key => "9d84383f9be2ca94902e45c756a9979d")
   end
 
+  it "should let you override the groupingHash" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:groupingHash].should be == "this is my grouping hash"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:grouping_hash => "this is my grouping hash"})
+  end
+
   it "should use the env variable apiKey" do
     ENV["BUGSNAG_API_KEY"] = "c9d60ae4c7e70c4b6c4ebd3e8056d2b9"
 

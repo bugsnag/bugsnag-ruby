@@ -59,6 +59,11 @@ module Bugsnag
       self.severity = @overrides[:severity]
       @overrides.delete :severity
 
+      if @overrides.key? :grouping_hash
+        self.grouping_hash = @overrides[:grouping_hash]
+        @overrides.delete :grouping_hash
+      end
+
       if @overrides.key? :api_key
         self.api_key = @overrides[:api_key]
         @overrides.delete :api_key
@@ -143,6 +148,14 @@ module Bugsnag
       @severity || "error"
     end
 
+    def grouping_hash=(grouping_hash)
+      @grouping_hash = grouping_hash
+    end
+
+    def grouping_hash
+      @grouping_hash || nil
+    end
+
     def api_key=(api_key)
       @api_key = api_key
     end
@@ -183,7 +196,7 @@ module Bugsnag
           end
         end
 
-        [:user_id, :context, :user].each do |symbol|
+        [:user_id, :context, :user, :grouping_hash].each do |symbol|
           if @overrides[symbol]
             self.send("#{symbol}=", @overrides[symbol])
             @overrides.delete symbol
@@ -205,6 +218,7 @@ module Bugsnag
           :user => @user,
           :exceptions => exception_list,
           :severity => self.severity,
+          :groupingHash => self.grouping_hash,
           :metaData => Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
         }.reject {|k,v| v.nil? }
 
