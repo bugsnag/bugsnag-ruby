@@ -21,14 +21,14 @@ module Bugsnag
   end
 end
 
-if ::Sidekiq::VERSION < '3'
-  ::Sidekiq.configure_server do |config|
+if Sidekiq::VERSION < '3'
+  Sidekiq.configure_server do |config|
     config.server_middleware do |chain|
-      chain.add ::Bugsnag::Sidekiq
+      chain.add Bugsnag::Sidekiq
     end
   end
 else
-  ::Sidekiq.configure_server do |config|
+  Sidekiq.configure_server do |config|
     config.error_handlers << ->(ex, ctx) {
       Bugsnag::Sidekiq.method(:call).call(nil, ctx.msg, ctx.msg.queue) do
         Bugsnag.notify(ex)
