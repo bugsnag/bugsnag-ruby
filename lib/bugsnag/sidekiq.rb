@@ -29,6 +29,6 @@ if ::Sidekiq::VERSION < '3'
   end
 else
   ::Sidekiq.configure_server do |config|
-    config.error_handlers << ::Bugsnag::Sidekiq
+    config.error_handlers << ->(ex, ctx) { Bugsnag.notify(ex) }
   end
 end
