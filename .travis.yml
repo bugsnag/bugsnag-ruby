@@ -7,11 +7,6 @@ rvm:
   - 1.9.3
   - jruby-19mode
 
-# Workaround for broken bundler on travis CI - https://github.com/bundler/bundler/issues/2784
-before_install:
-  - gem update --system 2.1.11
-  - gem --version
-
 notifications:
   hipchat:
     secure: "OLw2B1ggBDSeyJYgnZ2Ezf2fXbu5BHWSNFEJF38+TB4hYv+Wp3rElROhnyP6IttftLYz68Q8n9SjEUXTX9zXwTNt2fGBHIDwLnjt1uw7BrIOIHCUheOJdPheV2XxdJv9yem5MQ0vF+y33auLpyrA53b+nCbI5UsCXKISLe+C8ME="
