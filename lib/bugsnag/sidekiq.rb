@@ -30,9 +30,8 @@ if Sidekiq::VERSION < '3'
 else
   Sidekiq.configure_server do |config|
     config.error_handlers << ->(ex, ctx) {
-      Bugsnag::Sidekiq.method(:call).call(nil, ctx.msg, ctx.msg.queue) do
-        Bugsnag.notify(ex)
-      end
+      notify = ->() { Bugsnag.notify(ex) }
+      Bugsnag::Sidekiq.method(:call)[nil, ctx.msg, ctx.msg.queue, &notify]
     }
   end
 end
