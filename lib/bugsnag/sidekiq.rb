@@ -21,8 +21,14 @@ module Bugsnag
   end
 end
 
-::Sidekiq.configure_server do |config|
-  config.server_middleware do |chain|
-    chain.add ::Bugsnag::Sidekiq
+if ::Sidekiq::VERSION < '3'
+  ::Sidekiq.configure_server do |config|
+    config.server_middleware do |chain|
+      chain.add ::Bugsnag::Sidekiq
+    end
+  end
+else
+  ::Sidekiq.configure_server do |config|
+    config.error_handlers << ::Bugsnag::Sidekiq
   end
 end
