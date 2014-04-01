@@ -470,6 +470,17 @@ rescue => e
 end
 ```
 
+### Grouping hash
+
+If you want to override Bugsnag's grouping algorithm, you can specify a grouping hash key as a parameter to `Bugsnag.notify`:
+
+```ruby
+rescue => e
+  Bugsnag.notify e, grouping_hash: "this-is-my-grouping-hash"
+end
+```
+
+All errors with the same groupingHash will be grouped together within the bugsnag dashboard.
 
 Deploy Tracking
 ---------------
