@@ -22,12 +22,13 @@ Gem::Specification.new do |s|
   if RUBY_VERSION < "1.9"
     # Use ruby 1.8 compatible httparty
     s.add_runtime_dependency 'httparty', ["< 0.12.0", ">= 0.6"]
+    s.add_development_dependency "rake", "~> 10.1.1"
   else
     s.add_runtime_dependency 'httparty', ["< 1.0", ">= 0.6"]
+    s.add_development_dependency 'rake'
   end
 
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rdoc'
-  s.add_development_dependency 'rake'
 end
 
