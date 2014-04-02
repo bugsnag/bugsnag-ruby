@@ -312,6 +312,17 @@ describe Bugsnag::Notification do
     })
   end
 
+  it "should accept a group_key in overrides" do
+    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      event[:groupingHash].should be == "test_key"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
+      :group_key => "test_key"
+    })
+  end
+
   it "should not send a notification if auto_notify is false" do
     Bugsnag.configure do |config|
       config.auto_notify = false
