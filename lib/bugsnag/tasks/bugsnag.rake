@@ -10,8 +10,6 @@ namespace :bugsnag do
     repository = ENV["BUGSNAG_REPOSITORY"]
     branch = ENV["BUGSNAG_BRANCH"]
 
-    raise RuntimeError.new("No API key found when notifying deploy") if !api_key || api_key.empty?
-
     Bugsnag::Deploy.notify({
       :api_key => api_key, 
       :release_stage => release_stage,

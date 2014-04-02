@@ -1,5 +1,6 @@
 require "net/http"
 require "uri"
+require "bugsnag"
 
 module Bugsnag
   class Deploy
@@ -20,6 +21,8 @@ module Bugsnag
         "branch" => opts[:branch]
       }.reject {|k,v| v == nil}
 
+      raise RuntimeError.new("No API key found when notifying of deploy") if !parameters["apiKey"] || parameters["apiKey"].empty?
+
       uri = URI.parse(endpoint)
       req = Net::HTTP::Post.new(uri.path)
       req.set_form_data(parameters)
@@ -33,8 +36,6 @@ module Bugsnag
       )
       http.use_ssl = true if opts[:use_ssl]
       http.request(req)
-    rescue Exception => e
-      Bugsnag.warn("Deploy notification failed, #{e.inspect}")
     end
   end
 end

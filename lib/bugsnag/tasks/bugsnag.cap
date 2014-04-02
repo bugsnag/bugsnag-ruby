@@ -24,13 +24,18 @@ namespace :bugsnag do
 
   desc 'Notify Bugsnag that new production code has been deployed'
   task :deploy do
-    Bugsnag::Deploy.notify({
-      :api_key => fetch(:bugsnag_api_key, nil),
-      :release_stage => fetch(:bugsnag_env) || fetch(:rails_env) || fetch(:stage) || "production",
-      :revision => fetch(:current_revision, nil),
-      :repository => fetch(:repo_url, nil),
-      :branch => fetch(:branch, nil)
-    })
+    begin
+      Bugsnag::Deploy.notify({
+        :api_key => fetch(:bugsnag_api_key, ENV["BUGSNAG_API_KEY"]),
+        :release_stage => fetch(:bugsnag_env) || fetch(:rails_env) || fetch(:stage) || ENV["BUGSNAG_RELEASE_STAGE"] || "production",
+        :revision => fetch(:current_revision, ENV["BUGSNAG_REVISION"]),
+        :repository => fetch(:repo_url, ENV["BUGSNAG_REPOSITORY"]),
+        :branch => fetch(:branch, ENV["BUGSNAG_BRANCH"]),
+        :app_version => fetch(:app_version, ENV["BUGSNAG_APP_VERSION"])
+      })
+    rescue Exception
+      important("Bugnsag deploy notification failed, #{$!.inspect}")
+    end
     
     info 'Bugsnag deploy notification complete.'
   end
