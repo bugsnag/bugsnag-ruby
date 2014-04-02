@@ -1,4 +1,5 @@
 require "bugsnag"
+require "pathname"
 require "httparty"
 require "multi_json"
 require "net/http"
@@ -19,12 +20,12 @@ namespace :bugsnag do
       branch       = ENV["BUGSNAG_BRANCH"]
 
       # TODO: more reliable ways to infer this are needed
-      path = Dir.pwd
-      initializer = File.expand_path(path + '/config/initializers/bugsnag')
+      path = defined?(Rails.root) ? Rails.root : Pathname.pwd
+      initializer = path + 'config/initializers/bugsnag'
       if File.exist?(initializer)
         require initializer
       else
-        yml_filename = File.expand_path(path + '/config/bugsnag.yml')
+        yml_filename = path + 'config/bugsnag.yml'
         config = YAML.load_file(yml_filename) if File.exists?(yml_filename)
         Bugsnag.configure(config[releaseStage] ? config[releaseStage] : config) if config
       end
