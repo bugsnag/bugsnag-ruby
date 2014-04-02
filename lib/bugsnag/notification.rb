@@ -22,6 +22,7 @@ module Bugsnag
     default_timeout 5
 
     attr_accessor :context
+    attr_accessor :group_key
     attr_accessor :user
     attr_accessor :configuration
 
@@ -62,6 +63,11 @@ module Bugsnag
       if @overrides.key? :api_key
         self.api_key = @overrides[:api_key]
         @overrides.delete :api_key
+      end
+
+      if @overrides.key? :group_key
+        self.group_key = @overrides[:group_key]
+        @overrides.delete :group_key
       end
 
       # Unwrap exceptions
@@ -202,6 +208,7 @@ module Bugsnag
             :type => @configuration.app_type
           },
           :context => self.context,
+          :groupingHash => self.group_key,
           :user => @user,
           :exceptions => exception_list,
           :severity => self.severity,
