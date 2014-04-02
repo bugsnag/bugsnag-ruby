@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 describe Bugsnag::MiddlewareStack do
-  it "should run before_bugsnag_notify callbacks, adding a tab" do
-    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+  it "runs before_bugsnag_notify callbacks, adding a tab" do
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:metaData][:some_tab].should_not be_nil
-      event[:metaData][:some_tab][:info].should be == "here"
-      event[:metaData][:some_tab][:data].should be == "also here"
+      expect(event[:metaData][:some_tab]).not_to be_nil
+      expect(event[:metaData][:some_tab][:info]).to eq("here")
+      expect(event[:metaData][:some_tab][:data]).to eq("also here")
     end
     
     callback_run_count = 0
@@ -19,15 +19,15 @@ describe Bugsnag::MiddlewareStack do
     }
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    callback_run_count.should be == 1
+    expect(callback_run_count).to eq(1)
   end
   
-  it "should run before_bugsnag_notify callbacks, adding custom data" do
-    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+  it "runs before_bugsnag_notify callbacks, adding custom data" do
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:metaData][:custom].should_not be_nil
-      event[:metaData][:custom][:info].should be == "here"
-      event[:metaData][:custom][:data].should be == "also here"
+      expect(event[:metaData][:custom]).not_to be_nil
+      expect(event[:metaData][:custom][:info]).to eq("here")
+      expect(event[:metaData][:custom][:data]).to eq("also here")
     end
     
     callback_run_count = 0
@@ -39,17 +39,17 @@ describe Bugsnag::MiddlewareStack do
     }
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    callback_run_count.should be == 1
+    expect(callback_run_count).to eq(1)
   end
 
-  it "should run before_bugsnag_notify callbacks, setting the user" do
-    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+  it "runs before_bugsnag_notify callbacks, setting the user" do
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:user].should_not be_nil
-      event[:user][:id].should be == "here"
-      event[:user][:email].should be == "also here"
-      event[:user][:name].should be == "also here too"
-      event[:user][:random_key].should be == "also here too too"
+      expect(event[:user]).not_to be_nil
+      expect(event[:user][:id]).to eq("here")
+      expect(event[:user][:email]).to eq("also here")
+      expect(event[:user][:name]).to eq("also here too")
+      expect(event[:user][:random_key]).to eq("also here too too")
     end
     
     callback_run_count = 0
@@ -59,15 +59,15 @@ describe Bugsnag::MiddlewareStack do
     }
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    callback_run_count.should be == 1
+    expect(callback_run_count).to eq(1)
   end
   
-  it "overrides should override data set in before_notify" do
-    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+  it "overrides data set in before_notify" do
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:metaData][:custom].should_not be_nil
-      event[:metaData][:custom][:info].should be == "here2"
-      event[:metaData][:custom][:data].should be == "also here"
+      expect(event[:metaData][:custom]).not_to be_nil
+      expect(event[:metaData][:custom][:info]).to eq("here2")
+      expect(event[:metaData][:custom][:data]).to eq("also here")
     end
     
     callback_run_count = 0
@@ -79,24 +79,22 @@ describe Bugsnag::MiddlewareStack do
     }
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:info => "here2"})
-    callback_run_count.should be == 1
+    expect(callback_run_count).to eq(1)
   end
   
-  it "should have no before or after callbacks by default" do
-    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
+  it "does not have have before or after callbacks by default" do
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      event[:metaData].should have(0).items
+      expect(event[:metaData].size).to eq(0)
     end
     
-    Bugsnag.before_notify_callbacks.should have(0).items
-    Bugsnag.after_notify_callbacks.should have(0).items
+    expect(Bugsnag.before_notify_callbacks.size).to eq(0)
+    expect(Bugsnag.after_notify_callbacks.size).to eq(0)
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
   
-  it "should run after_bugsnag_notify callbacks" do
-    Bugsnag::Notification.should_receive(:deliver_exception_payload) do |endpoint, payload|
-      event = get_event_from_payload(payload)
-    end
+  it "runs after_bugsnag_notify callbacks" do
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload)
     
     callback_run_count = 0
     Bugsnag.after_notify_callbacks << lambda {|notif|
@@ -105,10 +103,10 @@ describe Bugsnag::MiddlewareStack do
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     
-    callback_run_count.should be == 1
+    expect(callback_run_count).to eq(1)
   end
 
-  it "should not execute disabled bugsnag middleware" do
+  it "does not execute disabled bugsnag middleware" do
     callback_run_count = 0
     Bugsnag.configure do |config|
       config.middleware.disable(Bugsnag::Middleware::Callbacks)
@@ -119,6 +117,6 @@ describe Bugsnag::MiddlewareStack do
     }
     
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    callback_run_count.should be == 0
+    expect(callback_run_count).to eq(0)
   end
 end
