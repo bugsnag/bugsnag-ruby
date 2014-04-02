@@ -24,34 +24,15 @@ namespace :bugsnag do
 
   desc 'Notify Bugsnag that new production code has been deployed'
   task :deploy do
-    on primary(:app) do
-      ALLOWED_ENV_SETTINGS = %w{BUGSNAG_RELEASE_STAGE BUGSNAG_REPOSITORY BUGSNAG_REVISION BUGSNAG_BRANCH BUGSNAG_API_KEY BUGSNAG_APP_VERSION}
-
-      rails_env    = fetch(:rails_env) || fetch(:stage)
-      bugsnag_env  = fetch(:bugsnag_env, rails_env)
-
-      # Build the new environment to pass through to rake
-      new_env = {
-        "BUGSNAG_RELEASE_STAGE" => bugsnag_env,
-        "BUGSNAG_REVISION"      => fetch(:current_revision, nil),
-        "BUGSNAG_REPOSITORY"    => fetch(:repo_url, nil),
-        "BUGSNAG_BRANCH"        => fetch(:branch, nil),
-        "BUGSNAG_API_KEY"       => fetch(:bugsnag_api_key, nil)
-      }.reject { |_, v| v.nil? }
-
-      # Pass through any existing env variables
-      ALLOWED_ENV_SETTINGS.each { |opt| new_env[opt] = ENV[opt] if ENV[opt] }
-
-      within release_path do
-        with rails_env: rails_env do
-          params = "bugsnag:deploy #{new_env.map{|k,v| "#{k}=#{v}"}.join(" ")}"
-          rake = fetch(:rake, "rake")
-          execute rake, params
-        end
-      end
-
-      info 'Bugsnag deploy notification complete.'
-    end
+    Bugsnag::Deploy.notify({
+      :api_key => fetch(:bugsnag_api_key, nil),
+      :release_stage => fetch(:bugsnag_env) || fetch(:rails_env) || fetch(:stage) || "production",
+      :revision => fetch(:current_revision, nil),
+      :repository => fetch(:repo_url, nil),
+      :branch => fetch(:branch, nil)
+    })
+    
+    info 'Bugsnag deploy notification complete.'
   end
 
 end

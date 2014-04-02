@@ -3,7 +3,6 @@ require "bugsnag"
 namespace :bugsnag do
   desc "Notify Bugsnag of a new deploy."
   task :deploy do
-    # TODO:SM Add rake task arguments
     api_key = ENV["BUGSNAG_API_KEY"]
     release_stage = ENV["BUGSNAG_RELEASE_STAGE"]
     app_version = ENV["BUGSNAG_APP_VERSION"]
