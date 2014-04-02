@@ -1,71 +1,26 @@
 require "bugsnag"
-require "pathname"
-require "httparty"
-require "multi_json"
-require "net/http"
-require "uri"
 
 namespace :bugsnag do
   desc "Notify Bugsnag of a new deploy."
   task :deploy do
-    # Post the deploy notification
-    begin
-      require 'bugsnag'
+    # TODO:SM Add rake task arguments
+    api_key = ENV["BUGSNAG_API_KEY"]
+    release_stage = ENV["BUGSNAG_RELEASE_STAGE"]
+    app_version = ENV["BUGSNAG_APP_VERSION"]
+    revision = ENV["BUGSNAG_REVISION"]
+    repository = ENV["BUGSNAG_REPOSITORY"]
+    branch = ENV["BUGSNAG_BRANCH"]
 
-      api_key      = ENV["BUGSNAG_API_KEY"]
-      releaseStage = ENV["BUGSNAG_RELEASE_STAGE"] || "production"
-      appVersion   = ENV["BUGSNAG_APP_VERSION"]
-      revision     = ENV["BUGSNAG_REVISION"]
-      repository   = ENV["BUGSNAG_REPOSITORY"]
-      branch       = ENV["BUGSNAG_BRANCH"]
+    raise RuntimeError.new("No API key found when notifying deploy") if !api_key || api_key.empty?
 
-      # TODO: more reliable ways to infer this are needed
-      path = defined?(Rails.root) ? Rails.root : Pathname.pwd
-      initializer = path + 'config/initializers/bugsnag'
-      if File.exist?(initializer)
-        require initializer
-      else
-        yml_filename = path + 'config/bugsnag.yml'
-        config = YAML.load_file(yml_filename) if File.exists?(yml_filename)
-        Bugsnag.configure(config[releaseStage] ? config[releaseStage] : config) if config
-      end
-
-      config = Bugsnag.configuration
-
-      # Fetch and check the api key
-      api_key ||= config.api_key
-      raise RuntimeError.new("No API key found when notifying deploy") if !api_key || api_key.empty?
-
-      endpoint = (config.use_ssl ? "https://" : "http://") \
-                 + (config.endpoint || Bugsnag::Configuration::DEFAULT_ENDPOINT) \
-                 + "/deploy"
-
-      parameters = {
-        "apiKey" => api_key,
-        "releaseStage" => releaseStage,
-        "appVersion" => appVersion,
-        "revision" => revision,
-        "repository" => repository,
-        "branch" => branch
-      }
-
-      uri = URI.parse(endpoint)
-      req = Net::HTTP::Post.new(uri.path)
-      req.set_form_data(parameters)
-      http = Net::HTTP.new(
-        uri.host,
-        uri.port,
-        config.proxy_host,
-        config.proxy_port,
-        config.proxy_user,
-        config.proxy_password
-      )
-      http.use_ssl = true if config.use_ssl
-      http.request(req)
-
-    rescue Exception => e
-      Bugsnag.warn("Deploy notification failed, #{e.inspect}")
-    end
+    Bugsnag::Deploy.notify({
+      :api_key => api_key, 
+      :release_stage => release_stage,
+      :app_version => app_version,
+      :revision => revision,
+      :repository => repository,
+      :branch => branch
+    })
   end
 
   desc "Send a test exception to Bugsnag."
