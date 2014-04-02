@@ -1,4 +1,5 @@
 require "bugsnag"
+require "pathname"
 require "httparty"
 require "multi_json"
 require "net/http"
@@ -11,17 +12,20 @@ namespace :bugsnag do
     begin
       require 'bugsnag'
 
-      api_key = ENV["BUGSNAG_API_KEY"]
+      api_key      = ENV["BUGSNAG_API_KEY"]
       releaseStage = ENV["BUGSNAG_RELEASE_STAGE"] || "production"
-      appVersion = ENV["BUGSNAG_APP_VERSION"]
-      revision = ENV["BUGSNAG_REVISION"]
-      repository = ENV["BUGSNAG_REPOSITORY"]
-      branch = ENV["BUGSNAG_BRANCH"]
+      appVersion   = ENV["BUGSNAG_APP_VERSION"]
+      revision     = ENV["BUGSNAG_REVISION"]
+      repository   = ENV["BUGSNAG_REPOSITORY"]
+      branch       = ENV["BUGSNAG_BRANCH"]
 
-      begin
-        require Rails.root.join('config/initializers/bugsnag')
-      rescue Exception => e
-        yml_filename = Rails.root.join("config","bugsnag.yml")
+      # TODO: more reliable ways to infer this are needed
+      path = defined?(Rails.root) ? Rails.root : Pathname.pwd
+      initializer = path + 'config/initializers/bugsnag'
+      if File.exist?(initializer)
+        require initializer
+      else
+        yml_filename = path + 'config/bugsnag.yml'
         config = YAML.load_file(yml_filename) if File.exists?(yml_filename)
         Bugsnag.configure(config[releaseStage] ? config[releaseStage] : config) if config
       end
@@ -65,7 +69,7 @@ namespace :bugsnag do
   end
 
   desc "Send a test exception to Bugsnag."
-  task :test_exception => :load do 
+  task :test_exception => :load do
     begin
       raise RuntimeError.new("Bugsnag test exception")
     rescue => e
@@ -80,7 +84,7 @@ namespace :bugsnag do
 end
 
 task :load do
-  begin 
+  begin
     Rake::Task["environment"].invoke
   rescue
   end
