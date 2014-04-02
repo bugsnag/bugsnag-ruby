@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.8.7
+-----
+
+- fix capistrano when `rake` is not set. #87
+- fix capistrano when `Rails` is not loaded. #85
+- various cleanup
+
 1.8.6
 -----
 
