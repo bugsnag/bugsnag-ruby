@@ -9,6 +9,7 @@ module Bugsnag
           notif.context ||= "sidekiq##{queue}"
         }
 
+        binding.pry
         block.call() if block_given?
       rescue Exception => ex
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
@@ -30,8 +31,9 @@ if Sidekiq::VERSION < '3'
 else
   Sidekiq.configure_server do |config|
     config.error_handlers << lambda do |ex, ctx|
-      notify = lambda { Bugsnag.notify(ex) }
-      Bugsnag::Sidekiq.method(:call).call(nil, ctx.msg, ctx.msg.queue, notify)
+      Bugsnag::Sidekiq.new.call(nil, ctx[:msg], ctx[:msg] ? ctx[:msg][:queue] : nil) do
+        Bugsnag.notify(ex)
+      end
     end
   end
 end
