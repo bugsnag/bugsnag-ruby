@@ -4,37 +4,36 @@ Changelog
 1.8.8
 -----
 
-- rename "severity" of error to "sev"
-- removes "fatal" as a sev
+-   Prepare 'severity' feature for release
 
 1.8.7
 -----
 
-- fix capistrano when `rake` is not set. #87
-- fix capistrano when `Rails` is not loaded. #85
-- various cleanup
+-   Fix capistrano when `rake` is not set. #87
+-   Fix capistrano when `Rails` is not loaded. #85
+-   Various cleanup
 
 1.8.6
 -----
 
-- proxy support in the bugsnag deploy notification rake task
+-   Proxy support in the bugsnag deploy notification rake task
 
 1.8.5
 -----
 
-- capistrano3 support (for real)
-- delayed_job support
+-   Capistrano3 support (for real)
+-   delayed_job support
 
 1.8.4
 -----
 
-- support for per-notification api keys
+-   Support for per-notification api keys
 
 1.8.3
 -----
 
-- capistrano3 support
-- allow `set :bugsnag_api_key, foo` in capistrano
+-   Capistrano3 support
+-   Allow `set :bugsnag_api_key, foo` in capistrano
 
 1.8.2
 -----
