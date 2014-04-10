@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.8.8
+-----
+
+- rename "severity" of error to "sev"
+- removes "fatal" as a sev
+
 1.8.7
 -----
 
@@ -195,7 +201,7 @@ Changelog
 
 1.2.7
 -----
--   Protect against rare exception-unwrapping infinite loop 
+-   Protect against rare exception-unwrapping infinite loop
     (only in some exceptions using the `original_exception` pattern)
 
 1.2.6
@@ -239,7 +245,7 @@ Changelog
 
 1.1.4
 -----
--   Move Bugsnag rack middleware later in the middleware stack, fixes 
+-   Move Bugsnag rack middleware later in the middleware stack, fixes
     issue where development exception may not have been delivered
 
 1.1.3
