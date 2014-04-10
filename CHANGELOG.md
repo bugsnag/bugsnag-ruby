@@ -3,35 +3,29 @@ Changelog
 
 1.8.8
 -----
-
 -   Prepare 'severity' feature for release
 
 1.8.7
 -----
-
 -   Fix capistrano when `rake` is not set. #87
 -   Fix capistrano when `Rails` is not loaded. #85
 -   Various cleanup
 
 1.8.6
 -----
-
 -   Proxy support in the bugsnag deploy notification rake task
 
 1.8.5
 -----
-
 -   Capistrano3 support (for real)
 -   delayed_job support
 
 1.8.4
 -----
-
 -   Support for per-notification api keys
 
 1.8.3
 -----
-
 -   Capistrano3 support
 -   Allow `set :bugsnag_api_key, foo` in capistrano
 
