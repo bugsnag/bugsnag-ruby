@@ -15,7 +15,7 @@ module Bugsnag
 
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
-    SUPPORTED_SEVERITIES = ["fatal", "error", "warning", "info"]
+    SUPPORTED_SEVS = ["error", "warning", "info"]
 
     # HTTParty settings
     headers  "Content-Type" => "application/json"
@@ -56,8 +56,8 @@ module Bugsnag
       @meta_data = {}
       @user = {}
 
-      self.severity = @overrides[:severity]
-      @overrides.delete :severity
+      self.sev = @overrides[:sev]
+      @overrides.delete :sev
 
       if @overrides.key? :grouping_hash
         self.grouping_hash = @overrides[:grouping_hash]
@@ -140,12 +140,12 @@ module Bugsnag
       @user.merge!(user).delete_if{|k,v| v == nil}
     end
 
-    def severity=(severity)
-      @severity = severity if SUPPORTED_SEVERITIES.include?(severity)
+    def sev=(sev)
+      @sev = sev if SUPPORTED_SEVS.include?(sev)
     end
 
-    def severity
-      @severity || "error"
+    def sev
+      @sev || "error"
     end
 
     def grouping_hash=(grouping_hash)
@@ -217,7 +217,7 @@ module Bugsnag
           :context => self.context,
           :user => @user,
           :exceptions => exception_list,
-          :severity => self.severity,
+          :sev => self.sev,
           :groupingHash => self.grouping_hash,
           :metaData => Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
         }.reject {|k,v| v.nil? }

@@ -256,44 +256,35 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "accepts a severity in overrides" do
+  it "accepts a sev in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      expect(event[:severity]).to eq("info")
+      expect(event[:sev]).to eq("info")
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :severity => "info"
+      :sev => "info"
     })
   end
 
-  it "defaults to error severity" do
+  it "defaults to error sev" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      expect(event[:severity]).to eq("error")
+      expect(event[:sev]).to eq("error")
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "does not accept a bad severity in overrides" do
+  it "does not accept a bad sev in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      expect(event[:severity]).to eq("error")
+      expect(event[:sev]).to eq("error")
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :severity => "infffo"
+      :sev => "fatal"
     })
-  end
-
-  it "autonotifies fatal errors" do
-    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
-      event = get_event_from_payload(payload)
-      expect(event[:severity]).to eq("fatal")
-    end
-
-    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
   end
 
   it "accepts a context in overrides" do
@@ -664,7 +655,7 @@ describe Bugsnag::Notification do
     notify_test_exception
   end
 
-  it "sets the timeout time to the value in the configuration" do 
+  it "sets the timeout time to the value in the configuration" do
     Bugsnag.configure do |config|
       config.timeout = 10
     end
