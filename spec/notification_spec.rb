@@ -287,6 +287,16 @@ describe Bugsnag::Notification do
     })
   end
 
+  it "autonotifies errors" do
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
+      event = get_event_from_payload(payload)
+      expect(event[:severity]).to eq("error")
+    end
+
+    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
+  end
+
+
   it "accepts a context in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
