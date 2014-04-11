@@ -1,34 +1,33 @@
 Changelog
 =========
 
+1.8.8
+-----
+-   Prepare 'severity' feature for release
+
 1.8.7
 -----
-
-- fix capistrano when `rake` is not set. #87
-- fix capistrano when `Rails` is not loaded. #85
-- various cleanup
+-   Fix capistrano when `rake` is not set. #87
+-   Fix capistrano when `Rails` is not loaded. #85
+-   Various cleanup
 
 1.8.6
 -----
-
-- proxy support in the bugsnag deploy notification rake task
+-   Proxy support in the bugsnag deploy notification rake task
 
 1.8.5
 -----
-
-- capistrano3 support (for real)
-- delayed_job support
+-   Capistrano3 support (for real)
+-   delayed_job support
 
 1.8.4
 -----
-
-- support for per-notification api keys
+-   Support for per-notification api keys
 
 1.8.3
 -----
-
-- capistrano3 support
-- allow `set :bugsnag_api_key, foo` in capistrano
+-   Capistrano3 support
+-   Allow `set :bugsnag_api_key, foo` in capistrano
 
 1.8.2
 -----
@@ -195,7 +194,7 @@ Changelog
 
 1.2.7
 -----
--   Protect against rare exception-unwrapping infinite loop 
+-   Protect against rare exception-unwrapping infinite loop
     (only in some exceptions using the `original_exception` pattern)
 
 1.2.6
@@ -239,7 +238,7 @@ Changelog
 
 1.1.4
 -----
--   Move Bugsnag rack middleware later in the middleware stack, fixes 
+-   Move Bugsnag rack middleware later in the middleware stack, fixes
     issue where development exception may not have been delivered
 
 1.1.3

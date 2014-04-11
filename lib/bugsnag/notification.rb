@@ -15,7 +15,9 @@ module Bugsnag
 
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
-    SUPPORTED_SEVERITIES = ["fatal", "error", "warning", "info"]
+    SUPPORTED_SEVERITIES = ["error", "warning", "info"]
+
+    CURRENT_PAYLOAD_VERSION = "2"
 
     # HTTParty settings
     headers  "Content-Type" => "application/json"
@@ -145,7 +147,11 @@ module Bugsnag
     end
 
     def severity
-      @severity || "error"
+      @severity || "warning"
+    end
+
+    def payload_version
+      CURRENT_PAYLOAD_VERSION
     end
 
     def grouping_hash=(grouping_hash)
@@ -216,6 +222,7 @@ module Bugsnag
           },
           :context => self.context,
           :user => @user,
+          :payloadVersion => payload_version,
           :exceptions => exception_list,
           :severity => self.severity,
           :groupingHash => self.grouping_hash,
