@@ -256,34 +256,34 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "accepts a sev in overrides" do
+  it "accepts a severity in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      expect(event[:sev]).to eq("info")
+      expect(event[:severity]).to eq("info")
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :sev => "info"
+      :severity => "info"
     })
   end
 
-  it "defaults to error sev" do
+  it "defaults to error severity" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      expect(event[:sev]).to eq("error")
+      expect(event[:severity]).to eq("error")
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "does not accept a bad sev in overrides" do
+  it "does not accept a bad severity in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      expect(event[:sev]).to eq("error")
+      expect(event[:severity]).to eq("error")
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :sev => "fatal"
+      :severity => "fatal"
     })
   end
 
