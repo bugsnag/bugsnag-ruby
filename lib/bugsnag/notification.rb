@@ -17,6 +17,8 @@ module Bugsnag
 
     SUPPORTED_SEVERITIES = ["error", "warning", "info"]
 
+    CURRENT_PAYLOAD_VERSION = "2"
+
     # HTTParty settings
     headers  "Content-Type" => "application/json"
     default_timeout 5
@@ -148,6 +150,10 @@ module Bugsnag
       @severity || "error"
     end
 
+    def payload_version
+      CURRENT_PAYLOAD_VERSION
+    end
+
     def grouping_hash=(grouping_hash)
       @grouping_hash = grouping_hash
     end
@@ -216,6 +222,7 @@ module Bugsnag
           },
           :context => self.context,
           :user => @user,
+          :payloadVersion => payload_version,
           :exceptions => exception_list,
           :severity => self.severity,
           :groupingHash => self.grouping_hash,
