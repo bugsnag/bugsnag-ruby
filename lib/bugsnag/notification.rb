@@ -147,7 +147,7 @@ module Bugsnag
     end
 
     def severity
-      @severity || "error"
+      @severity || "warning"
     end
 
     def payload_version
