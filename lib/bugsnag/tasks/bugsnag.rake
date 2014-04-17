@@ -21,7 +21,7 @@ namespace :bugsnag do
 
       # TODO: more reliable ways to infer this are needed
       path = defined?(Rails.root) ? Rails.root : Pathname.pwd
-      initializer = path + 'config/initializers/bugsnag'
+      initializer = path + 'config/initializers/bugsnag.rb'
       if File.exist?(initializer)
         require initializer
       else
