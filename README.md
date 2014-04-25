@@ -148,7 +148,7 @@ You can read more about how callbacks work in the
 [Bugsnag Middleware](#bugsnag-middleware) documentation below.
 
 
-Sending Non-Fatal Exceptions
+Sending Handled Exceptions
 ----------------------------
 
 If you would like to send non-fatal exceptions to Bugsnag, you can call
@@ -158,14 +158,35 @@ If you would like to send non-fatal exceptions to Bugsnag, you can call
 Bugsnag.notify(RuntimeError.new("Something broke"))
 ```
 
+### Custom Data
+
 You can also send additional meta-data with your exception:
 
 ```ruby
 Bugsnag.notify(RuntimeError.new("Something broke"), {
-  :username => "bob-hoskins",
-  :registered_user => true
+  :user => {
+    :username => "bob-hoskins",
+    :registered_user => true
+  }
 })
 ```
+
+### Severity
+
+You can set the severity of an error in Bugsnag by including the severity option when
+notifying bugsnag of the error,
+
+```ruby
+Bugsnag.notify(RuntimeError.new("Something broke"), {
+  :severity => "error",
+})
+```
+
+Valid severities are `error`, `warning` and `info`.
+
+Severity is displayed in the dashboard and can be used to filter the error list.
+By default all crashes (or unhandled exceptions) are set to `error` and all
+`Bugsnag.notify` calls default to `warning`.
 
 Rake Integration
 ----------------
@@ -256,7 +277,7 @@ apps it is automatically set to `RACK_ENV`. Otherwise the default is
 ###notify_release_stages
 
 By default, we will notify Bugsnag of exceptions that happen in any
-`release_stage`. If you would like to change which release stages 
+`release_stage`. If you would like to change which release stages
 notify Bugsnag of exceptions you can set `notify_release_stages`:
 
 ```ruby
