@@ -9,6 +9,10 @@ module Bugsnag
       opts[:release_stage] ||= "production"
       opts[:endpoint] ||= Bugsnag.configuration.endpoint
       opts[:use_ssl] = Bugsnag.configuration.use_ssl if opts[:use_ssl] == nil
+      opts[:proxy_host] ||= Bugsnag.configuration.proxy_host
+      opts[:proxy_port] ||= Bugsnag.configuration.proxy_port
+      opts[:proxy_user] ||= Bugsnag.configuration.proxy_user
+      opts[:proxy_password] ||= Bugsnag.configuration.proxy_password
 
       endpoint = (opts[:use_ssl] ? "https://" : "http://") + opts[:endpoint] + "/deploy"
 
