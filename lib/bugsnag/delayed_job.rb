@@ -1,8 +1,15 @@
 require 'delayed_job'
 
+# See Issue #99
+unless defined?(Delayed::Plugins::Plugin)
+  raise LoadError, "bugsnag requires delayed_job > 3.x"
+end
+
 unless defined? Delayed::Plugins::Bugsnag
   module Delayed
     module Plugins
+
+
       class Bugsnag < Plugin
         module Notify
           def error(job, error)
