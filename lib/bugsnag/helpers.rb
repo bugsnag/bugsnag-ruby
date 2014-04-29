@@ -79,8 +79,35 @@ module Bugsnag
       end
     end
 
+    def self.fix_utf8(obj)
+      case obj
+      when Hash
+        obj.keys.each do |k|
+          obj[k] = fix_utf8(obj[k])
+        end
+        obj
+
+      when Array
+        obj.map! do |item|
+          fix_utf8 item
+        end
+
+      when String
+        if defined?(obj.encoding) && defined?(Encoding::UTF_8)
+          obj.encode('utf-8', obj.encoding == Encoding::UTF_8 ? 'binary' : obj.encoding, :invalid => :replace, :undef => :replace)
+        elsif defined?(Iconv)
+          Iconv.iconv('UTF-8//REPLACE', 'UTF-8', obj)
+        end
+
+      else
+
+        obj
+      end
+    end
+
     # Helper functions to work around MultiJson changes in 1.3+
     def self.dump_json(object, options={})
+      object = fix_utf8(object)
       if MultiJson.respond_to?(:adapter)
         MultiJson.dump(object, options)
       else

@@ -26,8 +26,8 @@ class JRubyException
 end
 
 describe Bugsnag::Notification do
-  def notify_test_exception
-    Bugsnag.notify(RuntimeError.new("test message"))
+  def notify_test_exception(*args)
+    Bugsnag.notify(RuntimeError.new("test message"), *args)
   end
 
   it "should contain an api_key if one is set" do
@@ -686,6 +686,17 @@ describe Bugsnag::Notification do
     end
 
     notify_test_exception
+  end
+
+  it "should fix invalid utf8" do
+    invalid_data = "fl\xc3ff"
+    invalid_data.force_encoding('BINARY') if invalid_data.respond_to?(:force_encoding)
+
+    expect(Bugsnag::Notification).to receive(:post) do |endpoint, opts|
+      expect(opts[:body]).to match(/fl�ff/) if defined?(Encoding::UTF_8)
+    end
+
+    notify_test_exception(:fluff => {:fluff => invalid_data})
   end
 
   if defined?(JRUBY_VERSION)
