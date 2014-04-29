@@ -2,14 +2,15 @@ require 'sidekiq'
 
 module Bugsnag
   class Sidekiq
-    def call(worker, msg, queue)
+    def call(worker, msg, queue, &block)
       begin
         Bugsnag.before_notify_callbacks << lambda {|notif|
           notif.add_tab(:sidekiq, msg)
           notif.context ||= "sidekiq##{queue}"
         }
 
-        yield
+        binding.pry
+        block.call() if block_given?
       rescue Exception => ex
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
         Bugsnag.auto_notify(ex)
@@ -21,8 +22,18 @@ module Bugsnag
   end
 end
 
-::Sidekiq.configure_server do |config|
-  config.server_middleware do |chain|
-    chain.add ::Bugsnag::Sidekiq
+if Sidekiq::VERSION < '3'
+  Sidekiq.configure_server do |config|
+    config.server_middleware do |chain|
+      chain.add Bugsnag::Sidekiq
+    end
+  end
+else
+  Sidekiq.configure_server do |config|
+    config.error_handlers << lambda do |ex, ctx|
+      Bugsnag::Sidekiq.new.call(nil, ctx[:msg], ctx[:msg] ? ctx[:msg][:queue] : nil) do
+        Bugsnag.notify(ex)
+      end
+    end
   end
 end
