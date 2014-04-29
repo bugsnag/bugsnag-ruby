@@ -15,6 +15,16 @@ class Ruby21Exception < RuntimeError
   end
 end
 
+class JRubyException
+  def self.raise!
+    new.gloops
+  end
+
+  def gloops
+    java.lang.System.out.printf(nil)
+  end
+end
+
 describe Bugsnag::Notification do
   def notify_test_exception
     Bugsnag.notify(RuntimeError.new("test message"))
@@ -676,5 +686,22 @@ describe Bugsnag::Notification do
     end
 
     notify_test_exception
+  end
+
+  if defined?(JRUBY_VERSION)
+
+    it "should work with java.lang.Throwables" do
+      expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
+        expect(payload[:events][0][:exceptions][0][:errorClass]).to eq('Java::JavaLang::ArrayIndexOutOfBoundsException')
+        expect(payload[:events][0][:exceptions][0][:message]).to eq("2")
+        expect(payload[:events][0][:exceptions][0][:stacktrace].size).to be_gt(0)
+      end
+
+      begin
+        JRubyException.raise!
+      rescue
+        Bugsnag.notify $!
+      end
+    end
   end
 end

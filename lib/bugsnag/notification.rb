@@ -11,7 +11,12 @@ module Bugsnag
     NOTIFIER_URL = "http://www.bugsnag.com"
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
+
+    # e.g. "org/jruby/RubyKernel.java:1264:in `catch'"
     BACKTRACE_LINE_REGEX = /^((?:[a-zA-Z]:)?[^:]+):(\d+)(?::in `([^']+)')?$/
+
+    # e.g. "org.jruby.Ruby.runScript(Ruby.java:807)"
+    JAVA_BACKTRACE_REGEX = /^(.*)\((.*)(?::([0-9]+))?\)$/
 
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
@@ -75,16 +80,18 @@ module Bugsnag
       @exceptions = []
       ex = exception
       while ex != nil && !@exceptions.include?(ex) && @exceptions.length < MAX_EXCEPTIONS_TO_UNWRAP
+
         unless ex.is_a? Exception
           if ex.respond_to?(:to_exception)
             ex = ex.to_exception
           elsif ex.respond_to?(:exception)
             ex = ex.exception
           end
-          unless ex.is_a? Exception
-            Bugsnag.warn("Converting non-Exception to RuntimeError: #{ex.inspect}")
-            ex = RuntimeError.new(ex.to_s)
-          end
+        end
+
+        unless ex.is_a?(Exception) || (defined?(Java::JavaLang::Throwable) && ex.is_a?(Java::JavaLang::Throwable))
+          Bugsnag.warn("Converting non-Exception to RuntimeError: #{ex.inspect}")
+          ex = RuntimeError.new(ex.to_s)
         end
 
         @exceptions << ex
@@ -331,8 +338,14 @@ module Bugsnag
 
     def stacktrace(exception)
       (exception.backtrace || caller).map do |trace|
+
+        if trace.match(BACKTRACE_LINE_REGEX)
+          file, line_str, method = [$1, $2, $3]
+        elsif trace.match(JAVA_BACKTRACE_REGEX)
+          method, file, line_str = [$1, $2, $3]
+        end
+
         # Parse the stacktrace line
-        _, file, line_str, method = trace.match(BACKTRACE_LINE_REGEX).to_a
 
         # Skip stacktrace lines inside lib/bugsnag
         next(nil) if file.nil? || file =~ %r{lib/bugsnag}
