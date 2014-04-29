@@ -9,25 +9,34 @@ module Bugsnag::Rake
         alias_method :define_task, :bugsnag_define_task
       end
     end
+
+    Bugsnag.before_notify_callbacks << lambda {|notif|
+      task = Thread.current[:bugsnag_running_task]
+      next unless task
+
+      notif.add_tab(:rake_task, {
+        :name => task.name,
+        :description => task.full_comment,
+        :arguments => task.arg_description
+      })
+
+      notif.context ||= task.name
+    }
   end
 
   module ClassMethods
     def bugsnag_define_task(*args, &block)
-      task = self.original_define_task *args do |*block_args|
+      task = self.original_define_task(*args) do |*block_args|
         begin
-          Bugsnag.before_notify_callbacks << lambda {|notif|
-            notif.add_tab(:rake_task, {
-              :name => task.name,
-              :description => task.full_comment,
-              :arguments => task.arg_description
-            })
-            notif.context ||= task.name
-          }
+          old_task = Thread.current[:bugsnag_running_task]
+          Thread.current[:bugsnag_running_task] = task
 
           yield(*block_args) if block_given?
         rescue Exception => e
           Bugsnag.auto_notify(e)
           raise
+        ensure
+          Thread.current[:bugsnag_running_task] = old_task
         end
       end
     end
