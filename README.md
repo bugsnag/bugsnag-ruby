@@ -597,6 +597,12 @@ end
 For this to work, include [Deferrable](http://eventmachine.rubyforge.org/EventMachine/Deferrable.html)
 in your `MyServer`, then whenever you want to raise an error, call `fail`.
 
+### Integrations
+
+Bugsnag ruby works out of the box with Rails, Sidekiq, Resque, DelayedJob (3+), Mailman, Rake and Rack. It
+should be easy to add support for other frameworks, either by sending a pull request here or adding a hook
+to those projects.
+
 Reporting Bugs or Feature Requests
 ----------------------------------
 
