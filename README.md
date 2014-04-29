@@ -256,7 +256,7 @@ apps it is automatically set to `RACK_ENV`. Otherwise the default is
 ###notify_release_stages
 
 By default, we will notify Bugsnag of exceptions that happen in any
-`release_stage`. If you would like to change which release stages 
+`release_stage`. If you would like to change which release stages
 notify Bugsnag of exceptions you can set `notify_release_stages`:
 
 ```ruby
@@ -493,11 +493,13 @@ introduced in.
 ### Using Capistrano
 
 If you use [capistrano](https://github.com/capistrano/capistrano) to deploy
-your apps, you can enable deploy tracking by adding the following line to your
+your apps, you can enable deploy tracking by adding the integration to your
 app's `deploy.rb`:
 
 ```ruby
 require "bugsnag/capistrano"
+
+set :bugsnag_api_key, "api_key_here"
 ```
 
 ### Using Rake
@@ -506,7 +508,7 @@ If you aren't using capistrano, you can run the following rake command from
 your deploy scripts.
 
 ```shell
-rake bugsnag:deploy BUGSNAG_REVISION=source-control-revision BUGSNAG_RELEASE_STAGE=production
+rake bugsnag:deploy BUGSNAG_REVISION=source-control-revision BUGSNAG_RELEASE_STAGE=production BUGSNAG_API_KEY=api-key-here
 ```
 
 The bugsnag rake tasks will be automatically available for Rails 3/4
@@ -522,13 +524,12 @@ require "bugsnag/tasks"
 You can set the following environmental variables to override or specify
 additional deploy information:
 
+-   **BUGSNAG_API_KEY** -
+    Your Bugsnag API key (required).
 -   **BUGSNAG_RELEASE_STAGE** -
     The release stage (eg, production, staging) currently being deployed.
     This is set automatically from your Bugsnag settings or rails/rack
     environment.
--   **BUGSNAG_API_KEY** -
-    Your Bugsnag API key. This is set automatically from your Bugsnag
-    settings in your app.
 -   **BUGSNAG_REPOSITORY** -
     The repository from which you are deploying the code. This is set
     automatically if you are using capistrano.
