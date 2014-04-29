@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'spec_helper'
 require 'securerandom'
 require 'ostruct'
@@ -15,9 +16,19 @@ class Ruby21Exception < RuntimeError
   end
 end
 
+class JRubyException
+  def self.raise!
+    new.gloops
+  end
+
+  def gloops
+    java.lang.System.out.printf(nil)
+  end
+end
+
 describe Bugsnag::Notification do
-  def notify_test_exception
-    Bugsnag.notify(RuntimeError.new("test message"))
+  def notify_test_exception(*args)
+    Bugsnag.notify(RuntimeError.new("test message"), *args)
   end
 
   it "should contain an api_key if one is set" do
@@ -267,10 +278,10 @@ describe Bugsnag::Notification do
     })
   end
 
-  it "defaults to error severity" do
+  it "defaults to warning severity" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      expect(event[:severity]).to eq("error")
+      expect(event[:severity]).to eq("warning")
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
@@ -279,22 +290,23 @@ describe Bugsnag::Notification do
   it "does not accept a bad severity in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      expect(event[:severity]).to eq("error")
+      expect(event[:severity]).to eq("warning")
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :severity => "infffo"
+      :severity => "fatal"
     })
   end
 
-  it "autonotifies fatal errors" do
+  it "autonotifies errors" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       event = get_event_from_payload(payload)
-      expect(event[:severity]).to eq("fatal")
+      expect(event[:severity]).to eq("error")
     end
 
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
   end
+
 
   it "accepts a context in overrides" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
@@ -664,7 +676,7 @@ describe Bugsnag::Notification do
     notify_test_exception
   end
 
-  it "sets the timeout time to the value in the configuration" do 
+  it "sets the timeout time to the value in the configuration" do
     Bugsnag.configure do |config|
       config.timeout = 10
     end
@@ -675,5 +687,33 @@ describe Bugsnag::Notification do
     end
 
     notify_test_exception
+  end
+
+  it "should fix invalid utf8" do
+    invalid_data = "fl\xc3ff"
+    invalid_data.force_encoding('BINARY') if invalid_data.respond_to?(:force_encoding)
+
+    expect(Bugsnag::Notification).to receive(:post) do |endpoint, opts|
+      expect(opts[:body]).to match(/fl�ff/) if defined?(Encoding::UTF_8)
+    end
+
+    notify_test_exception(:fluff => {:fluff => invalid_data})
+  end
+
+  if defined?(JRUBY_VERSION)
+
+    it "should work with java.lang.Throwables" do
+      expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
+        expect(payload[:events][0][:exceptions][0][:errorClass]).to eq('Java::JavaLang::ArrayIndexOutOfBoundsException')
+        expect(payload[:events][0][:exceptions][0][:message]).to eq("2")
+        expect(payload[:events][0][:exceptions][0][:stacktrace].size).to be_gt(0)
+      end
+
+      begin
+        JRubyException.raise!
+      rescue
+        Bugsnag.notify $!
+      end
+    end
   end
 end

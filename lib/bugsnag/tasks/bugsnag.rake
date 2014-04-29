@@ -11,7 +11,7 @@ namespace :bugsnag do
     branch = ENV["BUGSNAG_BRANCH"]
 
     Bugsnag::Deploy.notify({
-      :api_key => api_key, 
+      :api_key => api_key,
       :release_stage => release_stage,
       :app_version => app_version,
       :revision => revision,

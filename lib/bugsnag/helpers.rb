@@ -23,7 +23,8 @@ module Bugsnag
         seen << obj
       end
 
-      if obj.is_a?(Hash)
+      case obj
+      when Hash
         clean_hash = {}
         obj.each do |k,v| 
           if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
@@ -34,12 +35,26 @@ module Bugsnag
           end
         end
         clean_hash
-      elsif obj.is_a?(Array) || obj.is_a?(Set)
+      when Array, Set
         obj.map { |el| cleanup_obj(el, filters, seen) }.compact
-      elsif obj.is_a?(Integer) || obj.is_a?(Float) || obj.is_a?(String)
+      when Numeric
         obj
+      when String
+        if defined?(obj.encoding) && defined?(Encoding::UTF_8)
+          obj.encode('utf-8', obj.encoding == Encoding::UTF_8 ? 'binary' : obj.encoding, :invalid => :replace, :undef => :replace)
+        elsif defined?(Iconv)
+          Iconv.conv('UTF-8//IGNORE', 'UTF-8', obj) || obj
+        else
+          obj
+        end
       else
-        obj.to_s unless obj.to_s =~ /#<.*>/
+        str = obj.to_s
+        # avoid leaking potentially sensitive data from objects' #inspect output
+        if str =~ /#<.*>/
+          '[OBJECT]'
+        else
+          str
+        end
       end
     end
 

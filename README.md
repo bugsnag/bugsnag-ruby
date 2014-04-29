@@ -148,7 +148,7 @@ You can read more about how callbacks work in the
 [Bugsnag Middleware](#bugsnag-middleware) documentation below.
 
 
-Sending Non-Fatal Exceptions
+Sending Handled Exceptions
 ----------------------------
 
 If you would like to send non-fatal exceptions to Bugsnag, you can call
@@ -158,14 +158,35 @@ If you would like to send non-fatal exceptions to Bugsnag, you can call
 Bugsnag.notify(RuntimeError.new("Something broke"))
 ```
 
+### Custom Data
+
 You can also send additional meta-data with your exception:
 
 ```ruby
 Bugsnag.notify(RuntimeError.new("Something broke"), {
-  :username => "bob-hoskins",
-  :registered_user => true
+  :user => {
+    :username => "bob-hoskins",
+    :registered_user => true
+  }
 })
 ```
+
+### Severity
+
+You can set the severity of an error in Bugsnag by including the severity option when
+notifying bugsnag of the error,
+
+```ruby
+Bugsnag.notify(RuntimeError.new("Something broke"), {
+  :severity => "error",
+})
+```
+
+Valid severities are `error`, `warning` and `info`.
+
+Severity is displayed in the dashboard and can be used to filter the error list.
+By default all crashes (or unhandled exceptions) are set to `error` and all
+`Bugsnag.notify` calls default to `warning`.
 
 Rake Integration
 ----------------
@@ -576,6 +597,12 @@ end
 
 For this to work, include [Deferrable](http://eventmachine.rubyforge.org/EventMachine/Deferrable.html)
 in your `MyServer`, then whenever you want to raise an error, call `fail`.
+
+### Integrations
+
+Bugsnag ruby works out of the box with Rails, Sidekiq, Resque, DelayedJob (3+), Mailman, Rake and Rack. It
+should be easy to add support for other frameworks, either by sending a pull request here or adding a hook
+to those projects.
 
 Reporting Bugs or Feature Requests
 ----------------------------------
