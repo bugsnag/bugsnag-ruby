@@ -5,6 +5,7 @@ require "bugsnag/configuration"
 require "bugsnag/meta_data"
 require "bugsnag/notification"
 require "bugsnag/helpers"
+require "bugsnag/deploy"
 
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
