@@ -96,7 +96,7 @@ module Bugsnag
         if defined?(obj.encoding) && defined?(Encoding::UTF_8)
           obj.encode('utf-8', obj.encoding == Encoding::UTF_8 ? 'binary' : obj.encoding, :invalid => :replace, :undef => :replace)
         elsif defined?(Iconv)
-          Iconv.iconv('UTF-8//REPLACE', 'UTF-8', obj)
+          Iconv.iconv('UTF-8//IGNORE', 'UTF-8', obj) || obj
         end
 
       else
