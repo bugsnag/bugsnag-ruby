@@ -23,7 +23,8 @@ module Bugsnag
         seen << obj
       end
 
-      if obj.is_a?(Hash)
+      case obj
+      when Hash
         clean_hash = {}
         obj.each do |k,v| 
           if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
@@ -34,10 +35,16 @@ module Bugsnag
           end
         end
         clean_hash
-      elsif obj.is_a?(Array) || obj.is_a?(Set)
+      when Array, Set
         obj.map { |el| cleanup_obj(el, filters, seen) }.compact
-      elsif obj.is_a?(Integer) || obj.is_a?(Float) || obj.is_a?(String)
+      when Integer, Float
         obj
+      when String
+        if defined?(obj.encoding) && defined?(Encoding::UTF_8)
+          obj.encode('utf-8', obj.encoding == Encoding::UTF_8 ? 'binary' : obj.encoding, :invalid => :replace, :undef => :replace)
+        elsif defined?(Iconv)
+          Iconv.conv('UTF-8//IGNORE', 'UTF-8', obj) || obj
+        end
       else
         obj.to_s unless obj.to_s =~ /#<.*>/
       end
@@ -79,35 +86,8 @@ module Bugsnag
       end
     end
 
-    def self.fix_utf8(obj)
-      case obj
-      when Hash
-        obj.keys.each do |k|
-          obj[k] = fix_utf8(obj[k])
-        end
-        obj
-
-      when Array
-        obj.map! do |item|
-          fix_utf8 item
-        end
-
-      when String
-        if defined?(obj.encoding) && defined?(Encoding::UTF_8)
-          obj.encode('utf-8', obj.encoding == Encoding::UTF_8 ? 'binary' : obj.encoding, :invalid => :replace, :undef => :replace)
-        elsif defined?(Iconv)
-          Iconv.iconv('UTF-8//IGNORE', 'UTF-8', obj) || obj
-        end
-
-      else
-
-        obj
-      end
-    end
-
     # Helper functions to work around MultiJson changes in 1.3+
     def self.dump_json(object, options={})
-      object = fix_utf8(object)
       if MultiJson.respond_to?(:adapter)
         MultiJson.dump(object, options)
       else
