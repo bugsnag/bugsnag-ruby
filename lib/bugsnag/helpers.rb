@@ -46,7 +46,13 @@ module Bugsnag
           Iconv.conv('UTF-8//IGNORE', 'UTF-8', obj) || obj
         end
       else
-        obj.to_s unless obj.to_s =~ /#<.*>/
+        str = obj.to_s
+        # avoid leaking potentially sensitive data from objects' #inspect output
+        if str =~ /#<.*>/
+          '[OBJECT]'
+        else
+          str
+        end
       end
     end
 
