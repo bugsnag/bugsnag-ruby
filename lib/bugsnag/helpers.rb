@@ -37,7 +37,7 @@ module Bugsnag
         clean_hash
       when Array, Set
         obj.map { |el| cleanup_obj(el, filters, seen) }.compact
-      when Integer, Float
+      when Numeric
         obj
       when String
         if defined?(obj.encoding) && defined?(Encoding::UTF_8)
