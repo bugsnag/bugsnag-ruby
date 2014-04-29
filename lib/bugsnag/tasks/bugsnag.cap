@@ -33,10 +33,10 @@ namespace :bugsnag do
         :branch => fetch(:branch, ENV["BUGSNAG_BRANCH"]),
         :app_version => fetch(:app_version, ENV["BUGSNAG_APP_VERSION"])
       })
-    rescue Exception
+    rescue
       important("Bugnsag deploy notification failed, #{$!.inspect}")
     end
-    
+
     info 'Bugsnag deploy notification complete.'
   end
 

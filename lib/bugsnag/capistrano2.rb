@@ -19,7 +19,7 @@ module Bugsnag
                 :branch => fetch(:branch, ENV["BUGSNAG_BRANCH"],
                 :app_version => fetch(:app_version, ENV["BUGSNAG_APP_VERSION"]))
               })
-            rescue Exception
+            rescue
               logger.important("Bugnsag deploy notification failed, #{$!.inspect}")
             end
 
@@ -32,4 +32,3 @@ module Bugsnag
 end
 
 Bugsnag::Capistrano.load_into(Capistrano::Configuration.instance) if Capistrano::Configuration.instance
-
