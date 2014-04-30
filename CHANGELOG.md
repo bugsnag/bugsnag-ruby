@@ -1,6 +1,16 @@
 Changelog
 =========
 
+2.0.0
+-----
+-   BREAKING: capistrano integration requires explicit configuration to avoid loading rails env (15x faster to notify)
+-   Sidekiq 3 support
+-   java.lang.Throwable support for jruby
+-   Show non-serializable objects as '[Object]' instead of 'null'.
+-   Fix delayed job 2.x
+-   Fix rake support
+-   Fix missing notifications caused by invalid utf8
+
 1.8.8
 -----
 -   Prepare 'severity' feature for release
