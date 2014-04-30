@@ -1,5 +1,3 @@
-require "bugsnag/deploy"
-
 module Bugsnag
   module Capistrano
     def self.load_into(configuration)
