@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.0.1
+-----
+-   Fix capistrano v3 after 2.0.0
+
 2.0.0
 -----
 -   BREAKING: capistrano integration requires explicit configuration to avoid loading rails env (15x faster to notify)
