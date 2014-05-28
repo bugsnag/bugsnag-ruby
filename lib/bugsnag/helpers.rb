@@ -42,9 +42,9 @@ module Bugsnag
       when String
         if defined?(obj.encoding) && defined?(Encoding::UTF_8)
           if obj.encoding == Encoding::UTF_8
-            obj.valid_encoding? ? obj : obj.encode('utf-16', invalid: :replace, undef: :replace).encode('utf-8')
+            obj.valid_encoding? ? obj : obj.encode('utf-16', {:invalid => :replace, :undef => :replace}).encode('utf-8')
           else
-            obj.encode('utf-8', invalid: :replace, undef: :replace)
+            obj.encode('utf-8', {:invalid => :replace, :undef => :replace})
           end
         elsif defined?(Iconv)
           Iconv.conv('UTF-8//IGNORE', 'UTF-8', obj) || obj
