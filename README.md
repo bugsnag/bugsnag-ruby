@@ -127,7 +127,7 @@ Bugsnag.before_notify_callbacks.clear
 ### Exceptions with Meta Data
 
 If you include the `Bugsnag::MetaData` module into your own exceptions, you can
-associate meta data with a paticular exception.
+associate meta data with a particular exception.
 
 ```ruby
 class MyCustomException < Exception
