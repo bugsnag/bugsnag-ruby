@@ -27,6 +27,16 @@ describe Bugsnag::Helpers do
     expect(Bugsnag::Helpers.cleanup_obj(a)).to eq([["hello"], ["hello"]])
   end
 
+  it "cleans up UTF8 strings properly" do
+    obj = "André"
+    expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("André")
+  end
+
+  it "cleans up binary strings properly" do
+    obj = "André".force_encoding('BINARY')
+    expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr��")
+  end
+
   it "reduces hash size correctly" do
     meta_data = {
       :key_one => "this should not be truncated",

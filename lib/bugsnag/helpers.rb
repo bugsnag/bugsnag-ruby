@@ -26,7 +26,7 @@ module Bugsnag
       case obj
       when Hash
         clean_hash = {}
-        obj.each do |k,v| 
+        obj.each do |k,v|
           if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
             clean_hash[k] = "[FILTERED]"
           else
@@ -41,7 +41,7 @@ module Bugsnag
         obj
       when String
         if defined?(obj.encoding) && defined?(Encoding::UTF_8)
-          obj.encode('utf-8', obj.encoding == Encoding::UTF_8 ? 'binary' : obj.encoding, :invalid => :replace, :undef => :replace)
+          obj.encode('utf-8', obj.encoding == Encoding::UTF_8 ? obj.encoding : 'binary', :invalid => :replace, :undef => :replace)
         elsif defined?(Iconv)
           Iconv.conv('UTF-8//IGNORE', 'UTF-8', obj) || obj
         else
@@ -62,10 +62,10 @@ module Bugsnag
       return url unless filters
 
       filter_regex = Regexp.new("([?&](?:[^&=]*#{filters.to_a.join('|[^&=]*')}[^&=]*)=)[^&]*")
-      
+
       url.gsub(filter_regex, '\1[FILTERED]')
     end
-    
+
     def self.reduce_hash_size(hash)
       return {} unless hash.is_a?(Hash)
       hash.inject({}) do |h, (k,v)|
@@ -82,13 +82,13 @@ module Bugsnag
         h
       end
     end
-    
+
     def self.flatten_meta_data(overrides)
       return nil unless overrides
 
       meta_data = overrides.delete(:meta_data)
       if meta_data.is_a?(Hash)
-        overrides.merge(meta_data) 
+        overrides.merge(meta_data)
       else
         overrides
       end
