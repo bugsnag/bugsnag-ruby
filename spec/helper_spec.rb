@@ -33,7 +33,7 @@ describe Bugsnag::Helpers do
   end
 
   it "cleans up binary strings properly" do
-    obj = "André"
+    obj = "Andr\xc7\xff"
     if obj.respond_to? :force_encoding
       obj = obj.force_encoding('BINARY')
     end
