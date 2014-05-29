@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.0.2
+-----
+-   Fix encoding issue when ensuring utf8 string is valid
+
 2.0.1
 -----
 -   Fix capistrano v3 after 2.0.0
