@@ -35,14 +35,16 @@ describe Bugsnag::Helpers do
   end
 
   it "cleans up binary strings properly" do
-    obj = "Andr\xc7\xff"
-    if obj.respond_to? :force_encoding
-      obj = obj.force_encoding('BINARY')
-    end
-    if defined?(obj.encoding) && defined?(Encoding::UTF_8)
-      expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr��")
-    else
-      expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr")
+    if RUBY_VERSION > "1.9"
+      obj = "Andr\xc7\xff"
+      if obj.respond_to? :force_encoding
+        obj = obj.force_encoding('BINARY')
+      end
+      if defined?(obj.encoding) && defined?(Encoding::UTF_8)
+        expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr��")
+      else
+        expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr")
+      end
     end
   end
 
