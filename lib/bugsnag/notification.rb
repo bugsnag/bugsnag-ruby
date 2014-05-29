@@ -146,6 +146,7 @@ module Bugsnag
     end
 
     def user=(user = {})
+      return unless user.is_a? Hash
       @user.merge!(user).delete_if{|k,v| v == nil}
     end
 
