@@ -39,7 +39,11 @@ describe Bugsnag::Helpers do
     if obj.respond_to? :force_encoding
       obj = obj.force_encoding('BINARY')
     end
-    expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr��")
+    if defined?(obj.encoding) && defined?(Encoding::UTF_8)
+      expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr��")
+    else
+      expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr")
+    end
   end
 
   it "reduces hash size correctly" do
