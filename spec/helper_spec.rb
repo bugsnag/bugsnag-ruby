@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'spec_helper'
 
 describe Bugsnag::Helpers do
@@ -25,6 +27,21 @@ describe Bugsnag::Helpers do
     b = ["hello"]
     a << b; a << b
     expect(Bugsnag::Helpers.cleanup_obj(a)).to eq([["hello"], ["hello"]])
+  end
+
+  it "cleans up UTF8 strings properly" do
+    obj = "André"
+    expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("André")
+  end
+
+  it "cleans up binary strings properly" do
+    if RUBY_VERSION > "1.9"
+      obj = "Andr\xc7\xff"
+      if obj.respond_to? :force_encoding
+        obj = obj.force_encoding('BINARY')
+      end
+      expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr��")
+    end
   end
 
   it "reduces hash size correctly" do
