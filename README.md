@@ -304,8 +304,8 @@ config.use_ssl = true
 
 By default, `use_ssl` is set to false.
 
-<!-- Custom ID for linking from alerts -->
-<h3 id=set-project-root>project_root</h3>
+<!-- Custom anchor for linking from alerts -->
+### project_root <a name="set-project-root"></a>
 
 We mark stacktrace lines as `inProject` if they come from files inside your
 `project_root`. In rails apps this value is automatically set to `RAILS_ROOT`,
