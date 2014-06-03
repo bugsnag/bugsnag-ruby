@@ -304,7 +304,7 @@ config.use_ssl = true
 
 By default, `use_ssl` is set to false.
 
-<!-- Give docs custom ID for project_root -->
+<!-- Custom ID for linking from alerts -->
 <h3 id=set-project-root>project_root</h3>
 
 We mark stacktrace lines as `inProject` if they come from files inside your
