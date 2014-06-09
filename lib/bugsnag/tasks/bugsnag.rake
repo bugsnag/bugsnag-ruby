@@ -1,6 +1,11 @@
 require "bugsnag"
 
 namespace :bugsnag do
+  desc "Notify bugsnag of a deploy and load the environment first (slower)"
+  task :deploy_load => :load do
+    Bugsnag::Deploy.notify
+  end
+
   desc "Notify Bugsnag of a new deploy."
   task :deploy do
     api_key = ENV["BUGSNAG_API_KEY"]
