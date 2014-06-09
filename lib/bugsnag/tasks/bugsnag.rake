@@ -1,11 +1,6 @@
 require "bugsnag"
 
 namespace :bugsnag do
-  desc "Notify bugsnag of a deploy and load the environment first (slower)"
-  task :deploy_load => :load do
-    Bugsnag::Deploy.notify
-  end
-
   desc "Notify Bugsnag of a new deploy."
   task :deploy do
     api_key = ENV["BUGSNAG_API_KEY"]
@@ -14,6 +9,8 @@ namespace :bugsnag do
     revision = ENV["BUGSNAG_REVISION"]
     repository = ENV["BUGSNAG_REPOSITORY"]
     branch = ENV["BUGSNAG_BRANCH"]
+
+    Rake::Task["build"].invoke unless api_key
 
     Bugsnag::Deploy.notify({
       :api_key => api_key,
