@@ -44,14 +44,27 @@ module Bugsnag
             payload_string = Bugsnag::Helpers.dump_json(payload)
           end
 
-          response = post(endpoint, {:body => payload_string})
-          Bugsnag.debug("Notification to #{endpoint} finished, response was #{response.code}, payload was #{payload_string}")
+          do_post(endpoint, payload_string)
+
         rescue StandardError => e
           # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
           raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
 
           Bugsnag.warn("Notification to #{endpoint} failed, #{e.inspect}")
           Bugsnag.warn(e.backtrace)
+        end
+
+      end
+
+      def do_post(endpoint, payload_string)
+        Thread.new do
+          begin
+            response = post(endpoint, {:body => payload_string})
+            Bugsnag.debug("Notification to #{endpoint} finished, response was #{response.code}, payload was #{payload_string}")
+          rescue StandardError => e
+            Bugsnag.warn("Notification to #{endpoint} failed, #{e.inspect}")
+            Bugsnag.warn(e.backtrace)
+          end
         end
       end
     end

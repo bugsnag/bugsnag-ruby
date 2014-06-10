@@ -251,10 +251,10 @@ describe Bugsnag::Notification do
   end
 
   it "truncates large meta_data before sending" do
-    expect(Bugsnag::Notification).to receive(:post) do |endpoint, opts|
+    expect(Bugsnag::Notification).to receive(:do_post) do |endpoint, payload_string|
       # Truncated body should be no bigger than
       # 2 truncated hashes (4096*2) + rest of payload (5000)
-      expect(opts[:body].length).to be < 4096*2 + 5000
+      expect(payload_string.length).to be < 4096*2 + 5000
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
@@ -693,8 +693,8 @@ describe Bugsnag::Notification do
     invalid_data = "fl\xc3ff"
     invalid_data.force_encoding('BINARY') if invalid_data.respond_to?(:force_encoding)
 
-    expect(Bugsnag::Notification).to receive(:post) do |endpoint, opts|
-      expect(opts[:body]).to match(/fl�ff/) if defined?(Encoding::UTF_8)
+    expect(Bugsnag::Notification).to receive(:do_post) do |endpoint, payload_string|
+      expect(payload_string).to match(/fl�ff/) if defined?(Encoding::UTF_8)
     end
 
     notify_test_exception(:fluff => {:fluff => invalid_data})
