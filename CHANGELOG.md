@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.0.3
+-----
+-   Load the env in the deploy rake task if there is no api key set
+
 2.0.2
 -----
 -   Fix encoding issue when ensuring utf8 string is valid
