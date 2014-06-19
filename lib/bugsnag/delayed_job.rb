@@ -1,7 +1,7 @@
 require 'delayed_job'
 
 # See Issue #99
-unless defined?(Delayed::Plugins::Plugin)
+unless defined?(Delayed::Plugin)
   raise LoadError, "bugsnag requires delayed_job > 3.x"
 end
 
