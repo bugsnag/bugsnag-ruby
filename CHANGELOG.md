@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.1.0
+-----
+-   Add job detail support to delayed_job integration (thanks dtaniwaki!)
+
 2.0.3
 -----
 -   Load the env in the deploy rake task if there is no api key set
