@@ -706,7 +706,7 @@ describe Bugsnag::Notification do
       expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
         expect(payload[:events][0][:exceptions][0][:errorClass]).to eq('Java::JavaLang::ArrayIndexOutOfBoundsException')
         expect(payload[:events][0][:exceptions][0][:message]).to eq("2")
-        expect(payload[:events][0][:exceptions][0][:stacktrace].size).to be_gt(0)
+        expect(payload[:events][0][:exceptions][0][:stacktrace].size).to be > 0
       end
 
       begin
