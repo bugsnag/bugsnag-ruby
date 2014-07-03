@@ -6,6 +6,7 @@ require 'ostruct'
 module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class NestedException < StandardError; attr_accessor :original_exception; end
 class BugsnagTestExceptionWithMetaData < Exception; include Bugsnag::MetaData; end
+class BugsnagSubclassTestException < BugsnagTestException; end
 
 class Ruby21Exception < RuntimeError
   attr_accessor :cause
@@ -491,6 +492,14 @@ describe Bugsnag::Notification do
     expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
 
     Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
+  end
+
+  it "does not notify if exception's ancestor is an ignored class" do
+    Bugsnag.configuration.ignore_classes << "BugsnagTestException"
+
+    expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
+
+    Bugsnag.notify_or_ignore(BugsnagSubclassTestException.new("It crashed"))
   end
 
   it "does not notify if the exception is matched by an ignore_classes lambda function" do
