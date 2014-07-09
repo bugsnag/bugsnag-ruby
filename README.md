@@ -64,6 +64,15 @@ How to Install
     use Bugsnag::Rack
     ```
 
+    **Sinatra**: Note that `raise_errors` must be enabled. If you are using custom
+    error handlers, then you will need to notify Bugsnag explicitly:
+
+    ```ruby
+    error 500 do
+      Bugsnag.auto_notify($!)
+      erb :"errors/500"
+    end
+    ```
 
 Sending Custom Data With Exceptions
 -----------------------------------
