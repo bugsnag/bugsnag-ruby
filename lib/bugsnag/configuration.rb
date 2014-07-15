@@ -14,7 +14,6 @@ module Bugsnag
     attr_accessor :app_version
     attr_accessor :app_type
     attr_accessor :params_filters
-    attr_accessor :ignore_classes
     attr_accessor :ignore_user_agents
     attr_accessor :endpoint
     attr_accessor :logger
@@ -27,6 +26,8 @@ module Bugsnag
     attr_accessor :proxy_password
     attr_accessor :timeout
     attr_accessor :hostname
+
+    attr_writer :ignore_classes
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -66,6 +67,11 @@ module Bugsnag
       # Configure the bugsnag middleware stack
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
+    end
+
+    # Accept both String and Class instances as an ignored class
+    def ignore_classes
+      @ignore_classes.map! { |klass| klass.is_a?(Class) ? klass.name : klass }
     end
 
     def should_notify?

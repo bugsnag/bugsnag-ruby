@@ -502,8 +502,8 @@ describe Bugsnag::Notification do
     Bugsnag.notify_or_ignore(BugsnagSubclassTestException.new("It crashed"))
   end
 
-  it "does not notify if the exception is matched by an ignore_classes lambda function" do
-    Bugsnag.configuration.ignore_classes << lambda {|e| e.message =~ /crashed/}
+  it "accepts both String and Class instances as an ignored class" do
+    Bugsnag.configuration.ignore_classes << BugsnagTestException
 
     expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
 
