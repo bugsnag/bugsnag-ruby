@@ -1,6 +1,7 @@
 require "rubygems"
 
 require "bugsnag/version"
+require "bugsnag/queue"
 require "bugsnag/configuration"
 require "bugsnag/meta_data"
 require "bugsnag/notification"
