@@ -33,9 +33,6 @@ module Bugsnag
     attr_accessor :configuration
 
     class << self
-      @@threads = []
-      at_exit{ @@threads.map(&:join) }
-
       def deliver_exception_payload(endpoint, payload)
         begin
           payload_string = Bugsnag::Helpers.dump_json(payload)
@@ -60,18 +57,29 @@ module Bugsnag
       end
 
       def do_post(endpoint, payload_string)
-        t = Thread.new do
+        if !@queue
+          @queue = Queue.new
+          t = Thread.new do
+            while x = @queue.pop
+              break if x == :stop
+              x.call
+            end
+          end
+          at_exit do
+            Bugsnag.warn("Waiting for #{@queue.length} outstanding request(s)") unless @queue.empty?
+            @queue.push :stop
+            t.join
+          end
+        end
+        @queue.push proc{
           begin
             response = post(endpoint, {:body => payload_string})
             Bugsnag.debug("Notification to #{endpoint} finished, response was #{response.code}, payload was #{payload_string}")
           rescue StandardError => e
             Bugsnag.warn("Notification to #{endpoint} failed, #{e.inspect}")
             Bugsnag.warn(e.backtrace)
-          ensure
-            @@threads.delete t
           end
-        end
-        @@threads << t
+        }
       end
     end
 
