@@ -29,6 +29,8 @@ module Bugsnag
         push STOP
         t.join
       end
+
+      t
     end
   end
 end
