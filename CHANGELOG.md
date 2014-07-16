@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.2.0
+-----
+-   Move Bugsnag notifications onto a background thread.
+
 2.1.0
 -----
 -   Add job detail support to delayed_job integration (thanks dtaniwaki!)
