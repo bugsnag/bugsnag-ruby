@@ -32,6 +32,8 @@ module Bugsnag
     attr_accessor :user
     attr_accessor :configuration
 
+    @queue = Bugsnag::Queue.new
+
     class << self
       def deliver_exception_payload(endpoint, payload)
         begin
@@ -57,20 +59,6 @@ module Bugsnag
       end
 
       def do_post(endpoint, payload_string)
-        if !@queue
-          @queue = Queue.new
-          t = Thread.new do
-            while x = @queue.pop
-              break if x == :stop
-              x.call
-            end
-          end
-          at_exit do
-            Bugsnag.warn("Waiting for #{@queue.length} outstanding request(s)") unless @queue.empty?
-            @queue.push :stop
-            t.join
-          end
-        end
         @queue.push proc{
           begin
             response = post(endpoint, {:body => payload_string})
