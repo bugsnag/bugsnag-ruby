@@ -14,7 +14,7 @@ class BugsnagGenerator < Rails::Generators::Base
     end
 
     initializer "bugsnag.rb" do
-      <<-EOF.strip
+      <<-EOF
 Bugsnag.configure do |config|
   config.api_key = #{api_key.inspect}
 end
