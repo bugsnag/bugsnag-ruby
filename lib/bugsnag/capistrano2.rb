@@ -12,8 +12,8 @@ module Bugsnag
               Bugsnag::Deploy.notify({
                 :api_key => fetch(:bugsnag_api_key, ENV["BUGSNAG_API_KEY"]),
                 :release_stage => fetch(:rails_env, ENV["BUGSNAG_RELEASE_STAGE"] || "production"),
-                :revision => fetch(:current_revision, ENV["BUGSNAG_REPOSITORY"]),
-                :repository => fetch(:repository, ENV["BUGSNAG_REVISION"]),
+                :revision => fetch(:current_revision, ENV["BUGSNAG_REVISION"]),
+                :repository => fetch(:repository, ENV["BUGSNAG_REPOSITORY"]),
                 :branch => fetch(:branch, ENV["BUGSNAG_BRANCH"],
                 :app_version => fetch(:app_version, ENV["BUGSNAG_APP_VERSION"]))
               })
