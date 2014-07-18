@@ -64,7 +64,7 @@ module Bugsnag
     # error class
     def auto_notify(exception, overrides=nil, request_data=nil)
       overrides ||= {}
-      overrides.merge!({:severity => "error"})
+      overrides = {:severity => "error"}.merge(overrides)
       notify_or_ignore(exception, overrides, request_data) if configuration.auto_notify
     end
 
