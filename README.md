@@ -293,6 +293,16 @@ notify Bugsnag of exceptions you can set `notify_release_stages`:
 config.notify_release_stages = ["production", "development"]
 ```
 
+###endpoint
+
+By default, we'll send crashes to *notify.bugsnag.com* to display them on
+your dashboard. If you are using *Bugsnag Enterprise* you'll need to set
+this to be your *Event Server* endpoint, for example:
+
+```ruby
+config.endpoint = "notify.bugsnag.example.com"
+```
+
 ###auto_notify
 
 By default, we will automatically notify Bugsnag of any fatal exceptions
