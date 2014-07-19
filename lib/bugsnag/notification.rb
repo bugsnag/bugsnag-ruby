@@ -284,12 +284,13 @@ module Bugsnag
     private
 
     def ignore_exception_class?
-      ex = @exceptions.last
-      ex_name = error_class(ex)
-      ancestor_chain = ex.class.ancestors.select { |ancestor| ancestor.is_a?(Class) }.map { |ancestor| error_class(ancestor) }.to_set
+      @exceptions.any? do |ex|
+        ex_name = error_class(ex)
+        ancestor_chain = ex.class.ancestors.select { |ancestor| ancestor.is_a?(Class) }.map { |ancestor| error_class(ancestor) }.to_set
 
-      @configuration.ignore_classes.any? do |to_ignore|
-        to_ignore.is_a?(Proc) ? to_ignore.call(ex) : ancestor_chain.include?(to_ignore)
+        @configuration.ignore_classes.any? do |to_ignore|
+          to_ignore.is_a?(Proc) ? to_ignore.call(ex) : ancestor_chain.include?(to_ignore)
+        end
       end
     end
 
