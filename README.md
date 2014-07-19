@@ -300,7 +300,7 @@ your dashboard. If you are using *Bugsnag Enterprise* you'll need to set
 this to be your *Event Server* endpoint, for example:
 
 ```ruby
-config.endpoint = "notify.bugsnag.example.com"
+config.endpoint = "bugsnag.example.com:49000"
 ```
 
 ###auto_notify
