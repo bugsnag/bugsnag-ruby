@@ -22,7 +22,7 @@ Contents
 - [Bugsnag Middleware](#bugsnag-middleware)
 - [Deploy Tracking](#deploy-tracking)
 - [EventMachine Apps](#eventmachine-apps)
-
+- [Demo Applications](#demo-applications)
 
 How to Install
 --------------
@@ -624,6 +624,12 @@ in your `MyServer`, then whenever you want to raise an error, call `fail`.
 Bugsnag ruby works out of the box with Rails, Sidekiq, Resque, DelayedJob (3+), Mailman, Rake and Rack. It
 should be easy to add support for other frameworks, either by sending a pull request here or adding a hook
 to those projects.
+
+Demo Applications
+-----------------
+
+[There are demo applications that use the Bugsnag Ruby gem](https://github.com/bugsnag/bugsnag-example-apps/tree/master/ruby):
+examples include Rails, Sinatra, Padrino integrations, etc.
 
 Reporting Bugs or Feature Requests
 ----------------------------------
