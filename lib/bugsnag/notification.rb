@@ -367,7 +367,7 @@ module Bugsnag
         # Parse the stacktrace line
 
         # Skip stacktrace lines inside lib/bugsnag
-        next(nil) if file.nil? || file =~ %r{bugsnag-ruby/lib/bugsnag}
+        next(nil) if file.nil? || file =~ %r{lib/bugsnag}
 
         # Expand relative paths
         p = Pathname.new(file)
