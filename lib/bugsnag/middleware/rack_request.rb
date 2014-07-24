@@ -3,13 +3,15 @@ module Bugsnag::Middleware
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
-      
+
     def call(notification)
       if notification.request_data[:rack_env]
         env = notification.request_data[:rack_env]
 
         request = ::Rack::Request.new(env)
-        params = request.params
+
+        params = request.params rescue {}
+
         session = env["rack.session"]
 
         # Set the context
@@ -32,7 +34,7 @@ module Bugsnag::Middleware
           :referer => request.referer,
           :clientIp => request.ip
         })
-          
+
         # Add an environment tab
         notification.add_tab(:environment, env)
 

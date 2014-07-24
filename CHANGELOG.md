@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.2.1
+-----
+-   Don't strip files with bugsnag in the name.
+
 2.2.0
 -----
 -   Move Bugsnag notifications onto a background thread.
