@@ -20,11 +20,11 @@ function clone_unless_exists()
     if [ ! -d $LOCALREPO_VC_DIR ]
     then
 	git clone $REPOSRC $LOCALREPO
+	cd $LOCALREPO
     else
+	cd $LOCALREPO
 	git pull $REPOSRC
     fi
-
-    cd $LOCALREPO
 }
 
 
