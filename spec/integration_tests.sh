@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 
-function cloneUnlessExists()
+# Exit if any command fails.
+set -e
+
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+
+function clone_unless_exists()
 {
+    git config user.email "buildbox@bugsnag.com"
+    git config user.name "Buildbox Bugsnag"
+
     REPOSRC=$1
     LOCALREPO=$2
 
@@ -12,16 +21,18 @@ function cloneUnlessExists()
     then
 	git clone $REPOSRC $LOCALREPO
     else
-	cd $LOCALREPO
 	git pull $REPOSRC
     fi
+
+    cd $LOCALREPO
 }
 
 
-function runIntegrationTests()
+function run_integration_tests()
 {
-    cloneUnlessExists git@github.com:bugsnag/bugsnag-example-apps-tests.git integration
-    cd integration
-    bundle install
-    rspec spec:$INTEGRATION_LANGUAGE
+    clone_unless_exists git@github.com:bugsnag/bugsnag-example-apps-tests.git integration
+    ./setup.sh
+    rspec spec/$INTEGRATION_LANGUAGE
 }
+
+run_integration_tests

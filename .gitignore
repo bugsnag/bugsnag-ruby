@@ -50,3 +50,5 @@ vendor
 # For rubinius:
 #*.rbc
 bin
+
+integration
