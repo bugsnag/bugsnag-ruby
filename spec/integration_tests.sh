@@ -32,7 +32,7 @@ function clone_unless_exists()
 
 function run_integration_tests()
 {
-    clone_unless_exists git@github.com:bugsnag/bugsnag-example-apps-tests.git integration
+    clone_unless_exists git@github.com:bugsnag/bugsnag-example-apps.git integration
     ./setup.sh
     rspec spec/$INTEGRATION_LANGUAGE
 }
