@@ -23,6 +23,8 @@ function clone_unless_exists()
 	cd $LOCALREPO
     else
 	cd $LOCALREPO
+	git fetch origin
+	git reset --hard origin/master
 	git pull $REPOSRC
     fi
 }
