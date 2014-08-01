@@ -52,3 +52,4 @@ vendor
 bin
 
 integration
+.env
