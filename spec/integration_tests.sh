@@ -33,7 +33,7 @@ function clone_unless_exists()
 function run_integration_tests()
 {
     clone_unless_exists git@github.com:bugsnag/bugsnag-example-apps.git integration
-    ln -s $PWD/../.env $PWD/.env
+    [ ! -h "$PWD/.env" ] && ln -s $PWD/../.env $PWD/.env
     ./setup.sh
     rspec spec/$INTEGRATION_LANGUAGE
 }
