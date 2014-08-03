@@ -3,7 +3,7 @@ module Bugsnag::Rails
     KINDS = [:commit, :rollback].freeze
 
     def run_callbacks(kind, *args, &block)
-      if kinds.include?(kind)
+      if KINDS.include?(kind)
         begin
           super
         rescue StandardError => exception
