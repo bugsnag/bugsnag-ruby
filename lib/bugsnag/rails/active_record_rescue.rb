@@ -1,7 +1,9 @@
 module Bugsnag::Rails
   module ActiveRecordRescue
+    KINDS = [:commit, :rollback].freeze
+
     def run_callbacks(kind, *args, &block)
-      if %w(commit rollback).include?(kind.to_s)
+      if kinds.include?(kind)
         begin
           super
         rescue StandardError => exception
