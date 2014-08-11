@@ -628,8 +628,8 @@ to those projects.
 Demo Applications
 -----------------
 
-[There are demo applications that use the Bugsnag Ruby gem](https://github.com/bugsnag/bugsnag-example-apps/tree/master/ruby):
-examples include Rails, Sinatra, Padrino integrations, etc.
+[There are demo applications that use the Bugsnag Ruby gem](https://github.com/bugsnag/bugsnag-example-apps/tree/master/apps/ruby):
+examples include Rails, Sinatra, Rack, Padrino integrations, etc.
 
 Reporting Bugs or Feature Requests
 ----------------------------------
