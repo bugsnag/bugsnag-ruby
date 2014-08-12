@@ -502,6 +502,17 @@ describe Bugsnag::Notification do
     Bugsnag.notify_or_ignore(BugsnagSubclassTestException.new("It crashed"))
   end
 
+  it "does not notify if any caused exception is an ignored class" do
+    Bugsnag.configuration.ignore_classes << "NestedException"
+
+    ex = NestedException.new("Self-referential exception")
+    ex.original_exception = BugsnagTestException.new("It crashed")
+
+    expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
+
+    Bugsnag.notify_or_ignore(ex)
+  end
+
   it "accepts both String and Class instances as an ignored class" do
     Bugsnag.configuration.ignore_classes << BugsnagTestException
 
