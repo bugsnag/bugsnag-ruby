@@ -117,7 +117,8 @@ end
 
 In other ruby apps, you can provide lambda functions to execute before any
 `Bugsnag.notify` calls as follows. Don't forget to clear the callbacks at the
-end of each request or session.
+end of each request or session. In Rack applications like Sinatra, however, the
+gem will clear the callbacks for you.
 
 ```ruby
 # Set a before notify callback
