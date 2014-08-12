@@ -42,7 +42,9 @@ module Bugsnag
       "CGI::Session::CookieStore::TamperedWithCookie",
       "ActionController::UnknownAction",
       "AbstractController::ActionNotFound",
-      "Mongoid::Errors::DocumentNotFound"
+      "Mongoid::Errors::DocumentNotFound",
+      "SystemExit",
+      "SignalException"
     ].freeze
 
     DEFAULT_IGNORE_USER_AGENTS = [].freeze
