@@ -3,7 +3,7 @@ Changelog
 
 2.2.1
 -----
--   Don't strip files with bugsnag in the name.
+-   [#116][116] Don't strip files with bugsnag in the name.
 
 2.2.0
 -----
@@ -294,3 +294,5 @@ Changelog
 1.1.0
 -----
 -   First public release
+
+[116]: https://github.com/bugsnag/bugsnag-ruby/issues/116
