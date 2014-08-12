@@ -3,6 +3,7 @@ Changelog
 
 2.2.1
 -----
+-   Fix occasional crash when reading rack params.
 -   Don't strip files with bugsnag in the name.
 
 2.2.0
