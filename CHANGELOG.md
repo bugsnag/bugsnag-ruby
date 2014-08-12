@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.2.2
+-----
+-   Add additional ignored classes
+-   Check all chained exceptions on an error for ignored classes
+
 2.2.1
 -----
 -   Fix occasional crash when reading rack params.
