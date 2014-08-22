@@ -373,9 +373,9 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "uses the http://notify.bugsnag.com endpoint by default" do
+  it "uses the https://notify.bugsnag.com endpoint by default" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
-      expect(endpoint).to eq("http://notify.bugsnag.com")
+      expect(endpoint).to eq("https://notify.bugsnag.com")
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
@@ -399,9 +399,9 @@ describe Bugsnag::Notification do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 
-  it "does not use ssl when use_ssl is unset" do
+  it "uses ssl when use_ssl is unset" do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
-      expect(endpoint).to start_with "http://"
+      expect(endpoint).to start_with "https://"
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))

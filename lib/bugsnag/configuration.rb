@@ -52,7 +52,7 @@ module Bugsnag
     def initialize
       # Set up the defaults
       self.auto_notify = true
-      self.use_ssl = false
+      self.use_ssl = true
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
