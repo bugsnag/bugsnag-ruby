@@ -256,7 +256,6 @@ settings you need on the `config` block variable. For example:
 ```ruby
 Bugsnag.configure do |config|
   config.api_key = "your-api-key-here"
-  config.use_ssl = true
   config.notify_release_stages = ["production", "development"]
 end
 ```
@@ -315,13 +314,14 @@ config.auto_notify = false
 
 ###use_ssl
 
-Enforces all communication with bugsnag.com be made via ssl.
+Enforces all communication with bugsnag.com be made via ssl. You can turn
+this off if necessary.
 
 ```ruby
-config.use_ssl = true
+config.use_ssl = false
 ```
 
-By default, `use_ssl` is set to false.
+By default, `use_ssl` is set to true.
 
 <!-- Custom anchor for linking from alerts -->
 <div id="set-project-root"></div>
