@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.3.0
+-----
+-   Use ssl by default (Thanks @dkubb)
+
 2.2.2
 -----
 -   Add additional ignored classes
