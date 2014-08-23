@@ -18,7 +18,14 @@ module Bugsnag
         config.logger = Rails.logger
         config.release_stage = Rails.env.to_s
         config.project_root = Rails.root.to_s
-        config.params_filters += Rails.configuration.filter_parameters
+        config.params_filters += Rails.configuration.filter_parameters.map do |filter|
+          case filter
+          when String
+            /\A#{filter}\z/
+          else
+            filter
+          end
+        end
         config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
       end
 

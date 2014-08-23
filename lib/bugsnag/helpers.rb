@@ -27,7 +27,7 @@ module Bugsnag
       when Hash
         clean_hash = {}
         obj.each do |k,v|
-          if filters && filters.any? {|f| k.to_s.include?(f.to_s)}
+          if filters_match?(k, filters)
             clean_hash[k] = "[FILTERED]"
           else
             clean_obj = cleanup_obj(v, filters, seen)
@@ -58,6 +58,19 @@ module Bugsnag
           '[OBJECT]'
         else
           str
+        end
+      end
+    end
+
+    def self.filters_match?(object, filters)
+      str = object.to_s
+
+      Array(filters).any? do |f|
+        case f
+        when Regexp
+          str.match(f)
+        else
+          str.include?(f.to_s)
         end
       end
     end

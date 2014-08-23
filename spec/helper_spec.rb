@@ -44,6 +44,16 @@ describe Bugsnag::Helpers do
     end
   end
 
+  it "filters by string inclusion" do
+    expect(Bugsnag::Helpers.cleanup_obj({ :foo => 'bar' }, ['f'])).to eq({ :foo => '[FILTERED]' })
+    expect(Bugsnag::Helpers.cleanup_obj({ :foo => 'bar' }, ['b'])).to eq({ :foo => 'bar' })
+  end
+
+  it "filters by regular expression" do
+    expect(Bugsnag::Helpers.cleanup_obj({ :foo => 'bar' }, [/fb?/])).to eq({ :foo => '[FILTERED]' })
+    expect(Bugsnag::Helpers.cleanup_obj({ :foo => 'bar' }, [/fb+/])).to eq({ :foo => 'bar' })
+  end
+
   it "reduces hash size correctly" do
     meta_data = {
       :key_one => "this should not be truncated",
