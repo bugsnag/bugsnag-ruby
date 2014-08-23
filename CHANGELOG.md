@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.4.0
+-----
+-   Allow filters to be regular expressions (thanks @tamird)
+-   Ensure filtering behavior matches rails' when importing filters from
+    `Rails.configuration.filter_parameters`
+
 2.3.0
 -----
 -   Use ssl by default (Thanks @dkubb)

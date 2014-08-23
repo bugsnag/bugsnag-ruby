@@ -347,16 +347,19 @@ config.app_version = "2.5.1"
 
 ###params_filters
 
-Sets the strings to filter out from the `params` hashes before sending
-them to Bugsnag. Use this if you want to ensure you don't send
-sensitive data such as passwords, and credit card numbers to our
-servers. Any keys which *contain* these strings will be filtered.
+Sets which keys should be filtered out from `params` hashes before sending
+them to Bugsnag. Use this if you want to ensure you don't send sensitive data
+such as passwords, and credit card numbers to our servers. You can add both
+strings and regular expressions to this array. When adding strings, keys which
+*contain* the string will be filtered. When adding regular expressions, any
+keys which *match* the regular expression will be filtered.
 
 ```ruby
-config.params_filters << "credit_card_number"
+config.params_filters += ["credit_card_number", /^password$/]
 ```
 
-By default, `params_filters` is set to `["password", "secret"]`
+By default, `params_filters` is set to `["password", "secret"]`, and for rails
+apps, imports all values from `Rails.configuration.filter_parameters`.
 
 ###ignore_classes
 
