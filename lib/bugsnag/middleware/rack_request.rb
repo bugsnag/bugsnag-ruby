@@ -39,7 +39,15 @@ module Bugsnag::Middleware
         notification.add_tab(:environment, env)
 
         # Add a session tab
-        notification.add_tab(:session, session) if session
+        if session
+          if session.is_a?(Hash)
+            # Rails 3
+            notification.add_tab(:session, session)
+          elsif session.respond_to?(:to_hash)
+            # Rails 4
+            notification.add_tab(:session, session.to_hash)
+          end
+        end
 
         # Add a cookies tab
         cookies = request.cookies
