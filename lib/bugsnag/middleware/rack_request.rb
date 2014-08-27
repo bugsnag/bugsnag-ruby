@@ -13,9 +13,6 @@ module Bugsnag::Middleware
         params = request.params rescue {}
 
         session = env["rack.session"]
-        # Load session for Rails (for Rails 4 it's lazy loaded).
-        # @see https://github.com/rails/rails/issues/10813
-        session["session_id"]
 
         # Set the context
         notification.context = "#{request.request_method} #{request.path}"
@@ -43,6 +40,10 @@ module Bugsnag::Middleware
 
         # Add a session tab
         if session
+          # Load session for Rails (for Rails 4 it's lazy loaded).
+          # @see https://github.com/rails/rails/issues/10813
+          session["session_id"]
+
           # Rails 3
           if session.is_a?(Hash)
             notification.add_tab(:session, session)
