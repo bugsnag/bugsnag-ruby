@@ -197,7 +197,6 @@ module Bugsnag
 
     # Deliver this notification to bugsnag.com Also runs through the middleware as required.
     def deliver
-      return if @should_ignore
       return unless @configuration.should_notify?
 
       # Check we have at least an api_key
@@ -216,6 +215,10 @@ module Bugsnag
 
       # Run the middleware here, at the end of the middleware stack, execute the actual delivery
       @configuration.middleware.run(self) do
+        # At this point the callbacks have already been run.
+        # This supports self.ignore! for before_notify_callbacks.
+        return if @should_ignore
+
         # Now override the required fields
         exceptions.each do |exception|
           if exception.class.include?(Bugsnag::MetaData)
