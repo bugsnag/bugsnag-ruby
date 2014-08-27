@@ -1,6 +1,11 @@
 Changelog
 =========
 
+?????
+-----
+
+-   Fix Rails 4 sessions appearing in Custom tab ([144](https://github.com/bugsnag/bugsnag-ruby/issues/144))
+
 2.4.0
 -----
 -   Allow filters to be regular expressions (thanks @tamird)
