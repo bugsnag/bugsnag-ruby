@@ -77,6 +77,7 @@ module Bugsnag
       @request_data = request_data
       @meta_data = {}
       @user = {}
+      @should_ignore = false
 
       self.severity = @overrides[:severity]
       @overrides.delete :severity
@@ -93,6 +94,7 @@ module Bugsnag
 
       # Unwrap exceptions
       @exceptions = []
+
       ex = exception
       while ex != nil && !@exceptions.include?(ex) && @exceptions.length < MAX_EXCEPTIONS_TO_UNWRAP
 
@@ -195,6 +197,7 @@ module Bugsnag
 
     # Deliver this notification to bugsnag.com Also runs through the middleware as required.
     def deliver
+      return if @should_ignore
       return unless @configuration.should_notify?
 
       # Check we have at least an api_key
@@ -270,7 +273,7 @@ module Bugsnag
     end
 
     def ignore?
-      ignore_exception_class? || ignore_user_agent?
+      @should_ignore || ignore_exception_class? || ignore_user_agent?
     end
 
     def request_data
@@ -279,6 +282,10 @@ module Bugsnag
 
     def exceptions
       @exceptions
+    end
+
+    def ignore!
+      @should_ignore = true
     end
 
     private
