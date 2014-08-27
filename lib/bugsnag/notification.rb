@@ -77,6 +77,7 @@ module Bugsnag
       @request_data = request_data
       @meta_data = {}
       @user = {}
+      @should_ignore = false
 
       self.severity = @overrides[:severity]
       @overrides.delete :severity
@@ -93,6 +94,7 @@ module Bugsnag
 
       # Unwrap exceptions
       @exceptions = []
+
       ex = exception
       while ex != nil && !@exceptions.include?(ex) && @exceptions.length < MAX_EXCEPTIONS_TO_UNWRAP
 
@@ -213,6 +215,10 @@ module Bugsnag
 
       # Run the middleware here, at the end of the middleware stack, execute the actual delivery
       @configuration.middleware.run(self) do
+        # At this point the callbacks have already been run.
+        # This supports self.ignore! for before_notify_callbacks.
+        return if @should_ignore
+
         # Now override the required fields
         exceptions.each do |exception|
           if exception.class.include?(Bugsnag::MetaData)
@@ -270,7 +276,7 @@ module Bugsnag
     end
 
     def ignore?
-      ignore_exception_class? || ignore_user_agent?
+      @should_ignore || ignore_exception_class? || ignore_user_agent?
     end
 
     def request_data
@@ -279,6 +285,10 @@ module Bugsnag
 
     def exceptions
       @exceptions
+    end
+
+    def ignore!
+      @should_ignore = true
     end
 
     private
