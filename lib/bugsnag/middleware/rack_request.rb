@@ -44,7 +44,7 @@ module Bugsnag::Middleware
             notification.add_tab(:session, session)
           else
             # Rails 4
-            notification.add_tab(:session, session.to_hash)
+            notification.add_tab(:session, session.to_hash) if session.loaded?
           end
         end
 
