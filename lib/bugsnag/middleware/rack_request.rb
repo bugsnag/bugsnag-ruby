@@ -39,7 +39,19 @@ module Bugsnag::Middleware
         notification.add_tab(:environment, env)
 
         # Add a session tab
-        notification.add_tab(:session, session) if session
+        if session
+          # Load session for Rails (for Rails 4 it's lazy loaded).
+          # @see https://github.com/rails/rails/issues/10813
+          session["session_id"]
+
+          # Rails 3
+          if session.is_a?(Hash)
+            notification.add_tab(:session, session)
+          else
+            # Rails 4
+            notification.add_tab(:session, session.to_hash) if session.loaded?
+          end
+        end
 
         # Add a cookies tab
         cookies = request.cookies
