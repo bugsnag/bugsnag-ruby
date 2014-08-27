@@ -285,7 +285,6 @@ module Bugsnag
 
     def ignore_exception_class?
       @exceptions.any? do |ex|
-        ex_name = error_class(ex)
         ancestor_chain = ex.class.ancestors.select { |ancestor| ancestor.is_a?(Class) }.map { |ancestor| error_class(ancestor) }.to_set
 
         @configuration.ignore_classes.any? do |to_ignore|
