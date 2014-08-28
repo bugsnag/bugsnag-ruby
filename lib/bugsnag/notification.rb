@@ -32,10 +32,12 @@ module Bugsnag
     attr_accessor :user
     attr_accessor :configuration
 
+    attr_reader :headers
+
     @queue = Bugsnag::Queue.new
 
     class << self
-      def deliver_exception_payload(endpoint, payload)
+      def deliver_exception_payload(endpoint, payload, headers)
         begin
           payload_string = Bugsnag::Helpers.dump_json(payload)
 
@@ -46,7 +48,7 @@ module Bugsnag
             payload_string = Bugsnag::Helpers.dump_json(payload)
           end
 
-          do_post(endpoint, payload_string)
+          do_post(endpoint, payload_string, headers)
 
         rescue StandardError => e
           # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
@@ -58,10 +60,10 @@ module Bugsnag
 
       end
 
-      def do_post(endpoint, payload_string)
+      def do_post(endpoint, payload_string, headers)
         @queue.push proc{
           begin
-            response = post(endpoint, {:body => payload_string})
+            response = post(endpoint, {:body => payload_string, :headers => headers})
             Bugsnag.debug("Notification to #{endpoint} finished, response was #{response.code}, payload was #{payload_string}")
           rescue StandardError => e
             Bugsnag.warn("Notification to #{endpoint} failed, #{e.inspect}")
@@ -77,6 +79,7 @@ module Bugsnag
       @request_data = request_data
       @meta_data = {}
       @user = {}
+      @headers = {}
       @should_ignore = false
 
       self.severity = @overrides[:severity]
@@ -271,7 +274,7 @@ module Bugsnag
           :events => [payload_event]
         }
 
-        self.class.deliver_exception_payload(endpoint, payload)
+        self.class.deliver_exception_payload(endpoint, payload, self.headers)
       end
     end
 
