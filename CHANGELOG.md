@@ -1,9 +1,10 @@
 Changelog
 =========
 
-??????
+2.4.1
 ------
 
+-   Ensure filtering behaviour matches rails' for symbol filters
 -   Fix Rails 4 sessions appearing in Custom tab instead of its own ([144](https://github.com/bugsnag/bugsnag-ruby/issues/144))
 
 2.4.0
