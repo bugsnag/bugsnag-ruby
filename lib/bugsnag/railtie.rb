@@ -20,7 +20,7 @@ module Bugsnag
         config.project_root = Rails.root.to_s
         config.params_filters += Rails.configuration.filter_parameters.map do |filter|
           case filter
-          when String
+          when String, Symbol
             /\A#{filter}\z/
           else
             filter
