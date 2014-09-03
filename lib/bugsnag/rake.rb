@@ -32,7 +32,7 @@ module Bugsnag::Rake
           Thread.current[:bugsnag_running_task] = task
 
           yield(*block_args) if block_given?
-        rescue Exception => e
+        rescue => e
           Bugsnag.auto_notify(e)
           raise
         ensure

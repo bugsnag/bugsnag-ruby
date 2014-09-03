@@ -9,7 +9,7 @@ module Bugsnag
         }
 
         yield
-      rescue Exception => ex
+      rescue => ex
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
         Bugsnag.auto_notify(ex)
         raise
