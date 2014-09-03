@@ -34,7 +34,7 @@ module Bugsnag
 
       begin
         response = @app.call(env)
-      rescue Exception => raised
+      rescue => raised
         # Notify bugsnag of rack exceptions
         Bugsnag.auto_notify(raised)
 
