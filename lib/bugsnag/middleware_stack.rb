@@ -62,7 +62,7 @@ module Bugsnag
       begin
         # We reverse them, so we can call "call" on the first middleware
         middleware_procs.reverse.inject(notify_lambda) { |n,e| e.call(n) }.call(notification)
-      rescue StandardError => e
+      rescue Exception => e
         # KLUDGE: Since we don't re-raise middleware exceptions, this breaks rspec
         raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
 
