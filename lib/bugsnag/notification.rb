@@ -299,7 +299,15 @@ module Bugsnag
         ancestor_chain = ex.class.ancestors.select { |ancestor| ancestor.is_a?(Class) }.map { |ancestor| error_class(ancestor) }.to_set
 
         @configuration.ignore_classes.any? do |to_ignore|
-          to_ignore.is_a?(Proc) ? to_ignore.call(ex) : ancestor_chain.include?(to_ignore)
+          if to_ignore.is_a?(Proc)
+            if to_ignore.arity == 1
+              to_ignore.call(ex)
+            else
+              to_ignore.call(ex, @overrides)
+            end
+          else
+            ancestor_chain.include?(to_ignore)
+          end
         end
       end
     end
