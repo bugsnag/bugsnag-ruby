@@ -134,6 +134,15 @@ Bugsnag.before_notify_callbacks << lambda {|notif|
 Bugsnag.before_notify_callbacks.clear
 ```
 
+In both cases you can call the `ignore!` method on a notification to prevent it
+from the send.
+
+```ruby
+Bugsnag.before_notify_callbacks << lambda { |notif|
+  notif.ignore! if foo == 'bar'
+}
+```
+
 ### Exceptions with Meta Data
 
 If you include the `Bugsnag::MetaData` module into your own exceptions, you can
