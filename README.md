@@ -83,9 +83,7 @@ exceptions, to help debug problems.
 
 ### Rails Apps
 
-In any rails controller you can define a `before_bugsnag_notify` callback,
-which allows you to add this additional data by calling `add_tab` on the
-exception notification object.
+In any rails controller you can define a `before_bugsnag_notify` callback, which allows you to add this additional data by calling `add_tab` on the exception notification object. Please see the [Notification Object](#notification-object) for details on the notification parameter.
 
 ```ruby
 class MyController < ApplicationController
@@ -132,6 +130,82 @@ Bugsnag.before_notify_callbacks << lambda {|notif|
 
 # Clear the callbacks
 Bugsnag.before_notify_callbacks.clear
+```
+
+#### Notification Object
+
+The notification object is passed to all [before bugsnag notify](#sending-custom-data-with-exceptions) callbacks and is used to manipulate the error report before it is transmitted.
+
+##### add_tab
+
+Call add_tab on a notification object to add a tab to the error report so that it would appear on your dashboard.
+
+```ruby
+notif.add_tab(:user_info, {
+  name: current_user.name
+})
+```
+
+The first parameter is the tab name that will appear in the error report and the second is the key, value list that will be displayed in the tab.
+
+##### remove_tab
+
+Removes a tab completely from the error report
+
+```ruby
+notif.remove_tab(:request)
+```
+
+##### ignore!
+
+Calling ignore! on a notification object will cause the notification to not be sent to bugsnag. This means that you can choose dynamically not to send an error depending on application state or the error itself.
+
+```ruby
+notif.ignore! if foo == 'bar'
+```
+
+##### grouping_hash
+
+Sets the grouping hash of the error report. All errors with the same grouping hash are grouped together. This is an advanced usage of the library and mis-using it will cause your errors not to group properly in your dashboard.
+
+```ruby
+notif.grouping_hash = "#{exception.message}#{exception.class}"
+```
+
+##### severity
+
+Set the severity of the error. Severity can be `error`, `warning` or `info`.
+
+```ruby
+notif.severity = "error"
+```
+
+##### context
+
+Set the context of the error report. This is notionally the location of the error and should be populated automatically. Context is displayed in the dashboard prominently.
+
+```ruby
+notif.context = "billing"
+```
+
+##### user
+
+You can set or read the user with the user property of the notification. The user will be a hash of `email`, `id` and `name`.
+
+```ruby
+notif.user = {
+  id: current_user.id,
+  email: current_user.email,
+  name: current_user.name
+}
+```
+
+##### exceptions
+
+Allows you to read the exceptions that will be combined into the report.
+
+```ruby
+puts "#{notif.exceptions.first.message} found!"
 ```
 
 ### Exceptions with Meta Data
@@ -466,7 +540,7 @@ Rake task for example. Bugsnag will automatically detect most application types 
 ###send_environment
 
 Bugsnag can transmit your rack environment to help diagnose issues. This environment
-can sometimes contain private information so Bugsnag does not transmit by default. To 
+can sometimes contain private information so Bugsnag does not transmit by default. To
 send your rack environment, set the `send_environment` option to `true`.
 
 ```ruby
