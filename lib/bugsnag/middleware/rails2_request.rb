@@ -3,7 +3,7 @@ module Bugsnag::Middleware
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
-      
+
     def call(notification)
       if notification.request_data[:rails2_request]
         request = notification.request_data[:rails2_request]
@@ -30,7 +30,9 @@ module Bugsnag::Middleware
         })
 
         # Add an environment tab
-        notification.add_tab(:environment, request.env) if request.env
+        if request.env && notification.configuration.send_environment
+          notification.add_tab(:environment, request.env)
+        end
 
         # Add a session tab
         notification.add_tab(:session, session_data) if session_data

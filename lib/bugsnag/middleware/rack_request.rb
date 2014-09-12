@@ -36,7 +36,9 @@ module Bugsnag::Middleware
         })
 
         # Add an environment tab
-        notification.add_tab(:environment, env)
+        if notification.configuration.send_environment
+          notification.add_tab(:environment, env)
+        end
 
         # Add a session tab
         if session

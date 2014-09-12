@@ -10,6 +10,7 @@ module Bugsnag
     attr_accessor :notify_release_stages
     attr_accessor :auto_notify
     attr_accessor :use_ssl
+    attr_accessor :send_environment
     attr_accessor :project_root
     attr_accessor :app_version
     attr_accessor :app_type
@@ -53,6 +54,7 @@ module Bugsnag
       # Set up the defaults
       self.auto_notify = true
       self.use_ssl = true
+      self.send_environment = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)

@@ -3,7 +3,7 @@ module Bugsnag::Middleware
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
-      
+
     def call(notification)
       if notification.request_data[:rack_env]
         env = notification.request_data[:rack_env]
@@ -21,9 +21,11 @@ module Bugsnag::Middleware
         end
 
         # Add the rails version
-        notification.add_tab(:environment, {
-          :railsVersion => Rails::VERSION::STRING
-        })
+        if notification.configuration.send_environment
+          notification.add_tab(:environment, {
+            :railsVersion => Rails::VERSION::STRING
+          })
+        end
       end
 
       @bugsnag.call(notification)
