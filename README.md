@@ -460,17 +460,18 @@ You can set the type of application executing the current code by using `app_typ
 config.app_type = "resque"
 ```
 
+This is usually used to represent if you are running in a Rails server, Sidekiq job or
+Rake task for example. Bugsnag will automatically detect most application types for you.
+
 ###send_environment
 
-Hides or shows the "Environment" tab on the website. Hidden by default. To
-enable it, set the `send_environment` option to `true`.
+Bugsnag can transmit your rack environment to help diagnose issues. This environment
+can sometimes contain private information so Bugsnag does not transmit by default. To 
+send your rack environment, set the `send_environment` option to `true`.
 
 ```ruby
 config.send_environment = true
 ```
-
-This is usually used to represent if you are running in a Rails server, Sidekiq job or
-Rake task for example. Bugsnag will automatically detect most application types for you.
 
 Bugsnag Middleware
 ------------------
