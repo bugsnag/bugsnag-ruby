@@ -134,12 +134,13 @@ describe Bugsnag::MiddlewareStack do
     # Use before notify callbacks as only the callback based metadata is
     # available to before_notify_callbacks
     Bugsnag.before_notify_callbacks << lambda do |notif|
-      notif.add_tab(:sidekiq, {:retry_count => 3})
+      notif.add_tab(:sidekiq, {:retry_count => 4})
     end
 
     Bugsnag.before_notify_callbacks << lambda do |notif|
       notif.ignore! if notif.meta_data[:sidekiq][:retry_count] > 3
     end
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
   end
 end
