@@ -129,11 +129,11 @@ Bugsnag.before_notify_callbacks << lambda {|notif|
 Bugsnag.before_notify_callbacks.clear
 ```
 
-#### Notification Object
+### Notification Object
 
 The notification object is passed to all [before bugsnag notify](#sending-custom-data-with-exceptions) callbacks and is used to manipulate the error report before it is transmitted.
 
-##### add_tab
+#### add_tab
 
 Call add_tab on a notification object to add a tab to the error report so that it would appear on your dashboard.
 
@@ -145,7 +145,7 @@ notif.add_tab(:user_info, {
 
 The first parameter is the tab name that will appear in the error report and the second is the key, value list that will be displayed in the tab.
 
-##### remove_tab
+#### remove_tab
 
 Removes a tab completely from the error report
 
@@ -153,7 +153,7 @@ Removes a tab completely from the error report
 notif.remove_tab(:request)
 ```
 
-##### ignore!
+#### ignore!
 
 Calling ignore! on a notification object will cause the notification to not be sent to bugsnag. This means that you can choose dynamically not to send an error depending on application state or the error itself.
 
@@ -161,7 +161,7 @@ Calling ignore! on a notification object will cause the notification to not be s
 notif.ignore! if foo == 'bar'
 ```
 
-##### grouping_hash
+#### grouping_hash
 
 Sets the grouping hash of the error report. All errors with the same grouping hash are grouped together. This is an advanced usage of the library and mis-using it will cause your errors not to group properly in your dashboard.
 
@@ -169,7 +169,7 @@ Sets the grouping hash of the error report. All errors with the same grouping ha
 notif.grouping_hash = "#{exception.message}#{exception.class}"
 ```
 
-##### severity
+#### severity
 
 Set the severity of the error. Severity can be `error`, `warning` or `info`.
 
@@ -177,7 +177,7 @@ Set the severity of the error. Severity can be `error`, `warning` or `info`.
 notif.severity = "error"
 ```
 
-##### context
+#### context
 
 Set the context of the error report. This is notionally the location of the error and should be populated automatically. Context is displayed in the dashboard prominently.
 
@@ -185,7 +185,7 @@ Set the context of the error report. This is notionally the location of the erro
 notif.context = "billing"
 ```
 
-##### user
+#### user
 
 You can set or read the user with the user property of the notification. The user will be a hash of `email`, `id` and `name`.
 
@@ -197,12 +197,20 @@ notif.user = {
 }
 ```
 
-##### exceptions
+#### exceptions
 
 Allows you to read the exceptions that will be combined into the report.
 
 ```ruby
 puts "#{notif.exceptions.first.message} found!"
+```
+
+#### meta_data
+
+Provides access to the meta_data in the error report.
+
+```ruby
+notif.ignore! if notif.meta_data[:sidekiq][:retry_count] > 2
 ```
 
 ### Exceptions with Meta Data
