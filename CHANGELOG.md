@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.5.0
+-----
+-   Allow access to the metadata object in before bugsnag notify callbacks
+-   Dont send the rack env by default
+
 2.4.1
 ------
 
