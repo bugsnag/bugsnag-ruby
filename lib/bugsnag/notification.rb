@@ -31,6 +31,7 @@ module Bugsnag
     attr_accessor :context
     attr_accessor :user
     attr_accessor :configuration
+    attr_accessor :meta_data
 
     @queue = Bugsnag::Queue.new
 
