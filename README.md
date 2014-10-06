@@ -299,7 +299,7 @@ end
 YourApp::Application.load_tasks
 ```
 
-**NOTE**: We also configure Bugsnag in the Rakefile, so the tasks that do not load the full
+> Note: We also configure Bugsnag in the Rakefile, so the tasks that do not load the full
 environment can still notify Bugsnag.
 
 Standard Ruby Scripts
