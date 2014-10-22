@@ -25,14 +25,28 @@ module Bugsnag::Middleware
         url << ":#{request.port}" unless [80, 443].include?(request.port)
         url << Bugsnag::Helpers.cleanup_url(request.fullpath, notification.configuration.params_filters)
 
+        headers = {}
+
+        env.each_pair do |key, value|
+          if key.start_with?("HTTP_")
+            header_key = key[5..-1]
+          elsif ["CONTENT_TYPE", "CONTENT_LENGTH"].include?(key)
+            header_key = key
+          else
+            next
+          end
+
+          headers[header_key.split("_").map {|s| s.capitalize}.join("-")] = value
+        end
+
         # Add a request tab
         notification.add_tab(:request, {
           :url => url,
           :httpMethod => request.request_method,
           :params => params.to_hash,
-          :userAgent => request.user_agent,
           :referer => request.referer,
-          :clientIp => request.ip
+          :clientIp => request.ip,
+          :headers => headers
         })
 
         # Add an environment tab
