@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.5.1
+-----
+-   Send headers through
+
 2.5.0
 -----
 -   Allow access to the metadata object in before bugsnag notify callbacks
