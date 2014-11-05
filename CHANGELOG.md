@@ -3,7 +3,7 @@ Changelog
 
 2.5.1
 -----
--   Send headers through
+-   Collect and send HTTP headers to bugsnag to help debugging
 
 2.5.0
 -----
