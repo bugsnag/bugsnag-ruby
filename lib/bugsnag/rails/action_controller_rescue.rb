@@ -16,7 +16,7 @@ module Bugsnag::Rails
     private
     def set_bugsnag_request_data
       Bugsnag.clear_request_data
-      Bugsnag.set_request_data(:rails2_request, request)
+      Bugsnag.set_request_data(:rails2_request, Bugsnag::Rails::FilteredRequest.new(self))
     end
 
     def rescue_action_in_public_with_bugsnag(exception)
