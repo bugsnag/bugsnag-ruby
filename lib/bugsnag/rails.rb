@@ -2,6 +2,7 @@
 # For Rails 3+ hooks, see railtie.rb
 
 require "bugsnag"
+require "bugsnag/rails/filtered_request"
 require "bugsnag/rails/controller_methods"
 require "bugsnag/rails/action_controller_rescue"
 require "bugsnag/rails/active_record_rescue"

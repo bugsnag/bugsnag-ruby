@@ -1,3 +1,4 @@
+require 'rspec/its'
 require 'bugsnag'
 
 class BugsnagTestException < RuntimeError; end
