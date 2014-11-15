@@ -24,53 +24,10 @@ module Bugsnag
 
     CURRENT_PAYLOAD_VERSION = "2"
 
-    # HTTParty settings
-    headers  "Content-Type" => "application/json"
-    default_timeout 5
-
     attr_accessor :context
     attr_accessor :user
     attr_accessor :configuration
     attr_accessor :meta_data
-
-    @queue = Bugsnag::Queue.new
-
-    class << self
-      def deliver_exception_payload(endpoint, payload)
-        begin
-          payload_string = Bugsnag::Helpers.dump_json(payload)
-
-          # If the payload is going to be too long, we trim the hashes to send
-          # a minimal payload instead
-          if payload_string.length > 128000
-            payload[:events].each {|e| e[:metaData] = Bugsnag::Helpers.reduce_hash_size(e[:metaData])}
-            payload_string = Bugsnag::Helpers.dump_json(payload)
-          end
-
-          do_post(endpoint, payload_string)
-
-        rescue StandardError => e
-          # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
-          raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
-
-          Bugsnag.warn("Notification to #{endpoint} failed, #{e.inspect}")
-          Bugsnag.warn(e.backtrace)
-        end
-
-      end
-
-      def do_post(endpoint, payload_string)
-        @queue.push proc{
-          begin
-            response = post(endpoint, {:body => payload_string})
-            Bugsnag.debug("Notification to #{endpoint} finished, response was #{response.code}, payload was #{payload_string}")
-          rescue StandardError => e
-            Bugsnag.warn("Notification to #{endpoint} failed, #{e.inspect}")
-            Bugsnag.warn(e.backtrace)
-          end
-        }
-      end
-    end
 
     def initialize(exception, configuration, overrides = nil, request_data = nil)
       @configuration = configuration
@@ -272,7 +229,18 @@ module Bugsnag
           :events => [payload_event]
         }
 
-        self.class.deliver_exception_payload(endpoint, payload)
+        # Stringify the payload
+        payload_string = Bugsnag::Helpers.dump_json(payload)
+
+        # If the payload is going to be too long, we trim the hashes to send
+        # a minimal payload instead
+        if payload_string.length > 128000
+          payload[:events].each {|e| e[:metaData] = Bugsnag::Helpers.reduce_hash_size(e[:metaData])}
+          payload_string = Bugsnag::Helpers.dump_json(payload)
+        end
+
+        # Deliver the payload
+        Bugsnag::Delivery[@configuration.delivery_method].deliver(endpoint, payload_string)
       end
     end
 
