@@ -29,6 +29,19 @@ module Bugsnag
     attr_accessor :configuration
     attr_accessor :meta_data
 
+    class << self
+      def deliver_exception_payload(url, payload, configuration=Bugsnag.configuration)
+        # If the payload is going to be too long, we trim the hashes to send
+        # a minimal payload instead
+        if payload_string.length > 128000
+          payload[:events].each {|e| e[:metaData] = Bugsnag::Helpers.reduce_hash_size(e[:metaData])}
+          payload_string = Bugsnag::Helpers.dump_json(payload)
+        end
+        
+        Bugsnag::Delivery[configuration.delivery_method].deliver(url, payload)
+      end
+    end
+
     def initialize(exception, configuration, overrides = nil, request_data = nil)
       @configuration = configuration
       @overrides = Bugsnag::Helpers.flatten_meta_data(overrides) || {}
@@ -232,15 +245,8 @@ module Bugsnag
         # Stringify the payload
         payload_string = Bugsnag::Helpers.dump_json(payload)
 
-        # If the payload is going to be too long, we trim the hashes to send
-        # a minimal payload instead
-        if payload_string.length > 128000
-          payload[:events].each {|e| e[:metaData] = Bugsnag::Helpers.reduce_hash_size(e[:metaData])}
-          payload_string = Bugsnag::Helpers.dump_json(payload)
-        end
-
         # Deliver the payload
-        Bugsnag::Delivery[@configuration.delivery_method].deliver(endpoint, payload_string)
+        self.class.deliver_exception_payload(endpoint, payload_string, @configuration)
       end
     end
 
