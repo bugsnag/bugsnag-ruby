@@ -14,7 +14,7 @@ module Bugsnag
         config.release_stage ||= ENV["RACK_ENV"] if ENV["RACK_ENV"]
 
         # Try to set the project_root if it hasn't already been set, or show a warning if we can't
-        unless config.project_root && !config.project_root.empty?
+        unless config.project_root && !config.project_root.to_s.empty?
           if defined?(settings)
             config.project_root = settings.root
           else
