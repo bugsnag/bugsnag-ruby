@@ -31,14 +31,16 @@ module Bugsnag
 
     class << self
       def deliver_exception_payload(url, payload, configuration=Bugsnag.configuration, delivery_method=nil)
+
         # If the payload is going to be too long, we trim the hashes to send
         # a minimal payload instead
-        if payload.length > 128000
+        payload_string = Bugsnag::Helpers.dump_json(payload)
+        if payload_string.length > 128000
           payload[:events].each {|e| e[:metaData] = Bugsnag::Helpers.reduce_hash_size(e[:metaData])}
-          payload = Bugsnag::Helpers.dump_json(payload)
+          payload_string = Bugsnag::Helpers.dump_json(payload)
         end
 
-        Bugsnag::Delivery[delivery_method || configuration.delivery_method].deliver(url, payload)
+        Bugsnag::Delivery[delivery_method || configuration.delivery_method].deliver(url, payload_string)
       end
     end
 
@@ -247,11 +249,8 @@ module Bugsnag
           :events => [payload_event]
         }
 
-        # Stringify the payload
-        payload_string = Bugsnag::Helpers.dump_json(payload)
-
         # Deliver the payload
-        self.class.deliver_exception_payload(endpoint, payload_string, @configuration, @delivery_method)
+        self.class.deliver_exception_payload(endpoint, payload, @configuration, @delivery_method)
       end
     end
 

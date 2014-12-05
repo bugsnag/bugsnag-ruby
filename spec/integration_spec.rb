@@ -25,6 +25,7 @@ describe 'Bugsnag' do
       config.endpoint = "localhost:#{server.config[:Port]}"
       config.use_ssl = false
     end
+    WebMock.allow_net_connect!
 
     Bugsnag.notify 'yo'
 
