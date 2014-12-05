@@ -39,6 +39,6 @@ end
 
 def have_sent_notification(&matcher)
   have_requested(:post, "https://notify.bugsnag.com/").with do |request|
-    matcher.(JSON.parse(request.body))
+    matcher.call JSON.parse(request.body)
   end
 end

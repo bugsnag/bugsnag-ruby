@@ -80,6 +80,7 @@ describe Bugsnag::Notification do
     Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
     Bugsnag.configure do |config|
       config.release_stage = "production"
+      config.delivery_method = :synchronous
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
@@ -720,7 +721,11 @@ describe Bugsnag::Notification do
     notify_test_exception(:fluff => {:fluff => invalid_data})
 
     expect(Bugsnag).to have_sent_notification{ |payload|
-      expect(payload.to_json).to match(/fl�ff/) if defined?(Encoding::UTF_8)
+      if defined?(Encoding::UTF_8)
+        expect(payload.to_json).to match(/fl�ff/)
+      else
+        expect(payload.to_json).to match(/flff/)
+      end
     }
   end
 
