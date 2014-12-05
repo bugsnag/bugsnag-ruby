@@ -26,7 +26,7 @@ module Bugsnag
     end
 
     def save
-      Bugsnag.auto_notify(exception, {:context => "resque##{queue}", :payload => payload})
+      Bugsnag.auto_notify(exception, {:context => "resque##{queue}", :payload => payload, :delivery_method => :synchronous})
     end
   end
 end
