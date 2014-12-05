@@ -390,6 +390,16 @@ module Bugsnag
         trace_hash = {}
         trace_hash[:inProject] = true if @configuration.project_root && file.match(/^#{@configuration.project_root}/) && !file.match(/vendor\//)
         trace_hash[:lineNumber] = line_str.to_i
+        trace_hash[:code] = {}
+
+        # Populate code hash with line numbers and code lines
+        File.open(file) do |f|
+          f.each_line.with_index do |line, index|
+            trace_hash[:code][index + 1] = line[0...1000]
+
+            break if index >= 4
+          end
+        end
 
         # Clean up the file path in the stacktrace
         if defined?(Bugsnag.configuration.project_root) && Bugsnag.configuration.project_root.to_s != ''
