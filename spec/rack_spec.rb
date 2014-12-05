@@ -5,9 +5,9 @@ describe Bugsnag::Rack do
     rack_env = {"key" => "value"}
     app = lambda { |env| ['response', {}, env] }
     rack_stack = Bugsnag::Rack.new(app)
-  
+
     response = rack_stack.call(rack_env)
-  
+
     expect(response).to eq(['response', {}, rack_env])
   end
 
@@ -23,22 +23,23 @@ describe Bugsnag::Rack do
     end
 
     it "delivers an exception if auto_notify is enabled" do
-      expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
-        exception_class = payload[:events].first[:exceptions].first[:errorClass]
-        expect(exception_class).to eq(exception.class.to_s)
-      end
-
       rack_stack.call(rack_env) rescue nil
+
+      expect(Bugsnag).to have_sent_notification{ |payload|
+        exception_class = payload["events"].first["exceptions"].first["errorClass"]
+        expect(exception_class).to eq(exception.class.to_s)
+      }
+
     end
-    
+
     it "does not deliver an exception if auto_notify is disabled" do
       Bugsnag.configure do |config|
         config.auto_notify = false
       end
 
-      expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
-
       rack_stack.call(rack_env) rescue nil
+
+      expect(Bugsnag::Notification).not_to have_sent_notification
     end
   end
 end

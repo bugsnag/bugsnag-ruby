@@ -39,6 +39,10 @@ end
 
 def have_sent_notification(&matcher)
   have_requested(:post, "https://notify.bugsnag.com/").with do |request|
-    matcher.call JSON.parse(request.body)
+    if matcher
+      matcher.call JSON.parse(request.body)
+    else
+      true
+    end
   end
 end
