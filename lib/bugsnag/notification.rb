@@ -392,33 +392,37 @@ module Bugsnag
         trace_hash[:lineNumber] = line_str.to_i
         trace_hash[:code] = {}
 
-        # Populate code hash with line numbers and code lines
-        File.open(file) do |f|
-          lines_in_file = f.readlines.size
+        begin
+          # Populate code hash with line numbers and code lines
+          File.open(file) do |f|
+            lines_in_file = f.readlines.size
 
-          # always have 7 lines of code, up to 6 before/after
-          lowest_line_number = trace_hash[:lineNumber] - 3
-          highest_line_number = trace_hash[:lineNumber] + 3
+            # always have 7 lines of code, up to 6 before/after
+            lowest_line_number = trace_hash[:lineNumber] - 3
+            highest_line_number = trace_hash[:lineNumber] + 3
 
-          if lowest_line_number < 1
-            lowest_line_number = 1
-            highest_line_number = 7
+            if lowest_line_number < 1
+              lowest_line_number = 1
+              highest_line_number = 7
+            end
+
+            if highest_line_number > lines_in_file
+              lowest_line_number = lines_in_file - 6
+              highest_line_number = lines_in_file
+            end
+
+            f.each_line.with_index do |line, index|
+              current_line_number = index + 1
+
+              next unless current_line_number >= lowest_line_number
+
+              trace_hash[:code][current_line_number] = line[0...1000]
+
+              break if current_line_number >= highest_line_number
+            end
           end
 
-          if highest_line_number > lines_in_file
-            lowest_line_number = lines_in_file - 6
-            highest_line_number = lines_in_file
-          end
-
-          f.each_line.with_index do |line, index|
-            current_line_number = index + 1
-
-            next unless current_line_number >= lowest_line_number
-
-            trace_hash[:code][current_line_number] = line[0...1000]
-
-            break if current_line_number >= highest_line_number
-          end
+        rescue
         end
 
         # Clean up the file path in the stacktrace
