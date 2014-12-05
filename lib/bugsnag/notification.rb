@@ -395,9 +395,11 @@ module Bugsnag
         # Populate code hash with line numbers and code lines
         File.open(file) do |f|
           f.each_line.with_index do |line, index|
+            next unless (index + 1) >= (trace_hash[:lineNumber] - 3)
+
             trace_hash[:code][index + 1] = line[0...1000]
 
-            break if index >= 4
+            break if (index + 1) >= (trace_hash[:lineNumber] + 3)
           end
         end
 
