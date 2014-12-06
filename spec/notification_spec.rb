@@ -598,7 +598,7 @@ describe Bugsnag::Notification do
     expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
       exception = get_exception_from_payload(payload)
       starting_line = __LINE__ + 12
-      expect(exception[:stacktrace][1][:code]).to eq({
+      expect(exception[:stacktrace][1][:code]).to match({
         starting_line => "    a = 1",
         (starting_line + 1) => "    b = 2",
         (starting_line + 2) => "    c = 3",
