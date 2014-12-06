@@ -254,8 +254,8 @@ describe Bugsnag::Notification do
   it "truncates large meta_data before sending" do
     expect(Bugsnag::Notification).to receive(:do_post) do |endpoint, payload_string|
       # Truncated body should be no bigger than
-      # 2 truncated hashes (4096*2) + rest of payload (5000)
-      expect(payload_string.length).to be < 4096*2 + 5000
+      # 2 truncated hashes (4096*2) + rest of payload (10000)
+      expect(payload_string.length).to be < 4096*2 + 10000
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
@@ -589,6 +589,41 @@ describe Bugsnag::Notification do
       exception = get_exception_from_payload(payload)
       expect(exception[:errorClass]).to eq("RuntimeError")
       expect(exception[:message]).to eq("test message")
+    end
+
+    notify_test_exception
+  end
+
+  it "includes code in the stack trace" do
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      starting_line = __LINE__ + 12
+      expect(exception[:stacktrace][1][:code]).to eq({
+        starting_line => "    a = 1",
+        (starting_line + 1) => "    b = 2",
+        (starting_line + 2) => "    c = 3",
+        (starting_line + 3) => "    notify_test_exception",
+        (starting_line + 4) => "    d = 4",
+        (starting_line + 5) => "    e = 5",
+        (starting_line + 6) => "    f = 6"
+        })
+    end
+
+    a = 1
+    b = 2
+    c = 3
+    notify_test_exception
+    d = 4
+    e = 5
+    f = 6
+  end
+
+  it "allows you to disable sending code" do
+    Bugsnag.configuration.send_code = false
+
+    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
+      exception = get_exception_from_payload(payload)
+      expect(exception[:code]).to eq(nil)
     end
 
     notify_test_exception
