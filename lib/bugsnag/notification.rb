@@ -422,10 +422,10 @@ module Bugsnag
     def code(file, line_number, num_lines = 7)
       code_hash = {}
 
+      from_line = [line_number - num_lines, 1].max
+
       # Populate code hash with line numbers and code lines
       File.open(file) do |f|
-        from_line = [line_number - num_lines, 1].max
-
         current_line_number = 0
         f.each_line do |line|
           current_line_number += 1
@@ -438,8 +438,7 @@ module Bugsnag
         end
       end
 
-      code_hash.delete(code_hash.first.first) while code_hash.length > num_lines
-
+      code_hash.delete((from_line+=1) - 1) while code_hash.length > num_lines
       code_hash
     rescue
       Bugsnag.warn("Error fetching code: #{$!.inspect}")
