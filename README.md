@@ -555,7 +555,7 @@ config.send_environment = true
 ###send_code
 
 Bugsnag automatically sends a small snippet of the code that crashed to help you diagnose
-even faster from within your dashboard. If you don't want to send this snipped you can
+even faster from within your dashboard. If you don't want to send this snippet you can
 set the `send_code` option to `false`.
 
 ```ruby
