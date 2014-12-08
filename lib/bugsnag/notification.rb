@@ -418,7 +418,6 @@ module Bugsnag
       end.compact
     end
 
-
     def code(file, line_number, num_lines = 7)
       code_hash = {}
 
@@ -434,11 +433,21 @@ module Bugsnag
 
           code_hash[current_line_number] = line[0...200].rstrip
 
-          break if code_hash.length >= (num_lines * 1.5).ceil
+          break if code_hash.length >= ( num_lines * 1.5 ).ceil
         end
       end
 
-      code_hash.delete((from_line+=1) - 1) while code_hash.length > num_lines
+      while code_hash.length > num_lines
+        last_line = code_hash.keys.max
+        first_line = code_hash.keys.min
+
+        if (last_line - line_number) > (line_number - first_line)
+          code_hash.delete(last_line)
+        else
+          code_hash.delete(first_line)
+        end
+      end
+
       code_hash
     rescue
       Bugsnag.warn("Error fetching code: #{$!.inspect}")
