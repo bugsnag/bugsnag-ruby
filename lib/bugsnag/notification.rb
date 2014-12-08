@@ -1,11 +1,8 @@
-require "httparty"
 require "multi_json"
 require "pathname"
 
 module Bugsnag
   class Notification
-    include HTTParty
-
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"

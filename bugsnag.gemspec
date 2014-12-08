@@ -20,11 +20,8 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'multi_json', ["~> 1.0"]
 
   if RUBY_VERSION < "1.9"
-    # Use ruby 1.8 compatible httparty
-    s.add_runtime_dependency 'httparty', ["< 0.12.0", ">= 0.6"]
     s.add_development_dependency "rake", "~> 10.1.1"
   else
-    s.add_runtime_dependency 'httparty', ["< 1.0", ">= 0.6"]
     s.add_development_dependency 'rake'
   end
 
@@ -33,4 +30,3 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'pry'
   s.add_development_dependency 'webmock'
 end
-
