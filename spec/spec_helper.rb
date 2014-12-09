@@ -16,6 +16,10 @@ def get_exception_from_payload(payload)
   event["exceptions"].last
 end
 
+def notify_test_exception(*args)
+  Bugsnag.notify(RuntimeError.new("test message"), *args)
+end
+
 RSpec.configure do |config|
   config.order = "random"
 

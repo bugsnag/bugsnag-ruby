@@ -28,10 +28,6 @@ class JRubyException
 end
 
 describe Bugsnag::Notification do
-  def notify_test_exception(*args)
-    Bugsnag.notify(RuntimeError.new("test message"), *args)
-  end
-
   it "should contain an api_key if one is set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
@@ -597,41 +593,6 @@ describe Bugsnag::Notification do
       expect(exception["errorClass"]).to eq("RuntimeError")
       expect(exception["message"]).to eq("test message")
     }
-  end
-
-  it "includes code in the stack trace" do
-    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
-      exception = get_exception_from_payload(payload)
-      starting_line = __LINE__ + 12
-      expect(exception[:stacktrace][1][:code]).to include({
-        starting_line => "    a = 1",
-        (starting_line + 1) => "    b = 2",
-        (starting_line + 2) => "    c = 3",
-        (starting_line + 3) => "    notify_test_exception",
-        (starting_line + 4) => "    d = 4",
-        (starting_line + 5) => "    e = 5",
-        (starting_line + 6) => "    f = 6"
-        })
-    end
-
-    a = 1
-    b = 2
-    c = 3
-    notify_test_exception
-    d = 4
-    e = 5
-    f = 6
-  end
-
-  it "allows you to disable sending code" do
-    Bugsnag.configuration.send_code = false
-
-    expect(Bugsnag::Notification).to receive(:deliver_exception_payload) do |endpoint, payload|
-      exception = get_exception_from_payload(payload)
-      expect(exception[:code]).to eq(nil)
-    end
-
-    notify_test_exception
   end
 
   it "supports unix-style paths in backtraces" do
