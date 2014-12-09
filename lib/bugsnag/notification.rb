@@ -391,7 +391,7 @@ module Bugsnag
         trace_hash[:inProject] = true if @configuration.project_root && file.match(/^#{@configuration.project_root}/) && !file.match(/vendor\//)
         trace_hash[:lineNumber] = line_str.to_i
 
-        if Bugsnag.configuration.send_code
+        if @configuration.send_code
           trace_hash[:code] = code(file, trace_hash[:lineNumber])
         end
 
