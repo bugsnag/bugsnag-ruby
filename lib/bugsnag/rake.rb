@@ -1,3 +1,5 @@
+require 'bugsnag'
+
 Rake::TaskManager.record_task_metadata = true
 
 module Bugsnag::Rake
