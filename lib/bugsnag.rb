@@ -1,12 +1,15 @@
 require "rubygems"
 
 require "bugsnag/version"
-require "bugsnag/queue"
 require "bugsnag/configuration"
 require "bugsnag/meta_data"
 require "bugsnag/notification"
 require "bugsnag/helpers"
 require "bugsnag/deploy"
+
+require "bugsnag/delivery"
+require "bugsnag/delivery/synchronous"
+require "bugsnag/delivery/thread_queue"
 
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)

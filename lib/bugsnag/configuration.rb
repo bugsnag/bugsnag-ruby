@@ -28,6 +28,7 @@ module Bugsnag
     attr_accessor :proxy_password
     attr_accessor :timeout
     attr_accessor :hostname
+    attr_accessor :delivery_method
 
     attr_writer :ignore_classes
 
@@ -51,6 +52,8 @@ module Bugsnag
 
     DEFAULT_IGNORE_USER_AGENTS = [].freeze
 
+    DEFAULT_DELIVERY_METHOD = :thread_queue
+
     def initialize
       # Set up the defaults
       self.auto_notify = true
@@ -62,6 +65,7 @@ module Bugsnag
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
       self.hostname = default_hostname
+      self.delivery_method = DEFAULT_DELIVERY_METHOD
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
