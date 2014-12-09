@@ -19,26 +19,42 @@ module Bugsnag
         ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
       end
 
-      # Try to find where to log to
-      rails_logger = nil
-      if defined?(::Rails.logger)
-        rails_logger = ::Rails.logger
-      elsif defined?(RAILS_DEFAULT_LOGGER)
-        rails_logger = RAILS_DEFAULT_LOGGER
-      end
-
       Bugsnag.configure do |config|
         config.logger ||= rails_logger
-        config.release_stage = RAILS_ENV if defined?(RAILS_ENV)
-        config.project_root = RAILS_ROOT if defined?(RAILS_ROOT)
+        config.release_stage = rails_env if rails_env
+        config.project_root = rails_root if rails_root
 
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks,Bugsnag::Middleware::Rails2Request)
       end
 
       # Auto-load configuration settings from config/bugsnag.yml if it exists
-      config_file = File.join(RAILS_ROOT, "config", "bugsnag.yml")
+      config_file = File.join(rails_root, "config", "bugsnag.yml")
       config = YAML.load_file(config_file) if File.exists?(config_file)
-      Bugsnag.configure(config[RAILS_ENV] ? config[RAILS_ENV] : config) if config
+      Bugsnag.configure(config[rails_env] ? config[rails_env] : config) if config
+    end
+
+    def self.rails_logger
+      if defined?(::Rails.logger)
+        rails_logger = ::Rails.logger
+      elsif defined?(RAILS_DEFAULT_LOGGER)
+        rails_logger = RAILS_DEFAULT_LOGGER
+      end
+    end
+
+    def self.rails_env
+      if defined?(::Rails.env)
+        ::Rails.env
+      elsif defined?(RAILS_ENV)
+        RAILS_ENV
+      end
+    end
+
+    def self.rails_root
+      if defined?(::Rails.root)
+        ::Rails.root
+      elsif defined?(RAILS_ROOT)
+        RAILS_ROOT
+      end
     end
   end
 end
