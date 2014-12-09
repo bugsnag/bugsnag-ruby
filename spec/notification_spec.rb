@@ -28,10 +28,6 @@ class JRubyException
 end
 
 describe Bugsnag::Notification do
-  def notify_test_exception(*args)
-    Bugsnag.notify(RuntimeError.new("test message"), *args)
-  end
-
   it "should contain an api_key if one is set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
@@ -272,7 +268,7 @@ describe Bugsnag::Notification do
     expect(Bugsnag).to have_sent_notification{ |payload|
       # Truncated body should be no bigger than
       # 2 truncated hashes (4096*2) + rest of payload (5000)
-      expect(Bugsnag::Helpers.dump_json(payload).length).to be < 4096*2 + 5000
+      expect(Bugsnag::Helpers.dump_json(payload).length).to be < 4096*2 + 10000
     }
   end
 
