@@ -83,14 +83,4 @@ describe Bugsnag::Notification do
       })
     }
   end
-
-  it 'should not send any code from unreadable files' do
-    eval("raise 'hell'", binding, "(eval)") rescue Bugsnag.notify $!
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      exception = get_exception_from_payload(payload)
-
-      expect(exception["stacktrace"][0]["code"]).to eq(nil)
-    }
-  end
 end
