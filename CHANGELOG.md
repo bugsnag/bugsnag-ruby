@@ -1,6 +1,14 @@
 Changelog
 =========
 
+2.6.0
+-----
+-   Collect and send snippets of source code to Bugsnag
+-   Fix resque integration
+-   Allow configuration of delivery method (from the default `:thread_queue` to `:synchronous`)
+-   Fix parameter filtering in rails 2
+-   Allow pathname in project root
+
 2.5.1
 -----
 -   Collect and send HTTP headers to bugsnag to help debugging
