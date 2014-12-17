@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.6.1
+-----
+-   Fix Ruby 1.8 payload delivery bug (thanks @colin!)
+
 2.6.0
 -----
 -   Collect and send snippets of source code to Bugsnag
