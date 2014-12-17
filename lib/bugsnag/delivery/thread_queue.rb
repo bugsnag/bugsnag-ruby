@@ -14,7 +14,7 @@ module Bugsnag
           end
 
           # Add delivery to the worker thread
-          queue.push proc { super }
+          queue.push proc { super(url, body) }
 
           # Make sure the worker thread is started
           ensure_worker_thread_started
