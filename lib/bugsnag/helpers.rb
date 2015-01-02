@@ -1,11 +1,3 @@
-module HTTParty
-  class Parser
-    def json
-      Bugsnag::Helpers.load_json(body)
-    end
-  end
-end
-
 module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096

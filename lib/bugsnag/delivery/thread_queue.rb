@@ -7,7 +7,7 @@ module Bugsnag
       STOP = Object.new
 
       class << self
-        def deliver(url, body)
+        def deliver(url, body, configuration)
           if queue.length > MAX_OUTSTANDING_REQUESTS
             Bugsnag.warn("Dropping notification, #{queue.length} outstanding requests")
             return

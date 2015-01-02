@@ -31,4 +31,16 @@ describe 'Bugsnag' do
 
     expect(request['events'][0]['exceptions'][0]['message']).to eq('yo')
   end
+
+  it 'should send deploys over the wire' do
+    Bugsnag.configure do |config|
+      config.endpoint = "localhost:#{server.config[:Port]}"
+      config.use_ssl = false
+    end
+    WebMock.allow_net_connect!
+
+    Bugsnag::Deploy.notify :app_version => '1.1.1'
+
+    expect(request['appVersion']).to eq('1.1.1')
+  end
 end

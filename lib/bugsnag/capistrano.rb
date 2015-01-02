@@ -1,4 +1,3 @@
-require "httparty"
 require "multi_json"
 require "bugsnag/deploy"
 

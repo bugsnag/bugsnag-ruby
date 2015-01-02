@@ -37,7 +37,7 @@ module Bugsnag
           payload_string = Bugsnag::Helpers.dump_json(payload)
         end
 
-        Bugsnag::Delivery[delivery_method || configuration.delivery_method].deliver(url, payload_string)
+        Bugsnag::Delivery[delivery_method || configuration.delivery_method].deliver(url, payload_string, configuration)
       end
     end
 
