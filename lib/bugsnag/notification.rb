@@ -98,9 +98,6 @@ module Bugsnag
           ex = nil
         end
       end
-
-      self.class.http_proxy(configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password) if configuration.proxy_host
-      self.class.default_timeout(configuration.timeout) if configuration.timeout
     end
 
     # Add a single value as custom data, to this notification
