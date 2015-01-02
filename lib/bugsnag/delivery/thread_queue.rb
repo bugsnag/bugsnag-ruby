@@ -7,14 +7,14 @@ module Bugsnag
       STOP = Object.new
 
       class << self
-        def deliver(url, body)
+        def deliver(url, body, configuration)
           if queue.length > MAX_OUTSTANDING_REQUESTS
             Bugsnag.warn("Dropping notification, #{queue.length} outstanding requests")
             return
           end
 
           # Add delivery to the worker thread
-          queue.push proc { super(url, body) }
+          queue.push proc { super(url, body, configuration) }
 
           # Make sure the worker thread is started
           ensure_worker_thread_started

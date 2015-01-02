@@ -1,11 +1,8 @@
-require "httparty"
 require "multi_json"
 require "pathname"
 
 module Bugsnag
   class Notification
-    include HTTParty
-
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
@@ -40,7 +37,7 @@ module Bugsnag
           payload_string = Bugsnag::Helpers.dump_json(payload)
         end
 
-        Bugsnag::Delivery[delivery_method || configuration.delivery_method].deliver(url, payload_string)
+        Bugsnag::Delivery[delivery_method || configuration.delivery_method].deliver(url, payload_string, configuration)
       end
     end
 
@@ -101,9 +98,6 @@ module Bugsnag
           ex = nil
         end
       end
-
-      self.class.http_proxy(configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password) if configuration.proxy_host
-      self.class.default_timeout(configuration.timeout) if configuration.timeout
     end
 
     # Add a single value as custom data, to this notification

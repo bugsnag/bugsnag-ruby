@@ -31,4 +31,56 @@ describe 'Bugsnag' do
 
     expect(request['events'][0]['exceptions'][0]['message']).to eq('yo')
   end
+
+  it 'should send deploys over the wire' do
+    Bugsnag.configure do |config|
+      config.endpoint = "localhost:#{server.config[:Port]}"
+      config.use_ssl = false
+    end
+    WebMock.allow_net_connect!
+
+    Bugsnag::Deploy.notify :app_version => '1.1.1'
+
+    expect(request['appVersion']).to eq('1.1.1')
+  end
+
+  describe 'with a proxy' do
+    proxy = nil
+    pqueue = Queue.new
+
+    before do
+      proxy = WEBrick::HTTPServer.new :Port => 0, :Logger => WEBrick::Log.new("/dev/null"), :AccessLog => []
+      proxy.mount_proc '/' do |req, res|
+        pqueue.push req
+        res.status = 200
+        res.body = "OK\n"
+      end
+      Thread.new{ proxy.start }
+    end
+    after do
+      proxy.stop
+    end
+
+    let(:proxied_request) { pqueue.pop }
+
+    it 'should use a proxy when configured' do
+      Bugsnag.configure do |config|
+
+        config.endpoint = "localhost:#{server.config[:Port]}"
+        config.use_ssl = false
+
+        config.proxy_host = 'localhost'
+        config.proxy_port = proxy.config[:Port]
+        config.proxy_user = 'conrad'
+        config.proxy_password = '$ecret'
+      end
+
+      Bugsnag.notify 'oy'
+
+      r = proxied_request
+
+      expect(r.header['proxy-authorization'].first).to eq("Basic Y29ucmFkOiRlY3JldA==")
+      expect(r.request_line).to eq("POST http://localhost:#{server.config[:Port]}/ HTTP/1.1\r\n")
+    end
+  end
 end
