@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.7.0
+-----
+-   Fix configuration of http timeouts
+-   Fix configuration of http proxies
+-   Remove dependency on httparty
+-   Allow for symbols in rack env
+
 2.6.1
 -----
 -   Fix Ruby 1.8 payload delivery bug (thanks @colin!)
