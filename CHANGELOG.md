@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.7.1
+-----
+-   Add rake task to create a Heroku deploy hook
+
 2.7.0
 -----
 -   Fix configuration of http timeouts
