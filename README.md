@@ -639,10 +639,10 @@ introduced in.
 ### Using Heroku
 
 You can easily add Bugsnag deploy tracking to your Heroku application by
-running the following command:
+running the following command from your application's directory:
 
 ```shell
-$ rake bugsnag:heroku:add_deploy_hook
+$ bundle exec rake bugsnag:heroku:add_deploy_hook
 ```
 
 ### Using Capistrano
