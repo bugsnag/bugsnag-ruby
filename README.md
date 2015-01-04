@@ -627,6 +627,7 @@ end
 
 All errors with the same groupingHash will be grouped together within the bugsnag dashboard.
 
+
 Deploy Tracking
 ---------------
 
@@ -634,6 +635,15 @@ Bugsnag allows you to track deploys of your apps. By sending the
 source revision or application version to bugsnag.com when you deploy a new
 version of your app, you'll be able to see which deploy each error was
 introduced in.
+
+### Using Heroku
+
+You can easily add Bugsnag deploy tracking to your Heroku application by
+running the following command:
+
+```shell
+$ rake bugsnag:heroku:add_deploy_hook
+```
 
 ### Using Capistrano
 
@@ -692,7 +702,9 @@ additional deploy information:
 For more information, check out the [deploy tracking api](https://bugsnag.com/docs/deploy-tracking-api)
 documentation.
 
-### EventMachine Apps
+
+EventMachine Apps
+-----------------
 
 If your app uses [EventMachine](http://rubyeventmachine.com/) you'll need to
 manually notify Bugsnag of errors. There are two ways to do this in your
@@ -722,17 +734,20 @@ end
 For this to work, include [Deferrable](http://eventmachine.rubyforge.org/EventMachine/Deferrable.html)
 in your `MyServer`, then whenever you want to raise an error, call `fail`.
 
-### Integrations
+Integrations
+------------
 
 Bugsnag ruby works out of the box with Rails, Sidekiq, Resque, DelayedJob (3+), Mailman, Rake and Rack. It
 should be easy to add support for other frameworks, either by sending a pull request here or adding a hook
 to those projects.
+
 
 Demo Applications
 -----------------
 
 [There are demo applications that use the Bugsnag Ruby gem](https://github.com/bugsnag/bugsnag-example-apps/tree/master/apps/ruby):
 examples include Rails, Sinatra, Rack, Padrino integrations, etc.
+
 
 Reporting Bugs or Feature Requests
 ----------------------------------
