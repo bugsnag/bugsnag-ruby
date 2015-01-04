@@ -39,6 +39,16 @@ namespace :bugsnag do
   namespace :heroku do
     desc "Add a heroku deploy hook to notify Bugsnag of deploys"
     task :add_deploy_hook => :load do
+      unless system("which heroku > /dev/null 2>&1")
+        puts "Error: 'heroku' command not found"
+        next
+      end
+
+      unless system("heroku config > /dev/null 2>&1")
+        puts "Error: Current directory does not look like a Heroku app"
+        next
+      end
+
       # Wrapper to run command safely even in bundler
       run_command = lambda { |command|
         defined?(Bundler.with_clean_env) ? Bundler.with_clean_env { `#{command}` } : `#{command}`
@@ -47,6 +57,7 @@ namespace :bugsnag do
       # Fetch heroku config settings
       heroku_env = run_command.call("heroku config --shell").split.each_with_object({}) do |c, obj|
         k,v = c.split("=")
+        next if v.nil?
         obj[k] = v.strip.empty? ? nil : v
       end
 
