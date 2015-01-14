@@ -45,7 +45,9 @@ namespace :bugsnag do
       }
 
       # Fetch heroku config settings
-      heroku_env = run_command.call("heroku config --shell").split.each_with_object({}) do |c, obj|
+      config_command = "heroku config --shell"
+      config_command += " --app #{ENV["HEROKU_APP"]}" if ENV["HEROKU_APP"]
+      heroku_env = run_command.call(config_command).split.each_with_object({}) do |c, obj|
         k,v = c.split("=")
         obj[k] = v.strip.empty? ? nil : v
       end
@@ -71,6 +73,7 @@ namespace :bugsnag do
       # Add the hook
       url = "https://notify.bugsnag.com/deploy?" + params.map {|k,v| "#{k}=#{v}"}.join("&")
       command = "heroku addons:add deployhooks:http --url=\"#{url}\""
+      command += " --app #{ENV["HEROKU_APP"]}" if ENV["HEROKU_APP"]
 
       puts "$ #{command}"
       run_command.call(command)
