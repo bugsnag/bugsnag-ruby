@@ -645,6 +645,13 @@ running the following command from your application's directory:
 $ bundle exec rake bugsnag:heroku:add_deploy_hook
 ```
 
+If you have multiple Heroku apps, you can specify which app to add the hook
+for as with the `HEROKU_APP` environment variable:
+
+```shell
+$ bundle exec rake bugsnag:heroku:add_deploy_hook HEROKU_APP=my-app
+```
+
 ### Using Capistrano
 
 If you use [capistrano](https://github.com/capistrano/capistrano) to deploy
