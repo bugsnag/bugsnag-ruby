@@ -47,7 +47,9 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, overrides=nil, request_data=nil)
-      Notification.new(exception, configuration, overrides, request_data).deliver
+      notification = Notification.new(exception, configuration, overrides, request_data)
+      notification.deliver
+      notification
     end
 
     # Notify of an exception unless it should be ignored

@@ -183,7 +183,7 @@ module Bugsnag
       # Warn if no release_stage is set
       Bugsnag.warn "You should set your app's release_stage (see https://bugsnag.com/docs/notifiers/ruby#release_stage)." unless @configuration.release_stage
 
-      @meta_data = {}
+      @meta_data = Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
 
       # Run the middleware here, at the end of the middleware stack, execute the actual delivery
       @configuration.middleware.run(self) do
@@ -227,7 +227,7 @@ module Bugsnag
           :exceptions => exception_list,
           :severity => self.severity,
           :groupingHash => self.grouping_hash,
-          :metaData => Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
+          :metaData => @meta_data,
         }.reject {|k,v| v.nil? }
 
         payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname

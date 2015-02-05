@@ -143,6 +143,31 @@ describe Bugsnag::MiddlewareStack do
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     expect(Bugsnag::Notification).not_to have_sent_notification
+  end
 
+  it "allows meta_data to be modified in a middleware" do
+    MetaDataMunger = Class.new do
+      def initialize(bugsnag)
+        @bugsnag = bugsnag
+      end
+
+      def call(notification)
+        token = notification.meta_data[:sidekiq][:args].first
+        notification.meta_data[:sidekiq][:args] = ["#{token[0...6]}*****#{token[-4..-1]}"]
+        @bugsnag.call(notification)
+      end
+    end
+
+    Bugsnag.configure do |c|
+      c.middleware.use MetaDataMunger
+    end
+
+    notification = Bugsnag.notify(BugsnagTestException.new("It crashed"), {
+      :sidekiq => {
+        :args => ["abcdef123456abcdef123456abcdef123456"]
+      }
+    })
+
+    expect(notification.meta_data[:sidekiq][:args]).to eq(["abcdef*****3456"])
   end
 end
