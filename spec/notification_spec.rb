@@ -684,7 +684,7 @@ describe Bugsnag::Notification do
     begin
       raise
     rescue
-      Bugsnag.notify($!, {context: invalid_data })
+      Bugsnag.notify($!, {:context => invalid_data })
     end
 
     expect(Bugsnag).to have_sent_notification do |payload|
@@ -746,8 +746,8 @@ describe Bugsnag::Notification do
 
     Bugsnag.before_notify_callbacks << lambda do |notif|
       notif.user = {
-        email: "#{invalid_data}@foo.com",
-        name: invalid_data
+        :email => "#{invalid_data}@foo.com",
+        :name => invalid_data
       }
     end
 
