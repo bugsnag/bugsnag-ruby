@@ -1,4 +1,9 @@
 require "multi_json"
+
+if RUBY_VERSION =~ /^1\.8/
+  require "iconv"
+end
+
 require "pathname"
 
 module Bugsnag
