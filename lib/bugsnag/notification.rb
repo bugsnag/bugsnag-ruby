@@ -1,7 +1,10 @@
 require "multi_json"
 
 if RUBY_VERSION =~ /^1\.8/
-  require "iconv"
+  begin
+    require "iconv"
+  rescue LoadError
+  end
 end
 
 require "pathname"
