@@ -661,7 +661,8 @@ describe Bugsnag::Notification do
   end
 
   it "should handle utf8 encoding errors in exceptions_list" do
-    invalid_data = "\"foo\xEBbar\"".force_encoding("utf-8")
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
 
     begin
       JSON.parse(invalid_data)
@@ -679,12 +680,13 @@ describe Bugsnag::Notification do
   end
 
   it "should handle utf8 encoding errors in notification context" do
-    invalid_data = "\"foo\xEBbar\"".force_encoding("utf-8")
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
 
     begin
       raise
     rescue
-      Bugsnag.notify($!, {:context => invalid_data })
+      Bugsnag.notify($!, { :context => invalid_data })
     end
 
     expect(Bugsnag).to have_sent_notification do |payload|
@@ -697,7 +699,8 @@ describe Bugsnag::Notification do
   end
 
   it "should handle utf8 encoding errors in notification app fields" do
-    invalid_data = "\"foo\xEBbar\"".force_encoding("utf-8")
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
 
     Bugsnag.configuration.app_version = invalid_data
     Bugsnag.configuration.release_stage = invalid_data
@@ -718,9 +721,9 @@ describe Bugsnag::Notification do
     end
   end
 
-
   it "should handle utf8 encoding errors in grouping_hash" do
-    invalid_data = "\"foo\xEBbar\"".force_encoding("utf-8")
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
 
     Bugsnag.before_notify_callbacks << lambda do |notif|
       notif.grouping_hash = invalid_data
@@ -742,7 +745,8 @@ describe Bugsnag::Notification do
   end
 
   it "should handle utf8 encoding errors in notification user fields" do
-    invalid_data = "\"foo\xEBbar\"".force_encoding("utf-8")
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
 
     Bugsnag.before_notify_callbacks << lambda do |notif|
       notif.user = {
