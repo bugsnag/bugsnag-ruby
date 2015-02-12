@@ -47,7 +47,7 @@ namespace :bugsnag do
       # Fetch heroku config settings
       config_command = "heroku config --shell"
       config_command += " --app #{ENV["HEROKU_APP"]}" if ENV["HEROKU_APP"]
-      heroku_env = run_command.call(config_command).split.each_with_object({}) do |c, obj|
+      heroku_env = run_command.call(config_command).split(/[\n\r]/).each_with_object({}) do |c, obj|
         k,v = c.split("=")
         obj[k] = v.strip.empty? ? nil : v
       end
