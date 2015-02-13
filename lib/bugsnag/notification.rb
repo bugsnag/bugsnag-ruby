@@ -1,4 +1,12 @@
 require "multi_json"
+
+if RUBY_VERSION =~ /^1\.8/
+  begin
+    require "iconv"
+  rescue LoadError
+  end
+end
+
 require "pathname"
 
 module Bugsnag
@@ -227,10 +235,16 @@ module Bugsnag
           :exceptions => exception_list,
           :severity => self.severity,
           :groupingHash => self.grouping_hash,
-          :metaData => Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
-        }.reject {|k,v| v.nil? }
+        }
 
         payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
+
+        payload_event = Bugsnag::Helpers.cleanup_obj_encoding(payload_event)
+
+        # filter metaData
+        payload_event[:metaData] = Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
+
+        payload_event.reject! { |k, v| v.nil? }
 
         # Build the payload hash
         payload = {

@@ -660,6 +660,116 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "should handle utf8 encoding errors in exceptions_list" do
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
+
+    begin
+      JSON.parse(invalid_data)
+    rescue
+      Bugsnag.notify $!
+    end
+
+    expect(Bugsnag).to have_sent_notification do |payload|
+      if defined?(Encoding::UTF_8)
+        expect(payload.to_json).to match(/foo�bar/)
+      else
+        expect(payload.to_json).to match(/foobar/)
+      end
+    end
+  end
+
+  it "should handle utf8 encoding errors in notification context" do
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
+
+    begin
+      raise
+    rescue
+      Bugsnag.notify($!, { :context => invalid_data })
+    end
+
+    expect(Bugsnag).to have_sent_notification do |payload|
+      if defined?(Encoding::UTF_8)
+        expect(payload.to_json).to match(/foo�bar/)
+      else
+        expect(payload.to_json).to match(/foobar/)
+      end
+    end
+  end
+
+  it "should handle utf8 encoding errors in notification app fields" do
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
+
+    Bugsnag.configuration.app_version = invalid_data
+    Bugsnag.configuration.release_stage = invalid_data
+    Bugsnag.configuration.app_type = invalid_data
+
+    begin
+      raise
+    rescue
+      Bugsnag.notify $!
+    end
+
+    expect(Bugsnag).to have_sent_notification do |payload|
+      if defined?(Encoding::UTF_8)
+        expect(payload.to_json).to match(/foo�bar/)
+      else
+        expect(payload.to_json).to match(/foobar/)
+      end
+    end
+  end
+
+  it "should handle utf8 encoding errors in grouping_hash" do
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
+
+    Bugsnag.before_notify_callbacks << lambda do |notif|
+      notif.grouping_hash = invalid_data
+    end
+
+    begin
+      raise
+    rescue
+      Bugsnag.notify $!
+    end
+
+    expect(Bugsnag).to have_sent_notification do |payload|
+      if defined?(Encoding::UTF_8)
+        expect(payload.to_json).to match(/foo�bar/)
+      else
+        expect(payload.to_json).to match(/foobar/)
+      end
+    end
+  end
+
+  it "should handle utf8 encoding errors in notification user fields" do
+    invalid_data = "\"foo\xEBbar\""
+    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
+
+    Bugsnag.before_notify_callbacks << lambda do |notif|
+      notif.user = {
+        :email => "#{invalid_data}@foo.com",
+        :name => invalid_data
+      }
+    end
+
+    begin
+      raise
+    rescue
+      Bugsnag.notify $!
+    end
+
+    expect(Bugsnag).to have_sent_notification do |payload|
+      if defined?(Encoding::UTF_8)
+        expect(payload.to_json).to match(/foo�bar/)
+      else
+        expect(payload.to_json).to match(/foobar/)
+      end
+    end
+  end
+
   if defined?(JRUBY_VERSION)
 
     it "should work with java.lang.Throwables" do

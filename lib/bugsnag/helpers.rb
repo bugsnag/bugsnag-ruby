@@ -29,20 +29,10 @@ module Bugsnag
         clean_hash
       when Array, Set
         obj.map { |el| cleanup_obj(el, filters, seen) }.compact
-      when Numeric
+      when Numeric, TrueClass, FalseClass
         obj
       when String
-        if defined?(obj.encoding) && defined?(Encoding::UTF_8)
-          if obj.encoding == Encoding::UTF_8
-            obj.valid_encoding? ? obj : obj.encode('utf-16', {:invalid => :replace, :undef => :replace}).encode('utf-8')
-          else
-            obj.encode('utf-8', {:invalid => :replace, :undef => :replace})
-          end
-        elsif defined?(Iconv)
-          Iconv.conv('UTF-8//IGNORE', 'UTF-8', obj) || obj
-        else
-          obj
-        end
+        cleanup_string(obj)
       else
         str = obj.to_s
         # avoid leaking potentially sensitive data from objects' #inspect output
@@ -52,6 +42,24 @@ module Bugsnag
           str
         end
       end
+    end
+
+    def self.cleanup_string(str)
+      if defined?(str.encoding) && defined?(Encoding::UTF_8)
+        if str.encoding == Encoding::UTF_8
+          str.valid_encoding? ? str : str.encode('utf-16', {:invalid => :replace, :undef => :replace}).encode('utf-8')
+        else
+          str.encode('utf-8', {:invalid => :replace, :undef => :replace})
+        end
+      elsif defined?(Iconv)
+        Iconv.conv('UTF-8//IGNORE', 'UTF-8', str) || str
+      else
+        str
+      end
+    end
+
+    def self.cleanup_obj_encoding(obj)
+      cleanup_obj(obj, nil)
     end
 
     def self.filters_match?(object, filters)
