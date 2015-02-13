@@ -4,9 +4,8 @@ module Bugsnag
   class Mailman
     def call(mail)
       begin
-        Bugsnag.before_notify_callbacks << lambda {|notif|
-          notif.add_tab(:mailman, {"message" => mail.to_s})
-        }
+
+        Bugsnag.set_request_data :mailman_msg, mail.to_s
 
         yield
       rescue Exception => ex
@@ -20,6 +19,9 @@ module Bugsnag
   end
 end
 
+
 if Mailman.config.respond_to?(:middleware)
   Mailman.config.middleware.add ::Bugsnag::Mailman
 end
+
+Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Mailman)

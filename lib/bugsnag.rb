@@ -14,12 +14,14 @@ require "bugsnag/delivery/thread_queue"
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
 
-[:resque, :sidekiq, :mailman, :delayed_job].each do |integration|
-  begin
-    require "bugsnag/#{integration}"
-  rescue LoadError
-  end
-end
+require "bugsnag/middleware/rack_request"
+require "bugsnag/middleware/warden_user"
+require "bugsnag/middleware/callbacks"
+require "bugsnag/middleware/rails3_request"
+require "bugsnag/middleware/sidekiq"
+require "bugsnag/middleware/mailman"
+require "bugsnag/middleware/rake"
+require "bugsnag/middleware/callbacks"
 
 module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
@@ -47,7 +49,9 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, overrides=nil, request_data=nil)
-      Notification.new(exception, configuration, overrides, request_data).deliver
+      notification = Notification.new(exception, configuration, overrides, request_data)
+      notification.deliver
+      notification
     end
 
     # Notify of an exception unless it should be ignored
@@ -112,5 +116,12 @@ module Bugsnag
     def after_notify_callbacks
       Bugsnag.configuration.request_data[:after_callbacks] ||= []
     end
+  end
+end
+
+[:resque, :sidekiq, :mailman, :delayed_job].each do |integration|
+  begin
+    require "bugsnag/#{integration}"
+  rescue LoadError
   end
 end

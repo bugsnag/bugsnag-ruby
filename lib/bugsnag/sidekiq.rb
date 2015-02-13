@@ -4,10 +4,10 @@ module Bugsnag
   class Sidekiq
     def call(worker, msg, queue)
       begin
-        Bugsnag.before_notify_callbacks << lambda {|notif|
-          notif.add_tab(:sidekiq, msg)
-          notif.context ||= "sidekiq##{queue}"
-        }
+
+        # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq
+        Bugsnag.set_request_data :sidekiq_msg, msg
+        Bugsnag.set_request_data :sidekiq_queue, queue
 
         yield
       rescue Exception => ex
@@ -34,3 +34,5 @@ else
     end
   end
 end
+
+Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)

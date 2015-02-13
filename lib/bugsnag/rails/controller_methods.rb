@@ -3,9 +3,9 @@ module Bugsnag::Rails
     def self.included(base)
       base.extend ClassMethods
     end
-    
+
     module ClassMethods
-      private      
+      private
       def before_bugsnag_notify(*methods, &block)
         _add_bugsnag_notify_callback(:before_callbacks, *methods, &block)
       end
