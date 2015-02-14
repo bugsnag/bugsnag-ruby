@@ -5,7 +5,7 @@ class InternalInfoSetter
   end
 
   def call(notification)
-    notification.info = MESSAGE
+    notification.meta_data[:custom][:info] = MESSAGE
     @bugsnag.call(notification)
   end
 end

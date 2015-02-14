@@ -67,17 +67,6 @@ describe Bugsnag::MiddlewareStack do
 
   end
 
-  it "allows internal middleware to add metadata to the notification" do
-    Bugsnag.configuration.internal_middleware.use(InternalInfoSetter)
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
-
-    expect(Bugsnag).to have_sent_notification do |payload|
-      event = get_event_from_payload(payload)
-      expect(event["metaData"]["custom"]).not_to be_nil
-      expect(event["metaData"]["custom"]["info"]).to eq(InternalInfoSetter::MESSAGE)
-    end
-  end
-
   it "allows overrides to override values set by internal middleware" do
     Bugsnag.configuration.internal_middleware.use(InternalInfoSetter)
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:info => "overridden"})
@@ -92,14 +81,15 @@ describe Bugsnag::MiddlewareStack do
 
   it "doesn't allow overrides to override public middleware" do
     Bugsnag.configuration.middleware.use(PublicInfoSetter)
+
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:info => "overridden"})
 
-    expect(Bugsnag).to have_sent_notification do |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["custom"]).not_to be_nil
-      expect(event["metaData"]["custom"]["info"]).not_to eq(PublicInfoSetter::MESSAGE)
-      expect(event["metaData"]["custom"]["info"]).to eq("overridden")
-    end
+      expect(event["metaData"]["custom"]["info"]).not_to eq("overridden")
+      expect(event["metaData"]["custom"]["info"]).to eq(PublicInfoSetter::MESSAGE)
+    }
   end
 
   it "does not have have before or after callbacks by default" do
@@ -121,7 +111,7 @@ describe Bugsnag::MiddlewareStack do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
     expect(callback_run_count).to eq(1)
-    expect(Bugsnag::Notification).to have_sent_notification
+    expect(Bugsnag::Notification).to have_sent_notification { }
   end
 
   it "does not execute disabled bugsnag middleware" do
@@ -143,7 +133,7 @@ describe Bugsnag::MiddlewareStack do
       notif.ignore!
     end
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    expect(Bugsnag::Notification).not_to have_sent_notification
+    expect(Bugsnag::Notification).not_to have_sent_notification { }
   end
 
   it "allows inspection of meta_data before ignoring exception" do

@@ -17,7 +17,7 @@ module Bugsnag::Rake
     def bugsnag_define_task(*args, &block)
       task = self.original_define_task(*args) do |*block_args|
         begin
-          old_task = Thread.current[:bugsnag_running_task]
+          old_task = Bugsnag.configuration.request_data[:bugsnag_running_task]
           Bugsnag.set_request_data :bugsnag_running_task, task
 
           yield(*block_args) if block_given?
@@ -25,7 +25,7 @@ module Bugsnag::Rake
           Bugsnag.auto_notify(e)
           raise
         ensure
-          Thread.current[:bugsnag_running_task] = old_task
+          Bugsnag.set_request_data :bugsnag_running_task, old_task
         end
       end
     end
