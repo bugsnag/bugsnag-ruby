@@ -237,12 +237,16 @@ module Bugsnag
           :exceptions => exception_list,
           :severity => self.severity,
           :groupingHash => self.grouping_hash,
-          :metaData => @meta_data
-        }.reject {|k,v| v.nil? }
+        }
 
         payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
 
+        # cleanup character encodings
         payload_event = Bugsnag::Helpers.cleanup_obj_encoding(payload_event)
+
+        # filter out sensitive values in (and cleanup encodings) metaData
+        payload_event[:metaData] = Bugsnag::Helpers.cleanup_obj(@meta_data, @configuration.params_filters)
+        payload_event.reject! {|k,v| v.nil? }
 
         # Build the payload hash
         payload = {
