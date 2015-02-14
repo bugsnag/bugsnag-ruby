@@ -6,8 +6,7 @@ module Bugsnag
       begin
 
         # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq
-        Bugsnag.set_request_data :sidekiq_msg, msg
-        Bugsnag.set_request_data :sidekiq_queue, queue
+        Bugsnag.set_request_data :sidekiq, { :msg => msg, :queue => queue }
 
         yield
       rescue Exception => ex

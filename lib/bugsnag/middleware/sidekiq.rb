@@ -5,8 +5,8 @@ module Bugsnag::Middleware
     end
 
     def call(notification)
-      notification.add_tab(:sidekiq, notification.request_data[:sidekiq_msg])
-      notification.context ||= "sidekiq##{notification.request_data[:sidekiq_queue]}"
+      sidekiq = notification.request_data[:sidekiq]
+      notification.add_tab(:sidekiq, sidekiq) if sidekiq
       @bugsnag.call(notification)
     end
   end

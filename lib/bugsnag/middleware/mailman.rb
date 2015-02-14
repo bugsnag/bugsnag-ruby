@@ -5,7 +5,8 @@ module Bugsnag::Middleware
     end
 
     def call(notification)
-      notification.add_tab(:mailman, {"message" => notification.request_data[:mailman_msg]})
+      mailman_msg = notification.request_data[:mailman_msg]
+      notification.add_tab(:mailman, {"message" => mailman_msg}) if mailman_msg
       @bugsnag.call(notification)
     end
   end
