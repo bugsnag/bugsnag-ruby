@@ -83,7 +83,11 @@ exceptions, to help debug problems.
 
 ### Rails Apps
 
-In any rails controller you can define a `before_bugsnag_notify` callback, which allows you to add this additional data by calling `add_tab` on the exception notification object. Please see the [Notification Object](#notification-object) for details on the notification parameter.
+By default Bugsnag includes some information automatically. For example, we
+send all the HTTP headers for requests. Additionally if you're using Warden or
+Devise, the id, name and email of the current user are sent.
+
+To send additional information, in any rails controller you can define a `before_bugsnag_notify` callback, which allows you to add this additional data by calling `add_tab` on the exception notification object. Please see the [Notification Object](#notification-object) for details on the notification parameter.
 
 ```ruby
 class MyController < ApplicationController
