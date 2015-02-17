@@ -15,6 +15,7 @@ module Bugsnag::Middleware
 
           # Augment the request tab
           notification.add_tab(:request, {
+            :requestId => env["action_dispatch.request_id"],
             :railsAction => "#{params[:controller]}##{params[:action]}",
             :params => params
           })
