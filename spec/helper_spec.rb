@@ -114,4 +114,20 @@ describe Bugsnag::Helpers do
 
     expect(url).to eq("/dir/page?param1=[FILTERED]&param2=[FILTERED]&param3=value3")
   end
+
+  it "filters using a combination of string and regex filters" do
+    url = Bugsnag::Helpers.cleanup_url "/dir/page?param1=value1&param2=value2&param3=value3", ["param1", /param2/]
+
+    expect(url).to eq("/dir/page?param1=[FILTERED]&param2=[FILTERED]&param3=value3")
+  end
+
+  it "filters regex matches" do
+    url = Bugsnag::Helpers.cleanup_url "https://host.example/sessions?access_token=abc123", [/\Aaccess_token\z/]
+    expect(url).to eq("https://host.example/sessions?access_token=[FILTERED]")
+  end
+
+  it "filters partial regex matches" do
+    url = Bugsnag::Helpers.cleanup_url "https://host.example/sessions?access_token=abc123", [/token/]
+    expect(url).to eq("https://host.example/sessions?access_token=[FILTERED]")
+  end
 end
