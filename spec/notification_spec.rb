@@ -113,6 +113,21 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "triggers failure delivery proc if delivery errors out" do
+    error = StandardError.new
+    allow(Bugsnag).to receive(:debug).and_raise(error)
+
+    calls = []
+    Bugsnag.configure do |config|
+      config.delivery_method = :synchronous
+      config.delivery_failure_proc = ->(e) { calls << e }
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(calls).to eq([error])
+  end
+
   # TODO: nested context
 
   it "accepts tabs in overrides and adds them to metaData" do

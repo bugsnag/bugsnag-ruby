@@ -12,6 +12,8 @@ module Bugsnag
             response = request(url, body, configuration)
             Bugsnag.debug("Notification to #{url} finished, response was #{response.code}, payload was #{body}")
           rescue StandardError => e
+            configuration.delivery_failure_proc.call(e) if configuration.delivery_failure_proc
+
             # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
             raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
 

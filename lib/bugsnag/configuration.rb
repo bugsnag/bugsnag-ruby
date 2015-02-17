@@ -30,6 +30,7 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :delivery_method
+    attr_accessor :delivery_failure_proc
 
     attr_writer :ignore_classes
 
