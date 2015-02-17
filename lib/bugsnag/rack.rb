@@ -1,8 +1,3 @@
-require "bugsnag/middleware/rack_request"
-require "bugsnag/middleware/warden_user"
-require "bugsnag/middleware/callbacks"
-require "bugsnag/middleware/rails3_request"
-
 module Bugsnag
   class Rack
     def initialize(app)
@@ -46,7 +41,7 @@ module Bugsnag
       if env["rack.exception"]
         Bugsnag.auto_notify(env["rack.exception"])
       end
-        
+
       response
     ensure
       # Clear per-request data after processing the each request

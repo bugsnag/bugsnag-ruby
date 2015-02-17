@@ -1,0 +1,15 @@
+require "bugsnag/rake"
+
+namespace :test do
+  desc "used by integration_spec to test that Bugsnag::Middleware::Rake runs properly"
+  task :crash do
+    port = ENV['BUGSNAG_TEST_SERVER_PORT']
+    Bugsnag.configure do |config|
+      config.endpoint = "localhost:#{port}"
+      config.api_key = "0" * 32
+      config.use_ssl = false
+    end
+
+    raise
+  end
+end

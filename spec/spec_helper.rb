@@ -45,8 +45,9 @@ def have_sent_notification(&matcher)
   have_requested(:post, "https://notify.bugsnag.com/").with do |request|
     if matcher
       matcher.call JSON.parse(request.body)
-    else
       true
+    else
+      raise "no matcher provided to have_sent_notification (did you use { })"
     end
   end
 end

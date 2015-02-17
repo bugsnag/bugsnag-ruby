@@ -191,32 +191,34 @@ module Bugsnag
       # Warn if no release_stage is set
       Bugsnag.warn "You should set your app's release_stage (see https://bugsnag.com/docs/notifiers/ruby#release_stage)." unless @configuration.release_stage
 
-      @meta_data = {}
+      @configuration.internal_middleware.run(self) { }
 
-      # Run the middleware here, at the end of the middleware stack, execute the actual delivery
+      exceptions.each do |exception|
+        if exception.class.include?(Bugsnag::MetaData)
+          if exception.bugsnag_user_id.is_a?(String)
+            self.user_id = exception.bugsnag_user_id
+          end
+          if exception.bugsnag_context.is_a?(String)
+            self.context = exception.bugsnag_context
+          end
+        end
+      end
+
+      [:user_id, :context, :user, :grouping_hash].each do |symbol|
+        if @overrides[symbol]
+          self.send("#{symbol}=", @overrides[symbol])
+          @overrides.delete symbol
+        end
+      end
+
+      # make meta_data available to public middleware
+      @meta_data = Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
+
+      # Run the middleware here (including Bugsnag::Middleware::Callbacks)
+      # at the end of the middleware stack, execute the actual notification delivery
       @configuration.middleware.run(self) do
-        # At this point the callbacks have already been run.
         # This supports self.ignore! for before_notify_callbacks.
         return if @should_ignore
-
-        # Now override the required fields
-        exceptions.each do |exception|
-          if exception.class.include?(Bugsnag::MetaData)
-            if exception.bugsnag_user_id.is_a?(String)
-              self.user_id = exception.bugsnag_user_id
-            end
-            if exception.bugsnag_context.is_a?(String)
-              self.context = exception.bugsnag_context
-            end
-          end
-        end
-
-        [:user_id, :context, :user, :grouping_hash].each do |symbol|
-          if @overrides[symbol]
-            self.send("#{symbol}=", @overrides[symbol])
-            @overrides.delete symbol
-          end
-        end
 
         # Build the endpoint url
         endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
@@ -239,12 +241,12 @@ module Bugsnag
 
         payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
 
+        # cleanup character encodings
         payload_event = Bugsnag::Helpers.cleanup_obj_encoding(payload_event)
 
-        # filter metaData
-        payload_event[:metaData] = Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
-
-        payload_event.reject! { |k, v| v.nil? }
+        # filter out sensitive values in (and cleanup encodings) metaData
+        payload_event[:metaData] = Bugsnag::Helpers.cleanup_obj(@meta_data, @configuration.params_filters)
+        payload_event.reject! {|k,v| v.nil? }
 
         # Build the payload hash
         payload = {

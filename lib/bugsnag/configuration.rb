@@ -20,6 +20,7 @@ module Bugsnag
     attr_accessor :endpoint
     attr_accessor :logger
     attr_accessor :middleware
+    attr_accessor :internal_middleware
     attr_accessor :delay_with_resque
     attr_accessor :debug
     attr_accessor :proxy_host
@@ -75,6 +76,8 @@ module Bugsnag
       self.logger.level = Logger::WARN
 
       # Configure the bugsnag middleware stack
+      self.internal_middleware = Bugsnag::MiddlewareStack.new
+
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
     end

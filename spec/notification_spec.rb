@@ -670,13 +670,13 @@ describe Bugsnag::Notification do
       Bugsnag.notify $!
     end
 
-    expect(Bugsnag).to have_sent_notification do |payload|
+    expect(Bugsnag).to have_sent_notification { |payload|
       if defined?(Encoding::UTF_8)
         expect(payload.to_json).to match(/foo�bar/)
       else
         expect(payload.to_json).to match(/foobar/)
       end
-    end
+    }
   end
 
   it "should handle utf8 encoding errors in notification context" do
@@ -689,13 +689,13 @@ describe Bugsnag::Notification do
       Bugsnag.notify($!, { :context => invalid_data })
     end
 
-    expect(Bugsnag).to have_sent_notification do |payload|
+    expect(Bugsnag).to have_sent_notification { |payload|
       if defined?(Encoding::UTF_8)
         expect(payload.to_json).to match(/foo�bar/)
       else
         expect(payload.to_json).to match(/foobar/)
       end
-    end
+    }
   end
 
   it "should handle utf8 encoding errors in notification app fields" do
@@ -712,13 +712,13 @@ describe Bugsnag::Notification do
       Bugsnag.notify $!
     end
 
-    expect(Bugsnag).to have_sent_notification do |payload|
+    expect(Bugsnag).to have_sent_notification { |payload|
       if defined?(Encoding::UTF_8)
         expect(payload.to_json).to match(/foo�bar/)
       else
         expect(payload.to_json).to match(/foobar/)
       end
-    end
+    }
   end
 
   it "should handle utf8 encoding errors in grouping_hash" do
@@ -735,13 +735,13 @@ describe Bugsnag::Notification do
       Bugsnag.notify $!
     end
 
-    expect(Bugsnag).to have_sent_notification do |payload|
+    expect(Bugsnag).to have_sent_notification { |payload|
       if defined?(Encoding::UTF_8)
         expect(payload.to_json).to match(/foo�bar/)
       else
         expect(payload.to_json).to match(/foobar/)
       end
-    end
+    }
   end
 
   it "should handle utf8 encoding errors in notification user fields" do
@@ -761,13 +761,13 @@ describe Bugsnag::Notification do
       Bugsnag.notify $!
     end
 
-    expect(Bugsnag).to have_sent_notification do |payload|
+    expect(Bugsnag).to have_sent_notification { |payload|
       if defined?(Encoding::UTF_8)
         expect(payload.to_json).to match(/foo�bar/)
       else
         expect(payload.to_json).to match(/foobar/)
       end
-    end
+    }
   end
 
   if defined?(JRUBY_VERSION)
