@@ -81,6 +81,8 @@ module Bugsnag
       return url if filters.empty?
 
       uri = URI(url)
+      return url unless uri.query
+
       query_params = uri.query.split('&').map { |pair| pair.split('=') }
       query_params.map! do |key, val|
         if filters_match?(key, filters)
