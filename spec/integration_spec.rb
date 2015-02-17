@@ -1,5 +1,6 @@
 require 'webrick'
 require 'spec_helper'
+require 'json'
 
 describe 'Bugsnag' do
   server = nil
