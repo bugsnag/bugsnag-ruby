@@ -1,5 +1,10 @@
 Changelog
 =========
+2.8.0
+-----
+-   Make meta_data available to before_notify hooks
+-   Fix bug with rails param filters
+-   Fix encoding error in exception message
 
 2.7.1
 -----
