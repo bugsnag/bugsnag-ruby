@@ -38,6 +38,8 @@ module Bugsnag
     DEFAULT_ENDPOINT = "notify.bugsnag.com"
 
     DEFAULT_PARAMS_FILTERS = [
+      /authorization/i,
+      /cookie/i,
       "password",
       "secret",
       "rack.request.form_vars"
