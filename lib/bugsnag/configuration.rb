@@ -40,8 +40,8 @@ module Bugsnag
     DEFAULT_PARAMS_FILTERS = [
       /authorization/i,
       /cookie/i,
-      "password",
-      "secret",
+      /password/i,
+      /secret/i,
       "rack.request.form_vars"
     ].freeze
 

@@ -442,7 +442,7 @@ config.params_filters += ["credit_card_number", /^password$/]
 ```
 
 By default, `params_filters` is set to `[/authorization/i, /cookie/i,
-"password", "secret"]`, and for rails apps, imports all values from
+/password/i, /secret/i]`, and for rails apps, imports all values from
 `Rails.configuration.filter_parameters`.
 
 ###ignore_classes
