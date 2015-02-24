@@ -1,5 +1,11 @@
 Changelog
 =========
+
+2.8.1
+-----
+-   Exclude cookies and authorization headers by default
+-   Include rails exclusion list at the right time
+
 2.8.0
 -----
 -   Make meta_data available to before_notify hooks
