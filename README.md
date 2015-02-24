@@ -773,11 +773,7 @@ project here:
 Contributing
 ------------
 
--   [Fork](https://help.github.com/articles/fork-a-repo) the [notifier on github](https://github.com/bugsnag/bugsnag-ruby)
--   Commit and push until you are happy with your contribution
--   Run the tests with `rake spec` and make sure they all pass
--   [Make a pull request](https://help.github.com/articles/using-pull-requests)
--   Thanks!
+We'd love you to file issues and send pull requests. If you need help getting started, see [CONTRIBUTING.md](https://github.com/bugsnag/bugsnag-ruby/blob/master/CONTRIBUTING.md)
 
 
 Build Status
