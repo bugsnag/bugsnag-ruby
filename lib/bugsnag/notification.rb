@@ -191,7 +191,7 @@ module Bugsnag
       # Warn if no release_stage is set
       Bugsnag.warn "You should set your app's release_stage (see https://bugsnag.com/docs/notifiers/ruby#release_stage)." unless @configuration.release_stage
 
-      @configuration.internal_middleware.run(self) { }
+      @configuration.internal_middleware.run(self)
 
       exceptions.each do |exception|
         if exception.class.include?(Bugsnag::MetaData)
@@ -224,44 +224,47 @@ module Bugsnag
         endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
         Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class} from api_key #{api_key}")
 
-        # Build the payload's exception event
-        payload_event = {
-          :app => {
-            :version => @configuration.app_version,
-            :releaseStage => @configuration.release_stage,
-            :type => @configuration.app_type
-          },
-          :context => self.context,
-          :user => @user,
-          :payloadVersion => payload_version,
-          :exceptions => exception_list,
-          :severity => self.severity,
-          :groupingHash => self.grouping_hash,
-        }
-
-        payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
-
-        # cleanup character encodings
-        payload_event = Bugsnag::Helpers.cleanup_obj_encoding(payload_event)
-
-        # filter out sensitive values in (and cleanup encodings) metaData
-        payload_event[:metaData] = Bugsnag::Helpers.cleanup_obj(@meta_data, @configuration.params_filters)
-        payload_event.reject! {|k,v| v.nil? }
-
-        # Build the payload hash
-        payload = {
-          :apiKey => api_key,
-          :notifier => {
-            :name => NOTIFIER_NAME,
-            :version => NOTIFIER_VERSION,
-            :url => NOTIFIER_URL
-          },
-          :events => [payload_event]
-        }
-
         # Deliver the payload
-        self.class.deliver_exception_payload(endpoint, payload, @configuration, @delivery_method)
+        self.class.deliver_exception_payload(endpoint, build_exception_payload, @configuration, @delivery_method)
       end
+    end
+
+    # Build an exception payload
+    def build_exception_payload
+      # Build the payload's exception event
+      payload_event = {
+        :app => {
+          :version => @configuration.app_version,
+          :releaseStage => @configuration.release_stage,
+          :type => @configuration.app_type
+        },
+        :context => self.context,
+        :user => @user,
+        :payloadVersion => payload_version,
+        :exceptions => exception_list,
+        :severity => self.severity,
+        :groupingHash => self.grouping_hash,
+      }
+
+      payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
+
+      # cleanup character encodings
+      payload_event = Bugsnag::Helpers.cleanup_obj_encoding(payload_event)
+
+      # filter out sensitive values in (and cleanup encodings) metaData
+      payload_event[:metaData] = Bugsnag::Helpers.cleanup_obj(@meta_data, @configuration.params_filters)
+      payload_event.reject! {|k,v| v.nil? }
+
+      # return the payload hash
+      {
+        :apiKey => api_key,
+        :notifier => {
+          :name => NOTIFIER_NAME,
+          :version => NOTIFIER_VERSION,
+          :url => NOTIFIER_URL
+        },
+        :events => [payload_event]
+      }
     end
 
     def ignore?
