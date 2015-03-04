@@ -56,7 +56,7 @@ module Bugsnag
       lambda_has_run = false
       notify_lambda = lambda do |notif|
         lambda_has_run = true
-        yield
+        yield if block_given?
       end
 
       begin
