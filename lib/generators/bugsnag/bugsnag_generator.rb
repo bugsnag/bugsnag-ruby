@@ -20,5 +20,13 @@ Bugsnag.configure do |config|
 end
       EOF
     end
+
+    puts <<-EOM
+Bugsnag was installed successfully!
+
+We've created an initializer at config/initializers/bugsnag.rb which contains
+your Bugsnag API key. If you are using Rails 4.1+ you may wish to add this to
+your config/secrets.yml file.
+    EOM
   end
 end
