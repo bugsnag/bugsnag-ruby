@@ -44,6 +44,17 @@ describe Bugsnag::Helpers do
     end
   end
 
+  it "cleans up strings returned from #to_s properly" do
+    if RUBY_VERSION > "1.9"
+      str = "Andr\xc7\xff"
+      if str.respond_to? :force_encoding
+        str = str.force_encoding('BINARY')
+      end
+      obj = RuntimeError.new(str)
+      expect(Bugsnag::Helpers.cleanup_obj(obj)).to eq("Andr��")
+    end
+  end
+
   it "filters by string inclusion" do
     expect(Bugsnag::Helpers.cleanup_obj({ :foo => 'bar' }, ['f'])).to eq({ :foo => '[FILTERED]' })
     expect(Bugsnag::Helpers.cleanup_obj({ :foo => 'bar' }, ['b'])).to eq({ :foo => 'bar' })
