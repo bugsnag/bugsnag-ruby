@@ -41,7 +41,7 @@ module Bugsnag
         if str =~ /#<.*>/
           '[OBJECT]'
         else
-          str
+          cleanup_string(str)
         end
       end
     end
