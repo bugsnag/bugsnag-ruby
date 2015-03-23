@@ -1,4 +1,5 @@
 require "rubygems"
+require "thread"
 
 require "bugsnag/version"
 require "bugsnag/configuration"
@@ -25,6 +26,7 @@ require "bugsnag/middleware/callbacks"
 
 module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
+  LOCK = Mutex.new
 
   class << self
     # Configure the Bugsnag notifier application-wide settings.
@@ -92,7 +94,7 @@ module Bugsnag
 
     # Configuration getters
     def configuration
-      @configuration ||= Bugsnag::Configuration.new
+      @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
     end
 
     # Set "per-request" data, temporal data for use in bugsnag middleware
