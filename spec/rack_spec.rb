@@ -42,4 +42,13 @@ describe Bugsnag::Rack do
       expect(Bugsnag::Notification).not_to have_sent_notification
     end
   end
+
+  it "don't mess with middlewares list on each req" do
+    stub_const('Rack', nil)
+    app = lambda { |env| ['200', {}, ['']] }
+
+    expect { 2.times { Bugsnag::Rack.new(app) } }.not_to change {
+      Bugsnag.configuration.middleware.instance_variable_get(:@middlewares)
+    }
+  end
 end
