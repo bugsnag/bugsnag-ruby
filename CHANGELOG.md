@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.8.2
+-----
+-   Fix various threading issues during library initialization
+
 2.8.1
 -----
 -   Exclude cookies and authorization headers by default
