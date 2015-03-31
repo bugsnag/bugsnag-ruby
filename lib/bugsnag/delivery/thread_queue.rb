@@ -6,6 +6,7 @@ module Bugsnag
       MAX_OUTSTANDING_REQUESTS = 100
       STOP = Object.new
 
+
       class << self
         def deliver(url, body, configuration)
           if queue.length > MAX_OUTSTANDING_REQUESTS
@@ -15,35 +16,32 @@ module Bugsnag
 
           # Add delivery to the worker thread
           queue.push proc { super(url, body, configuration) }
-
-          # Make sure the worker thread is started
-          ensure_worker_thread_started
         end
 
         private
-        def queue
-          @queue ||= Queue.new
-        end
 
-        def ensure_worker_thread_started
-          unless @worker_thread
-            @worker_thread = Thread.new do
-              while x = queue.pop
-                break if x == STOP
-                x.call
-              end
-            end
+        attr_reader :queue
 
-            at_exit do
-              Bugsnag.warn("Waiting for #{queue.length} outstanding request(s)") unless queue.empty?
-              queue.push STOP
-              @worker_thread.join
+        def start!
+          @queue = Queue.new
+
+          worker_thread = Thread.new do
+            while x = queue.pop
+              break if x == STOP
+              x.call
             end
           end
 
-          @worker_thread
+          at_exit do
+            Bugsnag.warn("Waiting for #{queue.length} outstanding request(s)") unless queue.empty?
+            queue.push STOP
+            worker_thread.join
+          end
         end
       end
+
+      # do this once at require time to avoid race conditions
+      start!
     end
   end
 end

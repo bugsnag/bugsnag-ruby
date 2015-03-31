@@ -55,6 +55,19 @@ describe 'Bugsnag' do
     expect(request['appVersion']).to eq('1.1.1')
   end
 
+  it 'should work with threadpool delivery' do
+    Bugsnag.configure do |config|
+      config.endpoint = "localhost:#{server.config[:Port]}"
+      config.use_ssl = false
+      config.delivery_method = :thread_queue
+    end
+    WebMock.allow_net_connect!
+
+    Bugsnag.notify 'yo'
+
+    expect(request['events'][0]['exceptions'][0]['message']).to eq('yo')
+  end
+
   describe 'with a proxy' do
     proxy = nil
     pqueue = Queue.new
