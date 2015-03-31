@@ -3,46 +3,58 @@ module Bugsnag
     def initialize
       @middlewares = []
       @disabled_middleware = []
+      @mutex = Mutex.new
     end
 
     def use(new_middleware)
-      return if @disabled_middleware.include?(new_middleware)
+      @mutex.synchronize do
+        return if @disabled_middleware.include?(new_middleware)
+        return if @middlewares.include?(new_middleware)
 
-      @middlewares << new_middleware
+        @middlewares << new_middleware
+      end
     end
 
     def insert_after(after, new_middleware)
-      return if @disabled_middleware.include?(new_middleware)
+      @mutex.synchronize do
+        return if @disabled_middleware.include?(new_middleware)
+        return if @middlewares.include?(new_middleware)
 
-      if after.is_a? Array
-        index = @middlewares.rindex {|el| after.include?(el)}
-      else
-        index = @middlewares.rindex(after)
-      end
+        if after.is_a? Array
+          index = @middlewares.rindex {|el| after.include?(el)}
+        else
+          index = @middlewares.rindex(after)
+        end
 
-      if index.nil?
-        @middlewares << new_middleware
-      else
-        @middlewares.insert index + 1, new_middleware
+        if index.nil?
+          @middlewares << new_middleware
+        else
+          @middlewares.insert index + 1, new_middleware
+        end
       end
     end
 
     def insert_before(before, new_middleware)
-      return if @disabled_middleware.include?(new_middleware)
+      @mutex.synchronize do
+        return if @disabled_middleware.include?(new_middleware)
+        return if @middlewares.include?(new_middleware)
 
-      if before.is_a? Array
-        index = @middlewares.index {|el| before.include?(el)}
-      else
-        index = @middlewares.index(before)
+        if before.is_a? Array
+          index = @middlewares.index {|el| before.include?(el)}
+        else
+          index = @middlewares.index(before)
+        end
+
+        @middlewares.insert index || @middlewares.length, new_middleware
       end
-
-      @middlewares.insert index || @middlewares.length, new_middleware
     end
 
     def disable(*middlewares)
-      @disabled_middleware += middlewares
+      @mutex.synchronize do
+        @disabled_middleware += middlewares
 
-      @middlewares.delete_if {|m| @disabled_middleware.include?(m)}
+        @middlewares.delete_if {|m| @disabled_middleware.include?(m)}
+      end
     end
 
     # This allows people to proxy methods to the array if they want to do more complex stuff
