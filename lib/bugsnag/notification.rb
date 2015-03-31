@@ -414,6 +414,9 @@ module Bugsnag
 
       from_line = [line_number - num_lines, 1].max
 
+      # don't try and open '(irb)' or '-e'
+      return unless File.exist?(file)
+
       # Populate code hash with line numbers and code lines
       File.open(file) do |f|
         current_line_number = 0
