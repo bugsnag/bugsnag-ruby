@@ -12,6 +12,15 @@ module Bugsnag
       load "bugsnag/tasks/bugsnag.rake"
     end
 
+    # send notifications if a command fails in a 'rails runner' call
+    runner do
+      at_exit do
+        if $!
+          Bugsnag.notify($!)
+        end
+      end
+    end
+
     config.before_initialize do
       # Configure bugsnag rails defaults
       Bugsnag.configure do |config|
