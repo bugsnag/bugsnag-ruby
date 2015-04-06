@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.8.4
+-----
+
+-   Automatically catch errors in `rails runner`
+-   Accept meta_data from any exception that deines `bugsnag_meta_data`
 
 2.8.3
 -----
