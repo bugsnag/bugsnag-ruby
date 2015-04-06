@@ -1,6 +1,12 @@
 Changelog
 =========
 
+
+2.8.3
+-----
+
+-   Delay forking the delivery thread
+
 2.8.2
 -----
 -   Fix various threading issues during library initialization
