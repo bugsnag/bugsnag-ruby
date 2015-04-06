@@ -5,10 +5,12 @@ module Bugsnag
     class ThreadQueue < Synchronous
       MAX_OUTSTANDING_REQUESTS = 100
       STOP = Object.new
-
+      MUTEX = Mutex.new
 
       class << self
         def deliver(url, body, configuration)
+          start_once!
+
           if queue.length > MAX_OUTSTANDING_REQUESTS
             Bugsnag.warn("Dropping notification, #{queue.length} outstanding requests")
             return
@@ -22,26 +24,28 @@ module Bugsnag
 
         attr_reader :queue
 
-        def start!
-          @queue = Queue.new
+        def start_once!
+          MUTEX.synchronize do
+            return if @started
+            @started = true
 
-          worker_thread = Thread.new do
-            while x = queue.pop
-              break if x == STOP
-              x.call
+            @queue = Queue.new
+
+            worker_thread = Thread.new do
+              while x = queue.pop
+                break if x == STOP
+                x.call
+              end
             end
-          end
 
-          at_exit do
-            Bugsnag.warn("Waiting for #{queue.length} outstanding request(s)") unless queue.empty?
-            queue.push STOP
-            worker_thread.join
+            at_exit do
+              Bugsnag.warn("Waiting for #{queue.length} outstanding request(s)") unless queue.empty?
+              queue.push STOP
+              worker_thread.join
+            end
           end
         end
       end
-
-      # do this once at require time to avoid race conditions
-      start!
     end
   end
 end
