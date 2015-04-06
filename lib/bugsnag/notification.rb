@@ -309,7 +309,7 @@ module Bugsnag
       meta_data = @meta_data.dup
 
       exceptions.each do |exception|
-        if exception.respond_to?(:bugsnag_meta_data)
+        if exception.respond_to?(:bugsnag_meta_data) && exception.bugsnag_meta_data
           exception.bugsnag_meta_data.each do |key, value|
             add_to_meta_data key, value, meta_data
           end
