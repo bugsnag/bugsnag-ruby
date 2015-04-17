@@ -3,6 +3,7 @@ require 'uri'
 module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096
+    ENCODING_OPTIONS = {:invalid => :replace, :undef => :replace}.freeze
 
     def self.cleanup_obj(obj, filters = nil, seen = {})
       return nil unless obj
@@ -48,9 +49,9 @@ module Bugsnag
     def self.cleanup_string(str)
       if defined?(str.encoding) && defined?(Encoding::UTF_8)
         if str.encoding == Encoding::UTF_8
-          str.valid_encoding? ? str : str.encode('utf-16', {:invalid => :replace, :undef => :replace}).encode('utf-8')
+          str.valid_encoding? ? str : str.encode('utf-16', ENCODING_OPTIONS).encode('utf-8')
         else
-          str.encode('utf-8', {:invalid => :replace, :undef => :replace})
+          str.encode('utf-8', ENCODING_OPTIONS)
         end
       elsif defined?(Iconv)
         Iconv.conv('UTF-8//IGNORE', 'UTF-8', str) || str
