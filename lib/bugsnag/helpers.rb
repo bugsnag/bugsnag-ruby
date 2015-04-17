@@ -18,7 +18,7 @@ module Bugsnag
         clean_hash = {}
         obj.each do |k,v|
           if filters_match?(k, filters)
-            clean_hash[k] = "[FILTERED]"
+            clean_hash[k] = '[FILTERED]'.freeze
           else
             clean_obj = cleanup_obj(v, filters, seen)
             clean_hash[k] = clean_obj
@@ -35,7 +35,7 @@ module Bugsnag
         str = obj.to_s
         # avoid leaking potentially sensitive data from objects' #inspect output
         if str =~ /#<.*>/
-          '[OBJECT]'
+          '[OBJECT]'.freeze
         else
           cleanup_string(str)
         end
