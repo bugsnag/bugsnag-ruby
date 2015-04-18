@@ -3,26 +3,23 @@ require 'uri'
 module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096
+    ENCODING_OPTIONS = {:invalid => :replace, :undef => :replace}.freeze
 
-    def self.cleanup_obj(obj, filters = nil, seen=Set.new)
+    def self.cleanup_obj(obj, filters = nil, seen = {})
       return nil unless obj
 
       # Protect against recursion of recursable items
-      if obj.is_a?(Hash) || obj.is_a?(Array) || obj.is_a?(Set)
-        return "[RECURSION]" if seen.include? obj
-
-        # We duplicate the seen set here so that no updates by further cleanup_obj calls
-        # are persisted beyond that call.
-        seen = seen.dup
-        seen << obj
+      protection = if obj.is_a?(Hash) || obj.is_a?(Array) || obj.is_a?(Set)
+        return seen[obj] if seen[obj]
+        seen[obj] = '[RECURSION]'.freeze
       end
 
-      case obj
+      value = case obj
       when Hash
         clean_hash = {}
         obj.each do |k,v|
           if filters_match?(k, filters)
-            clean_hash[k] = "[FILTERED]"
+            clean_hash[k] = '[FILTERED]'.freeze
           else
             clean_obj = cleanup_obj(v, filters, seen)
             clean_hash[k] = clean_obj
@@ -39,19 +36,22 @@ module Bugsnag
         str = obj.to_s
         # avoid leaking potentially sensitive data from objects' #inspect output
         if str =~ /#<.*>/
-          '[OBJECT]'
+          '[OBJECT]'.freeze
         else
           cleanup_string(str)
         end
       end
+
+      seen[obj] = value if protection
+      value
     end
 
     def self.cleanup_string(str)
       if defined?(str.encoding) && defined?(Encoding::UTF_8)
         if str.encoding == Encoding::UTF_8
-          str.valid_encoding? ? str : str.encode('utf-16', {:invalid => :replace, :undef => :replace}).encode('utf-8')
+          str.valid_encoding? ? str : str.encode('utf-16', ENCODING_OPTIONS).encode('utf-8')
         else
-          str.encode('utf-8', {:invalid => :replace, :undef => :replace})
+          str.encode('utf-8', ENCODING_OPTIONS)
         end
       elsif defined?(Iconv)
         Iconv.conv('UTF-8//IGNORE', 'UTF-8', str) || str
