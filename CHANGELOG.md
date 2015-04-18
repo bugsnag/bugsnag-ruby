@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.8.5
+-----
+
+-   Fix performance problems in cleanup_obj
+
+
 2.8.4
 -----
 
