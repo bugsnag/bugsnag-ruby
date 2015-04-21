@@ -12,6 +12,7 @@ module Bugsnag
     attr_accessor :use_ssl
     attr_accessor :send_environment
     attr_accessor :send_code
+    attr_accessor :send_cookies
     attr_accessor :project_root
     attr_accessor :app_version
     attr_accessor :app_type
@@ -67,6 +68,7 @@ module Bugsnag
       self.use_ssl = true
       self.send_environment = false
       self.send_code = true
+      self.send_cookies = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
