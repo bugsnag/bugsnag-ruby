@@ -67,7 +67,7 @@ module Bugsnag::Middleware
 
         # Add a cookies tab
         cookies = request.cookies
-        notification.add_tab(:cookies, cookies) if cookies
+        notification.add_tab(:cookies, cookies) if cookies && notification.configuration.send_cookies
       end
 
       @bugsnag.call(notification)
