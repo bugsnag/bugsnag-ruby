@@ -92,6 +92,7 @@ module Bugsnag
         unless ex.is_a?(Exception) || (defined?(Java::JavaLang::Throwable) && ex.is_a?(Java::JavaLang::Throwable))
           Bugsnag.warn("Converting non-Exception to RuntimeError: #{ex.inspect}")
           ex = RuntimeError.new(ex.to_s)
+          ex.set_backtrace caller
         end
 
         @exceptions << ex
