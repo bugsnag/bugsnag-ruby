@@ -16,7 +16,7 @@ module Bugsnag
     runner do
       at_exit do
         if $!
-          Bugsnag.notify($!)
+          Bugsnag.auto_notify($!)
         end
       end
     end
