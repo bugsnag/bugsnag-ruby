@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.8.6
+-----
+
+-   Don't report SystemExit from `rails runner`
+-   Fix for stacktrace including custom bugsnag middleware
+-   Fix reporting of errors in rails-defined rake tasks
+
 2.8.5
 -----
 
