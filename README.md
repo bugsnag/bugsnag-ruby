@@ -115,6 +115,22 @@ class MyController < ApplicationController
 end
 ```
 
+### Rails API Apps
+
+If you are building an API using the [rails-api](https://github.com/rails-api/rails-api) gem, your controllers will inherit from `ActionController::API` instead of `ActionController::Base`.
+
+In this case, the `before_bugsnag_notify` filter will not be automatically available in your controllers.  In order to use it, you will need to include the module `Bugsnag::Rails::ControllerMethods`.
+
+```ruby
+class ApplicationController < ActionController::API
+
+  # Include module which defines the before_bugsnag_notify filter
+  include Bugsnag::Rails::ControllerMethods
+
+  # Other code here
+end
+```
+
 ### Other Ruby Apps
 
 In other ruby apps, you can provide lambda functions to execute before any `Bugsnag.notify` calls as follows. Don't forget to clear the callbacks at the end of each request or session. In Rack applications like Sinatra, this is automatically done for you.
