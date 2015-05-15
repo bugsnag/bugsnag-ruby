@@ -469,6 +469,38 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "filters params from all payload hashes if they are added to params_filters as regex" do
+
+    Bugsnag.configuration.params_filters << /other_data/
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]).not_to be_nil
+      expect(event["metaData"]["request"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]["password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_data"]).to eq("[FILTERED]")
+    }
+  end
+
+  it "filters params from all payload hashes if they are added to params_filters as partial regex" do
+
+    Bugsnag.configuration.params_filters << /r_data/
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]).not_to be_nil
+      expect(event["metaData"]["request"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]["password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_data"]).to eq("[FILTERED]")
+    }
+  end
+
   it "does not filter params from payload hashes if their values are nil" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:nil_param => nil}}})
 

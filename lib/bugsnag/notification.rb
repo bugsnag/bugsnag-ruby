@@ -213,7 +213,7 @@ module Bugsnag
       end
 
       # make meta_data available to public middleware
-      @meta_data = Bugsnag::Helpers.cleanup_obj(generate_meta_data(@exceptions, @overrides), @configuration.params_filters)
+      @meta_data = generate_meta_data(@exceptions, @overrides)
 
       # Run the middleware here (including Bugsnag::Middleware::Callbacks)
       # at the end of the middleware stack, execute the actual notification delivery
