@@ -32,6 +32,7 @@ module Bugsnag
             http.use_ssl = true
             # the default in 1.9+, but required for 1.8
             http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+            http.ca_file = configuration.ca_file if configuration.ca_file
           end
 
           request = Net::HTTP::Post.new(path(uri), HEADERS)
