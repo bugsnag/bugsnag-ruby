@@ -10,6 +10,7 @@ module Bugsnag
     attr_accessor :notify_release_stages
     attr_accessor :auto_notify
     attr_accessor :use_ssl
+    attr_accessor :ca_file
     attr_accessor :send_environment
     attr_accessor :send_code
     attr_accessor :project_root
