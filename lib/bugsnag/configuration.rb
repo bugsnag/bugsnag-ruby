@@ -31,7 +31,6 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :delivery_method
-    private_attr_reader :mutex
     attr_writer :ignore_classes
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
@@ -93,7 +92,7 @@ module Bugsnag
 
     # Accept both String and Class instances as an ignored class
     def ignore_classes
-      mutex.synchronize { @ignore_classes.map! { |klass| klass.is_a?(Class) ? klass.name : klass } }
+      @mutex.synchronize { @ignore_classes.map! { |klass| klass.is_a?(Class) ? klass.name : klass } }
     end
 
     def should_notify?
