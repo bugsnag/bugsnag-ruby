@@ -31,6 +31,8 @@ module Bugsnag
       config_file = File.join(rails_root, "config", "bugsnag.yml")
       config = YAML.load_file(config_file) if File.exists?(config_file)
       Bugsnag.configure(config[rails_env] ? config[rails_env] : config) if config
+
+      Bugsnag.configuration.app_type = "rails"
     end
 
     def self.rails_logger
