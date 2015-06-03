@@ -1,6 +1,14 @@
 Changelog
 =========
 
+2.8.7
+-----
+
+-   Fix for old rails 3.2 not having runner defined in the railtie
+-   Support for rails API
+-   Added support for ca_file for dealing with SSL issues
+-   Threadsafe ignore_classes
+
 2.8.6
 -----
 
