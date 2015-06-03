@@ -13,10 +13,12 @@ module Bugsnag
     end
 
     # send notifications if a command fails in a 'rails runner' call
-    runner do
-      at_exit do
-        if $!
-          Bugsnag.auto_notify($!)
+    if self.respond_to? :runner
+      runner do
+        at_exit do
+          if $!
+            Bugsnag.auto_notify($!)
+          end
         end
       end
     end
