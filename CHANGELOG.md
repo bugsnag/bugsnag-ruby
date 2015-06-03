@@ -8,6 +8,8 @@ Changelog
 -   Support for rails API
 -   Added support for ca_file for dealing with SSL issues
 -   Threadsafe ignore_classes
+-   Add app type
+-   Dont send cookies in their own tab
 
 2.8.6
 -----
