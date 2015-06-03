@@ -35,3 +35,4 @@ else
 end
 
 Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
+Bugsnag.configuration.app_type = "sidekiq"

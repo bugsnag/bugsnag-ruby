@@ -25,3 +25,4 @@ if Mailman.config.respond_to?(:middleware)
 end
 
 Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Mailman)
+Bugsnag.configuration.app_type = "mailman"

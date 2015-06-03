@@ -48,6 +48,8 @@ module Bugsnag
         require "bugsnag/rails/active_record_rescue"
         ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
       end
+
+      Bugsnag.configuration.app_type = "rails"
     end
 
     # Configure params_filters after initialization, so that rails initializers
