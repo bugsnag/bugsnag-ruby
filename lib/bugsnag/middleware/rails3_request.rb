@@ -21,6 +21,13 @@ module Bugsnag::Middleware
           })
         end
 
+        # Use action_dispatch.remote_ip for IP address fields
+        notification.add_tab(:request, {
+          :clientIp => env["action_dispatch.remote_ip"]
+        })
+
+        notification.user_id = env["action_dispatch.remote_ip"]
+
         # Add the rails version
         if notification.configuration.send_environment
           notification.add_tab(:environment, {
