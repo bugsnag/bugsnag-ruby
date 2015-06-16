@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.8.8
+-----
+
+-   Pull IP address from action_dispatch.remote_ip if available
+
 2.8.7
 -----
 
