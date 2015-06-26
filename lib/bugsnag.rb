@@ -14,6 +14,7 @@ require "bugsnag/delivery/thread_queue"
 
 require "bugsnag/rack"
 require "bugsnag/railtie" if defined?(Rails::Railtie)
+require "bugsnag/faraday" if defined?(::Faraday)
 
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
