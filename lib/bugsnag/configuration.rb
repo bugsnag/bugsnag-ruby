@@ -46,15 +46,18 @@ module Bugsnag
     ].freeze
 
     DEFAULT_IGNORE_CLASSES = [
-      "ActiveRecord::RecordNotFound",
-      "ActionController::RoutingError",
-      "ActionController::InvalidAuthenticityToken",
-      "CGI::Session::CookieStore::TamperedWithCookie",
-      "ActionController::UnknownAction",
       "AbstractController::ActionNotFound",
+      "ActionController::InvalidAuthenticityToken",
+      "ActionController::ParameterMissing",
+      "ActionController::RoutingError",
+      "ActionController::UnknownAction",
+      "ActionController::UnknownFormat",
+      "ActionController::UnknownHttpMethod",
+      "ActiveRecord::RecordNotFound",
+      "CGI::Session::CookieStore::TamperedWithCookie",
       "Mongoid::Errors::DocumentNotFound",
+      "SignalException",
       "SystemExit",
-      "SignalException"
     ].freeze
 
     DEFAULT_IGNORE_USER_AGENTS = [].freeze
