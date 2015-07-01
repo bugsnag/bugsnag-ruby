@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.8.9
+-----
+
+-   Remove dependency on `multi_json`, fall back to the `json` gem for Ruby < 1.9
+
 2.8.8
 -----
 
