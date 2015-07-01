@@ -268,7 +268,7 @@ describe Bugsnag::Notification do
     expect(Bugsnag).to have_sent_notification{ |payload|
       # Truncated body should be no bigger than
       # 2 truncated hashes (4096*2) + rest of payload (20000)
-      expect(Bugsnag::Helpers.dump_json(payload).length).to be < 4096*2 + 20000
+      expect(::JSON.dump(payload).length).to be < 4096*2 + 20000
     }
   end
 

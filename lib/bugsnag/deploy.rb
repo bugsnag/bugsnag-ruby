@@ -27,7 +27,7 @@ module Bugsnag
 
       raise RuntimeError.new("No API key found when notifying of deploy") if !parameters["apiKey"] || parameters["apiKey"].empty?
 
-      payload_string = Bugsnag::Helpers.dump_json(parameters)
+      payload_string = ::JSON.dump(parameters)
       Bugsnag::Delivery::Synchronous.deliver(endpoint, payload_string, configuration)
     end
   end

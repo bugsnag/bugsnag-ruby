@@ -1,4 +1,4 @@
-require "multi_json"
+require "json"
 
 if RUBY_VERSION =~ /^1\.8/
   begin
@@ -39,10 +39,10 @@ module Bugsnag
 
         # If the payload is going to be too long, we trim the hashes to send
         # a minimal payload instead
-        payload_string = Bugsnag::Helpers.dump_json(payload)
+        payload_string = ::JSON.dump(payload)
         if payload_string.length > 128000
           payload[:events].each {|e| e[:metaData] = Bugsnag::Helpers.reduce_hash_size(e[:metaData])}
-          payload_string = Bugsnag::Helpers.dump_json(payload)
+          payload_string = ::JSON.dump(payload)
         end
 
         Bugsnag::Delivery[delivery_method || configuration.delivery_method].deliver(url, payload_string, configuration)
