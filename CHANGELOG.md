@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.8.10
+------
+
+-   Remove multi_json from deploy
+
 2.8.9
 -----
 
