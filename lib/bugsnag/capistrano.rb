@@ -1,4 +1,4 @@
-require "multi_json"
+require "json"
 require "bugsnag/deploy"
 
 if defined?(Capistrano::VERSION) && Gem::Version.new(Capistrano::VERSION).release >= Gem::Version.new('3.0.0')
