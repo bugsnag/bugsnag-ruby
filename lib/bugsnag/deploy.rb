@@ -1,4 +1,5 @@
 require "bugsnag"
+require "json"
 
 module Bugsnag
   class Deploy
