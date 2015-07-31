@@ -15,8 +15,10 @@ module Bugsnag
         ActionController::Base.send(:include, Bugsnag::Rails::ActionControllerRescue)
         ActionController::Base.send(:include, Bugsnag::Rails::ControllerMethods)
       end
-      if defined?(ActiveRecord::Base)
-        ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
+      if defined?(ActiveRecord::Base) && Gem::Version.new(ActiveRecord::VERSION::STRING) < Gem::Version.new("4.3")
+        unless ActiveRecord::Base.respond_to?(:raise_in_transactional_callbacks) && ActiveRecord::Base.raise_in_transactional_callbacks
+          ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
+        end
       end
 
       Bugsnag.configure do |config|
