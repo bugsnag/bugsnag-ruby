@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.8.11
+------
+
+-   Better handle errors in ActiveRecord transactions (thanks @arthurnn!)
+
 2.8.10
 ------
 
