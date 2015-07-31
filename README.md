@@ -534,7 +534,7 @@ config.proxy_password = "proxy_secret_password_here"
 ```
 
 ###timeout
-By default the timeout for posting errors to Bugsnag is 5 seconds, to change this
+By default the timeout for posting errors to Bugsnag is 15 seconds, to change this
 you can set the `timeout`:
 
 ```ruby

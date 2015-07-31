@@ -78,6 +78,7 @@ module Bugsnag
       self.endpoint = DEFAULT_ENDPOINT
       self.hostname = default_hostname
       self.delivery_method = DEFAULT_DELIVERY_METHOD
+      self.timeout = 15
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
