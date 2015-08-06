@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.8.12
+------
+
+-   Ensure timeout is set when configured
+-   Allow on premise installations to easily send deploy notifications
+
 2.8.11
 ------
 
