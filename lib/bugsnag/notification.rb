@@ -380,7 +380,7 @@ module Bugsnag
 
         # Generate the stacktrace line hash
         trace_hash = {}
-        trace_hash[:inProject] = true if @configuration.project_root && file.match(/^#{@configuration.project_root}/) && !file.match(/vendor\//)
+        trace_hash[:inProject] = true if in_project?(file)
         trace_hash[:lineNumber] = line_str.to_i
 
         if @configuration.send_code
@@ -408,6 +408,17 @@ module Bugsnag
           nil
         end
       end.compact
+    end
+
+    def in_project?(line)
+      return false if @configuration.vendor_paths && @configuration.vendor_paths.any? do |vendor_path|
+        if vendor_path.is_a?(String)
+          line.include?(vendor_path)
+        else
+          line =~ vendor_path
+        end
+      end
+      @configuration.project_root && line.start_with?(@configuration.project_root.to_s)
     end
 
     def code(file, line_number, num_lines = 7)
