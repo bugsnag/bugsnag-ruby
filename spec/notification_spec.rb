@@ -417,6 +417,19 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "does not mark the top-most stacktrace line as inProject if it matches a vendor path" do
+    Bugsnag.configuration.project_root = File.expand_path('../../', __FILE__)
+    Bugsnag.configuration.vendor_paths = [File.expand_path('../', __FILE__)]
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      exception = get_exception_from_payload(payload)
+      expect(exception["stacktrace"].size).to be >= 1
+      expect(exception["stacktrace"].first["inProject"]).to be_nil
+    }
+  end
+
   it "marks the top-most stacktrace line as inProject if necessary" do
     Bugsnag.configuration.project_root = File.expand_path File.dirname(__FILE__)
     Bugsnag.notify(BugsnagTestException.new("It crashed"))

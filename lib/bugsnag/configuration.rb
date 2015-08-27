@@ -14,6 +14,7 @@ module Bugsnag
     attr_accessor :send_environment
     attr_accessor :send_code
     attr_accessor :project_root
+    attr_accessor :vendor_paths
     attr_accessor :app_version
     attr_accessor :app_type
     attr_accessor :params_filters
@@ -79,6 +80,7 @@ module Bugsnag
       self.hostname = default_hostname
       self.delivery_method = DEFAULT_DELIVERY_METHOD
       self.timeout = 15
+      self.vendor_paths = [%r{vendor/}]
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
