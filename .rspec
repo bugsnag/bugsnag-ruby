@@ -1,3 +1,4 @@
 --backtrace
 --color
 --format doc
+--warnings
