@@ -153,6 +153,7 @@ module Bugsnag
     end
 
     def severity
+      @severity = nil unless defined?(@severity)
       @severity || "warning"
     end
 
@@ -165,6 +166,7 @@ module Bugsnag
     end
 
     def grouping_hash
+      @grouping_hash = nil unless defined?(@grouping_hash)
       @grouping_hash || nil
     end
 
@@ -226,6 +228,7 @@ module Bugsnag
         Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class} from api_key #{api_key}")
 
         # Deliver the payload
+        @delivery_method = nil unless defined?(@delivery_method)
         self.class.deliver_exception_payload(endpoint, build_exception_payload, @configuration, @delivery_method)
       end
     end
