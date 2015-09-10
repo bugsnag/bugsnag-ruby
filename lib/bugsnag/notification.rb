@@ -30,7 +30,7 @@ module Bugsnag
     CURRENT_PAYLOAD_VERSION = "2"
 
     attr_accessor :context
-    attr_accessor :user
+    attr_reader :user
     attr_accessor :configuration
     attr_accessor :meta_data
 
