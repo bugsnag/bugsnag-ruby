@@ -1,4 +1,3 @@
-require "bugsnag"
 require "json"
 
 module Bugsnag
