@@ -11,18 +11,16 @@ module Bugsnag
         def deliver(url, body, configuration)
           start_once!
 
-          if queue.length > MAX_OUTSTANDING_REQUESTS
-            Bugsnag.warn("Dropping notification, #{queue.length} outstanding requests")
+          if @queue.length > MAX_OUTSTANDING_REQUESTS
+            Bugsnag.warn("Dropping notification, #{@queue.length} outstanding requests")
             return
           end
 
           # Add delivery to the worker thread
-          queue.push proc { super(url, body, configuration) }
+          @queue.push proc { super(url, body, configuration) }
         end
 
         private
-
-        attr_reader :queue
 
         def start_once!
           MUTEX.synchronize do
@@ -32,15 +30,15 @@ module Bugsnag
             @queue = Queue.new
 
             worker_thread = Thread.new do
-              while x = queue.pop
+              while x = @queue.pop
                 break if x == STOP
                 x.call
               end
             end
 
             at_exit do
-              Bugsnag.warn("Waiting for #{queue.length} outstanding request(s)") unless queue.empty?
-              queue.push STOP
+              Bugsnag.warn("Waiting for #{@queue.length} outstanding request(s)") unless @queue.empty?
+              @queue.push STOP
               worker_thread.join
             end
           end
