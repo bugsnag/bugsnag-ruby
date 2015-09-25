@@ -17,6 +17,7 @@ describe 'Bugsnag' do
   end
   after do
     server.stop
+    queue.clear
   end
 
   let(:request) { JSON.parse(queue.pop) }
@@ -66,6 +67,24 @@ describe 'Bugsnag' do
     Bugsnag.notify 'yo'
 
     expect(request['events'][0]['exceptions'][0]['message']).to eq('yo')
+  end
+
+  it 'should work with threadpool delivery after fork' do
+    Bugsnag.configure do |config|
+      config.endpoint = "localhost:#{server.config[:Port]}"
+      config.use_ssl = false
+      config.delivery_method = :thread_queue
+    end
+    WebMock.allow_net_connect!
+
+    Bugsnag.notify 'yo'
+
+    Process.fork do
+      Bugsnag.notify 'yo too'
+    end
+    Process.wait
+
+    expect(queue.length).to eq(2)
   end
 
   describe 'with a proxy' do
