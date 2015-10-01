@@ -70,21 +70,24 @@ describe 'Bugsnag' do
   end
 
   it 'should work with threadpool delivery after fork' do
-    Bugsnag.configure do |config|
-      config.endpoint = "localhost:#{server.config[:Port]}"
-      config.use_ssl = false
-      config.delivery_method = :thread_queue
+    is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
+    unless is_jruby #jruby doesn't support fork, so this test doesn't apply
+      Bugsnag.configure do |config|
+        config.endpoint = "localhost:#{server.config[:Port]}"
+        config.use_ssl = false
+        config.delivery_method = :thread_queue
+      end
+      WebMock.allow_net_connect!
+
+      Bugsnag.notify 'yo'
+
+      Process.fork do
+        Bugsnag.notify 'yo too'
+      end
+      Process.wait
+
+      expect(queue.length).to eq(2)
     end
-    WebMock.allow_net_connect!
-
-    Bugsnag.notify 'yo'
-
-    Process.fork do
-      Bugsnag.notify 'yo too'
-    end
-    Process.wait
-
-    expect(queue.length).to eq(2)
   end
 
   describe 'with a proxy' do
