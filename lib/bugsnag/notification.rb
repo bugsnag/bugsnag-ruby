@@ -250,10 +250,10 @@ module Bugsnag
       payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
 
       # cleanup character encodings
-      payload_event = Bugsnag::Helpers.cleanup_obj_encoding(payload_event)
+      payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
 
       # filter out sensitive values in (and cleanup encodings) metaData
-      payload_event[:metaData] = Bugsnag::Helpers.cleanup_obj(@meta_data, @configuration.params_filters)
+      payload_event[:metaData] = Bugsnag::Cleaner.new(@configuration.params_filters).clean_object(@meta_data)
       payload_event.reject! {|k,v| v.nil? }
 
       # return the payload hash

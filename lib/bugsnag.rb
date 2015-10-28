@@ -5,6 +5,7 @@ require "bugsnag/version"
 require "bugsnag/configuration"
 require "bugsnag/meta_data"
 require "bugsnag/notification"
+require "bugsnag/cleaner"
 require "bugsnag/helpers"
 require "bugsnag/deploy"
 
