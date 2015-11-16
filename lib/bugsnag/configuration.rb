@@ -102,6 +102,7 @@ module Bugsnag
     end
 
     def should_notify?
+      @notify_release_stages = nil unless defined?(@notify_release_stages)
       @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
     end
 

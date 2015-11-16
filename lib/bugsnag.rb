@@ -43,6 +43,7 @@ module Bugsnag
       require "bugsnag/delay/resque" if configuration.delay_with_resque && defined?(Resque)
 
       # Log that we are ready to rock
+      @logged_ready = nil unless defined?(@logged_ready)
       if configuration.api_key && !@logged_ready
         log "Bugsnag exception handler #{VERSION} ready, api_key=#{configuration.api_key}"
         @logged_ready = true
@@ -94,7 +95,8 @@ module Bugsnag
 
     # Configuration getters
     def configuration
-      @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
+      return @configuration if defined?(@configuration)
+      LOCK.synchronize { @configuration = Bugsnag::Configuration.new }
     end
 
     # Set "per-request" data, temporal data for use in bugsnag middleware
