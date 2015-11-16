@@ -27,12 +27,12 @@ RSpec.configure do |config|
     WebMock.stub_request(:post, "https://notify.bugsnag.com/")
 
     Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
-    Bugsnag.configure do |config|
-      config.api_key = "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
-      config.release_stage = "production"
-      config.delivery_method = :synchronous
+    Bugsnag.configure do |bugsnag|
+      bugsnag.api_key = "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
+      bugsnag.release_stage = "production"
+      bugsnag.delivery_method = :synchronous
       # silence logger in tests
-      config.logger = Logger.new(StringIO.new)
+      bugsnag.logger = Logger.new(StringIO.new)
     end
   end
 
