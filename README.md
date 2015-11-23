@@ -1,4 +1,4 @@
-Bugsnag Notifier for Ruby
+Bugsnag Notifier for Ruby ![build status](https://travis-ci.org/bugsnag/bugsnag-ruby.svg?branch=master)
 =========================
 
 The Bugsnag Notifier for Ruby gives you instant notification of exceptions
