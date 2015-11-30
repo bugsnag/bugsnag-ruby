@@ -49,7 +49,7 @@ namespace :bugsnag do
       config_command += " --app #{ENV["HEROKU_APP"]}" if ENV["HEROKU_APP"]
       heroku_env = run_command.call(config_command).split(/[\n\r]/).each_with_object({}) do |c, obj|
         k,v = c.split("=")
-        obj[k] = v.strip.empty? ? nil : v
+        obj[k] = (v.nil? || v.strip.empty?) ? nil : v
       end
 
       # Check for Bugsnag API key (required)
