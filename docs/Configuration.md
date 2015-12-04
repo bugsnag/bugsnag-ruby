@@ -20,38 +20,26 @@ Your Bugsnag API key (required).
 config.api_key = "your-api-key-here"
 ```
 
-### `release_stage`
+### `app_type`
 
-If you would like to distinguish between errors that happen in different
-stages of the application release process (development, production, etc)
-you can set the `release_stage` that is reported to Bugsnag.
+You can set the type of application executing the current code by using
+`app_type`:
 
 ```ruby
-config.release_stage = "development"
+config.app_type = "resque"
 ```
 
-In rails apps this value is automatically set from `RAILS_ENV`, and in rack
-apps it is automatically set to `RACK_ENV`. Otherwise the default is
-"production".
+This is usually used to represent if you are running in a Rails server, Sidekiq
+job or Rake task for example. Bugsnag will automatically detect most application
+types for you.
 
-### `notify_release_stages`
+### `app_version`
 
-By default, we will notify Bugsnag of exceptions that happen in any
-`release_stage`. If you would like to change which release stages
-notify Bugsnag of exceptions you can set `notify_release_stages`:
-
-```ruby
-config.notify_release_stages = ["production", "development"]
-```
-
-### `endpoint`
-
-By default, we'll send crashes to *notify.bugsnag.com* to display them on
-your dashboard. If you are using *Bugsnag Enterprise* you'll need to set
-this to be your *Event Server* endpoint, for example:
+If you want to track in which versions of your application each exception
+happens, you can set `app_version`. This is set to `nil` by default.
 
 ```ruby
-config.endpoint = "bugsnag.example.com:49000"
+config.app_version = "2.5.1"
 ```
 
 ### `auto_notify`
@@ -64,54 +52,15 @@ in your application. If you want to stop this from happening, you can set
 config.auto_notify = false
 ```
 
-### `use_ssl`
+### `endpoint`
 
-Enforces all communication with bugsnag.com be made via ssl. You can turn
-this off if necessary.
-
-```ruby
-config.use_ssl = false
-```
-
-By default, `use_ssl` is set to true.
-
-<!-- Custom anchor for linking from alerts -->
-<div id="set-project-root"></div>
-### `project_root`
-
-We mark stacktrace lines as `inProject` if they come from files inside your
-`project_root`. In rails apps this value is automatically set to `RAILS_ROOT`,
-otherwise you should set it manually:
+By default, we'll send crashes to *notify.bugsnag.com* to display them on
+your dashboard. If you are using *Bugsnag Enterprise* you'll need to set
+this to be your *Event Server* endpoint, for example:
 
 ```ruby
-config.project_root = "/var/www/myproject"
+config.endpoint = "bugsnag.example.com:49000"
 ```
-
-### `app_version`
-
-If you want to track which versions of your application each exception
-happens in, you can set `app_version`. This is set to `nil` by default.
-
-```ruby
-config.app_version = "2.5.1"
-```
-
-### `params_filters`
-
-Sets which keys should be filtered out from `params` hashes before sending
-them to Bugsnag. Use this if you want to ensure you don't send sensitive data
-such as passwords, and credit card numbers to our servers. You can add both
-strings and regular expressions to this array. When adding strings, keys which
-*contain* the string will be filtered. When adding regular expressions, any
-keys which *match* the regular expression will be filtered.
-
-```ruby
-config.params_filters += ["credit_card_number", /^password$/]
-```
-
-By default, `params_filters` is set to `[/authorization/i, /cookie/i,
-/password/i, /secret/i]`, and for rails apps, imports all values from
-`Rails.configuration.filter_parameters`.
 
 ### `ignore_classes`
 
@@ -153,12 +102,70 @@ config.ignore_user_agents << %r{Chrome}
 By default, `ignore_user_agents` is empty, so exceptions caused by all
 user agents are reported.
 
+### `logger`
+
+Sets which logger to use for Bugsnag log messages. In rails apps, this is
+automatically set to use `Rails.logger`, otherwise it will be set to
+`Logger.new(STDOUT)`.
+
+### `middleware`
+
+Provides access to the middleware stack, see the
+[Bugsnag Middleware](#bugsnag-middleware) section below for details.
+
+### `notify_release_stages`
+
+By default, we will notify Bugsnag of exceptions that happen in any
+`release_stage`. If you would like to change which release stages
+notify Bugsnag of exceptions you can set `notify_release_stages`:
+
+```ruby
+config.notify_release_stages = ["production", "development"]
+```
+
+### `params_filters`
+
+Sets which keys should be filtered out from `params` hashes before sending
+them to Bugsnag. Use this if you want to ensure you don't send sensitive data
+such as passwords, and credit card numbers to our servers. You can add both
+strings and regular expressions to this array. When adding strings, keys which
+*contain* the string will be filtered. When adding regular expressions, any
+keys which *match* the regular expression will be filtered.
+
+```ruby
+config.params_filters += ["credit_card_number", /^password$/]
+```
+
+By default, `params_filters` is set to `[/authorization/i, /cookie/i,
+/password/i, /secret/i]`, and for rails apps, imports all values from
+`Rails.configuration.filter_parameters`.
+
+<!-- Custom anchor for linking from alerts -->
+<div id="set-project-root"></div>
+### `project_root`
+
+We mark stacktrace lines as `inProject` if they come from files inside your
+`project_root`. In rails apps this value is automatically set to `RAILS_ROOT`,
+otherwise you should set it manually:
+
+```ruby
+config.project_root = "/var/www/myproject"
+```
+
 ### `proxy_host`
 
 Sets the address of the HTTP proxy that should be used for requests to bugsnag.
 
 ```ruby
 config.proxy_host = "10.10.10.10"
+```
+
+### `proxy_password`
+
+Sets the password for the user that should be used to send requests to the HTTP proxy for requests to bugsnag.
+
+```ruby
+config.proxy_password = "proxy_secret_password_here"
 ```
 
 ### `proxy_port`
@@ -177,43 +184,19 @@ Sets the user that should be used to send requests to the HTTP proxy for request
 config.proxy_user = "proxy_user"
 ```
 
-### `proxy_password`
+### `release_stage`
 
-Sets the password for the user that should be used to send requests to the HTTP proxy for requests to bugsnag.
-
-```ruby
-config.proxy_password = "proxy_secret_password_here"
-```
-
-### `timeout`
-By default the timeout for posting errors to Bugsnag is 15 seconds, to change this
-you can set the `timeout`:
+If you would like to distinguish between errors that happen in different
+stages of the application release process (development, production, etc)
+you can set the `release_stage` that is reported to Bugsnag.
 
 ```ruby
-config.timeout = 10
+config.release_stage = "development"
 ```
 
-### `logger`
-
-Sets which logger to use for Bugsnag log messages. In rails apps, this is
-automatically set to use `Rails.logger`, otherwise it will be set to
-`Logger.new(STDOUT)`.
-
-### `middleware`
-
-Provides access to the middleware stack, see the
-[Bugsnag Middleware](#bugsnag-middleware) section below for details.
-
-### `app_type`
-
-You can set the type of application executing the current code by using `app_type`:
-
-```ruby
-config.app_type = "resque"
-```
-
-This is usually used to represent if you are running in a Rails server, Sidekiq job or
-Rake task for example. Bugsnag will automatically detect most application types for you.
+In rails apps this value is automatically set from `RAILS_ENV`, and in rack
+apps it is automatically set to `RACK_ENV`. Otherwise the default is
+"production".
 
 ### `send_environment`
 
@@ -234,3 +217,23 @@ set the `send_code` option to `false`.
 ```ruby
 config.send_code = false
 ```
+
+### `timeout`
+By default the timeout for posting errors to Bugsnag is 15 seconds, to change this
+you can set the `timeout`:
+
+```ruby
+config.timeout = 10
+```
+
+### `use_ssl`
+
+Enforces all communication with bugsnag.com be made via ssl. You can turn
+this off if necessary.
+
+```ruby
+config.use_ssl = false
+```
+
+By default, `use_ssl` is set to true.
+
