@@ -123,8 +123,8 @@ Activate the Bugsnag Rack middleware
 use Bugsnag::Rack
 ```
 
-**Sinatra**: Note that `raise_errors` must be enabled. If you are 
-    using custom error handlers, then you will need to notify Bugsnag 
+**Sinatra**: Note that `raise_errors` must be enabled. If you are
+    using custom error handlers, then you will need to notify Bugsnag
     explicitly:
 
 ```ruby
@@ -136,8 +136,8 @@ end
 
 #### Custom Ruby Scripts
 
-**Custom Ruby Scripts**: If you are running a standard ruby script, 
-you can ensure that all exceptions are sent to Bugsnag by adding 
+**Custom Ruby Scripts**: If you are running a standard ruby script,
+you can ensure that all exceptions are sent to Bugsnag by adding
 the following code to your app:
 
 ```ruby
@@ -325,7 +325,6 @@ examples include Rails, Sinatra, Rack, Padrino integrations, etc.
 Support
 -------
 
-
 * [Additional Documentation](https://github.com/bugsnag/bugsnag-ruby/tree/master/docs)
 * [Search open and closed issues](https://github.com/bugsnag/bugsnag-ruby/issues?utf8=✓&q=is%3Aissue) for similar problems
 * [Report a bug or request a feature](https://github.com/bugsnag/bugsnag-ruby/issues/new)
@@ -335,6 +334,7 @@ Contributing
 ------------
 
 We'd love you to file issues and send pull requests. The [contributing guidelines](https://github.com/bugsnag/bugsnag-ruby/CONTRIBUTING.md) details the process of building and testing `bugsnag-ruby`, as well as the pull request process. Feel free to comment on [existing issues](https://github.com/bugsnag/bugsnag-ruby/issues) for clarification or starting points.
+
 
 License
 -------
