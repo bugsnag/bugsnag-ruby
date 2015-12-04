@@ -1,6 +1,23 @@
 Changelog
 =========
 
+2.8.13
+------
+
+### Bug Fixes
+
+* Fix crash during heroku Rake task when an environment variable was empty
+  | [#261](https://github.com/bugsnag/bugsnag-ruby/issues/261)
+
+### Enhancements
+
+* Various warning fixes
+  | [Taylor Fausak](https://github.com/tfausak)
+  | [#254](https://github.com/bugsnag/bugsnag-ruby/pull/254)
+* Make the list of vendor paths configurable
+  | [Jean Boussier](https://github.com/byroot)
+  | [#253](https://github.com/bugsnag/bugsnag-ruby/pull/253)
+
 2.8.12
 ------
 
