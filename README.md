@@ -334,7 +334,7 @@ Support
 Contributing
 ------------
 
-We'd love you to file issues and send pull requests. The [contributing guidelines](https://github.com/bugsnag/bugsnag-ruby/CONTRIBUTING.md) details the process of building and testing `bugsnag-ruby`, as well as the pull request process. Feel free to comment on [existing issues](https://github.com/bugsnag/bugsnag-ruby/issues) for clarification or starting points.
+We'd love you to file issues and send pull requests. The [contributing guidelines](https://github.com/bugsnag/bugsnag-ruby/CONTRIBUTING) details the process of building and testing `bugsnag-ruby`, as well as the pull request process. Feel free to comment on [existing issues](https://github.com/bugsnag/bugsnag-ruby/issues) for clarification or starting points.
 
 License
 -------
