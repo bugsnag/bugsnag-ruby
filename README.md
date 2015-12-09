@@ -24,15 +24,12 @@ Contents
 	- [Sending Non-fatal Exceptions](#sending-non-fatal-exceptions)
 	- [Deploy Tracking](#deploy-tracking)
 	- [Callbacks](#callbacks)
+	- [Configuration](https://github.com/bugsnag/bugsnag-ruby/tree/master/docs/Configuration.md)
+	- [Notification Options](https://github.com/bugsnag/bugsnag-ruby/tree/master/docs/Notification Options.md)
 - [Demo Applications](#demo-applications)
 - [Support](#support)
 - [Contributing](#contributing)
 - [License](#license)
-
-- [Additional Documentation](https://github.com/bugsnag/bugsnag-ruby/tree/master/docs)
-	- [Configuration](docs/Configuration.md)
-	- [Notification Options](docs/Notification Options.md)
-
 
 
 Getting Started
