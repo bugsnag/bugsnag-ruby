@@ -17,7 +17,7 @@ module Bugsnag::Rails
       def _add_bugsnag_notify_callback(callback_key, *methods, &block)
         options = methods.last.is_a?(Hash) ? methods.pop : {}
 
-        before_filter(options) do |controller|
+        before_action(options) do |controller|
           request_data = Bugsnag.configuration.request_data
           request_data[callback_key] ||= []
 
