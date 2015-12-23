@@ -17,7 +17,7 @@ module Bugsnag::Rails
       def _add_bugsnag_notify_callback(callback_key, *methods, &block)
         options = methods.last.is_a?(Hash) ? methods.pop : {}
 
-        before_action(options) do |controller|
+        action = lambda do |controller|
           request_data = Bugsnag.configuration.request_data
           request_data[callback_key] ||= []
 
@@ -32,6 +32,11 @@ module Bugsnag::Rails
           request_data[callback_key] << lambda { |notification|
             controller.instance_exec(notification, &block)
           } if block_given?
+        end
+        if respond_to?(:before_action)
+          before_action(options, &action)
+        else
+          before_filter(options, &action)
         end
       end
     end
