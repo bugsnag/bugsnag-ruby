@@ -1,3 +1,4 @@
+sudo: false
 language: ruby
 rvm:
 - 2.1.0
@@ -9,7 +10,3 @@ rvm:
 before_install:
 - gem update --system 2.1.11
 - gem --version
-notifications:
-  hipchat:
-    rooms:
-      secure: cv5V8ivZExOywKL9n0CODnxy9m5u4rQ5ZMYK8XHPIoqQKkvH9DQOeb2ItW2aM2kxeupJEcQEy1Eu4sYMGhyzKUNdqbFtQBhDYxRwSAgTRIkGlHQCnznyExHWZbGfDB8y/m11HiZ1wuPuqs8ZZ+VccNb4bwJKbhPTbf1RZ+GPeU8=
