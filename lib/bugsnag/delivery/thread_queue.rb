@@ -24,8 +24,8 @@ module Bugsnag
 
         def start_once!
           MUTEX.synchronize do
-            return if @started
-            @started = true
+            return if @started == Process.pid
+            @started = Process.pid
 
             @queue = Queue.new
 
