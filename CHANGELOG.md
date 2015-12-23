@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.9.0 (23 Dec 2015)
+3.0.0 (23 Dec 2015)
 -----
 
 ### Enhancements
@@ -13,6 +13,9 @@ Changelog
 * Use Rails 5-style deep parameter filtering
   | [fimmtiu](https://github.com/fimmtiu)
   | [#256](https://github.com/bugsnag/bugsnag-ruby/pull/256)
+
+  Note: This is a backwards incompatible change, as filters containing `.` are
+  now parsed as nested instead of as a single key.
 
 
 2.8.13
