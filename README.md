@@ -188,7 +188,7 @@ If you would like to send non-fatal exceptions to Bugsnag, you can call
 Bugsnag.notify(RuntimeError.new("Something broke"))
 ```
 
-Additional data can be sent with exceptions as an options hash as detailed in the [Notification Options](docs/Notification Options.md) documentation, including some [options specific to non-fatal exceptions](docs/Notification Options.md#handled-notification-options).
+Additional data can be sent with exceptions as an options hash as detailed in the [Notification Options](https://github.com/bugsnag/bugsnag-ruby/tree/master/docs/Notification Options.md) documentation, including some [options specific to non-fatal exceptions](https://github.com/bugsnag/bugsnag-ruby/tree/master/docs/Notification Options.md#handled-notification-options).
 
 
 ### Callbacks
