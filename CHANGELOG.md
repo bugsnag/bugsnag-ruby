@@ -1,6 +1,20 @@
 Changelog
 =========
 
+2.9.0 (23 Dec 2015)
+-----
+
+### Enhancements
+
+* Fix warning from usage of `before_filter` in Rails 5
+  | [Scott Ringwelski](https://github.com/sgringwe)
+  | [#267](https://github.com/bugsnag/bugsnag-ruby/pull/267)
+
+* Use Rails 5-style deep parameter filtering
+  | [fimmtiu](https://github.com/fimmtiu)
+  | [#256](https://github.com/bugsnag/bugsnag-ruby/pull/256)
+
+
 2.8.13
 ------
 
