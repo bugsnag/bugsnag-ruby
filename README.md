@@ -66,17 +66,19 @@ Getting Started
     end
     ```
 
-    The Bugsnag module will read the `BUGSNAG_API_KEY` environment variable if you
-    do not configure one automatically.
+    The Bugsnag module will read the `BUGSNAG_API_KEY` environment variable if
+    you do not configure one automatically.
 
 ### Rake Integration
 
-Rake integration is automatically enabled in Rails 3/4 apps, so providing you load the environment
-in your Rake tasks you dont need to do anything to get Rake support. If you choose not to load
-your environment, you can manually configure Bugsnag with a `bugsnag.configure` block in the Rakefile.
+Rake integration is automatically enabled in Rails 3/4/5 apps, so providing you
+load the environment in your Rake tasks you dont need to do anything to get Rake
+support. If you choose not to load your environment, you can manually configure
+Bugsnag with a `bugsnag.configure` block in the Rakefile.
 
-Bugsnag can automatically notify of all exceptions that happen in your rake tasks. In order
-to enable this, you need to `require "bugsnag/rake"` in your Rakefile, like so:
+Bugsnag can automatically notify of all exceptions that happen in your rake
+tasks. In order to enable this, you need to `require "bugsnag/rake"` in your
+Rakefile, like so:
 
 ```ruby
 require File.expand_path('../config/application', __FILE__)
@@ -90,27 +92,29 @@ end
 YourApp::Application.load_tasks
 ```
 
-> Note: We also configure Bugsnag in the Rakefile, so the tasks that do not load the full
-environment can still notify Bugsnag.
+> Note: We also configure Bugsnag in the Rakefile, so the tasks that do not load
+> the full environment can still notify Bugsnag.
 
 ### Sending a Test Notification
 
-To test that bugsnag is properly configured, you can use the `test_exception` rake task:
+To test that bugsnag is properly configured, you can use the `test_exception`
+rake task:
 
 ```bash
 rake bugsnag:test_exception
 ```
 
-A test exception will be sent to your bugsnag dashboard if everything is configured correctly.
+A test exception will be sent to your bugsnag dashboard if everything is
+configured correctly.
 
 Usage
 -----
 
 ### Catching and Reporting Exceptions
 
-Bugsnag Ruby works out of the box with Rails, Sidekiq, Resque, DelayedJob (3+), Mailman, Rake and Rack. It
-should be easy to add support for other frameworks, either by sending a pull request here or adding a hook
-to those projects.
+Bugsnag Ruby works out of the box with Rails, Sidekiq, Resque, DelayedJob (3+),
+Mailman, Rake and Rack. It should be easy to add support for other frameworks,
+either by sending a pull request here or adding a hook to those projects.
 
 #### Rack/Sinatra Apps
 
