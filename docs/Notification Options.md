@@ -15,7 +15,7 @@ exceptions, to help debug problems.
 
 ## Notification Object
 
-The notification object is passed to all [before bugsnag notify](#sending-custom-data-with-exceptions)
+The notification object is passed to all [before bugsnag notify](#framework-specific-configuration)
 callbacks and is used to manipulate the error report before it is transmitted.
 
 ### Instance Methods
