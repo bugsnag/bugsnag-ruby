@@ -272,6 +272,23 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "truncates large messages before sending" do
+    Bugsnag.notify(BugsnagTestException.new(SecureRandom.hex(500_000)), {
+      :meta_data => {
+        :some_tab => {
+          :giant => SecureRandom.hex(500_000/2),
+          :mega => SecureRandom.hex(500_000/2)
+        }
+      }
+    })
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      # Truncated body should be no bigger than
+      # 2 truncated hashes (4096*2) + rest of payload (20000)
+      expect(::JSON.dump(payload).length).to be < 4096*2 + 20000
+    }
+  end
+
   it "accepts a severity in overrides" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
       :severity => "info"

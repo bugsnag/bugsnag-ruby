@@ -41,7 +41,7 @@ module Bugsnag
         # a minimal payload instead
         payload_string = ::JSON.dump(payload)
         if payload_string.length > 128000
-          payload[:events].each {|e| e[:metaData] = Bugsnag::Helpers.reduce_hash_size(e[:metaData])}
+          payload[:events] = payload[:events].map {|e| Bugsnag::Helpers.reduce_hash_size(e)}
           payload_string = ::JSON.dump(payload)
         end
 
