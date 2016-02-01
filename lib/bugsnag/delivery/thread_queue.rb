@@ -24,6 +24,7 @@ module Bugsnag
 
         def start_once!
           MUTEX.synchronize do
+            @started = nil unless defined?(@started)
             return if @started == Process.pid
             @started = Process.pid
 

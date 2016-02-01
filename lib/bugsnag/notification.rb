@@ -56,6 +56,9 @@ module Bugsnag
       @meta_data = {}
       @user = {}
       @should_ignore = false
+      @severity = nil
+      @grouping_hash = nil
+      @delivery_method = nil
 
       self.severity = @overrides[:severity]
       @overrides.delete :severity

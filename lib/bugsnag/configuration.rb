@@ -81,6 +81,7 @@ module Bugsnag
       self.delivery_method = DEFAULT_DELIVERY_METHOD
       self.timeout = 15
       self.vendor_paths = [%r{vendor/}]
+      self.notify_release_stages = nil
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
