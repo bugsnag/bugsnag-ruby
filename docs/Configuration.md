@@ -140,6 +140,9 @@ By default, `params_filters` is set to `[/authorization/i, /cookie/i,
 /password/i, /secret/i]`, and for rails apps, imports all values from
 `Rails.configuration.filter_parameters`.
 
+**Note:** Assigning (`=`) instead of appending (`+=`) to the default value will
+remove the default protections.
+
 <!-- Custom anchor for linking from alerts -->
 <div id="set-project-root"></div>
 ### `project_root`
