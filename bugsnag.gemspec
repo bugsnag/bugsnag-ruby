@@ -16,15 +16,9 @@ Gem::Specification.new do |s|
     "README.md"
   ]
   s.require_paths = ["lib"]
+  s.required_ruby_version = '>= 1.9.2'
 
-  s.add_dependency 'json', '~> 1.7', '>= 1.7.7'
-
-  if RUBY_VERSION < "1.9"
-    s.add_development_dependency "rake", "~> 10.1.1"
-  else
-    s.add_development_dependency 'rake'
-  end
-
+  s.add_development_dependency 'rake', '~> 10.1.1'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rdoc'
   s.add_development_dependency 'pry'
