@@ -6,7 +6,7 @@ thrown from your **Rails**, **Sinatra**, **Rack** or **plain Ruby** app.
 Any uncaught exceptions will trigger a notification to be sent to your
 Bugsnag project.
 
-[Bugsnag](http://bugsnag.com) captures errors in real-time from your web,
+Capture Rails errors with Bugsnag's [Rails error monitoring](https://bugsnag.com/platforms/rails) solution. [Bugsnag](http://bugsnag.com) captures errors in real-time from your web,
 mobile and desktop applications, helping you to understand and resolve them
 as fast as possible. [Create a free account](http://bugsnag.com) to start
 capturing exceptions from your applications.
