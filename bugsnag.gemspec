@@ -13,7 +13,8 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split("\n").reject {|file| file.start_with? "example/"}
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ]
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 1.9.2'
