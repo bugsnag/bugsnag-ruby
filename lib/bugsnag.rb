@@ -47,7 +47,7 @@ module Bugsnag
       @logged_ready = false unless defined?(@logged_ready)
 
       if configuration.api_key && !@logged_ready
-        log "Bugsnag exception handler #{VERSION} ready, api_key=#{configuration.api_key}"
+        log "Bugsnag exception handler #{VERSION} ready"
         @logged_ready = true
       end
     end
