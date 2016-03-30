@@ -289,6 +289,20 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "truncate large stacktraces before sending" do
+    ex = BugsnagTestException.new("It crashed")
+    stacktrace = []
+    5000.times {|i| stacktrace.push("/Some/path/rspec/example.rb:113:in `instance_eval'")}
+    ex.set_backtrace(stacktrace)
+    Bugsnag.notify(ex)
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      # Truncated body should be no bigger than
+      # 400 stacktrace lines * approx 60 chars per line + rest of payload (20000)
+      expect(::JSON.dump(payload).length).to be < 400*60 + 20000
+    }
+  end
+
   it "accepts a severity in overrides" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
       :severity => "info"
