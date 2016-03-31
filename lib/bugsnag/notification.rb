@@ -29,6 +29,9 @@ module Bugsnag
 
     CURRENT_PAYLOAD_VERSION = "2"
 
+    MAX_PAYLOAD_LENGTH = 128000
+    MAX_STACKTRACE_LENGTH = 400
+
     attr_accessor :context
     attr_reader :user
     attr_accessor :configuration
@@ -40,9 +43,19 @@ module Bugsnag
         # If the payload is going to be too long, we trim the hashes to send
         # a minimal payload instead
         payload_string = ::JSON.dump(payload)
-        if payload_string.length > 128000
+
+        # Trim the hashes first then..
+        if payload_string.length > MAX_PAYLOAD_LENGTH
           payload[:events] = payload[:events].map {|e| Bugsnag::Helpers.reduce_hash_size(e)}
           payload_string = ::JSON.dump(payload)
+
+          #..if the payload is still too long, trim the stack trace
+          if payload_string.length > MAX_PAYLOAD_LENGTH
+            payload[:events].map{ |event| event[:exceptions] }.flatten.each do |exception|
+              exception[:stacktrace] = exception[:stacktrace].slice(0, MAX_STACKTRACE_LENGTH)
+            end
+            payload_string = ::JSON.dump(payload)
+          end
         end
 
         Bugsnag::Delivery[delivery_method || configuration.delivery_method].deliver(url, payload_string, configuration)
