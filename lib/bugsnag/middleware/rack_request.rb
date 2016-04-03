@@ -23,7 +23,13 @@ module Bugsnag::Middleware
         # Build the clean url (hide the port if it is obvious)
         url = "#{request.scheme}://#{request.host}"
         url << ":#{request.port}" unless [80, 443].include?(request.port)
-        url << Bugsnag::Cleaner.new(notification.configuration.params_filters).clean_url(request.fullpath)
+
+        # If app is passed a bad URL, this code will crash attempting to clean it
+        begin
+          url << Bugsnag::Cleaner.new(notification.configuration.params_filters).clean_url(request.fullpath)
+        rescue StandardError => stde
+          Bugsnag.log "RackRequest - Rescued error while cleaning request.fullpath: #{stde}"
+        end
 
         headers = {}
 
