@@ -34,5 +34,10 @@ else
   end
 end
 
-Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
-Bugsnag.configuration.app_type = "sidekiq"
+# Only include if running under Sidekiq server; if it is included with Rails (for example)
+# it will cause Bugsnag to crash during middleware calls and no meta-data will be sent
+# along with application traces sent to the server.
+if ::Sidekiq.server?
+  Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
+  Bugsnag.configuration.app_type = "sidekiq"
+end
