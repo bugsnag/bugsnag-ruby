@@ -29,9 +29,6 @@ module Bugsnag
 
     CURRENT_PAYLOAD_VERSION = "2"
 
-    MAX_PAYLOAD_LENGTH = 128000
-    MAX_STACKTRACE_LENGTH = 400
-
     attr_accessor :context
     attr_reader :user
     attr_accessor :configuration
