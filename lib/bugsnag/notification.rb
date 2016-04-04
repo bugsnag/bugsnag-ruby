@@ -39,26 +39,9 @@ module Bugsnag
 
     class << self
       def deliver_exception_payload(url, payload, configuration=Bugsnag.configuration, delivery_method=nil)
-
-        # If the payload is going to be too long, we trim the hashes to send
-        # a minimal payload instead
-        payload_string = ::JSON.dump(payload)
-
-        # Trim the hashes first then..
-        if payload_string.length > MAX_PAYLOAD_LENGTH
-          payload[:events] = payload[:events].map {|e| Bugsnag::Helpers.reduce_hash_size(e)}
-          payload_string = ::JSON.dump(payload)
-
-          #..if the payload is still too long, trim the stack trace
-          if payload_string.length > MAX_PAYLOAD_LENGTH
-            payload[:events].map{ |event| event[:exceptions] }.flatten.each do |exception|
-              exception[:stacktrace] = exception[:stacktrace].slice(0, MAX_STACKTRACE_LENGTH)
-            end
-            payload_string = ::JSON.dump(payload)
-          end
-        end
-
-        Bugsnag::Delivery[delivery_method || configuration.delivery_method].deliver(url, payload_string, configuration)
+        payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(payload))
+        delivery_method = delivery_method || configuration.delivery_method
+        Bugsnag::Delivery[delivery_method].deliver(url, payload_string, configuration)
       end
     end
 
