@@ -11,6 +11,12 @@ module Bugsnag
           h[k] = reduce_hash_size(v)
         elsif v.is_a?(Array) || v.is_a?(Set)
           h[k] = v.map {|el| reduce_hash_size(el) }
+        elsif v.is_a?(Integer)
+          # Preserve integers
+          h[k] = v
+        elsif !!v == v
+          # Preserve booleans
+          h[k] = v
         else
           val = v.to_s
           val = val.slice(0, MAX_STRING_LENGTH) + "[TRUNCATED]" if val.length > MAX_STRING_LENGTH
