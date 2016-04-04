@@ -36,3 +36,7 @@ end
 
 Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
 Bugsnag.configuration.app_type = "sidekiq"
+
+if defined?(::Sidekiq::CLI) && defined?(Bugsnag::Railtie)
+  Bugsnag::Railtie.running_as_dependency = true
+end

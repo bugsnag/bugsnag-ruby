@@ -7,6 +7,8 @@ require "bugsnag/middleware/rack_request"
 
 module Bugsnag
   class Railtie < Rails::Railtie
+    cattr_accessor :running_as_dependency
+
     rake_tasks do
       require "bugsnag/rake"
       load "bugsnag/tasks/bugsnag.rake"
@@ -49,7 +51,7 @@ module Bugsnag
         ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
       end
 
-      Bugsnag.configuration.app_type = "rails"
+      Bugsnag.configuration.app_type = "rails" unless Bugsnag::Railtie.running_as_dependency
     end
 
     # Configure params_filters after initialization, so that rails initializers
