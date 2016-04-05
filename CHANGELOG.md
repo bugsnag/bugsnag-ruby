@@ -1,6 +1,27 @@
 Changelog
 =========
 
+## 4.0.1 (5 Apr 2016)
+
+### Fixes
+
+* Fix Sidekiq app type being overwritten by Rails
+  | [Luiz Felipe G. Pereira](https://github.com/Draiken)
+  | [#286](https://github.com/bugsnag/bugsnag-ruby/pull/286)
+
+* Fix report uploads being rejected due to payload size
+  | [Ben Ibinson](https://github.com/CodeHex)
+  | [Duncan Hewett](https://github.com/duncanhewett)
+  | [#288](https://github.com/bugsnag/bugsnag-ruby/pull/288)
+  | [#290](https://github.com/bugsnag/bugsnag-ruby/pull/290)
+
+* Fix a possible crash when parsing a URL for RackRequest
+  | [Max Schubert](https://github.com/perldork)
+  | [#289](https://github.com/bugsnag/bugsnag-ruby/pull/289)
+
+* Hide partial API key logged when loading Bugsnag
+  | [#283](https://github.com/bugsnag/bugsnag-ruby/issues/283)
+
 ## 4.0.0 (9 Mar 2016)
 
 This release includes general fixes as well as removing support
