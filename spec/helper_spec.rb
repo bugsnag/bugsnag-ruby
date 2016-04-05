@@ -7,6 +7,24 @@ describe Bugsnag::Helpers do
 
   describe "trim_if_needed" do
 
+    it "preserves bool types" do
+      value = Bugsnag::Helpers.trim_if_needed([1, 3, true, "NO", "2", false])
+      expect(value[2]).to be_a(TrueClass)
+      expect(value[5]).to be_a(FalseClass)
+    end
+
+    it "preserves Numeric types" do
+      value = Bugsnag::Helpers.trim_if_needed([1, 3.445, true, "NO", "2", false])
+      expect(value[0]).to be_a(Numeric)
+      expect(value[1]).to be_a(Numeric)
+    end
+
+    it "preserves String types" do
+      value = Bugsnag::Helpers.trim_if_needed([1, 3, true, "NO", "2", false])
+      expect(value[3]).to be_a(String)
+      expect(value[4]).to be_a(String)
+    end
+
     context "payload length is less than allowed" do
 
       it "does not change strings" do
