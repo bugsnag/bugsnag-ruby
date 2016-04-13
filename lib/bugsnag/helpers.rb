@@ -8,12 +8,14 @@ module Bugsnag
     MAX_STRING_LENGTH = 4096
     MAX_PAYLOAD_LENGTH = 128000
     MAX_ARRAY_LENGTH = 400
+    RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
     # Trim the size of value if the serialized JSON value is longer than is
     # accepted by Bugsnag
     def self.trim_if_needed(value)
-      return value unless payload_too_long?(value)
-      reduced_value = trim_strings_in_value(value)
+      sanitized_value = Bugsnag::Cleaner.clean_object_encoding(value)
+      return sanitized_value unless payload_too_long?(sanitized_value)
+      reduced_value = trim_strings_in_value(sanitized_value)
       return reduced_value unless payload_too_long?(reduced_value)
       truncate_arrays_in_value(reduced_value)
     end
@@ -29,10 +31,15 @@ module Bugsnag
       end
     end
 
+    # Check if a value is a raw type which should not be trimmed, truncated
+    # or converted to a string
+    def self.is_json_raw_type?(value)
+      RAW_DATA_TYPES.detect {|klass| value.is_a?(klass)} != nil
+    end
+
     private
 
     TRUNCATION_INFO = '[TRUNCATED]'
-    RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
     # Shorten array until it fits within the payload size limit when serialized
     def self.truncate_arrays(array)
@@ -45,13 +52,13 @@ module Bugsnag
     end
 
     # Trim all strings to be less than the maximum allowed string length
-    def self.trim_strings_in_value(value, seen=[])
+    def self.trim_strings_in_value(value)
       return value if is_json_raw_type?(value)
       case value
       when Hash
-        trim_strings_in_hash(value, seen)
+        trim_strings_in_hash(value)
       when Array, Set
-        trim_strings_in_array(value, seen)
+        trim_strings_in_array(value)
       else
         trim_as_string(value)
       end
@@ -63,21 +70,13 @@ module Bugsnag
       ::JSON.dump(value).length >= MAX_PAYLOAD_LENGTH
     end
 
-    # Check if a value is a raw type which should not be trimmed, truncated
-    # or converted to a string
-    def self.is_json_raw_type?(value)
-      RAW_DATA_TYPES.detect {|klass| value.is_a?(klass)} != nil
-    end
-
-    def self.trim_strings_in_hash(hash, seen=[])
-      return {} if seen.include?(hash) || !hash.is_a?(Hash)
-      result = hash.each_with_object({}) do |(key, value), reduced_hash|
-        if reduced_value = trim_strings_in_value(value, seen)
+    def self.trim_strings_in_hash(hash)
+      return {} unless hash.is_a?(Hash)
+      hash.each_with_object({}) do |(key, value), reduced_hash|
+        if reduced_value = trim_strings_in_value(value)
           reduced_hash[key] = reduced_value
         end
       end
-      seen << hash
-      result
     end
 
     # If possible, convert the provided object to a string and trim to the
@@ -92,11 +91,9 @@ module Bugsnag
       text
     end
 
-    def self.trim_strings_in_array(collection, seen=[])
-      return [] if seen.include?(collection) || !collection.respond_to?(:map)
-      result = collection.map {|value| trim_strings_in_value(value, seen)}
-      seen << collection
-      result
+    def self.trim_strings_in_array(collection)
+      return [] unless collection.respond_to?(:map)
+      collection.map {|value| trim_strings_in_value(value)}
     end
 
     def self.truncate_arrays_in_value(value)
