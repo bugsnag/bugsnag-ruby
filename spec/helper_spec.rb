@@ -7,6 +7,20 @@ describe Bugsnag::Helpers do
 
   describe "trim_if_needed" do
 
+    it "breaks recursion" do
+      a = [1, 2, 3]
+      b = [2, a]
+      a << b
+      value = Bugsnag::Helpers.trim_if_needed(a)
+      expect(value).to eq([1, 2, 3, [2, "[RECURSION]"]])
+    end
+
+    it "does not break equal objects without recursion" do
+      data = [1, [1, 2], [1, 2], "a"]
+      value = Bugsnag::Helpers.trim_if_needed(data)
+      expect(value).to eq data
+    end
+
     it "preserves bool types" do
       value = Bugsnag::Helpers.trim_if_needed([1, 3, true, "NO", "2", false])
       expect(value[2]).to be_a(TrueClass)
@@ -29,17 +43,17 @@ describe Bugsnag::Helpers do
 
       it "does not change strings" do
         value = SecureRandom.hex(4096)
-        expect(Bugsnag::Helpers.trim_if_needed(value)).to be value
+        expect(Bugsnag::Helpers.trim_if_needed(value)).to eq value
       end
 
       it "does not change arrays" do
         value = 1000.times.map {|i| "#{i} - #{i + 1}" }
-        expect(Bugsnag::Helpers.trim_if_needed(value)).to be value
+        expect(Bugsnag::Helpers.trim_if_needed(value)).to eq value
       end
 
       it "does not change hashes" do
         value = Hash[*1000.times.map{|i| ["#{i}", i]}.flatten]
-        expect(Bugsnag::Helpers.trim_if_needed(value)).to be value
+        expect(Bugsnag::Helpers.trim_if_needed(value)).to eq value
       end
     end
 

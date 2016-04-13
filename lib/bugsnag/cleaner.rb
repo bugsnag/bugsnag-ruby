@@ -17,7 +17,7 @@ module Bugsnag
     end
 
     def traverse_object(obj, seen, scope)
-      return nil unless obj
+      return nil if obj.nil?
 
       # Protect against recursion of recursable items
       protection = if obj.is_a?(Hash) || obj.is_a?(Array) || obj.is_a?(Set)
