@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 4.0.2 (13 Apr 2016)
+
+### Fixes
+
+* Fix payload rejection due to truncating duplicate stacktrace frames
+  | [#284](https://github.com/bugsnag/bugsnag-ruby/issues/284)
+  | [#291](https://github.com/bugsnag/bugsnag-ruby/pull/291)
+
 ## 4.0.1 (5 Apr 2016)
 
 ### Fixes
