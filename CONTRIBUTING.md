@@ -41,3 +41,7 @@ If you're a member of the core team, follow these instructions for releasing bug
     ```
 
 * Update the version running in the bugsnag-website project
+
+### Update docs.bugsnag.com
+
+Update the setup guides for Ruby (and its frameworks) with any new content.
