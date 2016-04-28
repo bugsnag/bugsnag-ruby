@@ -29,7 +29,7 @@ if ::Sidekiq::VERSION < '3'
 else
   ::Sidekiq.configure_server do |config|
     config.error_handlers << lambda do |ex, ctx|
-      Bugsnag.auto_notify(ex, :sidekiq => ctx, :context => "sidekiq##{ctx['queue']}")
+      Bugsnag.auto_notify(ex, :sidekiq => ctx, :context => "#{ctx['class']} on #{ctx['queue']}")
     end
   end
 end
