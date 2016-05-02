@@ -335,6 +335,17 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "lets you override severity using block syntax" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |notification|
+      notification.severity = "info"
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["severity"]).to eq("info")
+    }
+  end
+
   it "autonotifies errors" do
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
 
