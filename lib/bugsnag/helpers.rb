@@ -5,7 +5,7 @@ require 'json' unless defined?(JSON)
 
 module Bugsnag
   module Helpers
-    MAX_STRING_LENGTH = 4096
+    MAX_STRING_LENGTH = 3072
     MAX_PAYLOAD_LENGTH = 128000
     MAX_ARRAY_LENGTH = 40
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
@@ -17,7 +17,9 @@ module Bugsnag
       return sanitized_value unless payload_too_long?(sanitized_value)
       reduced_value = trim_strings_in_value(sanitized_value)
       return reduced_value unless payload_too_long?(reduced_value)
-      truncate_arrays_in_value(reduced_value)
+      reduced_value = truncate_arrays_in_value(reduced_value)
+      return reduced_value unless payload_too_long?(reduced_value)
+      remove_metadata_from_events(reduced_value)
     end
 
     def self.flatten_meta_data(overrides)
@@ -103,6 +105,15 @@ module Bugsnag
       else
         value
       end
+    end
+
+    # Remove `metaData` from array of `events` within object
+    def self.remove_metadata_from_events(object)
+      return {} unless object.is_a?(Hash) and object[:events].respond_to?(:map)
+      object[:events].map do |event|
+        event.delete(:metaData) if object.is_a?(Hash)
+      end
+      object
     end
 
     def self.truncate_arrays_in_hash(hash)

@@ -146,6 +146,17 @@ describe Bugsnag::Helpers do
 
           expect(::JSON.dump(trimmed_value).length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
         end
+
+        it "removes metadata from events" do
+          metadata = Hash[*20000.times.map {|i| [i,i+1]}.flatten]
+          frames = 100.times.map {|i| SecureRandom.hex(4096) }
+          value = {key:"abc", events:[{metaData: metadata, frames: frames, cake: "carrot"}]}
+          trimmed_value = Bugsnag::Helpers.trim_if_needed(value)
+          expect(::JSON.dump(trimmed_value).length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+          expect(trimmed_value[:key]).to eq value[:key]
+          expect(trimmed_value[:events].first.keys.to_set).to eq [:frames, :cake].to_set
+          expect(trimmed_value[:events].first[:metaData]).to be_nil
+        end
       end
     end
   end
