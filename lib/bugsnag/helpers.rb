@@ -42,13 +42,11 @@ module Bugsnag
     TRUNCATION_INFO = '[TRUNCATED]'
 
     # Shorten array until it fits within the payload size limit when serialized
-    def self.truncate_arrays(array)
+    def self.truncate_array(array)
       return [] unless array.respond_to?(:slice)
-      array = array.slice(0, MAX_ARRAY_LENGTH)
-      while array.length > 0 and payload_too_long?(array)
-        array = array.slice(0, array.length - 1)
+      array.slice(0, MAX_ARRAY_LENGTH).map do |item|
+        truncate_arrays_in_value(item)
       end
-      array
     end
 
     # Trim all strings to be less than the maximum allowed string length
@@ -101,7 +99,7 @@ module Bugsnag
       when Hash
         truncate_arrays_in_hash(value)
       when Array, Set
-        truncate_arrays(value)
+        truncate_array(value)
       else
         value
       end

@@ -135,10 +135,11 @@ describe Bugsnag::Helpers do
 
       context "and trimmed strings are not enough" do
         it "truncates long arrays" do
-          value = 100.times.map {|i| SecureRandom.hex(8192) }
+          value = [100.times.map {|i| SecureRandom.hex(8192) }, "a"]
           trimmed_value = Bugsnag::Helpers.trim_if_needed(value)
-          expect(trimmed_value.length).to be > 0
-          trimmed_value.each do |str|
+          expect(trimmed_value.length).to eq 2
+          expect(trimmed_value.first.length).to eq Bugsnag::Helpers::MAX_ARRAY_LENGTH
+          trimmed_value.first.each do |str|
             expect(str.match(/\[TRUNCATED\]$/)).to_not be_nil
             expect(str.length).to eq(Bugsnag::Helpers::MAX_STRING_LENGTH)
           end
