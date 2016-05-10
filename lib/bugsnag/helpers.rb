@@ -7,7 +7,7 @@ module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 4096
     MAX_PAYLOAD_LENGTH = 128000
-    MAX_ARRAY_LENGTH = 400
+    MAX_ARRAY_LENGTH = 40
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
     # Trim the size of value if the serialized JSON value is longer than is
