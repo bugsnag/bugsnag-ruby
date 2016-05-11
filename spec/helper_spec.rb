@@ -135,15 +135,27 @@ describe Bugsnag::Helpers do
 
       context "and trimmed strings are not enough" do
         it "truncates long arrays" do
-          value = 100.times.map {|i| SecureRandom.hex(8192) }
+          value = [100.times.map {|i| SecureRandom.hex(8192) }, "a"]
           trimmed_value = Bugsnag::Helpers.trim_if_needed(value)
-          expect(trimmed_value.length).to be > 0
-          trimmed_value.each do |str|
+          expect(trimmed_value.length).to eq 2
+          expect(trimmed_value.first.length).to eq Bugsnag::Helpers::MAX_ARRAY_LENGTH
+          trimmed_value.first.each do |str|
             expect(str.match(/\[TRUNCATED\]$/)).to_not be_nil
             expect(str.length).to eq(Bugsnag::Helpers::MAX_STRING_LENGTH)
           end
 
           expect(::JSON.dump(trimmed_value).length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        end
+
+        it "removes metadata from events" do
+          metadata = Hash[*20000.times.map {|i| [i,i+1]}.flatten]
+          frames = 100.times.map {|i| SecureRandom.hex(4096) }
+          value = {key:"abc", events:[{metaData: metadata, frames: frames, cake: "carrot"}]}
+          trimmed_value = Bugsnag::Helpers.trim_if_needed(value)
+          expect(::JSON.dump(trimmed_value).length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+          expect(trimmed_value[:key]).to eq value[:key]
+          expect(trimmed_value[:events].first.keys.to_set).to eq [:frames, :cake].to_set
+          expect(trimmed_value[:events].first[:metaData]).to be_nil
         end
       end
     end

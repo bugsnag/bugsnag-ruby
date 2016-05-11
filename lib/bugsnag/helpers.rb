@@ -5,9 +5,9 @@ require 'json' unless defined?(JSON)
 
 module Bugsnag
   module Helpers
-    MAX_STRING_LENGTH = 4096
+    MAX_STRING_LENGTH = 3072
     MAX_PAYLOAD_LENGTH = 128000
-    MAX_ARRAY_LENGTH = 400
+    MAX_ARRAY_LENGTH = 40
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
     # Trim the size of value if the serialized JSON value is longer than is
@@ -17,7 +17,9 @@ module Bugsnag
       return sanitized_value unless payload_too_long?(sanitized_value)
       reduced_value = trim_strings_in_value(sanitized_value)
       return reduced_value unless payload_too_long?(reduced_value)
-      truncate_arrays_in_value(reduced_value)
+      reduced_value = truncate_arrays_in_value(reduced_value)
+      return reduced_value unless payload_too_long?(reduced_value)
+      remove_metadata_from_events(reduced_value)
     end
 
     def self.flatten_meta_data(overrides)
@@ -42,13 +44,11 @@ module Bugsnag
     TRUNCATION_INFO = '[TRUNCATED]'
 
     # Shorten array until it fits within the payload size limit when serialized
-    def self.truncate_arrays(array)
+    def self.truncate_array(array)
       return [] unless array.respond_to?(:slice)
-      array = array.slice(0, MAX_ARRAY_LENGTH)
-      while array.length > 0 and payload_too_long?(array)
-        array = array.slice(0, array.length - 1)
+      array.slice(0, MAX_ARRAY_LENGTH).map do |item|
+        truncate_arrays_in_value(item)
       end
-      array
     end
 
     # Trim all strings to be less than the maximum allowed string length
@@ -101,10 +101,19 @@ module Bugsnag
       when Hash
         truncate_arrays_in_hash(value)
       when Array, Set
-        truncate_arrays(value)
+        truncate_array(value)
       else
         value
       end
+    end
+
+    # Remove `metaData` from array of `events` within object
+    def self.remove_metadata_from_events(object)
+      return {} unless object.is_a?(Hash) and object[:events].respond_to?(:map)
+      object[:events].map do |event|
+        event.delete(:metaData) if object.is_a?(Hash)
+      end
+      object
     end
 
     def self.truncate_arrays_in_hash(hash)
