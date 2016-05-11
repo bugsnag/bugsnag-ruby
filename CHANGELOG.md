@@ -1,6 +1,20 @@
 Changelog
 =========
 
+## 4.1.0 (11 May 2016)
+
+### Enhancements
+
+* Add support for 'block syntax' on Bugsnag.notify calls
+  | [James Smith](https://github.com/loopj)
+  | [#292](https://github.com/bugsnag/bugsnag-ruby/pull/292)
+
+### Fixes
+
+* Trim stacktraces and metadata to ensure payload delivery
+  | [#294](https://github.com/bugsnag/bugsnag-ruby/issues/294)
+  | [#295](https://github.com/bugsnag/bugsnag-ruby/pull/295)
+
 ## 4.0.2 (13 Apr 2016)
 
 ### Fixes
