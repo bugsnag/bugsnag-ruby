@@ -271,11 +271,15 @@ $ bundle exec rake bugsnag:heroku:add_deploy_hook HEROKU_APP=my-app
 
 If you use [capistrano](https://github.com/capistrano/capistrano) to deploy
 your apps, you can enable deploy tracking by adding the integration to your
-app's `deploy.rb`:
+app's `Capfile`:
 
 ```ruby
 require "bugsnag/capistrano"
+```
 
+Provide an API key in `config/deploy.rb`:
+
+```ruby
 set :bugsnag_api_key, "api_key_here"
 ```
 
