@@ -81,12 +81,18 @@ By default, `ignore_classes` contains the following:
 
 ```ruby
 [
-  "ActiveRecord::RecordNotFound",
-  "ActionController::RoutingError",
+  "AbstractController::ActionNotFound",
   "ActionController::InvalidAuthenticityToken",
-  "CGI::Session::CookieStore::TamperedWithCookie",
+  "ActionController::ParameterMissing",
+  "ActionController::RoutingError",
   "ActionController::UnknownAction",
-  "AbstractController::ActionNotFound"
+  "ActionController::UnknownFormat",
+  "ActionController::UnknownHttpMethod",
+  "ActiveRecord::RecordNotFound",
+  "CGI::Session::CookieStore::TamperedWithCookie",
+  "Mongoid::Errors::DocumentNotFound",
+  "SignalException",
+  "SystemExit"
 ]
 ```
 
@@ -137,8 +143,8 @@ config.params_filters += ["credit_card_number", /^password$/]
 ```
 
 By default, `params_filters` is set to `[/authorization/i, /cookie/i,
-/password/i, /secret/i]`, and for rails apps, imports all values from
-`Rails.configuration.filter_parameters`.
+/password/i, /secret/i, "rack.request.form_vars"]`, and for rails apps,
+imports all values from `Rails.configuration.filter_parameters`.
 
 **Note:** Assigning (`=`) instead of appending (`+=`) to the default value will
 remove the default protections.
