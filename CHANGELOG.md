@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 4.2.0 (17 Jun 2016)
+
+### Enhancements
+
+* Add the name of the job class in context for Sidekiq and Resque errors
+  | [Johan Lundström](https://github.com/johanlunds)
+  | [#293](https://github.com/bugsnag/bugsnag-ruby/pull/293)
+
 ## 4.1.0 (11 May 2016)
 
 ### Enhancements
