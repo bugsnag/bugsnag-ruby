@@ -1,6 +1,17 @@
 Changelog
 =========
 
+## 4.2.1 (23 Jun 2016)
+
+### Fixes
+
+* Ensure Rails 2 extensions are not loaded on newer versions
+  | [#303](https://github.com/bugsnag/bugsnag-ruby/issues/303)
+
+* Remove API key logging when Bugsnag is logging successfully
+  | [Julian Borrey](https://github.com/jborrey)
+  | [#299](https://github.com/bugsnag/bugsnag-ruby/pull/299)
+
 ## 4.2.0 (17 Jun 2016)
 
 ### Enhancements
