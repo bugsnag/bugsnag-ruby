@@ -130,7 +130,7 @@ module Bugsnag
   end
 end
 
-[:resque, :sidekiq, :mailman, :delayed_job].each do |integration|
+[:resque, :sidekiq, :mailman, :delayed_job, :que].each do |integration|
   begin
     require "bugsnag/#{integration}"
   rescue LoadError
