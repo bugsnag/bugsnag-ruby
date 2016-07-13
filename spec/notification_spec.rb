@@ -857,6 +857,21 @@ describe Bugsnag::Notification do
     }
   end
 
+  it 'should handle exceptions with empty backtrace' do
+    begin
+      err = RuntimeError.new
+      err.set_backtrace([])
+      raise err
+    rescue
+      Bugsnag.notify $!
+    end
+
+    expect(Bugsnag).to have_sent_notification { |payload|
+      exception = get_exception_from_payload(payload)
+      expect(exception['stacktrace'].size).to be > 0
+    }
+  end
+
   if defined?(JRUBY_VERSION)
 
     it "should work with java.lang.Throwables" do
