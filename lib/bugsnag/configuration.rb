@@ -50,7 +50,6 @@ module Bugsnag
       "AbstractController::ActionNotFound",
       "ActionController::InvalidAuthenticityToken",
       "ActionController::ParameterMissing",
-      "ActionController::RoutingError",
       "ActionController::UnknownAction",
       "ActionController::UnknownFormat",
       "ActionController::UnknownHttpMethod",
