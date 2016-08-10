@@ -29,7 +29,7 @@ module Bugsnag
       # Configure bugsnag rails defaults
       Bugsnag.configure do |config|
         config.logger = ::Rails.logger
-        config.release_stage = ::Rails.env.to_s
+        config.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] || ::Rails.env.to_s
         config.project_root = ::Rails.root.to_s
         config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
       end
