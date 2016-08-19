@@ -1,0 +1,9 @@
+---
+:orm: datamapper
+:test: riot
+:mock: mocha
+:script: jquery
+:renderer: haml
+:stylesheet: none
+:namespace: BugsnagPadrino
+:migration_format: number

@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+
+if ENV['INTEGRATION_LANGUAGE']
+  gem 'bugsnag', path: '../../../../'
+else
+  gem 'bugsnag'
+end
+
+gem 'rack'
+gem 'redcarpet'
