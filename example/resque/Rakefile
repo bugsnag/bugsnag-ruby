@@ -1,0 +1,8 @@
+load "app.rb"
+require "resque/tasks"
+require "bugsnag/rake"
+
+desc "Remove all events that are too old to be accessed"
+task :test_rake do
+  raise "DWERP"
+end

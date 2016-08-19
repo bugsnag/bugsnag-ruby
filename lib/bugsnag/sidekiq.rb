@@ -30,7 +30,3 @@ end
     chain.add ::Bugsnag::Sidekiq
   end
 end
-
-if defined?(::Sidekiq::CLI) && defined?(Bugsnag::Railtie)
-  Bugsnag::Railtie.running_as_dependency = true
-end
