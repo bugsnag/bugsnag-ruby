@@ -2,9 +2,14 @@ require 'sidekiq'
 
 module Bugsnag
   class Sidekiq
+    def initialize(options = {})
+      Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
+      Bugsnag.configuration.app_type = "sidekiq"
+      Bugsnag.configuration.delivery_method = :synchronous
+    end
+
     def call(worker, msg, queue)
       begin
-
         # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq
         Bugsnag.set_request_data :sidekiq, { :msg => msg, :queue => queue }
 
@@ -20,22 +25,11 @@ module Bugsnag
   end
 end
 
-if ::Sidekiq::VERSION < '3'
-  ::Sidekiq.configure_server do |config|
-    config.server_middleware do |chain|
-      chain.add ::Bugsnag::Sidekiq
-    end
-  end
-else
-  ::Sidekiq.configure_server do |config|
-    config.error_handlers << lambda do |ex, ctx|
-      Bugsnag.auto_notify(ex, :sidekiq => ctx, :context => "#{ctx['class']}@#{ctx['queue']}")
-    end
+::Sidekiq.configure_server do |config|
+  config.server_middleware do |chain|
+    chain.add ::Bugsnag::Sidekiq
   end
 end
-
-Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
-Bugsnag.configuration.app_type = "sidekiq"
 
 if defined?(::Sidekiq::CLI) && defined?(Bugsnag::Railtie)
   Bugsnag::Railtie.running_as_dependency = true
