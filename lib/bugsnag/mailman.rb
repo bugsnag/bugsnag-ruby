@@ -3,8 +3,6 @@ require 'mailman'
 module Bugsnag
   class Mailman
     def initialize
-      super
-
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Mailman)
       Bugsnag.configuration.app_type = "mailman"
     end
