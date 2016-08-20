@@ -9,21 +9,17 @@ module Bugsnag
     attr_accessor :release_stage
     attr_accessor :notify_release_stages
     attr_accessor :auto_notify
-    attr_accessor :use_ssl
     attr_accessor :ca_file
     attr_accessor :send_environment
     attr_accessor :send_code
     attr_accessor :project_root
     attr_accessor :app_version
     attr_accessor :app_type
-    attr_accessor :params_filters
-    attr_accessor :ignore_user_agents
+    attr_accessor :meta_data_filters
     attr_accessor :endpoint
     attr_accessor :logger
     attr_accessor :middleware
     attr_accessor :internal_middleware
-    attr_accessor :delay_with_resque
-    attr_accessor :debug
     attr_accessor :proxy_host
     attr_accessor :proxy_port
     attr_accessor :proxy_user
@@ -31,7 +27,7 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :delivery_method
-    attr_writer :ignore_classes
+    attr_accessor :ignore_classes
 
     LOG_PREFIX = "** [Bugsnag] "
 
@@ -65,7 +61,7 @@ module Bugsnag
 
       # Set up logging
       self.logger = Logger.new(STDOUT)
-      self.logger.level = Logger::WARN
+      self.logger.level = Logger::INFO
 
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new
@@ -74,13 +70,25 @@ module Bugsnag
       self.middleware.use Bugsnag::Middleware::Callbacks
     end
 
-    # Accept both String and Class instances as an ignored class
-    def ignore_classes
-      @mutex.synchronize { @ignore_classes.map! { |klass| klass.is_a?(Class) ? klass.name : klass } }
+    def should_notify_release_stage?
+      if @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
+        return true
+      else
+        warn "Not notifying in release stage #{@release_stage}"
+        return false
+      end
     end
 
-    def should_notify?
-      @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
+    def valid_api_key?
+      if api_key.nil?
+        warn "No API key configured, couldn't notify"
+        return false
+      elsif api_key !~ API_KEY_REGEX
+        warn "Your API key (#{api_key}) is not valid, couldn't notify"
+        return false
+      end
+
+      return true
     end
 
     def request_data
@@ -97,6 +105,20 @@ module Bugsnag
 
     def clear_request_data
       Thread.current[THREAD_LOCAL_NAME] = nil
+    end
+
+    def info(message)
+      configuration.logger.info("#{LOG_PREFIX}#{message}")
+    end
+
+    # Warning logger
+    def warn(message)
+      configuration.logger.warn("#{LOG_PREFIX}#{message}")
+    end
+
+    # Debug logger
+    def debug(message)
+      configuration.logger.debug("#{LOG_PREFIX}#{message}")
     end
 
     private

@@ -9,6 +9,8 @@ module Bugsnag
 
       class << self
         def deliver(url, body, configuration)
+          @configuration = configuration
+
           start_once!
 
           if @queue.length > MAX_OUTSTANDING_REQUESTS
@@ -38,7 +40,7 @@ module Bugsnag
             end
 
             at_exit do
-              Bugsnag.warn("Waiting for #{@queue.length} outstanding request(s)") unless @queue.empty?
+              @configuration.warn("Waiting for #{@queue.length} outstanding request(s)") unless @queue.empty?
               @queue.push STOP
               worker_thread.join
             end

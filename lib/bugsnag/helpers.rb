@@ -6,7 +6,7 @@ require 'json' unless defined?(JSON)
 module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 3072
-    MAX_PAYLOAD_LENGTH = 128000
+    MAX_PAYLOAD_LENGTH = 256000
     MAX_ARRAY_LENGTH = 40
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 

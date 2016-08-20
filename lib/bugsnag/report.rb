@@ -22,14 +22,6 @@ module Bugsnag
     attr_accessor :meta_data
     attr_accessor :severity
 
-
-    class << self
-      def deliver_exception_payload(payload, configuration, delivery_method)
-        payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(payload))
-        Bugsnag::Delivery[delivery_method].deliver(url, payload_string, configuration)
-      end
-    end
-
     def initialize(exception, configuration, request_data = nil)
       configuration = configuration
       @request_data = request_data
@@ -108,49 +100,15 @@ module Bugsnag
 
     # Deliver this notification to bugsnag.com Also runs through the middleware as required.
     def deliver
-      return unless configuration.should_notify?
-      return if ignore?
-
       # Check we have at least an api_key
-      if api_key.nil?
-        Bugsnag.warn "No API key configured, couldn't notify"
-        return
-      elsif api_key !~ API_KEY_REGEX
-        Bugsnag.warn "Your API key (#{api_key}) is not valid, couldn't notify"
-        return
-      end
-
-      configuration.internal_middleware.run(self)
-
-      exceptions.each do |exception|
-        if exception.class.include?(Bugsnag::MetaData)
-          if exception.bugsnag_user_id.is_a?(String)
-            self.user_id = exception.bugsnag_user_id
-          end
-          if exception.bugsnag_context.is_a?(String)
-            self.context = exception.bugsnag_context
-          end
-        end
-      end
+      
 
       # make meta_data available to public middleware
       @meta_data = generate_meta_data(@exceptions, @overrides)
-
-      # Run the middleware here (including Bugsnag::Middleware::Callbacks)
-      # at the end of the middleware stack, execute the actual notification delivery
-      configuration.middleware.run(self) do
-        # This supports self.ignore! for before_notify_callbacks.
-        return if ignore?
-
-        Bugsnag.log("Notifying #{configuration.endpoint} of #{exceptions.last.class}")
-
-        # Deliver the payload
-        self.class.deliver_exception_payload(configuration.endpoint, build_exception_payload, configuration)
-      end
     end
 
     # Build an exception payload
-    def build_exception_payload
+    def as_json
       # Build the payload's exception event
       payload_event = {
         :app => {

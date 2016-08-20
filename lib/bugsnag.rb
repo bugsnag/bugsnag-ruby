@@ -35,21 +35,47 @@ module Bugsnag
     end
 
     # Explicitly notify of an exception
-    def notify(exception, &block)
-      #Build notification
-      notification = Notification.new(exception, configuration)
+    def notify(exception, auto_notify=false, &block)
+      return unless configuration.valid_api_key? && configuration.should_notify_release_stage?
 
-      #Check if config allows send
-      if configuration.
-      #Run internal middleware
-      #Run internal block?
-      #Run users middleware
-      #Run users block
-      #Deliver
+      report = Report.new(exception, configuration)
+      return if report.ignore?
 
-      yield(notification) if block_given?
+      # Run internal middleware
+      configuration.internal_middleware.run(report)
+      return if report.ignore?
 
-      notification.deliver
+      # If this is an auto_notify we yield the block before the user's middleware is run
+      # so that they get to see the final copy of the report there
+      yield(report) if block_given? && auto_notify
+      return if report.ignore?
+
+      # Apply the user's information attached to the exceptions
+      exceptions.each do |exception|
+        if exception.class.include?(Bugsnag::MetaData)
+          if exception.bugsnag_user_id.is_a?(String)
+            self.user_id = exception.bugsnag_user_id
+          end
+          if exception.bugsnag_context.is_a?(String)
+            self.context = exception.bugsnag_context
+          end
+        end
+      end
+
+      # Run users middleware
+      configuration.middleware.run(report) do
+        return if report.ignore?
+
+        # If this is not an auto_notify then the block was provided by the user. This should be the last
+        # block that is run as it is the users "most specific" block.
+        yield(report) if block_given? && !auto_notify
+        return if report.ignore?
+
+        # Deliver
+        configuration.info("Notifying #{configuration.endpoint} of #{exceptions.last.class}")
+        payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
+        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
+      end
     end
 
     # Configuration getters
