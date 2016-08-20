@@ -2,7 +2,7 @@ require 'sidekiq'
 
 module Bugsnag
   class Sidekiq
-    def initialize(options = {})
+    def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
       Bugsnag.configuration.app_type = "sidekiq"
       Bugsnag.configuration.delivery_method = :synchronous

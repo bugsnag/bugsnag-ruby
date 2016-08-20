@@ -39,4 +39,5 @@ Bugsnag::Resque.add_failure_backend
 
 Resque.before_first_fork do
   Bugsnag.configuration.app_type = "resque"
+  Bugsnag.configuration.delivery_method = :synchronous
 end
