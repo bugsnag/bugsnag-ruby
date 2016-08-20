@@ -29,8 +29,6 @@ module Bugsnag
     attr_accessor :delivery_method
     attr_accessor :ignore_classes
 
-    LOG_PREFIX = "** [Bugsnag] "
-
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
     DEFAULT_PARAMS_FILTERS = [
@@ -62,6 +60,9 @@ module Bugsnag
       # Set up logging
       self.logger = Logger.new(STDOUT)
       self.logger.level = Logger::INFO
+      self.logger.formatter = proc do |severity, datetime, progname, msg|
+        "** [Bugsnag] #{datetime}: #{msg}\n"
+      end
 
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new

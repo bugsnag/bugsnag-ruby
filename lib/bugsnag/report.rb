@@ -22,13 +22,12 @@ module Bugsnag
     attr_accessor :meta_data
     attr_accessor :severity
 
-    def initialize(exception, configuration, request_data = nil)
-      configuration = configuration
-      @request_data = request_data
+    def initialize(exception, configuration)
       @user = {}
       @should_ignore = false
 
       self.api_key = configuration.api_key
+      self.configuration = configuration
       self.delivery_method = configuration.delivery_method
       self.meta_data = {}
       self.severity = "warning"
@@ -67,12 +66,6 @@ module Bugsnag
       end
     end
 
-    # Add a single value as custom data, to this notification
-    def add_custom_data(name, value)
-      @meta_data[:custom] ||= {}
-      @meta_data[:custom][name.to_sym] = value
-    end
-
     # Add a new tab to this notification
     def add_tab(name, value)
       return if name.nil?
@@ -96,15 +89,6 @@ module Bugsnag
     def user=(user = {})
       return unless user.is_a? Hash
       @user.merge!(user).delete_if{|k,v| v == nil}
-    end
-
-    # Deliver this notification to bugsnag.com Also runs through the middleware as required.
-    def deliver
-      # Check we have at least an api_key
-      
-
-      # make meta_data available to public middleware
-      @meta_data = generate_meta_data(@exceptions, @overrides)
     end
 
     # Build an exception payload
@@ -150,7 +134,7 @@ module Bugsnag
     end
 
     def request_data
-      @request_data || Bugsnag.configuration.request_data
+      @configuration.request_data
     end
 
     def exceptions
@@ -178,44 +162,6 @@ module Bugsnag
         configuration.ignore_user_agents.any? do |to_ignore|
           agent =~ to_ignore
         end
-      end
-    end
-
-    # Generate the meta data from both the request configuration, the overrides and the exceptions for this notification
-    def generate_meta_data(exceptions, overrides)
-      # Copy the request meta data so we dont edit it by mistake
-      meta_data = @meta_data.dup
-
-      exceptions.each do |exception|
-        if exception.respond_to?(:bugsnag_meta_data) && exception.bugsnag_meta_data
-          exception.bugsnag_meta_data.each do |key, value|
-            add_to_meta_data key, value, meta_data
-          end
-        end
-      end
-
-      overrides.each do |key, value|
-        add_to_meta_data key, value, meta_data
-      end
-
-      meta_data
-    end
-
-    def add_to_meta_data(key, value, meta_data)
-      # If its a hash, its a tab so we can just add it providing its not reserved
-      if value.is_a? Hash
-        key = key.to_sym
-
-        if meta_data[key]
-          # If its a clash, merge with the existing data
-          meta_data[key].merge! value
-        else
-          # Add it as is if its not special
-          meta_data[key] = value
-        end
-      else
-        meta_data[:custom] ||= {}
-        meta_data[:custom][key] = value
       end
     end
 
