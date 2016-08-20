@@ -50,18 +50,6 @@ module Bugsnag
       yield(report) if block_given? && auto_notify
       return if report.ignore?
 
-      # Apply the user's information attached to the exceptions
-      exceptions.each do |exception|
-        if exception.class.include?(Bugsnag::MetaData)
-          if exception.bugsnag_user_id.is_a?(String)
-            self.user_id = exception.bugsnag_user_id
-          end
-          if exception.bugsnag_context.is_a?(String)
-            self.context = exception.bugsnag_context
-          end
-        end
-      end
-
       # Run users middleware
       configuration.middleware.run(report) do
         return if report.ignore?
