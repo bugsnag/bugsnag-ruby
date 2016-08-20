@@ -51,8 +51,8 @@ module Bugsnag
       return if name.nil?
 
       if value.is_a? Hash
-        meta_data[name.to_s] ||= {}
-        meta_data[name.to_s].merge! value
+        meta_data[name] ||= {}
+        meta_data[name].merge! value
       else
         meta_data["custom"][name.to_s] = value
       end
@@ -62,7 +62,7 @@ module Bugsnag
     def remove_tab(name)
       return if name.nil?
 
-      meta_data.delete(name.to_s)
+      meta_data.delete(name)
     end
 
     # Build an exception payload
@@ -78,7 +78,7 @@ module Bugsnag
         device: {
           hostname: hostname
         },
-        exceptions: exception_list,
+        exceptions: exceptions,
         groupingHash: grouping_hash,
         payloadVersion: CURRENT_PAYLOAD_VERSION,
         severity: severity,
@@ -89,7 +89,7 @@ module Bugsnag
       payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
 
       # filter out sensitive values in (and cleanup encodings) metaData
-      payload_event[:metaData] = Bugsnag::Cleaner.new(configuration.params_filters).clean_object(meta_data)
+      payload_event[:metaData] = Bugsnag::Cleaner.new(configuration.meta_data_filters).clean_object(meta_data)
       payload_event.reject! {|k,v| v.nil? }
 
       # return the payload hash
@@ -123,7 +123,7 @@ module Bugsnag
         {
           errorClass: error_class(exception),
           message: exception.message,
-          stacktrace: Stacktrace.new(exception.backtrace).to_a
+          stacktrace: Stacktrace.new(exception.backtrace, configuration).to_a
         }
       end
     end

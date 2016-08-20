@@ -8,7 +8,9 @@ module Bugsnag::Rails
           super
         rescue StandardError => exception
           # This exception will NOT be escalated, so notify it here.
-          Bugsnag.auto_notify(exception)
+          Bugsnag.notify(exception, true) do |report|
+            report.severity = "error"
+          end
           raise
         end
       else

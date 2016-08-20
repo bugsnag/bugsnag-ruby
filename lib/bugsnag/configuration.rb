@@ -2,6 +2,9 @@ require "set"
 require "socket"
 require "logger"
 require "bugsnag/middleware_stack"
+require "bugsnag/middleware/callbacks"
+require "bugsnag/middleware/exception_meta_data"
+require "bugsnag/middleware/ignore_error_class"
 
 module Bugsnag
   class Configuration
@@ -47,7 +50,7 @@ module Bugsnag
       self.auto_notify = true
       self.send_environment = false
       self.send_code = true
-      self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
+      self.meta_data_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new([])
       self.endpoint = "https://notify.bugsnag.com"
       self.hostname = default_hostname
@@ -112,17 +115,17 @@ module Bugsnag
     end
 
     def info(message)
-      configuration.logger.info("#{LOG_PREFIX}#{message}")
+      logger.info(message)
     end
 
     # Warning logger
     def warn(message)
-      configuration.logger.warn("#{LOG_PREFIX}#{message}")
+      logger.warn(message)
     end
 
     # Debug logger
     def debug(message)
-      configuration.logger.debug("#{LOG_PREFIX}#{message}")
+      logger.debug(message)
     end
 
     private

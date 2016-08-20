@@ -27,7 +27,7 @@ class JRubyException
   end
 end
 
-describe Bugsnag::Notification do
+describe Bugsnag::Report do
   it "should contain an api_key if one is set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 

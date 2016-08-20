@@ -16,7 +16,9 @@ module Bugsnag
         yield
       rescue Exception => ex
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
-        Bugsnag.auto_notify(ex)
+        Bugsnag.notify(ex, true) do |report|
+          report.severity = "error"
+        end
         raise
       ensure
         Bugsnag.configuration.clear_request_data

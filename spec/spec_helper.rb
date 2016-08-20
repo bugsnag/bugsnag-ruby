@@ -32,7 +32,7 @@ RSpec.configure do |config|
       bugsnag.release_stage = "production"
       bugsnag.delivery_method = :synchronous
       # silence logger in tests
-      bugsnag.logger = Logger.new(StringIO.new)
+      #bugsnag.logger = Logger.new(StringIO.new)
     end
   end
 

@@ -15,6 +15,7 @@ describe 'Bugsnag' do
     end
     Thread.new{ server.start }
   end
+
   after do
     server.stop
     queue.clear
@@ -34,8 +35,7 @@ describe 'Bugsnag' do
 
   it 'should send notifications over the wire' do
     Bugsnag.configure do |config|
-      config.endpoint = "localhost:#{server.config[:Port]}"
-      config.use_ssl = false
+      config.endpoint = "http://localhost:#{server.config[:Port]}"
     end
     WebMock.allow_net_connect!
 
@@ -44,22 +44,9 @@ describe 'Bugsnag' do
     expect(request['events'][0]['exceptions'][0]['message']).to eq('yo')
   end
 
-  it 'should send deploys over the wire' do
-    Bugsnag.configure do |config|
-      config.endpoint = "localhost:#{server.config[:Port]}"
-      config.use_ssl = false
-    end
-    WebMock.allow_net_connect!
-
-    Bugsnag::Deploy.notify :app_version => '1.1.1'
-
-    expect(request['appVersion']).to eq('1.1.1')
-  end
-
   it 'should work with threadpool delivery' do
     Bugsnag.configure do |config|
-      config.endpoint = "localhost:#{server.config[:Port]}"
-      config.use_ssl = false
+      config.endpoint = "http://localhost:#{server.config[:Port]}"
       config.delivery_method = :thread_queue
     end
     WebMock.allow_net_connect!
@@ -73,8 +60,7 @@ describe 'Bugsnag' do
     is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
     unless is_jruby #jruby doesn't support fork, so this test doesn't apply
       Bugsnag.configure do |config|
-        config.endpoint = "localhost:#{server.config[:Port]}"
-        config.use_ssl = false
+        config.endpoint = "http://localhost:#{server.config[:Port]}"
         config.delivery_method = :thread_queue
       end
       WebMock.allow_net_connect!
@@ -112,8 +98,7 @@ describe 'Bugsnag' do
     it 'should use a proxy when configured' do
       Bugsnag.configure do |config|
 
-        config.endpoint = "localhost:#{server.config[:Port]}"
-        config.use_ssl = false
+        config.endpoint = "http://localhost:#{server.config[:Port]}"
 
         config.proxy_host = 'localhost'
         config.proxy_port = proxy.config[:Port]

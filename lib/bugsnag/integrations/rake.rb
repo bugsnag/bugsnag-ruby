@@ -12,7 +12,9 @@ class Rake::Task
     execute_without_bugsnag(args)
 
   rescue Exception => ex
-    Bugsnag.auto_notify(ex)
+    Bugsnag.notify(ex, true) do |report|
+      report.severity = "error"
+    end
     raise
   ensure
     Bugsnag.configuration.set_request_data :bugsnag_running_task, old_task

@@ -4,10 +4,9 @@ require "thread"
 require "bugsnag/version"
 require "bugsnag/configuration"
 require "bugsnag/meta_data"
-require "bugsnag/notification"
+require "bugsnag/report"
 require "bugsnag/cleaner"
 require "bugsnag/helpers"
-require "bugsnag/deploy"
 
 require "bugsnag/delivery"
 require "bugsnag/delivery/synchronous"
@@ -23,7 +22,6 @@ require "bugsnag/middleware/rails3_request"
 require "bugsnag/middleware/sidekiq"
 require "bugsnag/middleware/mailman"
 require "bugsnag/middleware/rake"
-require "bugsnag/middleware/callbacks"
 
 module Bugsnag
   LOCK = Mutex.new
@@ -36,6 +34,7 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, auto_notify=false, &block)
+      return if auto_notify && !configuration.auto_notify
       return unless configuration.valid_api_key? && configuration.should_notify_release_stage?
 
       report = Report.new(exception, configuration)
@@ -59,7 +58,7 @@ module Bugsnag
         return if report.ignore?
 
         # Deliver
-        configuration.info("Notifying #{configuration.endpoint} of #{exceptions.last.class}")
+        configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
         payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
       end

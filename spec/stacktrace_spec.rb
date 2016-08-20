@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Bugsnag::Notification do
+describe Bugsnag::Stacktrace do
   it "includes code in the stack trace" do
     _a = 1
     _b = 2

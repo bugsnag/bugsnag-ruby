@@ -17,7 +17,9 @@ module Bugsnag
       runner do
         at_exit do
           if $!
-            Bugsnag.auto_notify($!)
+            Bugsnag.notify($!, true) do |report|
+              report.severity = "error"
+            end
           end
         end
       end

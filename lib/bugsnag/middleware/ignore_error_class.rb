@@ -5,7 +5,7 @@ module Bugsnag::Middleware
     end
 
     def call(report)
-      ignore_error_class = self.raw_exceptions.any? do |ex|
+      ignore_error_class = report.raw_exceptions.any? do |ex|
         ancestor_chain = ex.class.ancestors.select { |ancestor| ancestor.is_a?(Class) }.to_set
 
         report.configuration.ignore_classes.any? do |to_ignore|
