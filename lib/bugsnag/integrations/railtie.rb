@@ -8,7 +8,7 @@ require "bugsnag/middleware/rack_request"
 module Bugsnag
   class Railtie < Rails::Railtie
     rake_tasks do
-      require "bugsnag/rake"
+      require "bugsnag/integrations/rake"
       load "bugsnag/tasks/bugsnag.rake"
     end
 
@@ -32,20 +32,16 @@ module Bugsnag
         config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
       end
 
-      # Auto-load configuration settings from config/bugsnag.yml if it exists
-      config_file = ::Rails.root.join("config", "bugsnag.yml")
-      config = YAML.load_file(config_file) if File.exists?(config_file)
-      Bugsnag.configure(config[::Rails.env] ? config[::Rails.env] : config) if config
-
       if defined?(::ActionController::Base)
-        require "bugsnag/rails/controller_methods"
+        require "bugsnag/integrations/rails/controller_methods"
         ::ActionController::Base.send(:include, Bugsnag::Rails::ControllerMethods)
       end
       if defined?(ActionController::API)
+        require "bugsnag/integrations/rails/controller_methods"
         ActionController::API.send(:include, Bugsnag::Rails::ControllerMethods)
       end
       if defined?(ActiveRecord::Base)
-        require "bugsnag/rails/active_record_rescue"
+        require "bugsnag/integrations/rails/active_record_rescue"
         ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
       end
 

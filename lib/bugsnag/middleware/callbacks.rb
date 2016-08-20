@@ -10,10 +10,6 @@ module Bugsnag::Middleware
       end
 
       @bugsnag.call(notification)
-
-      if notification.request_data[:after_callbacks]
-        notification.request_data[:after_callbacks].each {|c| c.call(*[notification][0...c.arity]) }
-      end
     end
   end
 end

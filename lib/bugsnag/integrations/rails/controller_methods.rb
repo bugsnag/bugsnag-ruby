@@ -10,10 +10,6 @@ module Bugsnag::Rails
         _add_bugsnag_notify_callback(:before_callbacks, *methods, &block)
       end
 
-      def after_bugsnag_notify(*methods, &block)
-        _add_bugsnag_notify_callback(:after_callbacks, *methods, &block)
-      end
-
       def _add_bugsnag_notify_callback(callback_key, *methods, &block)
         options = methods.last.is_a?(Hash) ? methods.pop : {}
 
@@ -39,11 +35,6 @@ module Bugsnag::Rails
           before_filter(options, &action)
         end
       end
-    end
-
-    private
-    def notify_bugsnag(exception, custom_data=nil)
-      Bugsnag.notify(exception, custom_data)
     end
   end
 end

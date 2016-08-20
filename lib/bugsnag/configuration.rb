@@ -14,7 +14,6 @@ module Bugsnag
     attr_accessor :send_environment
     attr_accessor :send_code
     attr_accessor :project_root
-    attr_accessor :vendor_paths
     attr_accessor :app_version
     attr_accessor :app_type
     attr_accessor :params_filters
@@ -34,9 +33,9 @@ module Bugsnag
     attr_accessor :delivery_method
     attr_writer :ignore_classes
 
-    THREAD_LOCAL_NAME = "bugsnag_req_data"
+    LOG_PREFIX = "** [Bugsnag] "
 
-    DEFAULT_ENDPOINT = "notify.bugsnag.com"
+    THREAD_LOCAL_NAME = "bugsnag_req_data"
 
     DEFAULT_PARAMS_FILTERS = [
       /authorization/i,
@@ -46,40 +45,19 @@ module Bugsnag
       "rack.request.form_vars"
     ].freeze
 
-    DEFAULT_IGNORE_CLASSES = [
-      "AbstractController::ActionNotFound",
-      "ActionController::InvalidAuthenticityToken",
-      "ActionController::ParameterMissing",
-      "ActionController::UnknownAction",
-      "ActionController::UnknownFormat",
-      "ActionController::UnknownHttpMethod",
-      "ActiveRecord::RecordNotFound",
-      "CGI::Session::CookieStore::TamperedWithCookie",
-      "Mongoid::Errors::DocumentNotFound",
-      "SignalException",
-      "SystemExit",
-    ].freeze
-
-    DEFAULT_IGNORE_USER_AGENTS = [].freeze
-
-    DEFAULT_DELIVERY_METHOD = :thread_queue
-
     def initialize
       @mutex = Mutex.new
 
       # Set up the defaults
       self.auto_notify = true
-      self.use_ssl = true
       self.send_environment = false
       self.send_code = true
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
-      self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
-      self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
-      self.endpoint = DEFAULT_ENDPOINT
+      self.ignore_classes = Set.new([])
+      self.endpoint = "https://notify.bugsnag.com"
       self.hostname = default_hostname
-      self.delivery_method = DEFAULT_DELIVERY_METHOD
+      self.delivery_method = :thread_queue
       self.timeout = 15
-      self.vendor_paths = [%r{vendor/}]
       self.notify_release_stages = nil
 
       # Read the API key from the environment

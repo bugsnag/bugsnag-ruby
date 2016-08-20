@@ -7,7 +7,7 @@ class Rake::Task
   def execute_with_bugsnag(args=nil)
     Bugsnag.configuration.app_type = "rake"
     old_task = Bugsnag.configuration.request_data[:bugsnag_running_task]
-    Bugsnag.set_request_data :bugsnag_running_task, self
+    Bugsnag.configuration.set_request_data :bugsnag_running_task, self
 
     execute_without_bugsnag(args)
 
@@ -15,7 +15,7 @@ class Rake::Task
     Bugsnag.auto_notify(ex)
     raise
   ensure
-    Bugsnag.set_request_data :bugsnag_running_task, old_task
+    Bugsnag.configuration.set_request_data :bugsnag_running_task, old_task
   end
 
   alias_method :execute_without_bugsnag, :execute

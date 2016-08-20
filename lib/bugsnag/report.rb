@@ -1,75 +1,45 @@
 require "json"
-
-if RUBY_VERSION =~ /^1\.8/
-  begin
-    require "iconv"
-  rescue LoadError
-  end
-end
-
 require "pathname"
 
 module Bugsnag
-  class Notification
+  class Report
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
 
-    # e.g. "org/jruby/RubyKernel.java:1264:in `catch'"
-    BACKTRACE_LINE_REGEX = /^((?:[a-zA-Z]:)?[^:]+):(\d+)(?::in `([^']+)')?$/
-
-    # e.g. "org.jruby.Ruby.runScript(Ruby.java:807)"
-    JAVA_BACKTRACE_REGEX = /^(.*)\((.*)(?::([0-9]+))?\)$/
-
     MAX_EXCEPTIONS_TO_UNWRAP = 5
-
-    SUPPORTED_SEVERITIES = ["error", "warning", "info"]
 
     CURRENT_PAYLOAD_VERSION = "2"
 
-    attr_accessor :context
     attr_reader :user
+    attr_accessor :api_key
     attr_accessor :configuration
+    attr_accessor :context
+    attr_accessor :delivery_method
+    attr_accessor :grouping_hash
     attr_accessor :meta_data
+    attr_accessor :severity
+
 
     class << self
-      def deliver_exception_payload(url, payload, configuration=Bugsnag.configuration, delivery_method=nil)
+      def deliver_exception_payload(payload, configuration, delivery_method)
         payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(payload))
-        delivery_method = delivery_method || configuration.delivery_method
         Bugsnag::Delivery[delivery_method].deliver(url, payload_string, configuration)
       end
     end
 
-    def initialize(exception, configuration, overrides = nil, request_data = nil)
-      @configuration = configuration
-      @overrides = Bugsnag::Helpers.flatten_meta_data(overrides) || {}
+    def initialize(exception, configuration, request_data = nil)
+      configuration = configuration
       @request_data = request_data
-      @meta_data = {}
       @user = {}
       @should_ignore = false
-      @severity = nil
-      @grouping_hash = nil
-      @delivery_method = nil
 
-      self.severity = @overrides[:severity]
-      @overrides.delete :severity
-
-      if @overrides.key? :grouping_hash
-        self.grouping_hash = @overrides[:grouping_hash]
-        @overrides.delete :grouping_hash
-      end
-
-      if @overrides.key? :api_key
-        self.api_key = @overrides[:api_key]
-        @overrides.delete :api_key
-      end
-
-      if @overrides.key? :delivery_method
-        @delivery_method = @overrides[:delivery_method]
-        @overrides.delete :delivery_method
-      end
+      self.api_key = configuration.api_key
+      self.delivery_method = configuration.delivery_method
+      self.meta_data = {}
+      self.severity = "warning"
 
       # Unwrap exceptions
       @exceptions = []
@@ -131,50 +101,15 @@ module Bugsnag
       @meta_data.delete(name.to_sym)
     end
 
-    def user_id=(user_id)
-      @user[:id] = user_id
-    end
-
-    def user_id
-      @user[:id]
-    end
-
     def user=(user = {})
       return unless user.is_a? Hash
       @user.merge!(user).delete_if{|k,v| v == nil}
     end
 
-    def severity=(severity)
-      @severity = severity if SUPPORTED_SEVERITIES.include?(severity)
-    end
-
-    def severity
-      @severity || "warning"
-    end
-
-    def payload_version
-      CURRENT_PAYLOAD_VERSION
-    end
-
-    def grouping_hash=(grouping_hash)
-      @grouping_hash = grouping_hash
-    end
-
-    def grouping_hash
-      @grouping_hash || nil
-    end
-
-    def api_key=(api_key)
-      @api_key = api_key
-    end
-
-    def api_key
-      @api_key ||= @configuration.api_key
-    end
-
     # Deliver this notification to bugsnag.com Also runs through the middleware as required.
     def deliver
-      return unless @configuration.should_notify?
+      return unless configuration.should_notify?
+      return if ignore?
 
       # Check we have at least an api_key
       if api_key.nil?
@@ -185,10 +120,7 @@ module Bugsnag
         return
       end
 
-      # Warn if no release_stage is set
-      Bugsnag.warn "You should set your app's release_stage (see https://bugsnag.com/docs/notifiers/ruby#release_stage)." unless @configuration.release_stage
-
-      @configuration.internal_middleware.run(self)
+      configuration.internal_middleware.run(self)
 
       exceptions.each do |exception|
         if exception.class.include?(Bugsnag::MetaData)
@@ -201,28 +133,19 @@ module Bugsnag
         end
       end
 
-      [:user_id, :context, :user, :grouping_hash].each do |symbol|
-        if @overrides[symbol]
-          self.send("#{symbol}=", @overrides[symbol])
-          @overrides.delete symbol
-        end
-      end
-
       # make meta_data available to public middleware
       @meta_data = generate_meta_data(@exceptions, @overrides)
 
       # Run the middleware here (including Bugsnag::Middleware::Callbacks)
       # at the end of the middleware stack, execute the actual notification delivery
-      @configuration.middleware.run(self) do
+      configuration.middleware.run(self) do
         # This supports self.ignore! for before_notify_callbacks.
-        return if @should_ignore
+        return if ignore?
 
-        # Build the endpoint url
-        endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
-        Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class}")
+        Bugsnag.log("Notifying #{configuration.endpoint} of #{exceptions.last.class}")
 
         # Deliver the payload
-        self.class.deliver_exception_payload(endpoint, build_exception_payload, @configuration, @delivery_method)
+        self.class.deliver_exception_payload(configuration.endpoint, build_exception_payload, configuration)
       end
     end
 
@@ -231,25 +154,25 @@ module Bugsnag
       # Build the payload's exception event
       payload_event = {
         :app => {
-          :version => @configuration.app_version,
-          :releaseStage => @configuration.release_stage,
-          :type => @configuration.app_type
+          :version => configuration.app_version,
+          :releaseStage => configuration.release_stage,
+          :type => configuration.app_type
         },
         :context => self.context,
         :user => @user,
-        :payloadVersion => payload_version,
+        :payloadVersion => CURRENT_PAYLOAD_VERSION,
         :exceptions => exception_list,
         :severity => self.severity,
         :groupingHash => self.grouping_hash,
       }
 
-      payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
+      payload_event[:device] = {:hostname => configuration.hostname} if configuration.hostname
 
       # cleanup character encodings
       payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
 
       # filter out sensitive values in (and cleanup encodings) metaData
-      payload_event[:metaData] = Bugsnag::Cleaner.new(@configuration.params_filters).clean_object(@meta_data)
+      payload_event[:metaData] = Bugsnag::Cleaner.new(configuration.params_filters).clean_object(@meta_data)
       payload_event.reject! {|k,v| v.nil? }
 
       # return the payload hash
@@ -286,15 +209,15 @@ module Bugsnag
       @exceptions.any? do |ex|
         ancestor_chain = ex.class.ancestors.select { |ancestor| ancestor.is_a?(Class) }.map { |ancestor| error_class(ancestor) }.to_set
 
-        @configuration.ignore_classes.any? do |to_ignore|
+        configuration.ignore_classes.any? do |to_ignore|
           to_ignore.is_a?(Proc) ? to_ignore.call(ex) : ancestor_chain.include?(to_ignore)
         end
       end
     end
 
     def ignore_user_agent?
-      if @configuration.request_data && @configuration.request_data[:rack_env] && (agent = @configuration.request_data[:rack_env]["HTTP_USER_AGENT"])
-        @configuration.ignore_user_agents.any? do |to_ignore|
+      if configuration.request_data && configuration.request_data[:rack_env] && (agent = configuration.request_data[:rack_env]["HTTP_USER_AGENT"])
+        configuration.ignore_user_agents.any? do |to_ignore|
           agent =~ to_ignore
         end
       end
@@ -352,108 +275,6 @@ module Bugsnag
       # The "Class" check is for some strange exceptions like Timeout::Error
       # which throw the error class instead of an instance
       (exception.is_a? Class) ? exception.name : exception.class.name
-    end
-
-    def stacktrace(backtrace)
-      backtrace = caller if !backtrace || backtrace.empty?
-      backtrace.map do |trace|
-        if trace.match(BACKTRACE_LINE_REGEX)
-          file, line_str, method = [$1, $2, $3]
-        elsif trace.match(JAVA_BACKTRACE_REGEX)
-          method, file, line_str = [$1, $2, $3]
-        end
-
-        # Parse the stacktrace line
-
-        # Skip stacktrace lines inside lib/bugsnag
-        next(nil) if file.nil? || file =~ %r{lib/bugsnag(/|\.rb)}
-
-        # Expand relative paths
-        p = Pathname.new(file)
-        if p.relative?
-          file = p.realpath.to_s rescue file
-        end
-
-        # Generate the stacktrace line hash
-        trace_hash = {}
-        trace_hash[:inProject] = true if in_project?(file)
-        trace_hash[:lineNumber] = line_str.to_i
-
-        if @configuration.send_code
-          trace_hash[:code] = code(file, trace_hash[:lineNumber])
-        end
-
-        # Clean up the file path in the stacktrace
-        if defined?(Bugsnag.configuration.project_root) && Bugsnag.configuration.project_root.to_s != ''
-          file.sub!(/#{Bugsnag.configuration.project_root}\//, "")
-        end
-
-        # Strip common gem path prefixes
-        if defined?(Gem)
-          file = Gem.path.inject(file) {|line, path| line.sub(/#{path}\//, "") }
-        end
-
-        trace_hash[:file] = file
-
-        # Add a method if we have it
-        trace_hash[:method] = method if method && (method =~ /^__bind/).nil?
-
-        if trace_hash[:file] && !trace_hash[:file].empty?
-          trace_hash
-        else
-          nil
-        end
-      end.compact
-    end
-
-    def in_project?(line)
-      return false if @configuration.vendor_paths && @configuration.vendor_paths.any? do |vendor_path|
-        if vendor_path.is_a?(String)
-          line.include?(vendor_path)
-        else
-          line =~ vendor_path
-        end
-      end
-      @configuration.project_root && line.start_with?(@configuration.project_root.to_s)
-    end
-
-    def code(file, line_number, num_lines = 7)
-      code_hash = {}
-
-      from_line = [line_number - num_lines, 1].max
-
-      # don't try and open '(irb)' or '-e'
-      return unless File.exist?(file)
-
-      # Populate code hash with line numbers and code lines
-      File.open(file) do |f|
-        current_line_number = 0
-        f.each_line do |line|
-          current_line_number += 1
-
-          next if current_line_number < from_line
-
-          code_hash[current_line_number] = line[0...200].rstrip
-
-          break if code_hash.length >= ( num_lines * 1.5 ).ceil
-        end
-      end
-
-      while code_hash.length > num_lines
-        last_line = code_hash.keys.max
-        first_line = code_hash.keys.min
-
-        if (last_line - line_number) > (line_number - first_line)
-          code_hash.delete(last_line)
-        else
-          code_hash.delete(first_line)
-        end
-      end
-
-      code_hash
-    rescue
-      Bugsnag.warn("Error fetching code: #{$!.inspect}")
-      nil
     end
   end
 end

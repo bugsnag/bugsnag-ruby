@@ -10,7 +10,7 @@ module Bugsnag
     def call(mail)
       begin
 
-        Bugsnag.set_request_data :mailman_msg, mail.to_s
+        Bugsnag.configuration.set_request_data :mailman_msg, mail.to_s
 
         yield
       rescue Exception => ex
@@ -18,7 +18,7 @@ module Bugsnag
         Bugsnag.auto_notify(ex)
         raise
       ensure
-        Bugsnag.clear_request_data
+        Bugsnag.configuration.clear_request_data
       end
     end
   end
