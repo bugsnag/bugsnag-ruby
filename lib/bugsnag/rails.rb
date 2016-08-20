@@ -23,7 +23,7 @@ module Bugsnag
 
       Bugsnag.configure do |config|
         config.logger ||= rails_logger
-        config.release_stage = rails_env if rails_env
+        config.release_stage = release_stage if release_stage
         config.project_root = rails_root if rails_root
 
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks,Bugsnag::Middleware::Rails2Request)
@@ -43,6 +43,10 @@ module Bugsnag
       elsif defined?(RAILS_DEFAULT_LOGGER)
         rails_logger = RAILS_DEFAULT_LOGGER
       end
+    end
+
+    def self.release_stage
+      ENV["BUGSNAG_RELEASE_STAGE"] || rails_env
     end
 
     def self.rails_env
