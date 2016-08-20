@@ -28,7 +28,7 @@ module Bugsnag::Middleware
         begin
           url << Bugsnag::Cleaner.new(report.configuration.params_filters).clean_url(request.fullpath)
         rescue StandardError => stde
-          Bugsnag.log "RackRequest - Rescued error while cleaning request.fullpath: #{stde}"
+          Bugsnag.configuration.warn "RackRequest - Rescued error while cleaning request.fullpath: #{stde}"
         end
 
         headers = {}

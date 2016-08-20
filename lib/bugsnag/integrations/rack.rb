@@ -13,7 +13,7 @@ module Bugsnag
           if defined?(settings)
             config.project_root = settings.root
           else
-            Bugsnag.warn("You should set your app's project_root (see https://bugsnag.com/docs/notifiers/ruby#project_root).")
+            config.warn("You should set your app's project_root (see https://bugsnag.com/docs/notifiers/ruby#project_root).")
           end
         end
 
@@ -21,7 +21,7 @@ module Bugsnag
         config.middleware.insert_before([Bugsnag::Middleware::Rails3Request,Bugsnag::Middleware::Callbacks], Bugsnag::Middleware::RackRequest) if defined?(::Rack)
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::WardenUser) if defined?(Warden)
 
-        Bugsnag.configuration.app_type ||= "rack"
+        config.app_type ||= "rack"
       end
     end
 

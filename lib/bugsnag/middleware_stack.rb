@@ -80,8 +80,8 @@ module Bugsnag
 
         # We dont notify, as we dont want to loop forever in the case of really broken middleware, we will
         # still send this notify
-        Bugsnag.warn "Bugsnag middleware error: #{e}"
-        Bugsnag.log "Middleware error stacktrace: #{e.backtrace.inspect}"
+        Bugsnag.configuration.warn "Bugsnag middleware error: #{e}"
+        Bugsnag.configuration.warn "Middleware error stacktrace: #{e.backtrace.inspect}"
       end
 
       # Ensure that the deliver has been performed, and no middleware has botched it

@@ -29,6 +29,7 @@ module Bugsnag
     attr_accessor :delivery_method
     attr_accessor :ignore_classes
 
+    API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
     DEFAULT_PARAMS_FILTERS = [
@@ -66,6 +67,8 @@ module Bugsnag
 
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new
+      self.internal_middleware.use Bugsnag::Middleware::ExceptionMetaData
+      self.internal_middleware.use Bugsnag::Middleware::IgnoreErrorClass
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks

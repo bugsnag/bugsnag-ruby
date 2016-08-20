@@ -7,9 +7,11 @@ module Bugsnag
     # e.g. "org.jruby.Ruby.runScript(Ruby.java:807)"
     JAVA_BACKTRACE_REGEX = /^(.*)\((.*)(?::([0-9]+))?\)$/
 
-    def initialize(backtrace)
+    def initialize(backtrace, configuration)
+      @configuration = configuration
+
       backtrace = caller if !backtrace || backtrace.empty?
-      backtrace.map do |trace|
+      @processed_backtrace = backtrace.map do |trace|
         if trace.match(BACKTRACE_LINE_REGEX)
           file, line_str, method = [$1, $2, $3]
         elsif trace.match(JAVA_BACKTRACE_REGEX)
@@ -37,8 +39,8 @@ module Bugsnag
         end
 
         # Clean up the file path in the stacktrace
-        if defined?(Bugsnag.configuration.project_root) && Bugsnag.configuration.project_root.to_s != ''
-          file.sub!(/#{Bugsnag.configuration.project_root}\//, "")
+        if defined?(@configuration.project_root) && @configuration.project_root.to_s != ''
+          file.sub!(/#{@configuration.project_root}\//, "")
         end
 
         # Strip common gem path prefixes
@@ -59,19 +61,14 @@ module Bugsnag
       end.compact
     end
 
-
+    def to_a
+      @processed_backtrace
+    end
 
     private
 
     def in_project?(line)
-      return false if configuration.vendor_paths && configuration.vendor_paths.any? do |vendor_path|
-        if vendor_path.is_a?(String)
-          line.include?(vendor_path)
-        else
-          line =~ vendor_path
-        end
-      end
-      configuration.project_root && line.start_with?(configuration.project_root.to_s)
+      @configuration.project_root && line.start_with?(@configuration.project_root.to_s)
     end
 
     def code(file, line_number, num_lines = 7)
@@ -109,7 +106,7 @@ module Bugsnag
 
       code_hash
     rescue
-      Bugsnag.warn("Error fetching code: #{$!.inspect}")
+      @configuration.warn("Error fetching code: #{$!.inspect}")
       nil
     end
   end

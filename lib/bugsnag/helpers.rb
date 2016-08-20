@@ -1,6 +1,6 @@
 require 'uri'
-require 'set' unless defined?(Set)
-require 'json' unless defined?(JSON)
+require 'set'
+require 'json'
 
 
 module Bugsnag
@@ -22,26 +22,15 @@ module Bugsnag
       remove_metadata_from_events(reduced_value)
     end
 
-    def self.flatten_meta_data(overrides)
-      return nil unless overrides
+    private
 
-      meta_data = overrides.delete(:meta_data)
-      if meta_data.is_a?(Hash)
-        overrides.merge(meta_data)
-      else
-        overrides
-      end
-    end
+    TRUNCATION_INFO = '[TRUNCATED]'
 
     # Check if a value is a raw type which should not be trimmed, truncated
     # or converted to a string
     def self.is_json_raw_type?(value)
       RAW_DATA_TYPES.detect {|klass| value.is_a?(klass)} != nil
     end
-
-    private
-
-    TRUNCATION_INFO = '[TRUNCATED]'
 
     # Shorten array until it fits within the payload size limit when serialized
     def self.truncate_array(array)

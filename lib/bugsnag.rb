@@ -41,13 +41,12 @@ module Bugsnag
       report = Report.new(exception, configuration)
       return if report.ignore?
 
-      # Run internal middleware
-      configuration.internal_middleware.run(report)
+      # If this is an auto_notify we yield the block before the any middleware is run
+      yield(report) if block_given? && auto_notify
       return if report.ignore?
 
-      # If this is an auto_notify we yield the block before the user's middleware is run
-      # so that they get to see the final copy of the report there
-      yield(report) if block_given? && auto_notify
+      # Run internal middleware
+      configuration.internal_middleware.run(report)
       return if report.ignore?
 
       # Run users middleware
