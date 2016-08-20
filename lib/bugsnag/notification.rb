@@ -198,6 +198,9 @@ module Bugsnag
           if exception.bugsnag_context.is_a?(String)
             self.context = exception.bugsnag_context
           end
+          if exception.bugsnag_grouping_hash.is_a?(String)
+            self.grouping_hash = exception.bugsnag_grouping_hash
+          end
         end
       end
 
