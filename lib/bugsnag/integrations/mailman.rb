@@ -9,9 +9,7 @@ module Bugsnag
 
     def call(mail)
       begin
-
         Bugsnag.configuration.set_request_data :mailman_msg, mail.to_s
-
         yield
       rescue Exception => ex
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
