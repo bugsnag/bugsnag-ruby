@@ -34,33 +34,56 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, auto_notify=false, &block)
-      return if auto_notify && !configuration.auto_notify
-      return unless configuration.valid_api_key? && configuration.should_notify_release_stage?
+      if auto_notify && !configuration.auto_notify
+        configuration.debug("Not notifying because auto_notify is disabled")
+        return
+      end
+
+      if !configuration.valid_api_key?
+        configuration.debug("Not notifying due to an invalid api_key")
+        return
+      end
+
+      if !configuration.should_notify_release_stage?
+        configuration.debug("Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
+        return
+      end
 
       report = Report.new(exception, configuration)
-      return if report.ignore?
 
       # If this is an auto_notify we yield the block before the any middleware is run
       yield(report) if block_given? && auto_notify
-      return if report.ignore?
+      if report.ignore?
+        configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in auto_notify block")
+        return
+      end
 
       # Run internal middleware
       configuration.internal_middleware.run(report)
-      return if report.ignore?
+      if report.ignore?
+        configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in internal middlewares")
+        return
+      end
 
       # Run users middleware
       configuration.middleware.run(report) do
-        return if report.ignore?
+        if report.ignore?
+          configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided middleware")
+          return
+        end
 
         # If this is not an auto_notify then the block was provided by the user. This should be the last
         # block that is run as it is the users "most specific" block.
         yield(report) if block_given? && !auto_notify
-        return if report.ignore?
+        if report.ignore?
+          configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided block")
+          return
+        end
 
         # Deliver
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
         payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
-        #TODO:SM Should endpoint add http: by default?
+        configuration.debug("Payload: #{payload_string}")
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
       end
     end

@@ -78,24 +78,11 @@ module Bugsnag
     end
 
     def should_notify_release_stage?
-      if @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
-        return true
-      else
-        warn "Not notifying in release stage #{@release_stage}"
-        return false
-      end
+      @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
     end
 
     def valid_api_key?
-      if api_key.nil?
-        warn "No API key configured, couldn't notify"
-        return false
-      elsif api_key !~ API_KEY_REGEX
-        warn "Your API key (#{api_key}) is not valid, couldn't notify"
-        return false
-      end
-
-      return true
+      !api_key.nil? && api_key =~ API_KEY_REGEX
     end
 
     def request_data
