@@ -8,12 +8,9 @@ end
 unless defined? Delayed::Plugins::Bugsnag
   module Delayed
     module Plugins
-
-
       class Bugsnag < Plugin
         module Notify
           def error(job, error)
-            # TODO:SM Pull overrides into a delayed job middleware
             overrides = {
               :job => {
                 :class => job.class.name,
