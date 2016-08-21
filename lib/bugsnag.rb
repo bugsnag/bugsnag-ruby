@@ -60,6 +60,7 @@ module Bugsnag
         # Deliver
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
         payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
+        #TODO:SM Should endpoint add http: by default?
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
       end
     end

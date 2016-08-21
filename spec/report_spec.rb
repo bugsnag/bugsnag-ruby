@@ -53,7 +53,9 @@ describe Bugsnag::Report do
   end
 
   it "lets you override the api_key" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), :api_key => "9d84383f9be2ca94902e45c756a9979d")
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.api_key = "9d84383f9be2ca94902e45c756a9979d"
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       expect(payload["apiKey"]).to eq("9d84383f9be2ca94902e45c756a9979d")
@@ -62,7 +64,9 @@ describe Bugsnag::Report do
 
   it "lets you override the groupingHash" do
 
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:grouping_hash => "this is my grouping hash"})
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.grouping_hash = "this is my grouping hash"
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -116,12 +120,14 @@ describe Bugsnag::Report do
   # TODO: nested context
 
   it "accepts tabs in overrides and adds them to metaData" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :some_tab => {
-        :info => "here",
-        :data => "also here"
-      }
-    })
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({
+        some_tab: {
+          info: "here",
+          data: "also here"
+        }
+      })
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -132,27 +138,12 @@ describe Bugsnag::Report do
     }
   end
 
-  it "accepts non-hash overrides and adds them to the custom tab in metaData" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :info => "here",
-      :data => "also here"
-    })
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      event = get_event_from_payload(payload)
-      expect(event["metaData"]["custom"]).to eq(
-        "info" => "here",
-        "data" => "also here"
-      )
-    }
-  end
-
   it "accepts meta data from an exception that mixes in Bugsnag::MetaData" do
     exception = BugsnagTestExceptionWithMetaData.new("It crashed")
     exception.bugsnag_meta_data = {
-      :some_tab => {
-        :info => "here",
-        :data => "also here"
+      some_tab: {
+        info: "here",
+        data: "also here"
       }
     }
 
@@ -176,7 +167,9 @@ describe Bugsnag::Report do
       }
     }
 
-    Bugsnag.notify(exception, {:some_tab => {:info => "overridden"}})
+    Bugsnag.notify(exception) do |report|
+      report.add_tab(:some_tab, {:info => "overridden"})
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -203,7 +196,9 @@ describe Bugsnag::Report do
     exception = BugsnagTestExceptionWithMetaData.new("It crashed")
     exception.bugsnag_user_id = "exception_user_id"
 
-    Bugsnag.notify(exception, {:user_id => "override_user_id"})
+    Bugsnag.notify(exception) do |report|
+      report.user.merge!({:id => "override_user_id"})
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -240,7 +235,9 @@ describe Bugsnag::Report do
     exception = BugsnagTestExceptionWithMetaData.new("It crashed")
     exception.bugsnag_context = "exception_context"
 
-    Bugsnag.notify(exception, {:context => "override_context"})
+    Bugsnag.notify(exception) do |report|
+      report.context = "override_context"
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -249,14 +246,14 @@ describe Bugsnag::Report do
   end
 
   it "accepts meta_data in overrides (for backwards compatibility) and merge it into metaData" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :meta_data => {
-        :some_tab => {
-          :info => "here",
-          :data => "also here"
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({
+        some_tab: {
+          info: "here",
+          data: "also here"
         }
-      }
-    })
+      })
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -268,14 +265,14 @@ describe Bugsnag::Report do
   end
 
   it "truncates large meta_data before sending" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :meta_data => {
-        :some_tab => {
-          :giant => SecureRandom.hex(500_000/2),
-          :mega => SecureRandom.hex(500_000/2)
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({
+        some_tab: {
+          giant: SecureRandom.hex(500_000/2),
+          mega: SecureRandom.hex(500_000/2)
         }
-      }
-    })
+      })
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       # Truncated body should be no bigger than
@@ -285,14 +282,14 @@ describe Bugsnag::Report do
   end
 
   it "truncates large messages before sending" do
-    Bugsnag.notify(BugsnagTestException.new(SecureRandom.hex(500_000)), {
-      :meta_data => {
-        :some_tab => {
-          :giant => SecureRandom.hex(500_000/2),
-          :mega => SecureRandom.hex(500_000/2)
+    Bugsnag.notify(BugsnagTestException.new(SecureRandom.hex(500_000))) do |report|
+      report.meta_data.merge!({
+        some_tab: {
+          giant: SecureRandom.hex(500_000/2),
+          mega: SecureRandom.hex(500_000/2)
         }
-      }
-    })
+      })
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       # Truncated body should be no bigger than
@@ -316,9 +313,9 @@ describe Bugsnag::Report do
   end
 
   it "accepts a severity in overrides" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :severity => "info"
-    })
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.severity = "info"
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -336,30 +333,10 @@ describe Bugsnag::Report do
     }
   end
 
-  it "does not accept a bad severity in overrides" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :severity => "fatal"
-    })
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      event = get_event_from_payload(payload)
-      expect(event["severity"]).to eq("warning")
-    }
-  end
-
-  it "lets you override severity using block syntax" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |notification|
-      notification.severity = "info"
-    end
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      event = get_event_from_payload(payload)
-      expect(event["severity"]).to eq("info")
-    }
-  end
-
   it "autonotifies errors" do
-    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
+      report.severity = "error"
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -369,9 +346,9 @@ describe Bugsnag::Report do
 
 
   it "accepts a context in overrides" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :context => "test_context"
-    })
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.context = 'test_context'
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -380,9 +357,9 @@ describe Bugsnag::Report do
   end
 
   it "accepts a user_id in overrides" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :user_id => "test_user"
-    })
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.user = {id: 'test_user'}
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -395,7 +372,7 @@ describe Bugsnag::Report do
       config.auto_notify = false
     end
 
-    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), true)
 
     expect(Bugsnag).not_to have_sent_notification
   end
@@ -405,7 +382,7 @@ describe Bugsnag::Report do
       config.release_stage = "production"
     end
 
-    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"))
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -439,42 +416,8 @@ describe Bugsnag::Report do
     expect(WebMock).to have_requested(:post, "https://notify.bugsnag.com")
   end
 
-  it "uses ssl when use_ssl is true" do
-    Bugsnag.configuration.use_ssl = true
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
-
-    expect(WebMock).to have_requested(:post, "https://notify.bugsnag.com")
-  end
-
-  it "does not use ssl when use_ssl is false" do
-    stub_request(:post, "http://notify.bugsnag.com/")
-    Bugsnag.configuration.use_ssl = false
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
-
-    expect(WebMock).to have_requested(:post, "http://notify.bugsnag.com")
-  end
-
-  it "uses ssl when use_ssl is unset" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
-
-    expect(WebMock).to have_requested(:post, "https://notify.bugsnag.com")
-  end
-
   it "does not mark the top-most stacktrace line as inProject if out of project" do
     Bugsnag.configuration.project_root = "/Random/location/here"
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      exception = get_exception_from_payload(payload)
-      expect(exception["stacktrace"].size).to be >= 1
-      expect(exception["stacktrace"].first["inProject"]).to be_nil
-    }
-  end
-
-  it "does not mark the top-most stacktrace line as inProject if it matches a vendor path" do
-    Bugsnag.configuration.project_root = File.expand_path('../../', __FILE__)
-    Bugsnag.configuration.vendor_paths = [File.expand_path('../', __FILE__)]
-
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
     expect(Bugsnag).to have_sent_notification{ |payload|
@@ -505,9 +448,11 @@ describe Bugsnag::Report do
     }
   end
 
-  it "filters params from all payload hashes if they are set in default params_filters" do
+  it "filters params from all payload hashes if they are set in default meta_data_filters" do
 
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "12345", :other_data => "123456"}}})
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "12345", :other_data => "123456"}}})
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -520,26 +465,12 @@ describe Bugsnag::Report do
     }
   end
 
-  it "filters params from all payload hashes if they are added to params_filters" do
+  it "filters params from all payload hashes if they are added to meta_data_filters" do
 
-    Bugsnag.configuration.params_filters << "other_data"
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      event = get_event_from_payload(payload)
-      expect(event["metaData"]).not_to be_nil
-      expect(event["metaData"]["request"]).not_to be_nil
-      expect(event["metaData"]["request"]["params"]).not_to be_nil
-      expect(event["metaData"]["request"]["params"]["password"]).to eq("[FILTERED]")
-      expect(event["metaData"]["request"]["params"]["other_password"]).to eq("[FILTERED]")
-      expect(event["metaData"]["request"]["params"]["other_data"]).to eq("[FILTERED]")
-    }
-  end
-
-  it "filters params from all payload hashes if they are added to params_filters as regex" do
-
-    Bugsnag.configuration.params_filters << /other_data/
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+    Bugsnag.configuration.meta_data_filters << "other_data"
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -552,10 +483,30 @@ describe Bugsnag::Report do
     }
   end
 
-  it "filters params from all payload hashes if they are added to params_filters as partial regex" do
+  it "filters params from all payload hashes if they are added to meta_data_filters as regex" do
 
-    Bugsnag.configuration.params_filters << /r_data/
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+    Bugsnag.configuration.meta_data_filters << /other_data/
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]).not_to be_nil
+      expect(event["metaData"]["request"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]["password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_data"]).to eq("[FILTERED]")
+    }
+  end
+
+  it "filters params from all payload hashes if they are added to meta_data_filters as partial regex" do
+
+    Bugsnag.configuration.meta_data_filters << /r_data/
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -569,7 +520,9 @@ describe Bugsnag::Report do
   end
 
   it "does not filter params from payload hashes if their values are nil" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:request => {:params => {:nil_param => nil}}})
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({:request => {:params => {:nil_param => nil}}})
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -581,54 +534,37 @@ describe Bugsnag::Report do
   end
 
   it "does not notify if the exception class is in the default ignore_classes list" do
-    Bugsnag.notify_or_ignore(ActiveRecord::RecordNotFound.new("It crashed"))
+    Bugsnag.configuration.ignore_classes << ActiveRecord::RecordNotFound
+    Bugsnag.notify(ActiveRecord::RecordNotFound.new("It crashed"))
 
     expect(Bugsnag).not_to have_sent_notification
   end
 
   it "does not notify if the non-default exception class is added to the ignore_classes" do
-    Bugsnag.configuration.ignore_classes << "BugsnagTestException"
+    Bugsnag.configuration.ignore_classes << BugsnagTestException
 
-    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
     expect(Bugsnag).not_to have_sent_notification
   end
 
   it "does not notify if exception's ancestor is an ignored class" do
-    Bugsnag.configuration.ignore_classes << "BugsnagTestException"
+    Bugsnag.configuration.ignore_classes << BugsnagTestException
 
-    Bugsnag.notify_or_ignore(BugsnagSubclassTestException.new("It crashed"))
+    Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
 
     expect(Bugsnag).not_to have_sent_notification
   end
 
   it "does not notify if any caused exception is an ignored class" do
-    Bugsnag.configuration.ignore_classes << "NestedException"
+    Bugsnag.configuration.ignore_classes << NestedException
 
     ex = NestedException.new("Self-referential exception")
     ex.original_exception = BugsnagTestException.new("It crashed")
 
-    Bugsnag.notify_or_ignore(ex)
+    Bugsnag.notify(ex)
 
     expect(Bugsnag).not_to have_sent_notification
-  end
-
-  it "accepts both String and Class instances as an ignored class" do
-    Bugsnag.configuration.ignore_classes << BugsnagTestException
-
-    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
-
-    expect(Bugsnag).not_to have_sent_notification
-  end
-
-  it "does not notify if the user agent is present and matches a regex in ignore_user_agents" do
-    Bugsnag.configuration.ignore_user_agents << %r{BugsnagUserAgent}
-
-    ((Thread.current["bugsnag_req_data"] ||= {})[:rack_env] ||= {})["HTTP_USER_AGENT"] = "BugsnagUserAgent"
-
-    Bugsnag.notify_or_ignore(BugsnagTestException.new("It crashed"))
-
-    expect(Bugsnag::Notification).not_to have_sent_notification
   end
 
   it "sends the cause of the exception" do
@@ -652,7 +588,7 @@ describe Bugsnag::Report do
     ex = NestedException.new("Self-referential exception")
     ex.original_exception = ex
 
-    Bugsnag.notify_or_ignore(ex)
+    Bugsnag.notify(ex)
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
@@ -667,7 +603,7 @@ describe Bugsnag::Report do
       ex = ex.original_exception = NestedException.new("Deep exception #{idx}")
     end
 
-    Bugsnag.notify_or_ignore(first_ex)
+    Bugsnag.notify(first_ex)
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
       expect(event["exceptions"].size).to eq(5)
@@ -748,13 +684,16 @@ describe Bugsnag::Report do
     invalid_data = "fl\xc3ff"
     invalid_data.force_encoding('BINARY') if invalid_data.respond_to?(:force_encoding)
 
-    notify_test_exception(:fluff => {:fluff => invalid_data})
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({fluff: {fluff: invalid_data}})
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
       if defined?(Encoding::UTF_8)
-        expect(payload.to_json).to match(/fl�ff/)
+        expect(event['metaData']['fluff']['fluff']).to match(/fl�ff/)
       else
-        expect(payload.to_json).to match(/flff/)
+        expect(event['metaData']['fluff']['fluff']).to match(/flff/)
       end
     }
   end
@@ -785,7 +724,9 @@ describe Bugsnag::Report do
     begin
       raise
     rescue
-      Bugsnag.notify($!, { :context => invalid_data })
+      Bugsnag.notify($!) do |report|
+        report.context = invalid_data
+      end
     end
 
     expect(Bugsnag).to have_sent_notification { |payload|

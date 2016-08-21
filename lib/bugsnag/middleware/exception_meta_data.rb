@@ -6,7 +6,7 @@ module Bugsnag::Middleware
 
     def call(report)
       # Apply the user's information attached to the exceptions
-      report.exceptions.each do |exception|
+      report.raw_exceptions.each do |exception|
         if exception.class.include?(Bugsnag::MetaData)
           if exception.bugsnag_user_id.is_a?(String)
             report.user = {id: exception.bugsnag_user_id}
@@ -22,7 +22,7 @@ module Bugsnag::Middleware
 
           if exception.respond_to?(:bugsnag_meta_data) && exception.bugsnag_meta_data
             exception.bugsnag_meta_data.each do |key, value|
-              report.add_to_tab key, value
+              report.add_tab key, value
             end
           end
         end

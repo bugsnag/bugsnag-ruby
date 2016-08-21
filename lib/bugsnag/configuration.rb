@@ -35,7 +35,7 @@ module Bugsnag
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
-    DEFAULT_PARAMS_FILTERS = [
+    DEFAULT_META_DATA_FILTERS = [
       /authorization/i,
       /cookie/i,
       /password/i,
@@ -50,7 +50,7 @@ module Bugsnag
       self.auto_notify = true
       self.send_environment = false
       self.send_code = true
-      self.meta_data_filters = Set.new(DEFAULT_PARAMS_FILTERS)
+      self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
       self.ignore_classes = Set.new([])
       self.endpoint = "https://notify.bugsnag.com"
       self.hostname = default_hostname

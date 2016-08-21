@@ -26,7 +26,7 @@ module Bugsnag::Middleware
 
         # If app is passed a bad URL, this code will crash attempting to clean it
         begin
-          url << Bugsnag::Cleaner.new(report.configuration.params_filters).clean_url(request.fullpath)
+          url << Bugsnag::Cleaner.new(report.configuration.meta_data_filters).clean_url(request.fullpath)
         rescue StandardError => stde
           Bugsnag.configuration.warn "RackRequest - Rescued error while cleaning request.fullpath: #{stde}"
         end

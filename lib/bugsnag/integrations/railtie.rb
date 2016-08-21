@@ -50,11 +50,11 @@ module Bugsnag
       Bugsnag.configuration.app_type = "rails"
     end
 
-    # Configure params_filters after initialization, so that rails initializers
+    # Configure meta_data_filters after initialization, so that rails initializers
     # may set filter_parameters which will be picked up by Bugsnag.
     config.after_initialize do
       Bugsnag.configure do |config|
-        config.params_filters += ::Rails.configuration.filter_parameters.map do |filter|
+        config.meta_data_filters += ::Rails.configuration.filter_parameters.map do |filter|
           case filter
           when String, Symbol
             /\A#{filter}\z/
