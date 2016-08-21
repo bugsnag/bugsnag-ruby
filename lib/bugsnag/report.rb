@@ -51,7 +51,6 @@ module Bugsnag
       return if name.nil?
 
       if value.is_a? Hash
-        #TODO:SM Should we to_s here?
         meta_data[name] ||= {}
         meta_data[name].merge! value
       else

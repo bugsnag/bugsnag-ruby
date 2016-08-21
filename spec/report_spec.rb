@@ -117,8 +117,6 @@ describe Bugsnag::Report do
     }
   end
 
-  # TODO: nested context
-
   it "accepts tabs in overrides and adds them to metaData" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({
