@@ -39,7 +39,7 @@ describe Bugsnag::Rack do
 
       rack_stack.call(rack_env) rescue nil
 
-      expect(Bugsnag::Notification).not_to have_sent_notification
+      expect(Bugsnag).not_to have_sent_notification
     end
   end
 

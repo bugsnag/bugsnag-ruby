@@ -26,7 +26,10 @@ module Bugsnag
     end
 
     def save
-      Bugsnag.auto_notify(exception, {:context => "#{payload['class']}@#{queue}", :payload => payload, :delivery_method => :synchronous})
+      Bugsnag.notify(exception, true) do |report|
+        report.severity = "error"
+        report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload, :delivery_method => :synchronous})
+      end
     end
   end
 end

@@ -33,7 +33,9 @@ explicitly.
 
 ```
 error 500 do
-  Bugsnag.auto_notify($!)
+  Bugsnag.notify($!) do |report|
+    report.severity = "error"
+  end
   erb :'errors/500'
 end
 ```

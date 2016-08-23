@@ -4,17 +4,16 @@ require "thread"
 require "bugsnag/version"
 require "bugsnag/configuration"
 require "bugsnag/meta_data"
-require "bugsnag/notification"
+require "bugsnag/report"
 require "bugsnag/cleaner"
 require "bugsnag/helpers"
-require "bugsnag/deploy"
 
 require "bugsnag/delivery"
 require "bugsnag/delivery/synchronous"
 require "bugsnag/delivery/thread_queue"
 
-require "bugsnag/rack"
-require "bugsnag/railtie" if defined?(Rails::Railtie)
+require "bugsnag/integrations/rack"
+require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
 
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
@@ -23,81 +22,70 @@ require "bugsnag/middleware/rails3_request"
 require "bugsnag/middleware/sidekiq"
 require "bugsnag/middleware/mailman"
 require "bugsnag/middleware/rake"
-require "bugsnag/middleware/callbacks"
 
 module Bugsnag
-  LOG_PREFIX = "** [Bugsnag] "
   LOCK = Mutex.new
 
   class << self
     # Configure the Bugsnag notifier application-wide settings.
-    def configure(config_hash=nil)
-      if config_hash
-        config_hash.each do |k,v|
-          configuration.send("#{k}=", v) rescue nil if configuration.respond_to?("#{k}=")
-        end
-      end
-
+    def configure
       yield(configuration) if block_given?
-
-      # Use resque for asynchronous notification if required
-      require "bugsnag/delay/resque" if configuration.delay_with_resque && defined?(Resque)
-
-      # Log that we are ready to rock
-      @logged_ready = false unless defined?(@logged_ready)
-
-      if configuration.api_key && !@logged_ready
-        log "Bugsnag exception handler #{VERSION} ready"
-        @logged_ready = true
-      end
     end
 
     # Explicitly notify of an exception
-    def notify(exception, overrides=nil, request_data=nil, &block)
-      notification = Notification.new(exception, configuration, overrides, request_data)
-
-      yield(notification) if block_given?
-
-      notification.deliver
-      notification
-    end
-
-    # Notify of an exception unless it should be ignored
-    def notify_or_ignore(exception, overrides=nil, request_data=nil, &block)
-      notification = Notification.new(exception, configuration, overrides, request_data)
-
-      yield(notification) if block_given?
-
-      unless notification.ignore?
-        notification.deliver
-        notification
-      else
-        false
+    def notify(exception, auto_notify=false, &block)
+      if auto_notify && !configuration.auto_notify
+        configuration.debug("Not notifying because auto_notify is disabled")
+        return
       end
-    end
 
-    # Auto notify of an exception, called from rails and rack exception
-    # rescuers, unless auto notification is disabled, or we should ignore this
-    # error class
-    def auto_notify(exception, overrides=nil, request_data=nil, &block)
-      overrides ||= {}
-      overrides.merge!({:severity => "error"})
-      notify_or_ignore(exception, overrides, request_data, &block) if configuration.auto_notify
-    end
+      if !configuration.valid_api_key?
+        configuration.debug("Not notifying due to an invalid api_key")
+        return
+      end
 
-    # Log wrapper
-    def log(message)
-      configuration.logger.info("#{LOG_PREFIX}#{message}")
-    end
+      if !configuration.should_notify_release_stage?
+        configuration.debug("Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
+        return
+      end
 
-    # Warning logger
-    def warn(message)
-      configuration.logger.warn("#{LOG_PREFIX}#{message}")
-    end
+      report = Report.new(exception, configuration)
 
-    # Debug logger
-    def debug(message)
-      configuration.logger.info("#{LOG_PREFIX}#{message}") if configuration.debug
+      # If this is an auto_notify we yield the block before the any middleware is run
+      yield(report) if block_given? && auto_notify
+      if report.ignore?
+        configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in auto_notify block")
+        return
+      end
+
+      # Run internal middleware
+      configuration.internal_middleware.run(report)
+      if report.ignore?
+        configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in internal middlewares")
+        return
+      end
+
+      # Run users middleware
+      configuration.middleware.run(report) do
+        if report.ignore?
+          configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided middleware")
+          return
+        end
+
+        # If this is not an auto_notify then the block was provided by the user. This should be the last
+        # block that is run as it is the users "most specific" block.
+        yield(report) if block_given? && !auto_notify
+        if report.ignore?
+          configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided block")
+          return
+        end
+
+        # Deliver
+        configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
+        payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
+        configuration.debug("Payload: #{payload_string}")
+        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
+      end
     end
 
     # Configuration getters
@@ -106,33 +94,16 @@ module Bugsnag
       @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
     end
 
-    # Set "per-request" data, temporal data for use in bugsnag middleware
-    def set_request_data(key, value)
-      Bugsnag.configuration.set_request_data(key, value)
-    end
-
-    # Clear all "per-request" data, temporal data for use in bugsnag middleware
-    # This method should be called after each distinct request or session ends
-    # Eg. After completing a page request in a web app
-    def clear_request_data
-      Bugsnag.configuration.clear_request_data
-    end
-
     # Allow access to "before notify" callbacks
     def before_notify_callbacks
       Bugsnag.configuration.request_data[:before_callbacks] ||= []
-    end
-
-    # Allow access to "after notify" callbacks
-    def after_notify_callbacks
-      Bugsnag.configuration.request_data[:after_callbacks] ||= []
     end
   end
 end
 
 [:resque, :sidekiq, :mailman, :delayed_job].each do |integration|
   begin
-    require "bugsnag/#{integration}"
+    require "bugsnag/integrations/#{integration}"
   rescue LoadError
   end
 end

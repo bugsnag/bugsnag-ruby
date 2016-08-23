@@ -8,8 +8,6 @@ end
 unless defined? Delayed::Plugins::Bugsnag
   module Delayed
     module Plugins
-
-
       class Bugsnag < Plugin
         module Notify
           def error(job, error)
@@ -36,7 +34,10 @@ unless defined? Delayed::Plugins::Bugsnag
               overrides[:job][:payload] = p
             end
 
-            ::Bugsnag.auto_notify(error, overrides)
+            ::Bugsnag.notify(error, true) do |report|
+              report.severity = "error"
+              report.meta_data.merge! overrides
+            end
 
             super if defined?(super)
           end

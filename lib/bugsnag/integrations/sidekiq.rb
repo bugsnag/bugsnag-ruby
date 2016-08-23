@@ -11,15 +11,17 @@ module Bugsnag
     def call(worker, msg, queue)
       begin
         # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq
-        Bugsnag.set_request_data :sidekiq, { :msg => msg, :queue => queue }
+        Bugsnag.configuration.set_request_data :sidekiq, { :msg => msg, :queue => queue }
 
         yield
       rescue Exception => ex
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
-        Bugsnag.auto_notify(ex)
+        Bugsnag.notify(ex, true) do |report|
+          report.severity = "error"
+        end
         raise
       ensure
-        Bugsnag.clear_request_data
+        Bugsnag.configuration.clear_request_data
       end
     end
   end

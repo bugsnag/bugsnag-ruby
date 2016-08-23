@@ -4,20 +4,20 @@ module Bugsnag::Middleware
       @bugsnag = bugsnag
     end
 
-    def call(notification)
-      task = notification.request_data[:bugsnag_running_task]
+    def call(report)
+      task = report.request_data[:bugsnag_running_task]
 
       if task
-        notification.add_tab(:rake_task, {
+        report.add_tab(:rake_task, {
           :name => task.name,
           :description => task.full_comment,
           :arguments => task.arg_description
         })
 
-        notification.context ||= task.name
+        report.context ||= task.name
       end
 
-      @bugsnag.call(notification)
+      @bugsnag.call(report)
     end
   end
 end

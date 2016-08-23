@@ -2,6 +2,9 @@ require "set"
 require "socket"
 require "logger"
 require "bugsnag/middleware_stack"
+require "bugsnag/middleware/callbacks"
+require "bugsnag/middleware/exception_meta_data"
+require "bugsnag/middleware/ignore_error_class"
 
 module Bugsnag
   class Configuration
@@ -9,22 +12,17 @@ module Bugsnag
     attr_accessor :release_stage
     attr_accessor :notify_release_stages
     attr_accessor :auto_notify
-    attr_accessor :use_ssl
     attr_accessor :ca_file
     attr_accessor :send_environment
     attr_accessor :send_code
     attr_accessor :project_root
-    attr_accessor :vendor_paths
     attr_accessor :app_version
     attr_accessor :app_type
-    attr_accessor :params_filters
-    attr_accessor :ignore_user_agents
+    attr_accessor :meta_data_filters
     attr_accessor :endpoint
     attr_accessor :logger
     attr_accessor :middleware
     attr_accessor :internal_middleware
-    attr_accessor :delay_with_resque
-    attr_accessor :debug
     attr_accessor :proxy_host
     attr_accessor :proxy_port
     attr_accessor :proxy_user
@@ -32,13 +30,12 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :delivery_method
-    attr_writer :ignore_classes
+    attr_accessor :ignore_classes
 
+    API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
-    DEFAULT_ENDPOINT = "notify.bugsnag.com"
-
-    DEFAULT_PARAMS_FILTERS = [
+    DEFAULT_META_DATA_FILTERS = [
       /authorization/i,
       /cookie/i,
       /password/i,
@@ -46,40 +43,19 @@ module Bugsnag
       "rack.request.form_vars"
     ].freeze
 
-    DEFAULT_IGNORE_CLASSES = [
-      "AbstractController::ActionNotFound",
-      "ActionController::InvalidAuthenticityToken",
-      "ActionController::ParameterMissing",
-      "ActionController::UnknownAction",
-      "ActionController::UnknownFormat",
-      "ActionController::UnknownHttpMethod",
-      "ActiveRecord::RecordNotFound",
-      "CGI::Session::CookieStore::TamperedWithCookie",
-      "Mongoid::Errors::DocumentNotFound",
-      "SignalException",
-      "SystemExit",
-    ].freeze
-
-    DEFAULT_IGNORE_USER_AGENTS = [].freeze
-
-    DEFAULT_DELIVERY_METHOD = :thread_queue
-
     def initialize
       @mutex = Mutex.new
 
       # Set up the defaults
       self.auto_notify = true
-      self.use_ssl = true
       self.send_environment = false
       self.send_code = true
-      self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
-      self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
-      self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
-      self.endpoint = DEFAULT_ENDPOINT
+      self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
+      self.ignore_classes = Set.new([])
+      self.endpoint = "https://notify.bugsnag.com"
       self.hostname = default_hostname
-      self.delivery_method = DEFAULT_DELIVERY_METHOD
+      self.delivery_method = :thread_queue
       self.timeout = 15
-      self.vendor_paths = [%r{vendor/}]
       self.notify_release_stages = nil
 
       # Read the API key from the environment
@@ -87,22 +63,26 @@ module Bugsnag
 
       # Set up logging
       self.logger = Logger.new(STDOUT)
-      self.logger.level = Logger::WARN
+      self.logger.level = Logger::INFO
+      self.logger.formatter = proc do |severity, datetime, progname, msg|
+        "** [Bugsnag] #{datetime}: #{msg}\n"
+      end
 
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new
+      self.internal_middleware.use Bugsnag::Middleware::ExceptionMetaData
+      self.internal_middleware.use Bugsnag::Middleware::IgnoreErrorClass
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
     end
 
-    # Accept both String and Class instances as an ignored class
-    def ignore_classes
-      @mutex.synchronize { @ignore_classes.map! { |klass| klass.is_a?(Class) ? klass.name : klass } }
+    def should_notify_release_stage?
+      @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
     end
 
-    def should_notify?
-      @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
+    def valid_api_key?
+      !api_key.nil? && api_key =~ API_KEY_REGEX
     end
 
     def request_data
@@ -119,6 +99,20 @@ module Bugsnag
 
     def clear_request_data
       Thread.current[THREAD_LOCAL_NAME] = nil
+    end
+
+    def info(message)
+      logger.info(message)
+    end
+
+    # Warning logger
+    def warn(message)
+      logger.warn(message)
+    end
+
+    # Debug logger
+    def debug(message)
+      logger.debug(message)
     end
 
     private
