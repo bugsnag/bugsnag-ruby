@@ -27,6 +27,6 @@ end
 
 ::Sidekiq.configure_server do |config|
   config.server_middleware do |chain|
-    chain.add ::Bugsnag::Sidekiq
+    chain.insert_after ::Sidekiq::Middleware::Server::Logging, ::Bugsnag::Sidekiq
   end
 end
