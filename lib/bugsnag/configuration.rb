@@ -33,6 +33,7 @@ module Bugsnag
     attr_accessor :hostname
     attr_accessor :delivery_method
     attr_writer :ignore_classes
+    attr_accessor :stacktrace_exclusion_patterns
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -85,6 +86,7 @@ module Bugsnag
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
 
+      self.stacktrace_exclusion_patterns = [ %r{lib/bugsnag(/|\.rb)}.freeze ]
       # Set up logging
       self.logger = Logger.new(STDOUT)
       self.logger.level = Logger::WARN

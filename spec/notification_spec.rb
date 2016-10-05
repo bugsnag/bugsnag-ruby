@@ -315,6 +315,41 @@ describe Bugsnag::Notification do
     }
   end
 
+  context "skips stacktrace lines mathing the exclusion list" do
+    let(:stacktrace) do
+      [ "/some/excluded/path/file1.rb:100:in `function1'",
+        "/lib/bugsnag/file.rb:300:in `bugsnag_function'",
+        "/some/included/path/file2.rb:200:in `function2'",
+        "/some/excluded/path/file3.rb:300:in `function3'",
+        "/some/included/path/file4.rb:400:in `function4'" ]
+    end
+    let(:exception) do
+      ex = BugsnagTestException.new("It crashed")
+      ex.set_backtrace(stacktrace)
+      ex
+    end
+
+    it "which have lib/bugsnag/*.rb by default" do
+      Bugsnag.notify(exception)
+
+      expect(Bugsnag).to have_sent_notification{ |payload|
+        exception_event=payload["events"].first["exceptions"].first
+        expect(exception_event["stacktrace"].size).to eq(4)
+      }
+    end
+
+    it "which can also be configured" do
+      Bugsnag.configuration.stacktrace_exclusion_patterns << /excluded/
+      Bugsnag.notify(exception)
+
+      expect(Bugsnag).to have_sent_notification{ |payload|
+        exception_event=payload["events"].first["exceptions"].first
+        expect(exception_event["stacktrace"].size).to eq(2)
+      }
+    end
+
+  end
+
   it "accepts a severity in overrides" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {
       :severity => "info"

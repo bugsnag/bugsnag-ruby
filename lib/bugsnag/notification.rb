@@ -52,6 +52,7 @@ module Bugsnag
       @severity = nil
       @grouping_hash = nil
       @delivery_method = nil
+      @stacktrace_exclusions =  Regexp.union( @configuration.stacktrace_exclusion_patterns )
 
       self.severity = @overrides[:severity]
       @overrides.delete :severity
@@ -369,7 +370,7 @@ module Bugsnag
         # Parse the stacktrace line
 
         # Skip stacktrace lines inside lib/bugsnag
-        next(nil) if file.nil? || file =~ %r{lib/bugsnag(/|\.rb)}
+        next(nil) if file.nil? || file =~ @stacktrace_exclusions
 
         # Expand relative paths
         p = Pathname.new(file)
