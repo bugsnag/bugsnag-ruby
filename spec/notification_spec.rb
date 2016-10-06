@@ -347,7 +347,6 @@ describe Bugsnag::Notification do
         expect(exception_event["stacktrace"].size).to eq(2)
       }
     end
-
   end
 
   it "accepts a severity in overrides" do
