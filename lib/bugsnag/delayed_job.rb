@@ -33,12 +33,23 @@ unless defined? Delayed::Plugins::Bugsnag
                 }
                 p[:object][:id] = object.id if object.respond_to?(:id)
               end
+              add_active_job_details(p, payload)
               overrides[:job][:payload] = p
             end
 
             ::Bugsnag.auto_notify(error, overrides)
 
             super if defined?(super)
+          end
+
+          def add_active_job_details(p, payload)
+            if payload.respond_to?(:job_data) && payload.job_data.respond_to?(:[])
+              [:job_class, :job_id, :arguments].each do |key|
+                if (value = payload.job_data[key.to_s])
+                  p[key] = value
+                end
+              end
+            end
           end
         end
 
