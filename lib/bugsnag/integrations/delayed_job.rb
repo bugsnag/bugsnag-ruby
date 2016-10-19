@@ -26,6 +26,12 @@ unless defined? Delayed::Plugins::Bugsnag
                 :attributes => FRAMEWORK_ATTRIBUTES,
               },
             }
+            if job.respond_to?(:queue) && (queue = job.queue)
+              overrides[:job][:queue] = queue
+            end
+            if job.respond_to?(:attempts)
+              overrides[:job][:attempts] = "#{job.attempts} / #{Delayed::Worker.max_attempts}"
+            end
             if payload = job.payload_object
               p = {
                 :class => payload.class.name,
@@ -58,7 +64,7 @@ unless defined? Delayed::Plugins::Bugsnag
 
           def add_active_job_details(p, payload)
             if payload.respond_to?(:job_data) && payload.job_data.respond_to?(:[])
-              [:job_class, :job_id, :arguments].each do |key|
+              [:job_class, :arguments, :queue_name, :job_id].each do |key|
                 if (value = payload.job_data[key.to_s])
                   p[key] = value
                 end
