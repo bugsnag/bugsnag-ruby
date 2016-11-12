@@ -7,8 +7,6 @@ require "bugsnag/middleware/rack_request"
 
 module Bugsnag
   class Railtie < Rails::Railtie
-    cattr_accessor :running_as_dependency
-
     rake_tasks do
       require "bugsnag/rake"
       load "bugsnag/tasks/bugsnag.rake"
@@ -29,7 +27,7 @@ module Bugsnag
       # Configure bugsnag rails defaults
       Bugsnag.configure do |config|
         config.logger = ::Rails.logger
-        config.release_stage = ::Rails.env.to_s
+        config.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] || ::Rails.env.to_s
         config.project_root = ::Rails.root.to_s
         config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
       end
@@ -51,7 +49,7 @@ module Bugsnag
         ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
       end
 
-      Bugsnag.configuration.app_type = "rails" unless Bugsnag::Railtie.running_as_dependency
+      Bugsnag.configuration.app_type = "rails"
     end
 
     # Configure params_filters after initialization, so that rails initializers

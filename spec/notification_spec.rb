@@ -223,6 +223,18 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "accepts grouping_hash from an exception that mixes in Bugsnag::MetaData" do
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_grouping_hash = "exception_hash"
+
+    Bugsnag.notify(exception)
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["groupingHash"]).to eq("exception_hash")
+    }
+  end
+
   it "accept contexts from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
 
     exception = BugsnagTestExceptionWithMetaData.new("It crashed")
@@ -854,6 +866,21 @@ describe Bugsnag::Notification do
       else
         expect(payload.to_json).to match(/foobar/)
       end
+    }
+  end
+
+  it 'should handle exceptions with empty backtrace' do
+    begin
+      err = RuntimeError.new
+      err.set_backtrace([])
+      raise err
+    rescue
+      Bugsnag.notify $!
+    end
+
+    expect(Bugsnag).to have_sent_notification { |payload|
+      exception = get_exception_from_payload(payload)
+      expect(exception['stacktrace'].size).to be > 0
     }
   end
 

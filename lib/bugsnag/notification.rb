@@ -198,6 +198,9 @@ module Bugsnag
           if exception.bugsnag_context.is_a?(String)
             self.context = exception.bugsnag_context
           end
+          if exception.bugsnag_grouping_hash.is_a?(String)
+            self.grouping_hash = exception.bugsnag_grouping_hash
+          end
         end
       end
 
@@ -343,7 +346,7 @@ module Bugsnag
         {
           :errorClass => error_class(exception),
           :message => exception.message,
-          :stacktrace => stacktrace(exception)
+          :stacktrace => stacktrace(exception.backtrace)
         }
       end
     end
@@ -354,9 +357,9 @@ module Bugsnag
       (exception.is_a? Class) ? exception.name : exception.class.name
     end
 
-    def stacktrace(exception)
-      (exception.backtrace || caller).map do |trace|
-
+    def stacktrace(backtrace)
+      backtrace = caller if !backtrace || backtrace.empty?
+      backtrace.map do |trace|
         if trace.match(BACKTRACE_LINE_REGEX)
           file, line_str, method = [$1, $2, $3]
         elsif trace.match(JAVA_BACKTRACE_REGEX)

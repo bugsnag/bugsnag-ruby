@@ -1,6 +1,36 @@
 Changelog
 =========
 
+## 5.0.1 (7 September 2016)
+
+### Bug fixes
+
+* Show the job class name for Sidekiq jobs, not the wrapper class name
+  | [Simon Maynard](https://github.com/snmaynard)
+  | [#323](https://github.com/bugsnag/bugsnag-ruby/pull/323)
+
+## 5.0.0 (23 August 2016)
+
+### Enhancements
+
+* Remove RoutingError from default ignore classes
+  | [#308](https://github.com/bugsnag/bugsnag-ruby/issues/308)
+* Prefer BUGSNAG_RELEASE_STAGE over RAILS_ENV for release_stage
+  | [#298](https://github.com/bugsnag/bugsnag-ruby/issues/298)
+* Apply grouping hash if method `bugsnag_grouping_hash` is available on the object
+  | [#318](https://github.com/bugsnag/bugsnag-ruby/issues/318)
+  | [#311](https://github.com/bugsnag/bugsnag-ruby/issues/311)
+* Sidekiq improvements
+  | [#317](https://github.com/bugsnag/bugsnag-ruby/issues/317)
+  | [#282](https://github.com/bugsnag/bugsnag-ruby/issues/282)
+  | [#309](https://github.com/bugsnag/bugsnag-ruby/issues/309)
+  | [#306](https://github.com/bugsnag/bugsnag-ruby/issues/306)
+
+### Fixes
+
+* Exception backtrace could be empty
+  | [#307](https://github.com/bugsnag/bugsnag-ruby/issues/307)
+
 ## 4.2.1 (23 Jun 2016)
 
 ### Fixes

@@ -6,7 +6,7 @@ module Bugsnag
       # Configure bugsnag rack defaults
       Bugsnag.configure do |config|
         # Try to set the release_stage automatically if it hasn't already been set
-        config.release_stage ||= ENV["RACK_ENV"] if ENV["RACK_ENV"]
+        config.release_stage ||= release_stage
 
         # Try to set the project_root if it hasn't already been set, or show a warning if we can't
         unless config.project_root && !config.project_root.to_s.empty?
@@ -49,6 +49,12 @@ module Bugsnag
     ensure
       # Clear per-request data after processing the each request
       Bugsnag.clear_request_data
+    end
+
+    private
+
+    def release_stage
+      ENV["BUGSNAG_RELEASE_STAGE"] || ENV["RACK_ENV"]
     end
   end
 end

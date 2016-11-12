@@ -2,10 +2,7 @@
 [![build status](https://travis-ci.org/bugsnag/bugsnag-ruby.svg?branch=master)](https://travis-ci.org/bugsnag/bugsnag-ruby)
 
 
-The Bugsnag exception reporter for Ruby gives you instant notification of exceptions
-thrown from your **[Rails](https://bugsnag.com/platforms/rails)**, **Sinatra**, **Rack** or **plain Ruby** app.
-Any uncaught exceptions will trigger a notification to be sent to your
-Bugsnag project.
+The Bugsnag exception reporter for Ruby gives you instant notification of exceptions thrown from your **[Rails](https://bugsnag.com/platforms/rails)**, **Sinatra**, **Rack** or **plain Ruby** app. Any uncaught exceptions will trigger a notification to be sent to your Bugsnag project.
 
 ## Features
 
@@ -40,11 +37,8 @@ Bugsnag project.
 
 ## Contributing
 
-All contributors are welcome! For information on how to build, test
-and release `bugsnag-ruby`, see our
-[contributing guide](https://github.com/bugsnag/bugsnag-ruby/blob/master/CONTRIBUTING.md). Feel free to comment on [existing issues](https://github.com/bugsnag/bugsnag-ruby/issues) for clarification or starting points.
+All contributors are welcome! For information on how to build, test and release `bugsnag-ruby`, see our [contributing guide](https://github.com/bugsnag/bugsnag-ruby/blob/master/CONTRIBUTING.md). Feel free to comment on [existing issues](https://github.com/bugsnag/bugsnag-ruby/issues) for clarification or starting points.
 
 ## License
 
-The Bugsnag ruby notifier is free software released under the MIT License.
-See [LICENSE.txt](LICENSE.txt) for details.
+The Bugsnag ruby notifier is free software released under the MIT License. See [LICENSE.txt](LICENSE.txt) for details.
