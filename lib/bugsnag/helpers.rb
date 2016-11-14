@@ -13,6 +13,7 @@ module Bugsnag
     # Trim the size of value if the serialized JSON value is longer than is
     # accepted by Bugsnag
     def self.trim_if_needed(value)
+      value = "" if value.nil?
       sanitized_value = Bugsnag::Cleaner.clean_object_encoding(value)
       return sanitized_value unless payload_too_long?(sanitized_value)
       reduced_value = trim_strings_in_value(sanitized_value)
