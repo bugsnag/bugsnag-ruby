@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 5.0.2 (14 November 2016)
+
+### Enhancements
+* Add Clearance support
+  | [Jonathan Rochkind](https://github.com/jrochkind)
+  | [#313](https://github.com/bugsnag/bugsnag-ruby/pull/313)
+
 ## 5.0.1 (7 September 2016)
 
 ### Bug fixes
