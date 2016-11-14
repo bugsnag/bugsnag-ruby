@@ -62,7 +62,7 @@ describe Bugsnag::Helpers do
       context "value is a String" do
         it "trims length" do
           value = Bugsnag::Helpers.trim_if_needed(SecureRandom.hex(500_000/2))
-          expect(::JSON.dump(value.length).length).to be < Bugsnag::Helpers::MAX_STRING_LENGTH
+          expect(value.length).to be <= Bugsnag::Helpers::MAX_STRING_LENGTH
         end
       end
 
