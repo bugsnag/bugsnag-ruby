@@ -37,7 +37,7 @@ Resque::Failure::Bugsnag = Bugsnag::Resque
 # Auto-load the failure backend
 Bugsnag::Resque.add_failure_backend
 
-Resque.before_first_fork do
+Resque.after_fork do
   Bugsnag.configuration.app_type = "resque"
   Bugsnag.configuration.default_delivery_method = :synchronous
 end
