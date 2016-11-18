@@ -1,6 +1,21 @@
 Changelog
 =========
 
+## 5.0.2 (14 November 2016)
+
+### Enhancements
+* Add Clearance support
+  | [Jonathan Rochkind](https://github.com/jrochkind)
+  | [#313](https://github.com/bugsnag/bugsnag-ruby/pull/313)
+
+## 5.0.1 (7 September 2016)
+
+### Bug fixes
+
+* Show the job class name for Sidekiq jobs, not the wrapper class name
+  | [Simon Maynard](https://github.com/snmaynard)
+  | [#323](https://github.com/bugsnag/bugsnag-ruby/pull/323)
+
 ## 5.0.0 (23 August 2016)
 
 ### Enhancements
