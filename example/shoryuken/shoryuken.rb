@@ -2,7 +2,7 @@ require 'shoryuken'
 require 'bugsnag'
 
 Bugsnag.configure do |config|
-  config.api_key = '066f5ad3590596f9aa8d601ea89af845'
+  config.api_key = 'YOUR BUGSNAG API KEY'
 end
 
 Shoryuken.configure_server do |config|
