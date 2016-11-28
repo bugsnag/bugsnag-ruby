@@ -37,12 +37,9 @@ module Bugsnag
       config = YAML.load_file(config_file) if File.exist?(config_file)
       Bugsnag.configure(config[::Rails.env] ? config[::Rails.env] : config) if config
 
-      if defined?(::ActionController::Base)
+      ActiveSupport.on_load(:action_controller) do
         require "bugsnag/rails/controller_methods"
-        ::ActionController::Base.send(:include, Bugsnag::Rails::ControllerMethods)
-      end
-      if defined?(ActionController::API)
-        ActionController::API.send(:include, Bugsnag::Rails::ControllerMethods)
+        include Bugsnag::Rails::ControllerMethods
       end
       if defined?(ActiveRecord::Base)
         require "bugsnag/rails/active_record_rescue"
