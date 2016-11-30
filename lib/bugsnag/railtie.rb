@@ -44,9 +44,9 @@ module Bugsnag
       if defined?(ActionController::API)
         ActionController::API.send(:include, Bugsnag::Rails::ControllerMethods)
       end
-      if defined?(ActiveRecord::Base)
+      ActiveSupport.on_load(:active_record) do
         require "bugsnag/rails/active_record_rescue"
-        ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
+        include Bugsnag::Rails::ActiveRecordRescue
       end
 
       Bugsnag.configuration.app_type = "rails"
