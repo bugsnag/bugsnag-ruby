@@ -19,6 +19,11 @@ describe Bugsnag::Cleaner do
       expect(subject.clean_object(a)).to eq(["[RECURSION]", "hello"])
     end
 
+    it "doesn't remove nil from arrays" do
+      a = ["b", nil, "c"]
+      expect(subject.clean_object(a)).to eq(["b", nil, "c"])
+    end
+
     it "allows multiple copies of the same string" do
       a = {:name => "bugsnag"}
       a[:second] = a[:name]

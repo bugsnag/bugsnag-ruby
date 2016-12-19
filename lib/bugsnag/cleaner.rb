@@ -38,7 +38,7 @@ module Bugsnag
         end
         clean_hash
       when Array, Set
-        obj.map { |el| traverse_object(el, seen, scope) }.compact
+        obj.map { |el| traverse_object(el, seen, scope) }
       when Numeric, TrueClass, FalseClass
         obj
       when String
