@@ -30,7 +30,7 @@ If you're a member of the core team, follow these instructions for releasing bug
 * Commit/push your changes
 
     ```
-    git commit -am v2.X.X
+    git commit -am v5.X.X
     git push origin master
     ```
 

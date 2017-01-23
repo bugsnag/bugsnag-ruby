@@ -1,9 +1,15 @@
 Changelog
 =========
 
-## 5.0.2 (14 November 2016)
+## 5.1.0 (23 January 2017)
+
+### Bug fixes
+
+* Fix behavior to not override Rails 5 `belongs_to` association
+  | [#314](https://github.com/bugsnag/bugsnag-ruby/pull/314)
 
 ### Enhancements
+
 * Add Clearance support
   | [Jonathan Rochkind](https://github.com/jrochkind)
   | [#313](https://github.com/bugsnag/bugsnag-ruby/pull/313)
