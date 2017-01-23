@@ -22,7 +22,8 @@ module Bugsnag
         "appVersion" => configuration.app_version,
         "revision" => opts[:revision],
         "repository" => opts[:repository],
-        "branch" => opts[:branch]
+        "branch" => opts[:branch],
+        "provider" => opts[:provider]
       }.reject {|k,v| v == nil}
 
       raise RuntimeError.new("No API key found when notifying of deploy") if !parameters["apiKey"] || parameters["apiKey"].empty?
