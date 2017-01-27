@@ -18,7 +18,7 @@ module Bugsnag
                 :app_version => fetch(:app_version, ENV["BUGSNAG_APP_VERSION"]))
               })
             rescue
-              logger.important("Bugnsag deploy notification failed, #{$!.inspect}")
+              logger.important("Bugsnag deploy notification failed, #{$!.inspect}")
             end
 
             logger.info "Bugsnag deploy notification complete."
