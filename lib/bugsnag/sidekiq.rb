@@ -5,7 +5,7 @@ module Bugsnag
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
       Bugsnag.configuration.app_type = "sidekiq"
-      Bugsnag.configuration.delivery_method = :synchronous
+      Bugsnag.configuration.default_delivery_method = :synchronous
     end
 
     def call(worker, msg, queue)

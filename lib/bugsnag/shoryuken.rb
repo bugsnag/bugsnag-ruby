@@ -4,7 +4,7 @@ module Bugsnag
   class Shoryuken
     def initialize
       Bugsnag.configuration.app_type = "shoryuken"
-      Bugsnag.configuration.delivery_method = :synchronous
+      Bugsnag.configuration.default_delivery_method = :synchronous
     end
 
     def call(_, queue, _, body)
