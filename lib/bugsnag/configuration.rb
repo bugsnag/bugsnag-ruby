@@ -31,7 +31,6 @@ module Bugsnag
     attr_accessor :proxy_password
     attr_accessor :timeout
     attr_accessor :hostname
-    attr_accessor :delivery_method
     attr_writer :ignore_classes
 
     THREAD_LOCAL_NAME = "bugsnag_req_data"
@@ -77,7 +76,6 @@ module Bugsnag
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
       self.hostname = default_hostname
-      self.delivery_method = DEFAULT_DELIVERY_METHOD
       self.timeout = 15
       self.vendor_paths = [%r{vendor/}]
       self.notify_release_stages = nil
@@ -94,6 +92,30 @@ module Bugsnag
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
+    end
+
+    ##
+    # Gets the delivery_method that Bugsnag will use to communicate with the
+    # notification endpoint.
+    #
+    def delivery_method
+      @delivery_method || @default_delivery_method || DEFAULT_DELIVERY_METHOD
+    end
+
+    ##
+    # Sets the delivery_method that Bugsnag will use to communicate with the
+    # notification endpoint.
+    #
+    def delivery_method=(delivery_method)
+      @delivery_method = delivery_method
+    end
+
+    ##
+    # Used to set a new default delivery method that will be used if one is not
+    # set with #delivery_method.
+    #
+    def default_delivery_method=(delivery_method)
+      @default_delivery_method = delivery_method
     end
 
     # Accept both String and Class instances as an ignored class

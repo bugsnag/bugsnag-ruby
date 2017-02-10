@@ -26,7 +26,7 @@ module Bugsnag
     end
 
     def save
-      Bugsnag.auto_notify(exception, {:context => "#{payload['class']}@#{queue}", :payload => payload, :delivery_method => :synchronous})
+      Bugsnag.auto_notify(exception, {:context => "#{payload['class']}@#{queue}", :payload => payload})
     end
   end
 end
@@ -39,5 +39,5 @@ Bugsnag::Resque.add_failure_backend
 
 Resque.before_first_fork do
   Bugsnag.configuration.app_type = "resque"
-  Bugsnag.configuration.delivery_method = :synchronous
+  Bugsnag.configuration.default_delivery_method = :synchronous
 end
