@@ -1,6 +1,26 @@
 Changelog
 =========
 
+## 5.2.0 (10 February 2017)
+
+### Enhancements
+
+* Allow provider attribute in Deploy#notify
+  | [@jbaranov](https://github.com/jbaranov)
+  | [#339](https://github.com/bugsnag/bugsnag-ruby/pull/339)
+
+### Bug fixes
+
+* Correctly hook on Action Controller
+  | [@rafaelfranca](https://github.com/rafaelfranca)
+  | [#338](https://github.com/bugsnag/bugsnag-ruby/pull/338)
+* Fix Bugsnag error message typo
+  | [@Adsidera](https://github.com/Adsidera)
+  | [#344](https://github.com/bugsnag/bugsnag-ruby/pull/344)
+* Default delivery method
+  | [@martin308](https://github.com/martin308)
+  | [#346](https://github.com/bugsnag/bugsnag-ruby/pull/346)
+
 ## 5.1.0 (23 January 2017)
 
 ### Bug fixes
