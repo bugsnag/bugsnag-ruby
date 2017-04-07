@@ -15,6 +15,7 @@ The Bugsnag exception reporter for Ruby gives you instant notification of except
 
 1. [Create a Bugsnag account](https://bugsnag.com)
 2. Complete the instructions in the integration guide for your framework:
+    * [Que](http://docs.bugsnag.com/platforms/ruby/que)
     * [Rack](http://docs.bugsnag.com/platforms/ruby/rack)
     * [Rails](http://docs.bugsnag.com/platforms/ruby/rails)
     * [Rake](http://docs.bugsnag.com/platforms/ruby/rake)
@@ -26,6 +27,7 @@ The Bugsnag exception reporter for Ruby gives you instant notification of except
 ## Support
 
 * Read the configuration reference:
+    * [Que](http://docs.bugsnag.com/platforms/ruby/que/configuration-options)
     * [Rack](http://docs.bugsnag.com/platforms/ruby/rack/configuration-options)
     * [Rails](http://docs.bugsnag.com/platforms/ruby/rails/configuration-options)
     * [Rake](http://docs.bugsnag.com/platforms/ruby/rake/configuration-options)

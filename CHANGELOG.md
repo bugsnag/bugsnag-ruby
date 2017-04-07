@@ -1,6 +1,42 @@
 Changelog
 =========
 
+## 5.3.0 (07 April 2017)
+
+### Enhancements
+
+* [Resque] Fix leaking config into parent process
+  | [Martin Holman](https://github.com/martin308)
+  | [#347](https://github.com/bugsnag/bugsnag-ruby/pull/347)
+* Add new integration for Que
+  | [Sjoerd Andringa](https://github.com/s-andringa)
+  | [#305](https://github.com/bugsnag/bugsnag-ruby/pull/305)
+* [Sidekiq] Start Bugsnag after the logger in the middleware chain
+  | [Stephen Bussey](https://github.com/sb8244)
+  | [Akhil Naini](https://github.com/akhiln)
+  | [#326](https://github.com/bugsnag/bugsnag-ruby/pull/326)
+  | [#350](https://github.com/bugsnag/bugsnag-ruby/pull/350)
+* [Rake] Allow overriding `app_type` apps
+  | [#351](https://github.com/bugsnag/bugsnag-ruby/issues/351)
+* Send the dyno name as the hostname when running on Heroku
+  | [#333](https://github.com/bugsnag/bugsnag-ruby/issues/333)
+* [Delayed Job] Add additional job information such as arguments and number of
+  attempts when available
+  | [Tim Diggins](https://github.com/timdiggins)
+  | [Abraham Chan](https://github.com/abraham-chan)
+  | [Johnny Shields](https://github.com/johnnyshields)
+  | [#329](https://github.com/bugsnag/bugsnag-ruby/pull/329)
+  | [#332](https://github.com/bugsnag/bugsnag-ruby/pull/332)
+  | [#321](https://github.com/bugsnag/bugsnag-ruby/pull/321)
+
+### Bug fixes
+
+* Initialize Railtie after Bugsnag class
+  | [#343](https://github.com/bugsnag/bugsnag-ruby/issues/343)
+* Alias `notify_or_ignore` to `notify`
+  | [Simon Maynard](https://github.com/snmaynard)
+  | [#319](https://github.com/bugsnag/bugsnag-ruby/pull/319)
+
 ## 5.2.0 (10 February 2017)
 
 ### Enhancements
