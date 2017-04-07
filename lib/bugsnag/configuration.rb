@@ -146,8 +146,8 @@ module Bugsnag
     private
 
     def default_hostname
-      # Don't send the hostname on Heroku
-      Socket.gethostname unless ENV["DYNO"]
+      # Send the heroku dyno name instead of hostname if available
+      ENV["DYNO"] || Socket.gethostname;
     end
   end
 end
