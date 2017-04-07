@@ -9,7 +9,7 @@ class Rake::Task
   }
 
   def execute_with_bugsnag(args=nil)
-    Bugsnag.configuration.app_type = "rake"
+    Bugsnag.configuration.app_type ||= "rake"
     old_task = Bugsnag.configuration.request_data[:bugsnag_running_task]
     Bugsnag.configuration.set_request_data :bugsnag_running_task, self
 
