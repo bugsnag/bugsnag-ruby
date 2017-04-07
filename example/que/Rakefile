@@ -1,0 +1,38 @@
+namespace :migrate do
+  desc "Create database and tables"
+  task :up do
+    require_relative 'app/migrations'
+    CreateUsersTable.migrate(:up)
+
+    require_relative 'app'
+    Que.migrate!
+  end
+
+  desc "Drop database tables"
+  task :down do
+    require_relative 'app/migrations'
+    CreateUsersTable.migrate(:down)
+  end
+end
+
+namespace :job do
+  desc "Enqueue a job"
+  task :enqueue do
+    require_relative 'app/jobs'
+    user = User.create(name: 'Bob', cheered_at: 5.days.ago)
+    user.save
+    Cheer.enqueue(user.id)
+  end
+
+  desc "Run a worker"
+  task :work do
+    require_relative 'app/jobs'
+    require 'que'
+
+    Que.worker_count = 5
+    Que.mode = :async
+    loop do
+      sleep
+    end
+  end
+end

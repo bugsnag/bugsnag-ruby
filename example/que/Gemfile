@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+gem 'que'
+gem 'activerecord'
+gem 'pg'
+gem 'bugsnag', path: '../../'
