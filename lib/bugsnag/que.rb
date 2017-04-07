@@ -1,9 +1,7 @@
 if defined?(::Que)
-  Que.error_handler = proc do |error, job|
+  handler = proc do |error, job|
     begin
       job = job.dup # Make sure the original job object is not mutated.
-
-      Bugsnag.configuration.app_type = "que"
 
       Bugsnag.auto_notify(error) do |notification|
         job[:error_count] += 1
@@ -27,5 +25,13 @@ if defined?(::Que)
       Bugsnag.warn("Failed to notify Bugsnag of error in Que job (#{e.class}): #{e.message} \n#{e.backtrace[0..9].join("\n")}")
       raise
     end
+  end
+
+  if Que.respond_to?(:error_notifier=)
+    Bugsnag.configuration.app_type ||= "que"
+    Que.error_notifier = handler
+  elsif Que.respond_to?(:error_handler=)
+    Bugsnag.configuration.app_type ||= "que"
+    Que.error_handler = handler
   end
 end
