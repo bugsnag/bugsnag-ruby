@@ -1,0 +1,41 @@
+PATH
+  remote: ../..
+  specs:
+    bugsnag (5.2.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activemodel (4.2.8)
+      activesupport (= 4.2.8)
+      builder (~> 3.1)
+    activerecord (4.2.8)
+      activemodel (= 4.2.8)
+      activesupport (= 4.2.8)
+      arel (~> 6.0)
+    activesupport (4.2.8)
+      i18n (~> 0.7)
+      minitest (~> 5.1)
+      thread_safe (~> 0.3, >= 0.3.4)
+      tzinfo (~> 1.1)
+    arel (6.0.4)
+    builder (3.2.3)
+    i18n (0.8.1)
+    minitest (5.10.1)
+    pg (0.20.0)
+    que (0.12.1)
+    thread_safe (0.3.6)
+    tzinfo (1.2.3)
+      thread_safe (~> 0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activerecord
+  bugsnag!
+  pg
+  que
+
+BUNDLED WITH
+   1.14.6
