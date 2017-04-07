@@ -59,16 +59,6 @@ module Bugsnag
 
       yield(notification) if block_given?
 
-      notification.deliver
-      notification
-    end
-
-    # Notify of an exception unless it should be ignored
-    def notify_or_ignore(exception, overrides=nil, request_data=nil, &block)
-      notification = Notification.new(exception, configuration, overrides, request_data)
-
-      yield(notification) if block_given?
-
       unless notification.ignore?
         notification.deliver
         notification
@@ -76,6 +66,7 @@ module Bugsnag
         false
       end
     end
+    alias_method :notify_or_ignore, :notify
 
     # Auto notify of an exception, called from rails and rack exception
     # rescuers, unless auto notification is disabled, or we should ignore this
