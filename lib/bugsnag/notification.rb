@@ -314,6 +314,9 @@ module Bugsnag
             add_to_meta_data key, value, meta_data
           end
         end
+        if exception.respond_to?(:record) && exception.record.respond_to?(:attributes)
+          add_to_meta_data :active_record, exception.record.attributes, meta_data
+        end
       end
 
       overrides.each do |key, value|

@@ -7,6 +7,13 @@ module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class NestedException < StandardError; attr_accessor :original_exception; end
 class BugsnagTestExceptionWithMetaData < Exception; include Bugsnag::MetaData; end
 class BugsnagSubclassTestException < BugsnagTestException; end
+class BugsnagTestExceptionWithRecord < Exception
+  attr_reader :record
+  def initialize(record)
+    super
+    @record = record
+  end
+end
 
 class Ruby21Exception < RuntimeError
   attr_accessor :cause
@@ -183,6 +190,20 @@ describe Bugsnag::Notification do
       expect(event["metaData"]["some_tab"]).to eq(
         "info" => "overridden",
         "data" => "also here"
+      )
+    }
+  end
+
+  it 'adds ActiveRecord information' do
+    exception = BugsnagTestExceptionWithRecord.new(OpenStruct.new(:attributes => {:a => 1, :b => 2}))
+
+    Bugsnag.notify(exception)
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]["active_record"]).to eq(
+        "a" => 1,
+        "b" => 2
       )
     }
   end
