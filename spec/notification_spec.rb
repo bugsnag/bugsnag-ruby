@@ -631,6 +631,22 @@ describe Bugsnag::Notification do
     expect(Bugsnag::Notification).not_to have_sent_notification
   end
 
+  it "does not notify if exception matches block condition" do
+    Bugsnag.configuration.ignore_classes << proc {|ex| ex.message == 'minor'}
+
+    expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
+
+    Bugsnag.notify_or_ignore(StandardError.new("minor"))
+  end
+
+  it "does not notify if exception's metadata matches the block condition" do
+    Bugsnag.configuration.ignore_classes << proc {|_, metadata| metadata[:retry_count] < 3}
+
+    expect(Bugsnag::Notification).not_to receive(:deliver_exception_payload)
+
+    Bugsnag.notify_or_ignore(StandardError.new("It crashed"), :retry_count => 2)
+  end
+
   it "sends the cause of the exception" do
     begin
       begin
