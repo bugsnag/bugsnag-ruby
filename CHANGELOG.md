@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 5.3.1 (20 April 2017)
+
+### Bug fixes
+
+* [Resque] Fix error when creating a worker without a queue
+  | [Dean Galvin](https://github.com/FreekingDean)
+  | [#355](https://github.com/bugsnag/bugsnag-ruby/pull/355)
+
 ## 5.3.0 (07 April 2017)
 
 ### Enhancements
