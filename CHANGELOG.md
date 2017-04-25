@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 5.3.2 (25 April 2017)
+
+### Bug fixes
+
+* [Sidekiq] Revert commit [c7862ea](https://github.com/bugsnag/bugsnag-ruby/commit/c7862ea90397357f8daad8698c1572230f65075c) because Sidekiq's logging middleware was removed in version 5.0.0 | [Reuben Brown](https://github.com/reubenbrown) | [#358](https://github.com/bugsnag/bugsnag-ruby/pull/358)
+
 ## 5.3.1 (20 April 2017)
 
 ### Bug fixes
