@@ -38,6 +38,10 @@ end
 
 ::Sidekiq.configure_server do |config|
   config.server_middleware do |chain|
-    chain.add ::Bugsnag::Sidekiq
+    if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('3.3.0')
+      chain.prepend ::Bugsnag::Sidekiq
+    else
+      chain.add ::Bugsnag::Sidekiq
+    end
   end
 end
