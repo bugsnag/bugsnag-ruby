@@ -17,6 +17,7 @@ unless defined? Delayed::Plugins::Bugsnag
               :job => {
                 :class => job.class.name,
                 :id => job.id,
+                :attempt => job.attempts,
               }
             }
             if job.respond_to?(:queue) && (queue = job.queue)
