@@ -18,7 +18,7 @@ module Bugsnag::Middleware
         notification.context = "#{request.request_method} #{request.path}"
 
         # Set a sensible default for user_id
-        notification.user_id = request.ip
+        notification.user_id ||= request.ip
 
         # Build the clean url (hide the port if it is obvious)
         url = "#{request.scheme}://#{request.host}"
