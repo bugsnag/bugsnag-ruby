@@ -2,6 +2,8 @@ require 'spec_helper'
 
 describe Bugsnag::Notification do
   it "includes code in the stack trace" do
+    Bugsnag.configuration.send_code = true
+
     _a = 1
     _b = 2
     _c = 3
@@ -25,9 +27,7 @@ describe Bugsnag::Notification do
     }
   end
 
-  it "allows you to disable sending code" do
-    Bugsnag.configuration.send_code = false
-
+  it "does not send code by default" do
     notify_test_exception
 
     expect(Bugsnag).to have_sent_notification{ |payload|
@@ -37,6 +37,8 @@ describe Bugsnag::Notification do
   end
 
   it 'should send the first 7 lines of the file for exceptions near the top' do
+    Bugsnag.configuration.send_code = true
+
     load 'spec/fixtures/crashes/start_of_file.rb' rescue Bugsnag.notify $!
 
     expect(Bugsnag).to have_sent_notification{ |payload|
@@ -55,6 +57,8 @@ describe Bugsnag::Notification do
   end
 
   it 'should send the last 7 lines of the file for exceptions near the bottom' do
+    Bugsnag.configuration.send_code = true
+
     load 'spec/fixtures/crashes/end_of_file.rb' rescue Bugsnag.notify $!
 
     expect(Bugsnag).to have_sent_notification{ |payload|
@@ -73,6 +77,8 @@ describe Bugsnag::Notification do
   end
 
   it 'should send the last 7 lines of the file for exceptions near the bottom' do
+    Bugsnag.configuration.send_code = true
+
     load 'spec/fixtures/crashes/short_file.rb' rescue Bugsnag.notify $!
 
     expect(Bugsnag).to have_sent_notification{ |payload|

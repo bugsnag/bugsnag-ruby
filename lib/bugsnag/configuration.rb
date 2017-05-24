@@ -70,7 +70,7 @@ module Bugsnag
       self.auto_notify = true
       self.use_ssl = true
       self.send_environment = false
-      self.send_code = true
+      self.send_code = false
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
       self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
