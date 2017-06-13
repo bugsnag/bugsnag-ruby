@@ -83,6 +83,15 @@ describe Bugsnag::Cleaner do
       params = {:request => {:params => {:foo => {:bar => "baz"}}}}
       expect(described_class.new([/^foo\.bar/]).clean_object(params)).to eq({:request => {:params => {:foo => {:bar => '[FILTERED]'}}}})
     end
+
+    it "filters objects which can't be stringified" do
+      class StringRaiser
+        def to_s
+          raise 'Oh no you do not!'
+        end
+      end
+      expect(subject.clean_object({ :foo => StringRaiser.new })).to eq({ :foo => '[RAISED]' })
+    end
   end
 
   describe "#clean_url" do
