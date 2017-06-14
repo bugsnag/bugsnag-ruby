@@ -1,5 +1,7 @@
 module Bugsnag::Middleware
   class RackRequest
+    SPOOF = "[SPOOF]".freeze
+
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
@@ -11,7 +13,7 @@ module Bugsnag::Middleware
         request = ::Rack::Request.new(env)
 
         params = request.params rescue {}
-
+        client_ip = request.ip.to_s rescue SPOOF
         session = env["rack.session"]
 
         # Set the context
@@ -51,7 +53,7 @@ module Bugsnag::Middleware
           :httpMethod => request.request_method,
           :params => params.to_hash,
           :referer => request.referer,
-          :clientIp => request.ip,
+          :clientIp => client_ip,
           :headers => headers
         })
 
