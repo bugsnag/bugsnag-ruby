@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## 5.3.3 (16 June 2017)
+
+* [Rails] Fix failure to report when encountering objects which throw in `to_s`
+  [#361](https://github.com/bugsnag/bugsnag-ruby/pull/361)
+
 ## 5.3.2 (27 April 2017)
 
 ### Bug fixes
