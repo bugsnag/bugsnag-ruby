@@ -34,6 +34,7 @@ module Bugsnag
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
+    DEFAULT_ENDPOINT = "https://notify.bugsnag.com"
 
     DEFAULT_META_DATA_FILTERS = [
       /authorization/i,
@@ -52,7 +53,7 @@ module Bugsnag
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
       self.ignore_classes = Set.new([])
-      self.endpoint = "https://notify.bugsnag.com"
+      self.endpoint = DEFAULT_ENDPOINT
       self.hostname = default_hostname
       self.delivery_method = :thread_queue
       self.timeout = 15
