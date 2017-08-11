@@ -37,6 +37,12 @@ describe Bugsnag::Cleaner do
       expect(subject.clean_object(obj)).to eq("André")
     end
 
+    it "cleans custom objects" do
+      class Macaron; end
+      a = Macaron.new
+      expect(subject.clean_object(a)).to eq('[OBJECT]')
+    end
+
     it "cleans up binary strings properly" do
       if RUBY_VERSION > "1.9"
         obj = "Andr\xc7\xff"

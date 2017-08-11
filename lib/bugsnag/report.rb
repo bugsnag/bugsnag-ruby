@@ -54,6 +54,8 @@ module Bugsnag
         meta_data[name] ||= {}
         meta_data[name].merge! value
       else
+        meta_data["custom"] = {} unless meta_data["custom"]
+
         meta_data["custom"][name.to_s] = value
       end
     end

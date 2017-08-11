@@ -156,6 +156,62 @@ describe Bugsnag::Report do
     }
   end
 
+  it "removes tabs" do
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_meta_data = {
+      :some_tab => {
+        :info => "here",
+        :data => "also here"
+      }
+    }
+
+    Bugsnag.notify(exception) do |report|
+      report.remove_tab(:some_tab)
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]["some_tab"]).to be_nil
+    }
+  end
+
+  it "ignores removing nil tabs" do
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_meta_data = {
+      :some_tab => {
+        :info => "here",
+        :data => "also here"
+      }
+    }
+
+    Bugsnag.notify(exception) do |report|
+      report.remove_tab(nil)
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]["some_tab"]).to eq(
+        "info" => "here",
+        "data" => "also here"
+      )
+    }
+  end
+
+  it "Creates a custom tab for metadata which is not a Hash" do
+    exception = Exception.new("It crashed")
+
+    Bugsnag.notify(exception) do |report|
+      report.add_tab(:some_tab, "added")
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]["custom"]).to eq(
+        "some_tab" => "added",
+      )
+    }
+  end
+
   it "accepts meta data from an exception that mixes in Bugsnag::MetaData, but override using the overrides" do
     exception = BugsnagTestExceptionWithMetaData.new("It crashed")
     exception.bugsnag_meta_data = {
@@ -529,6 +585,14 @@ describe Bugsnag::Report do
       expect(event["metaData"]["request"]["params"]).not_to be_nil
       expect(event["metaData"]["request"]["params"]).to have_key("nil_param")
     }
+  end
+
+  it "does not notify if report ignored" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.ignore!
+    end
+
+    expect(Bugsnag).not_to have_sent_notification
   end
 
   it "does not notify if the exception class is in the default ignore_classes list" do
