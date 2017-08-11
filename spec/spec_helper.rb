@@ -1,9 +1,11 @@
-require 'simplecov'
-require 'coveralls'
+if RUBY_VERSION > "2.0.0"
+  require 'simplecov'
+  require 'coveralls'
 
-SimpleCov.formatter = Coveralls::SimpleCov::Formatter
-SimpleCov.start do
-  add_filter 'spec'
+  SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+  SimpleCov.start do
+    add_filter 'spec'
+  end
 end
 
 require 'bugsnag'
