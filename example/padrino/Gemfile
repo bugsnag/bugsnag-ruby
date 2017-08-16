@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 if ENV['INTEGRATION_LANGUAGE']
-  gem 'bugsnag', path: '../../../'
+  gem 'bugsnag', path: '../../'
 else
   gem 'bugsnag'
 end
