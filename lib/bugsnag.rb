@@ -43,6 +43,14 @@ module Bugsnag
       # Use resque for asynchronous notification if required
       require "bugsnag/delay/resque" if configuration.delay_with_resque && defined?(Resque)
 
+      #Warn if an api_key hasn't been set
+      @key_warning = false unless defined?(@key_warning)
+
+      if !configuration.api_key && !@key_warning
+        warn "No API key has been set, check your configuration"
+        @key_warning = true
+      end
+
       # Log that we are ready to rock
       @logged_ready = false unless defined?(@logged_ready)
 
