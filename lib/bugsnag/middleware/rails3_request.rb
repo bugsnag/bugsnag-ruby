@@ -26,7 +26,7 @@ module Bugsnag::Middleware
           :requestId => env["action_dispatch.request_id"]
         })
 
-        report.user_id = env["action_dispatch.remote_ip"]
+        report.user["id"] = env["action_dispatch.remote_ip"]
 
         # Add the rails version
         if report.configuration.send_environment
