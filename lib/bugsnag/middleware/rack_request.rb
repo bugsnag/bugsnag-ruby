@@ -18,7 +18,7 @@ module Bugsnag::Middleware
         report.context = "#{request.request_method} #{request.path}"
 
         # Set a sensible default for user_id
-        report.user_id = request.ip
+        report.user["id"] = request.ip
 
         # Build the clean url (hide the port if it is obvious)
         url = "#{request.scheme}://#{request.host}"
