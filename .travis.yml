@@ -19,6 +19,11 @@ install:
 script:
 - bundle exec rake -- $EXEC_OPTS
 
+env:
+- INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
+- INSTALL_OPTS="--without coverage"
+- EXEC_OPTS="--coverage"
+
 matrix:
   include:
   - rvm: jruby-19mode
