@@ -25,6 +25,13 @@ env:
 - EXEC_OPTS="--coverage"
 
 matrix:
+  exclude:
+  - rvm: jruby-19mode
+  - rvm: 1.9.3
+  - rvm: 2.0.0
+  - rvm: 2.1.8
+  - rvm: 2.2.4
+  - rvm: 2.3.0
   include:
   - rvm: jruby-19mode
     env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
