@@ -18,14 +18,4 @@ Gem::Specification.new do |s|
   ]
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 1.9.2'
-
-  s.add_development_dependency 'rake', '~> 10.1.1'
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'rdoc'
-  s.add_development_dependency 'pry'
-  s.add_development_dependency 'addressable', '~> 2.3.8'
-  s.add_development_dependency 'webmock'
-  s.add_development_dependency 'simplecov'
-  s.add_development_dependency 'coveralls'
-  s.add_development_dependency 'sidekiq', '~> 5.0.4'
 end

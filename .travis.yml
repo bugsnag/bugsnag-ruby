@@ -12,3 +12,29 @@ rvm:
 before_install:
 - gem update --system 2.1.11
 - gem --version
+
+install:
+- bundle install $INSTALL_OPTS
+
+script:
+- bundle exec rake -- $EXEC_OPTS
+
+matrix:
+  include:
+  - rvm: jruby-19mode
+    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
+  - rvm: 1.9.3
+    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
+  - rvm: 2.0.0
+    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
+  - rvm: 2.0.0
+    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
+  - rvm: 2.2.4
+    env: INSTALL_OPTS="--without coverage"
+  - rvm: 2.3.0
+    env: INSTALL_OPTS="--without coverage"
+  - rvm: 2.3.0
+    env: EXEC_OPTS="--coverage"
+  allow_failures:
+  - rvm: 2.3.0
+    env: EXEC_OPTS="--coverage"
