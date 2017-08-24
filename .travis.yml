@@ -14,9 +14,11 @@ before_install:
 - gem --version
 
 install:
+- echo $INSTALL_OPTS
 - bundle install $INSTALL_OPTS
 
 script:
+- echo $EXEC_OPTS
 - bundle exec rake -- $EXEC_OPTS
 
 env:
