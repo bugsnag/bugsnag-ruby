@@ -6,7 +6,7 @@ group :test do
     gem 'rdoc'
     gem 'pry'
     gem 'addressable', '~> 2.3.8'
-    gem 'webmock'
+    gem 'webmock', '2.3.2' if RUBY_VERSION <= '1.9.3'
 end
 
 group :coverage do

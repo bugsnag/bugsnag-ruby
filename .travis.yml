@@ -39,7 +39,7 @@ matrix:
     env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
   - rvm: 2.0.0
     env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
-  - rvm: 2.0.0
+  - rvm: 2.1.8
     env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
   - rvm: 2.2.4
     env: INSTALL_OPTS="--without coverage"
