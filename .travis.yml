@@ -10,7 +10,6 @@ rvm:
 - jruby-19mode
 
 before_install:
-- yes | gem uninstall bundler
 - gem install bundler -v 1.13.7
 - gem update --system 2.2
 - gem --version
