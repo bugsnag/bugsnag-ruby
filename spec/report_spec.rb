@@ -761,6 +761,7 @@ describe Bugsnag::Report do
   end
 
   it "should handle utf8 encoding errors in exceptions_list" do
+    skip "Irrelevant on newer ruby" if RUBY_VERSION >= '2.3.0'
     invalid_data = "\"foo\xEBbar\""
     invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
 
