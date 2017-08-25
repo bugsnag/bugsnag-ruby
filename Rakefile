@@ -26,7 +26,10 @@ end
 require 'rspec/core'
 require "rspec/core/rake_task"
 RSpec::Core::RakeTask.new(:spec) do |task|
-  if ARGV.include? '--no-sidekiq'
+  begin
+    require 'sidekiq/testing'
+  rescue LoadError
+    puts "Skipping sidekiq tests, missing dependencies"
     task.rspec_opts = "--exclude-pattern **/integrations/sidekiq_spec.rb"
   end
 end

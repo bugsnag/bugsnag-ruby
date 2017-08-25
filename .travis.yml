@@ -1,55 +1,32 @@
 sudo: false
 language: ruby
-cache: bundler
-rvm:
-- 2.3.0
-- 2.2.4
-- 2.1.8
-- 2.0.0
-- 1.9.3
-- jruby-19mode
 
 before_install:
 - gem install bundler -v 1.13.7
-- gem update --system 2.2
-- gem --version
 
 install:
-- echo $INSTALL_OPTS
-- bundle install $INSTALL_OPTS
+- bundle install --with "$GEMSETS"
 
 script:
-- echo $EXEC_OPTS
-- bundle exec rake -- $EXEC_OPTS
+- bundle exec rake
 
-env:
-- INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
-- INSTALL_OPTS="--without coverage"
-- EXEC_OPTS="--coverage"
-
-matrix:
-  exclude:
-  - rvm: jruby-19mode
-  - rvm: 1.9.3
-  - rvm: 2.0.0
-  - rvm: 2.1.8
-  - rvm: 2.2.4
-  - rvm: 2.3.0
+jobs:
   include:
-  - rvm: jruby-19mode
-    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
-  - rvm: 1.9.3
-    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
-  - rvm: 2.0.0
-    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
-  - rvm: 2.1.8
-    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
-  - rvm: 2.2.4
-    env: INSTALL_OPTS="--without coverage"
-  - rvm: 2.3.0
-    env: INSTALL_OPTS="--without coverage"
-  - rvm: 2.3.0
-    env: EXEC_OPTS="--coverage"
-  allow_failures:
-  - rvm: 2.3.0
-    env: EXEC_OPTS="--coverage"
+  - stage: test
+    env: GEMSETS=test
+    rvm: jruby-19mode
+  - stage: test
+    env: GEMSETS=test
+    rvm: 1.9.3
+  - stage: test
+    env: GEMSETS=test
+    rvm: 2.0.0
+  - stage: test
+    env: GEMSETS=test
+    rvm: 2.1.8
+  - stage: test
+    env: GEMSETS="test sidekiq"
+    rvm: 2.2.4
+  - stage: test
+    env: GEMSETS="test sidekiq coverage"
+    rvm: 2.3.0
