@@ -10,7 +10,6 @@ rvm:
 - jruby-19mode
 
 before_install:
-- gem install bundler -v 1.7.6
 - gem update --system 2.2
 - gem --version
 
@@ -36,20 +35,20 @@ matrix:
   - rvm: 2.2.4
   - rvm: 2.3.0
   include:
-  #- rvm: jruby-19mode
-  #  env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
-  #- rvm: 1.9.3
-  #  env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
-  #- rvm: 2.0.0
-  #  env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
+  - rvm: jruby-19mode
+    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
+  - rvm: 1.9.3
+    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
+  - rvm: 2.0.0
+    env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
   - rvm: 2.1.8
     env: INSTALL_OPTS="--without coverage sidekiq" EXEC_OPTS="--no-sidekiq"
-  #- rvm: 2.2.4
-  #  env: INSTALL_OPTS="--without coverage"
-  #- rvm: 2.3.0
-  #  env: INSTALL_OPTS="--without coverage"
-  #- rvm: 2.3.0
-  #  env: EXEC_OPTS="--coverage"
+  - rvm: 2.2.4
+    env: INSTALL_OPTS="--without coverage"
+  - rvm: 2.3.0
+    env: INSTALL_OPTS="--without coverage"
+  - rvm: 2.3.0
+    env: EXEC_OPTS="--coverage"
   allow_failures:
-  #- rvm: 2.3.0
-  #  env: EXEC_OPTS="--coverage"
+  - rvm: 2.3.0
+    env: EXEC_OPTS="--coverage"
