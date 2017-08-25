@@ -2,13 +2,16 @@ sudo: false
 language: ruby
 
 before_install:
-- gem install bundler -v 1.13.7
+- gem install bundler -v 1.12
+- gem update --system
+- bundle --version
+- gem --version
 
 install:
-- bundle install --with "$GEMSETS"
+- bundle _1.12.0_ install --with "$GEMSETS"
 
 script:
-- bundle exec rake
+- bundle _1.12.0_ exec rake
 
 jobs:
   include:
