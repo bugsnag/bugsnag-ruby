@@ -23,7 +23,7 @@ jobs:
     rvm: 2.0.0
   - stage: test
     env: GEMSETS=test
-    rvm: 2.1.8
+    rvm: 2.1.10
   - stage: test
     env: GEMSETS="test sidekiq"
     rvm: 2.2.4
