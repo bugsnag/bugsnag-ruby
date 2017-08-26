@@ -56,7 +56,11 @@ module Bugsnag
     # Validate that the serialized JSON string value is below maximum payload
     # length
     def self.payload_too_long?(value)
-      ::JSON.dump(value).length >= MAX_PAYLOAD_LENGTH
+      if value.is_a? String
+        value.length >= MAX_PAYLOAD_LENGTH
+      else
+        ::JSON.dump(value).length >= MAX_PAYLOAD_LENGTH
+      end
     end
 
     def self.trim_strings_in_hash(hash)
