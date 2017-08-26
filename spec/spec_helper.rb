@@ -1,4 +1,4 @@
-if RUBY_VERSION > "2.0.0"
+if ARGV.include? "--coverage"
   require 'simplecov'
   require 'coveralls'
 
