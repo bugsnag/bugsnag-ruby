@@ -1,0 +1,11 @@
+desc 'Set up this example'
+task :setup do
+  fail 'Docker not found in $PATH - please install it' if `which docker`.empty?
+end
+
+namespace :chef do
+  desc 'Simulate a failed Chef run'
+  task :failed_run do
+    sh 'docker run -v $PWD:/app chef/chef-dk /opt/chefdk/embedded/bin/chef-client -z /app/failed_run.rb'
+  end
+end
