@@ -1,63 +1,28 @@
 module Bugsnag
     module Breadcrumbs
-
-        class << self
-            def max_size
-                @max_size || = 4096
-            end
-
-            def name_size_limit
-                @name_size_limit || = 30
-            end
-
-            def navigation_type
-                @navigation || = "navigation"
-            end
-
-            def request_type
-                @request || = "request"
-            end
-
-            def process_type
-                @request || = "process"
-            end
-
-            def log_type
-                @log || = "log"
-            end
-
-            def user_type
-                @user || = "user"
-            end
-
-            def state_type
-                @state || = "state"
-            end
-
-            def error_type
-                @error || = "error"
-            end
-
-            def manual_type
-                @manual || = "manual"
-            end
-
-
-            def valid_types
-                @types || = [
-                    Breadcrumbs::navigation_type,
-                    Breadcrumbs::request_type,
-                    Breadcrumbs::process_type,
-                    Breadcrumbs::log_type,
-                    Breadcrumbs::user_type,
-                    Breadcrumbs::state_type,
-                    Breadcrumbs::error_type,
-                    Breadcrumbs::manual_Type
-                ]
-            end
-        end
-
         class Breadcrumb
+
+            MAX_SIZE = 4096
+            NAME_SIZE_LIMIT = 30
+            NAVIGATION_TYPE = "navigation"
+            REQUEST_TYPE = "request"
+            PROCESS_TYPE = "process"
+            LOG_TYPE = "log"
+            USER_TYPE = "user"
+            STATE_TYPE = "state"
+            ERROR_TYPE = "error"
+            MANUAL_TYPE = "manual"
+
+            VALID_TYPES = [
+                NAVIGATION_TYPE,
+                REQUEST_TYPE,
+                PROCESS_TYPE,
+                LOG_TYPE,
+                USER_TYPE,
+                STATE_TYPE,
+                ERROR_TYPE,
+                MANUAL_TYPE
+            ]
 
             attr_accessor :name
             attr_accessor :type
@@ -65,18 +30,18 @@ module Bugsnag
             attr_accessor :metadata
 
             def initialize(name, type, metadata = {})
-                timestamp = Time.now.utc.strftime "%Y-%m-%dT%H:%MZ"
+                self.timestamp = Time.now.utc.strftime "%Y-%m-%dT%H:%MZ"
 
                 if !name || name.length === 0
-                    raise ArgumentError "The breadcrumb name must be a non-empty string"
+                    raise ArgumentError, "The breadcrumb name must be a non-empty string"
                 end
 
-                if name.length > Breadcrumbs::name_size_limit
-                    raise ArgumentError "The breadcrumb name must be not more than #{Breadcrumbs::name_size_limit} characters in length"
+                if name.length > NAME_SIZE_LIMIT
+                    raise ArgumentError, "The breadcrumb name must be not more than #{NAME_SIZE_LIMIT} characters in length"
                 end
 
-                if !valid_types.include? type
-                    raise ArgumentError "The breadcrumb type must be one of the set of standard types"
+                if !VALID_TYPES.include? type
+                    raise ArgumentError, "The breadcrumb type must be one of the set of standard types"
                 end
 
                 self.name = name

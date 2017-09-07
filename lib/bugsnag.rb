@@ -23,6 +23,8 @@ require "bugsnag/middleware/sidekiq"
 require "bugsnag/middleware/mailman"
 require "bugsnag/middleware/rake"
 
+require "bugsnag/breadcrumbs/breadcrumb"
+
 module Bugsnag
   LOCK = Mutex.new
 
@@ -30,6 +32,13 @@ module Bugsnag
     # Configure the Bugsnag notifier application-wide settings.
     def configure
       yield(configuration) if block_given?
+    end
+
+    # Records a breadcrumb to give context to notifications
+    def leave_breadcrumb(name, type=nil, metadata={})
+      name = name.slice(0, Bugsnag::Breadcrumbs::Breadcrumb::NAME_SIZE_LIMIT)
+      type = Bugsnag::Breadcrumbs::Breadcrumb::MANUAL_TYPE unless Bugsnag::Breadcrumbs::Breadcrumb::VALID_TYPES.include? type
+      configuration.recorder.add_breadcrumb(Bugsnag::Breadcrumbs::Breadcrumb.new(name, type, metadata))
     end
 
     # Explicitly notify of an exception

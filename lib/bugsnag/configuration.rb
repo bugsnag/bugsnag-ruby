@@ -1,8 +1,10 @@
 require "set"
 require "socket"
 require "logger"
+require "bugsnag/breadcrumbs/recorder"
 require "bugsnag/middleware_stack"
 require "bugsnag/middleware/callbacks"
+require "bugsnag/middleware/breadcrumb_data"
 require "bugsnag/middleware/exception_meta_data"
 require "bugsnag/middleware/ignore_error_class"
 
@@ -20,6 +22,7 @@ module Bugsnag
     attr_accessor :app_type
     attr_accessor :meta_data_filters
     attr_accessor :endpoint
+    attr_accessor :recorder
     attr_accessor :logger
     attr_accessor :middleware
     attr_accessor :internal_middleware
@@ -69,8 +72,12 @@ module Bugsnag
         "** [Bugsnag] #{datetime}: #{msg}\n"
       end
 
+      # Create the recorder
+      self.recorder = Bugsnag::Breadcrumbs::Recorder.new
+
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new
+      self.internal_middleware.use Bugsnag::Middleware::BreadcrumbData
       self.internal_middleware.use Bugsnag::Middleware::ExceptionMetaData
       self.internal_middleware.use Bugsnag::Middleware::IgnoreErrorClass
 

@@ -22,6 +22,7 @@ module Bugsnag
     attr_accessor :hostname
     attr_accessor :grouping_hash
     attr_accessor :meta_data
+    attr_accessor :breadcrumbs
     attr_accessor :raw_exceptions
     attr_accessor :release_stage
     attr_accessor :severity
@@ -41,6 +42,7 @@ module Bugsnag
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
       self.meta_data = {}
+      self.breadcrumbs = []
       self.release_stage = configuration.release_stage
       self.severity = "warning"
       self.user = {}
@@ -102,8 +104,23 @@ module Bugsnag
           :version => NOTIFIER_VERSION,
           :url => NOTIFIER_URL
         },
-        :events => [payload_event]
+        :events => [payload_event],
+        :breadcrumbs => breadcrumbs
       }
+    end
+
+    def add_breadcrumb(breadcrumb)
+      data = breadcrumb.as_object
+
+      unless breadcrumb.metadata.nil?
+        cleaned_metadata = Bugsnag::Cleaner.new(configuration.meta_data_filters).clean_object(breadcrumb.metadata)
+        
+        unless JSON::dump(cleaned_metadata).length > Bugsnag::Breadcrumbs::Breadcrumb::MAX_SIZE
+          data[:metaData] = cleaned_metadata
+        end
+      end
+
+      breadcrumbs.push(data)
     end
 
     def ignore?
