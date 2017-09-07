@@ -94,6 +94,13 @@ module Bugsnag
         payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
         configuration.debug("Payload: #{payload_string}")
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
+
+        summary = {
+          :name => exception.class.to_s,
+          :message => exception.message,
+          :severity => report.severity
+        }
+        leave_breadcrumb(exception.class.to_s, Bugsnag::Breadcrumbs::Breadcrumb::ERROR_TYPE, summary)
       end
     end
 
