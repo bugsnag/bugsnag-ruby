@@ -26,6 +26,11 @@ def get_exception_from_payload(payload)
   event["exceptions"].last
 end
 
+def get_breadcrumb_from_payload(payload)
+  expect(payload["breadcrumbs"].size).to eq(1)
+  payload["breadcrumbs"].last
+end
+
 def notify_test_exception(*args)
   Bugsnag.notify(RuntimeError.new("test message"), *args)
 end

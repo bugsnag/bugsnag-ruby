@@ -117,6 +117,18 @@ describe Bugsnag::Report do
     }
   end
 
+  it "attaches added breadcrumbs" do
+    Bugsnag.leave_breadcrumb("Test", Bugsnag::Breadcrumbs::MANUAL_TYPE, {:foo => "foo", :bar => "bar"})
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      breadcrumb = get_breadcrumb_from_payload(payload)
+      expect(breadcrumb).to include("name" => "Test")
+      expect(breadcrumb).to include("type" => Bugsnag::Breadcrumbs::MANUAL_TYPE)
+      expect(breadcrumb).to include("timestamp" => be_a_kind_of(String))
+      expect(breadcrumb).to include("metaData" => {"foo" => "foo", "bar" => "bar"})
+    }
+  end
+
   it "accepts tabs in overrides and adds them to metaData" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({
