@@ -36,8 +36,9 @@ module Bugsnag
 
     # Records a breadcrumb to give context to notifications
     def leave_breadcrumb(name, type=nil, metadata={})
-      name = name.slice(0, Bugsnag::Breadcrumbs::Breadcrumb::NAME_SIZE_LIMIT)
-      type = Bugsnag::Breadcrumbs::Breadcrumb::MANUAL_TYPE unless Bugsnag::Breadcrumbs::Breadcrumb::VALID_TYPES.include? type
+      name = name.is_a?(String) ? name : name.class.to_s
+      name = name.slice(0, Bugsnag::Breadcrumbs::NAME_SIZE_LIMIT) 
+      type = Bugsnag::Breadcrumbs::MANUAL_TYPE unless Bugsnag::Breadcrumbs::VALID_TYPES.include? type
       configuration.recorder.add_breadcrumb(Bugsnag::Breadcrumbs::Breadcrumb.new(name, type, metadata))
     end
 
@@ -100,7 +101,7 @@ module Bugsnag
           :message => exception.message,
           :severity => report.severity
         }
-        leave_breadcrumb(exception.class.to_s, Bugsnag::Breadcrumbs::Breadcrumb::ERROR_TYPE, summary)
+        leave_breadcrumb(exception.class.to_s, Bugsnag::Breadcrumbs::ERROR_TYPE, summary)
       end
     end
 

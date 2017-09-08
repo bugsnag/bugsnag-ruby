@@ -110,12 +110,12 @@ module Bugsnag
     end
 
     def add_breadcrumb(breadcrumb)
-      data = breadcrumb.as_object
+      data = breadcrumb.as_hash
 
       unless breadcrumb.metadata.nil?
         cleaned_metadata = Bugsnag::Cleaner.new(configuration.meta_data_filters).clean_object(breadcrumb.metadata)
         
-        unless JSON::dump(cleaned_metadata).length > Bugsnag::Breadcrumbs::Breadcrumb::MAX_SIZE
+        unless JSON::dump(cleaned_metadata).length > Bugsnag::Breadcrumbs::MAX_SIZE
           data[:metaData] = cleaned_metadata
         end
       end

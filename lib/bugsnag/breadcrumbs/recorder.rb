@@ -20,10 +20,10 @@ module Bugsnag
                     @breadcrumbs.push(breadcrumb)
                 end
 
+                @current_item += 1
+
                 if @current_item >= Recorder::MAX_ITEMS
                     @current_item = 0
-                else
-                    @current_item += 1
                 end
             end
 
@@ -34,9 +34,8 @@ module Bugsnag
             end
 
             def get_breadcrumbs
-                if !block_given?
-                    raise ArgumentError "get_breadcrumbs must be passed a block"
-                end
+                raise ArgumentError, "get_breadcrumbs must be passed a block" unless block_given?
+                
                 ordered_breadcrumbs.each do |breadcrumb|
                     yield breadcrumb
                 end
