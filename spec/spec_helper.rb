@@ -27,7 +27,7 @@ def get_exception_from_payload(payload)
 end
 
 def get_breadcrumb_from_payload(payload)
-  expect(payload["breadcrumbs"].size).to eq(1)
+  expect(payload["breadcrumbs"].size).to be > 0
   payload["breadcrumbs"].last
 end
 

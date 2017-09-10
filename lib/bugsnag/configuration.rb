@@ -22,7 +22,6 @@ module Bugsnag
     attr_accessor :app_type
     attr_accessor :meta_data_filters
     attr_accessor :endpoint
-    attr_accessor :recorder
     attr_accessor :logger
     attr_accessor :middleware
     attr_accessor :internal_middleware
@@ -37,6 +36,7 @@ module Bugsnag
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
+    THREAD_RECORDER = "bugsnag_recorder"
     DEFAULT_ENDPOINT = "https://notify.bugsnag.com"
 
     DEFAULT_META_DATA_FILTERS = [
@@ -72,9 +72,6 @@ module Bugsnag
         "** [Bugsnag] #{datetime}: #{msg}\n"
       end
 
-      # Create the recorder
-      self.recorder = Bugsnag::Breadcrumbs::Recorder.new
-
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new
       self.internal_middleware.use Bugsnag::Middleware::BreadcrumbData
@@ -83,6 +80,10 @@ module Bugsnag
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
+    end
+
+    def recorder
+      Thread.current[THREAD_RECORDER] ||= Bugsnag::Breadcrumbs::Recorder.new
     end
 
     def should_notify_release_stage?
