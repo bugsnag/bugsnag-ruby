@@ -6,9 +6,7 @@ module Bugsnag::Middleware
   
       def call(report)
         if report.configuration.recorder
-            report.configuration.recorder.get_breadcrumbs do |breadcrumb|
-                report.add_breadcrumb breadcrumb
-            end
+          report.breadcrumbs = report.configuration.recorder
         end
   
         @bugsnag.call(report)

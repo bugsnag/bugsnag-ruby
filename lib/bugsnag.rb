@@ -34,14 +34,6 @@ module Bugsnag
       yield(configuration) if block_given?
     end
 
-    # Records a breadcrumb to give context to notifications
-    def leave_breadcrumb(name, type=nil, metadata={})
-      name = name.is_a?(String) ? name : name.class.to_s
-      name = name.slice(0, Bugsnag::Breadcrumbs::NAME_SIZE_LIMIT) 
-      type = Bugsnag::Breadcrumbs::MANUAL_TYPE unless Bugsnag::Breadcrumbs::VALID_TYPES.include? type
-      configuration.recorder.add_breadcrumb(Bugsnag::Breadcrumbs::Breadcrumb.new(name, type, metadata))
-    end
-
     # Explicitly notify of an exception
     def notify(exception, auto_notify=false, &block)
       if auto_notify && !configuration.auto_notify
@@ -104,6 +96,12 @@ module Bugsnag
         leave_breadcrumb(exception.class.to_s, Bugsnag::Breadcrumbs::ERROR_TYPE, summary)
       end
     end
+
+    # Records a breadcrumb to give context to notifications
+    def leave_breadcrumb(name, type=nil, metadata={})
+      configuration.recorder.add_breadcrumb(Bugsnag::Breadcrumbs::Breadcrumb.new(name, type, metadata))
+    end
+
 
     # Configuration getters
     def configuration

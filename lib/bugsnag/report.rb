@@ -42,7 +42,6 @@ module Bugsnag
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
       self.meta_data = {}
-      self.breadcrumbs = []
       self.release_stage = configuration.release_stage
       self.severity = "warning"
       self.user = {}
@@ -92,9 +91,17 @@ module Bugsnag
       # cleanup character encodings
       payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
 
+      cleaner = Bugsnag::Cleaner.new(configuration.meta_data_filters)
+
       # filter out sensitive values in (and cleanup encodings) metaData
-      payload_event[:metaData] = Bugsnag::Cleaner.new(configuration.meta_data_filters).clean_object(meta_data)
+      payload_event[:metaData] = cleaner.clean_object(meta_data)
       payload_event.reject! {|k,v| v.nil? }
+      
+      # appends the breadcrumbs
+      filtered_breadcrumbs = []
+      breadcrumbs.each do |breadcrumb|
+        filtered_breadcrumbs.push cleaner.clean_object(breadcrumb.as_json)
+      end
 
       # return the payload hash
       {
@@ -105,22 +112,8 @@ module Bugsnag
           :url => NOTIFIER_URL
         },
         :events => [payload_event],
-        :breadcrumbs => breadcrumbs
+        :breadcrumbs => filtered_breadcrumbs
       }
-    end
-
-    def add_breadcrumb(breadcrumb)
-      data = breadcrumb.as_hash
-
-      unless breadcrumb.metadata.nil?
-        cleaned_metadata = Bugsnag::Cleaner.new(configuration.meta_data_filters).clean_object(breadcrumb.metadata)
-        
-        unless JSON::dump(cleaned_metadata).length > Bugsnag::Breadcrumbs::MAX_SIZE
-          data[:metaData] = cleaned_metadata
-        end
-      end
-
-      breadcrumbs.push(data)
     end
 
     def ignore?
