@@ -89,11 +89,10 @@ module Bugsnag
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
 
         summary = {
-          :name => exception.class.to_s,
           :message => exception.message,
           :severity => report.severity
         }
-        leave_breadcrumb(exception.class.to_s, Bugsnag::Breadcrumbs::ERROR_TYPE, summary)
+        leave_breadcrumb(exception, Bugsnag::Breadcrumbs::ERROR_TYPE, summary)
       end
     end
 
