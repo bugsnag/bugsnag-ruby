@@ -33,11 +33,36 @@ module Bugsnag
     end
 
     # Explicitly notify of an exception
-    def notify(exception, auto_notify=false, &block)
-      if auto_notify && !configuration.auto_notify
+    def notify(exception, &block)
+      report = Report.new(exception, configuration)
+      send_report(report, false, &block)
+    end
+
+    # For automatic notification of exceptions
+    def auto_notify(exception, severity_reason, &block)
+      if !configuration.auto_notify
         configuration.debug("Not notifying because auto_notify is disabled")
         return
       end
+
+      report = Report.new(exception, configuration, true, severity_reason)
+
+      send_report(report, true, &block)
+    end
+
+    # Configuration getters
+    def configuration
+      @configuration = nil unless defined?(@configuration)
+      @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
+    end
+
+    # Allow access to "before notify" callbacks
+    def before_notify_callbacks
+      Bugsnag.configuration.request_data[:before_callbacks] ||= []
+    end
+
+    private
+    def send_report(report, auto_notify, &block)
 
       if !configuration.valid_api_key?
         configuration.debug("Not notifying due to an invalid api_key")
@@ -48,8 +73,6 @@ module Bugsnag
         configuration.debug("Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
         return
       end
-
-      report = Report.new(exception, configuration)
 
       # If this is an auto_notify we yield the block before the any middleware is run
       yield(report) if block_given? && auto_notify
@@ -64,6 +87,9 @@ module Bugsnag
         configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in internal middlewares")
         return
       end
+
+      # Store default severity for future reference
+      initial_severity = report.severity
 
       # Run users middleware
       configuration.middleware.run(report) do
@@ -80,23 +106,17 @@ module Bugsnag
           return
         end
 
+        # Test whether severity has been changed
+        if report.severity != initial_severity
+          report.default_severity = false
+        end
+
         # Deliver
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
         payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
         configuration.debug("Payload: #{payload_string}")
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
       end
-    end
-
-    # Configuration getters
-    def configuration
-      @configuration = nil unless defined?(@configuration)
-      @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
-    end
-
-    # Allow access to "before notify" callbacks
-    def before_notify_callbacks
-      Bugsnag.configuration.request_data[:before_callbacks] ||= []
     end
   end
 end

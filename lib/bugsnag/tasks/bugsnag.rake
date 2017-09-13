@@ -6,7 +6,14 @@ namespace :bugsnag do
     begin
       raise RuntimeError.new("Bugsnag test exception")
     rescue => e
-      Bugsnag.notify(e, {:context => "rake#test_exception"})
+      Bugsnag.auto_notify(e, {
+        :type => "middleware",
+        :attributes => {
+          :name => "rake"
+        }
+      }) do |report|
+        report.context = "rake#test_exception"
+      end
     end
   end
 end

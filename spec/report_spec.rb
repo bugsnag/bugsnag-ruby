@@ -388,7 +388,7 @@ describe Bugsnag::Report do
   end
 
   it "autonotifies errors" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
+    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"), {}) do |report|
       report.severity = "error"
     end
 
@@ -421,12 +421,12 @@ describe Bugsnag::Report do
     }
   end
 
-  it "does not send a notification if auto_notify is false" do
+  it "does not send an automatic notification if auto_notify is false" do
     Bugsnag.configure do |config|
       config.auto_notify = false
     end
 
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), true)
+    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"), true)
 
     expect(Bugsnag).not_to have_sent_notification
   end
@@ -885,6 +885,52 @@ describe Bugsnag::Report do
     expect(Bugsnag).to have_sent_notification { |payload|
       exception = get_exception_from_payload(payload)
       expect(exception['stacktrace'].size).to be > 0
+    }
+  end
+
+  it 'should use defaults when notify is called' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+    
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = payload["events"][0]
+      expect(event["unhandled"]).to be false
+      expect(event["severityReason"].nil?).to be true
+      expect(event["defaultSeverity"]).to be true
+    }
+  end
+
+  it 'should attach a severity reason when auto_notify is called' do
+    Bugsnag.auto_notify(
+      BugsnagTestException.new("It crashed"),
+      {
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "middleware_test"
+        }
+      }
+    )
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = payload["events"][0]
+      expect(event["severityReason"]).to eq(
+        {
+          "type" => "middleware_handler",
+          "attributes" => {
+            "name" => "middleware_test"
+          }
+        }
+      )
+      expect(event["unhandled"]).to be true
+    }
+  end
+
+  it 'should set default_severity flag if severity is changed' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.severity = "info"
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      expect(payload["events"][0]["defaultSeverity"]).to be false
     }
   end
 

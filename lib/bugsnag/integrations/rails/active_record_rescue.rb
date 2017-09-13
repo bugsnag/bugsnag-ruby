@@ -8,7 +8,12 @@ module Bugsnag::Rails
           super
         rescue StandardError => exception
           # This exception will NOT be escalated, so notify it here.
-          Bugsnag.notify(exception, true) do |report|
+          Bugsnag.auto_notify(exception, {
+            :type => "middleware",
+            :attributes => {
+              :name => "active record"
+            }
+          }) do |report|
             report.severity = "error"
           end
           raise

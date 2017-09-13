@@ -17,7 +17,12 @@ module Bugsnag
       runner do
         at_exit do
           if $!
-            Bugsnag.notify($!, true) do |report|
+            Bugsnag.auto_notify($!, {
+              :type => "middleware",
+              :attributes => {
+                :name => "railtie"
+              }
+            }) do |report|
               report.severity = "error"
             end
           end

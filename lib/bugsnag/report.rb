@@ -17,6 +17,7 @@ module Bugsnag
     attr_accessor :app_version
     attr_accessor :configuration
     attr_accessor :context
+    attr_accessor :default_severity
     attr_accessor :delivery_method
     attr_accessor :exceptions
     attr_accessor :hostname
@@ -27,8 +28,10 @@ module Bugsnag
     attr_accessor :severity
     attr_accessor :user
 
-    def initialize(exception, passed_configuration)
+    def initialize(exception, passed_configuration, unhandled=false, severity_reason=nil)
       @should_ignore = false
+      @unhandled = unhandled
+      @severity_reason = severity_reason
 
       self.configuration = passed_configuration
 
@@ -43,6 +46,7 @@ module Bugsnag
       self.meta_data = {}
       self.release_stage = configuration.release_stage
       self.severity = "warning"
+      self.default_severity = true
       self.user = {}
     end
 
@@ -77,6 +81,7 @@ module Bugsnag
           type: app_type
         },
         context: context,
+        defaultSeverity: default_severity,
         device: {
           hostname: hostname
         },
@@ -84,9 +89,15 @@ module Bugsnag
         groupingHash: grouping_hash,
         payloadVersion: CURRENT_PAYLOAD_VERSION,
         severity: severity,
+        unhandled: @unhandled,
         user: user
       }
 
+      # add severity_reason if necessary
+      if @unhandled
+        payload_event[:severityReason] = @severity_reason
+      end
+      
       # cleanup character encodings
       payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
 

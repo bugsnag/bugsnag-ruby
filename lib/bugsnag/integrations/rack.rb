@@ -33,7 +33,12 @@ module Bugsnag
         response = @app.call(env)
       rescue Exception => raised
         # Notify bugsnag of rack exceptions
-        Bugsnag.notify(raised, true) do |report|
+        Bugsnag.auto_notify(raised, {
+          :type => "middleware_handler",
+          :attirbutes => {
+            :name => "rack"
+          }
+        }) do |report|
           report.severity = "error"
         end
 
@@ -43,7 +48,12 @@ module Bugsnag
 
       # Notify bugsnag of rack exceptions
       if env["rack.exception"]
-        Bugsnag.notify(env["rack.exception"], true) do |report|
+        Bugsnag.auto_notify(env["rack.exception"], {
+          :type => "middleware",
+          :attributes => {
+            :name => "rack"
+          }
+        }) do |report|
           report.severity = "error"
         end
       end
