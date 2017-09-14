@@ -30,11 +30,20 @@ module Bugsnag
       # Set the request data for bugsnag middleware to use
       Bugsnag.set_request_data(:rack_env, env)
 
+      overrides = {
+        :severity_reason => {
+          :type => "middleware_handler",
+          :attributes => {
+            :name => "rack"
+          }
+        }
+      }
+
       begin
         response = @app.call(env)
       rescue Exception => raised
         # Notify bugsnag of rack exceptions
-        Bugsnag.auto_notify(raised)
+        Bugsnag.auto_notify(raised, overrides)
 
         # Re-raise the exception
         raise
@@ -42,7 +51,7 @@ module Bugsnag
 
       # Notify bugsnag of rack exceptions
       if env["rack.exception"]
-        Bugsnag.auto_notify(env["rack.exception"])
+        Bugsnag.auto_notify(env["rack.exception"], overrides)
       end
 
       response

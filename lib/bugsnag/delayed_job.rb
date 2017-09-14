@@ -17,6 +17,12 @@ unless defined? Delayed::Plugins::Bugsnag
               :job => {
                 :class => job.class.name,
                 :id => job.id,
+              },
+              :severity_reason => {
+                :type => "middleware_handler",
+                :attributes => {
+                  :name => "delayed_job"
+                }
               }
             }
             if job.respond_to?(:queue) && (queue = job.queue)

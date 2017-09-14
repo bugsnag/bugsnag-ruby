@@ -12,7 +12,14 @@ class Rake::Task
     execute_without_bugsnag(args)
 
   rescue Exception => ex
-    Bugsnag.auto_notify(ex)
+    Bugsnag.auto_notify(ex, {
+      :severity_reason => {
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "rake"
+        }
+      }
+    })
     raise
   ensure
     Bugsnag.set_request_data :bugsnag_running_task, old_task

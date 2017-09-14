@@ -17,7 +17,14 @@ module Bugsnag
       runner do
         at_exit do
           if $!
-            Bugsnag.auto_notify($!)
+            Bugsnag.auto_notify($!, {
+              :severity_reason => {
+                :type => "middleware_handler",
+                :attributes => {
+                  :name => "railtie"
+                }
+              }
+            })
           end
         end
       end

@@ -18,7 +18,14 @@ module Bugsnag
 
         yield
       rescue Exception => ex
-        Bugsnag.auto_notify(ex) unless [Interrupt, SystemExit, SignalException].include?(ex.class)
+        Bugsnag.auto_notify(ex, {
+          :severity_reason => {
+            :type => "middleware_handler",
+            :attributes => {
+              :name => "shoryuken"
+            }
+          }
+        }) unless [Interrupt, SystemExit, SignalException].include?(ex.class)
         raise
       ensure
         Bugsnag.clear_request_data
