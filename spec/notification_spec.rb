@@ -113,6 +113,63 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "uses correct unhandled defaults" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:grouping_hash => "this is my grouping hash"})
+    
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be false
+      expect(event["defaultSeverity"]).to be true
+      expect(event["severityReason"].nil?).to be true
+    }
+  end
+
+  it "sets defaultSeverity if severity is modified" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:severity => "info"})
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be false
+      expect(event["defaultSeverity"]).to be false
+      expect(event["severityReason"].nil?).to be true
+    }
+  end
+
+  it "sets defaultSeverity if severity is modified in a block" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |notification|
+      notification.severity = "info"
+    end
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be false
+      expect(event["defaultSeverity"]).to be false
+      expect(event["severityReason"].nil?).to be true
+    }
+  end
+
+  it "sets unhandled and severityReasons through auto_notify" do
+    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"), {
+      :severity_reason => {
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "ruby test"
+        }
+      }
+    })
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be true
+      expect(event["defaultSeverity"]).to be true
+      expect(event["severityReason"].nil?).to be false
+      expect(event["severityReason"]).to eq({
+        "type" => "middleware_handler",
+        "attributes" => {
+          "name" => "ruby test"
+        }
+      })
+    }
+  end
+
   # TODO: nested context
 
   it "accepts tabs in overrides and adds them to metaData" do
