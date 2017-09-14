@@ -31,6 +31,8 @@ module Bugsnag
 
     attr_accessor :context
     attr_reader :user
+    attr_reader :severity
+    attr_reader :default_severity
     attr_accessor :configuration
     attr_accessor :meta_data
 
@@ -50,10 +52,29 @@ module Bugsnag
       @user = {}
       @should_ignore = false
       @severity = nil
+      @unhandled = false
+      @severity_reason = nil
       @grouping_hash = nil
       @delivery_method = nil
+      @default_severity = true
+      @initial_severity = nil
+
+      if @overrides.key? :unhandled
+        self.unhandled = @overrides[:unhandled]
+        @overrides.delete :unhandled
+      end
+      
+      if @overrides.key? :severity_reason
+        self.severity_reason = @overrides[:severity_reason]
+        @overrides.delete :severity_reason 
+      end
+
+      if !self.unhandled && (@overrides.key? :severity)
+        self.default_severity = false
+      end
 
       self.severity = @overrides[:severity]
+      self.initial_severity = self.severity
       @overrides.delete :severity
 
       if @overrides.key? :grouping_hash
@@ -220,6 +241,11 @@ module Bugsnag
         # This supports self.ignore! for before_notify_callbacks.
         return if @should_ignore
 
+        # Check to see if the severity has been changed
+        if @initial_severity != @severity
+          @default_severity = false
+        end
+
         # Build the endpoint url
         endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
         Bugsnag.log("Notifying #{endpoint} of #{@exceptions.last.class}")
@@ -239,12 +265,18 @@ module Bugsnag
           :type => @configuration.app_type
         },
         :context => self.context,
+        :defaultSeverity => self.default_severity,
         :user => @user,
         :payloadVersion => payload_version,
         :exceptions => exception_list,
         :severity => self.severity,
+        :unhandled => self.unhandled,
         :groupingHash => self.grouping_hash,
       }
+
+      if self.unhandled
+        payload_event[:severity_reason] = self.severity_reason
+      end
 
       payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
 
