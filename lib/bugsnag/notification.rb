@@ -60,21 +60,21 @@ module Bugsnag
       @initial_severity = nil
 
       if @overrides.key? :unhandled
-        self.unhandled = @overrides[:unhandled]
+        @unhandled = @overrides[:unhandled]
         @overrides.delete :unhandled
       end
       
       if @overrides.key? :severity_reason
-        self.severity_reason = @overrides[:severity_reason]
+        @severity_reason = @overrides[:severity_reason]
         @overrides.delete :severity_reason 
       end
 
-      if !self.unhandled && (@overrides.key? :severity)
-        self.default_severity = false
+      if !@unhandled && (@overrides.key? :severity)
+        @default_severity = false
       end
 
       self.severity = @overrides[:severity]
-      self.initial_severity = self.severity
+      @initial_severity = self.severity
       @overrides.delete :severity
 
       if @overrides.key? :grouping_hash
@@ -242,7 +242,7 @@ module Bugsnag
         return if @should_ignore
 
         # Check to see if the severity has been changed
-        if @initial_severity != @severity
+        if @initial_severity != self.severity
           @default_severity = false
         end
 
@@ -265,17 +265,17 @@ module Bugsnag
           :type => @configuration.app_type
         },
         :context => self.context,
-        :defaultSeverity => self.default_severity,
+        :defaultSeverity => @default_severity,
         :user => @user,
         :payloadVersion => payload_version,
         :exceptions => exception_list,
         :severity => self.severity,
-        :unhandled => self.unhandled,
+        :unhandled => @unhandled,
         :groupingHash => self.grouping_hash,
       }
 
-      if self.unhandled
-        payload_event[:severity_reason] = self.severity_reason
+      if @unhandled
+        payload_event[:severityReason] = @severity_reason
       end
 
       payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
