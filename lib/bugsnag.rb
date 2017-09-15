@@ -34,7 +34,7 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, auto_notify=false, &block)
-      report = Report.new(exception, configuration)
+      report = Report.new(exception, configuration, auto_notify)
 
       if !configuration.auto_notify && auto_notify
         configuration.debug("Not notifying because auto_notify is disabled")

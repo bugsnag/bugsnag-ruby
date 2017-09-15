@@ -28,8 +28,9 @@ module Bugsnag
     attr_accessor :severity
     attr_accessor :user
 
-    def initialize(exception, passed_configuration)
+    def initialize(exception, passed_configuration, auto_notify=false)
       @should_ignore = false
+      @auto_notify = auto_notify
       @unhandled = false
 
       self.configuration = passed_configuration
@@ -117,7 +118,7 @@ module Bugsnag
     end
 
     def set_handled_state(handled_state)
-      if !@unhandled
+      if @auto_notify
         @unhandled = true
         @severity_reason = handled_state
       end
