@@ -33,36 +33,13 @@ module Bugsnag
     end
 
     # Explicitly notify of an exception
-    def notify(exception, &block)
+    def notify(exception, auto_notify=false, &block)
       report = Report.new(exception, configuration)
-      send_report(report, false, &block)
-    end
 
-    # For automatic notification of exceptions
-    def auto_notify(exception, severity_reason, &block)
-      if !configuration.auto_notify
+      if !configuration.auto_notify && auto_notify
         configuration.debug("Not notifying because auto_notify is disabled")
         return
       end
-
-      report = Report.new(exception, configuration, true, severity_reason)
-
-      send_report(report, true, &block)
-    end
-
-    # Configuration getters
-    def configuration
-      @configuration = nil unless defined?(@configuration)
-      @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
-    end
-
-    # Allow access to "before notify" callbacks
-    def before_notify_callbacks
-      Bugsnag.configuration.request_data[:before_callbacks] ||= []
-    end
-
-    private
-    def send_report(report, auto_notify, &block)
 
       if !configuration.valid_api_key?
         configuration.debug("Not notifying due to an invalid api_key")
@@ -107,9 +84,7 @@ module Bugsnag
         end
 
         # Test whether severity has been changed
-        if report.severity != initial_severity
-          report.default_severity = false
-        end
+        report.default_severity = report.severity == initial_severity
 
         # Deliver
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
@@ -117,6 +92,17 @@ module Bugsnag
         configuration.debug("Payload: #{payload_string}")
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
       end
+    end
+
+    # Configuration getters
+    def configuration
+      @configuration = nil unless defined?(@configuration)
+      @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
+    end
+
+    # Allow access to "before notify" callbacks
+    def before_notify_callbacks
+      Bugsnag.configuration.request_data[:before_callbacks] ||= []
     end
   end
 end
