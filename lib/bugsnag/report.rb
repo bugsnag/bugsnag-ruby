@@ -118,7 +118,7 @@ module Bugsnag
     end
 
     def set_handled_state(handled_state)
-      if @auto_notify
+      if @auto_notify && !@unhandled
         @unhandled = true
         @severity_reason = handled_state
       end
