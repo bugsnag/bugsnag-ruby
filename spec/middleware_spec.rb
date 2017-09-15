@@ -178,4 +178,68 @@ describe Bugsnag::MiddlewareStack do
     }
   end
 
+  it "doesn't allow handledState properties to be changed in middleware" do
+    HandledStateChanger = Class.new do
+      def initialize(bugsnag)
+        @bugsnag = bugsnag
+      end
+
+      def call(report)
+        report.set_handled_state({
+          :test => "test"
+        })
+        @bugsnag.call(report)
+      end
+    end
+
+    Bugsnag.configure do |c|
+      c.middleware.use HandledStateChanger
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
+      report.set_handled_state({
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "middleware_test"
+        }
+      })
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be true
+      expect(event["severityReason"]).to eq({
+        "type" => "middleware_handler",
+        "attributes" => {
+          "name" => "middleware_test"
+        }
+      })
+    }
+  end
+
+  it "sets defaultSeverity to false if changed in middleware" do
+    SeverityChanger = Class.new do
+      def initialize(bugsnag)
+        @bugsnag = bugsnag
+      end
+
+      def call(report)
+        report.severity = "info"
+        @bugsnag.call(report)
+      end
+    end
+
+    Bugsnag.configure do |c|
+      c.middleware.use SeverityChanger
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["severity"]).to eq("info")
+      expect(event["defaultSeverity"]).to be false
+    }
+  end
+
 end

@@ -387,18 +387,6 @@ describe Bugsnag::Report do
     }
   end
 
-  it "autonotifies errors" do
-    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"), {}) do |report|
-      report.severity = "error"
-    end
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      event = get_event_from_payload(payload)
-      expect(event["severity"]).to eq("error")
-    }
-  end
-
-
   it "accepts a context in overrides" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.context = 'test_context'
@@ -426,7 +414,7 @@ describe Bugsnag::Report do
       config.auto_notify = false
     end
 
-    Bugsnag.auto_notify(BugsnagTestException.new("It crashed"), true)
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), true)
 
     expect(Bugsnag).not_to have_sent_notification
   end
@@ -899,16 +887,15 @@ describe Bugsnag::Report do
     }
   end
 
-  it 'should attach a severity reason when auto_notify is called' do
-    Bugsnag.auto_notify(
-      BugsnagTestException.new("It crashed"),
-      {
+  it 'should attach severity reason through a block when auto_notify is true' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
+      report.set_handled_state({
         :type => "middleware_handler",
         :attributes => {
           :name => "middleware_test"
         }
-      }
-    )
+      })
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = payload["events"][0]
@@ -921,6 +908,23 @@ describe Bugsnag::Report do
         }
       )
       expect(event["unhandled"]).to be true
+    }
+  end
+
+  it 'should not attach severity reason when auto_notify is false' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.set_handled_state({
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "middleware_test"
+        }
+      })
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = payload["events"][0]
+      expect(event["unhandled"]).to be false
+      expect(event["severityReason"].nil?).to be true
     }
   end
 
