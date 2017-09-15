@@ -28,8 +28,8 @@ describe 'Bugsnag' do
     Dir.chdir(task_fixtures_path) do
       system("bundle exec rake test:crash > /dev/null 2>&1")
     end
-    #expect(request["events"][0]["metaData"]["rake_task"]).not_to be_nil
-    #expect(request["events"][0]["metaData"]["rake_task"]["name"]).to eq("test:crash")
+    expect(request["events"][0]["metaData"]["rake_task"]).not_to be_nil
+    expect(request["events"][0]["metaData"]["rake_task"]["name"]).to eq("test:crash")
   end
 
   it 'should send notifications over the wire' do
