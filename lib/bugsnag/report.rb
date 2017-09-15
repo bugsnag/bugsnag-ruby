@@ -28,10 +28,9 @@ module Bugsnag
     attr_accessor :severity
     attr_accessor :user
 
-    def initialize(exception, passed_configuration, unhandled=false, severity_reason=nil)
+    def initialize(exception, passed_configuration)
       @should_ignore = false
-      @unhandled = unhandled
-      @severity_reason = severity_reason
+      @unhandled = false
 
       self.configuration = passed_configuration
 
@@ -115,6 +114,13 @@ module Bugsnag
         },
         :events => [payload_event]
       }
+    end
+
+    def set_handled_state(handled_state)
+      if !@unhandled
+        @unhandled = true
+        @severity_reason = handled_state
+      end
     end
 
     def ignore?
