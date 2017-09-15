@@ -12,13 +12,14 @@ class Rake::Task
     execute_without_bugsnag(args)
 
   rescue Exception => ex
-    Bugsnag.auto_notify(ex, {
-      :type => "middleware",
-      :attributes => {
-        :name => "rake"
-      }
-    }) do |report|
+    Bugsnag.notify(ex, true) do |report|
       report.severity = "error"
+      report.set_handled_state({
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "rake"
+        }
+      })
     end
     raise
   ensure

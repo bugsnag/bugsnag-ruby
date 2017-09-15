@@ -13,13 +13,14 @@ module Bugsnag
         yield
       rescue Exception => ex
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
-        Bugsnag.auto_notify(ex, {
-            :type => "middleware",
+        Bugsnag.notify(ex, true) do |report|
+          report.severity = "error"
+          report.set_handled_state({
+            :type => "middleware_handler",
             :attributes => {
               :name => "mailman"
             }
-          }) do |report|
-          report.severity = "error"
+          })
         end
         raise
       ensure

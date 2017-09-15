@@ -26,13 +26,14 @@ module Bugsnag
     end
 
     def save
-      Bugsnag.auto_notify(exception, {
-        :type => "middleware",
-        :attributes => {
-          :name => "mailman"
-        }
-      }) do |report|
+      Bugsnag.notify(exception, true) do |report|
         report.severity = "error"
+        report.set_handled_state({
+          :type => "middleware_handler",
+          :attributes => {
+            :name => "mailman"
+          }
+        })
         report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload, :delivery_method => :synchronous})
       end
     end
