@@ -16,9 +16,9 @@ module Bugsnag
         Bugsnag.notify(ex, true) do |report|
           report.severity = "error"
           report.set_handled_state({
-            :type => "middleware_handler",
+            :type => "unhandledExceptionMiddleware",
             :attributes => {
-              :name => "mailman"
+              :framework => "Mailman"
             }
           })
         end

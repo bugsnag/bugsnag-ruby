@@ -36,9 +36,9 @@ module Bugsnag
         Bugsnag.notify(raised, true) do |report|
           report.severity = "error"
           report.set_handled_state({
-            :type => "middleware_handler",
+            :type => "unhandledExceptionMiddleware",
             :attirbutes => {
-              :name => "rack"
+              :framework => "Rack"
             }
           })
         end

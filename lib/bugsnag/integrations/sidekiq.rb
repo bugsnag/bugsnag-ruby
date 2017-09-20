@@ -19,9 +19,9 @@ module Bugsnag
         Bugsnag.notify(ex, true) do |report|
           report.severity = "error"
           report.set_handled_states({
-            :type => 'middleware_handler',
+            :type => 'unhandledExceptionMiddleware',
             :attributes => {
-              :name => "sidekiq"
+              :framework => "Sidekiq"
             }
           })
         end

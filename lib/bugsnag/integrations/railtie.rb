@@ -20,9 +20,9 @@ module Bugsnag
             Bugsnag.notify($!, true) do |report|
               report.severity = "error"
               report.set_handled_state({
-                :type => "middleware_handler",
+                :type => "unhandledExceptionMiddleware",
                 :attributes => {
-                  :name => "railtie"
+                  :framework => "Rails"
                 }
               })
             end

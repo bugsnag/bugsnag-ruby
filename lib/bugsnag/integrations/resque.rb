@@ -29,9 +29,9 @@ module Bugsnag
       Bugsnag.notify(exception, true) do |report|
         report.severity = "error"
         report.set_handled_state({
-          :type => "middleware_handler",
+          :type => "unhandledExceptionMiddleware",
           :attributes => {
-            :name => "mailman"
+            :framework => "Resque"
           }
         })
         report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload, :delivery_method => :synchronous})
