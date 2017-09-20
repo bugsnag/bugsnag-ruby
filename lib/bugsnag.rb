@@ -65,8 +65,9 @@ module Bugsnag
         return
       end
 
-      # Store default severity for future reference
-      initial_severity = report.severity
+      # Store before_middleware severity reason for future reference
+      before_middleware_severity = report.severity
+      before_middleware_reason = report.severity_reason
 
       # Run users middleware
       configuration.middleware.run(report) do
@@ -74,6 +75,16 @@ module Bugsnag
           configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided middleware")
           return
         end
+
+        # Update severity reason if necessary
+        if report.severity != before_middleware_severity
+          report.severity_reason = {
+            :type => "userSpecifiedSeverity"
+          }
+        end
+
+        # Store severity before user callbacks
+        before_callback_severity = report.severity
 
         # If this is not an auto_notify then the block was provided by the user. This should be the last
         # block that is run as it is the users "most specific" block.
@@ -83,8 +94,15 @@ module Bugsnag
           return
         end
 
-        # Test whether severity has been changed
-        report.default_severity = report.severity == initial_severity
+        # Test whether severity has been changed and ensure severity_reason is consistant in auto_notify case
+        if auto_notify
+          report.severity = before_middleware_severity
+          report.severity_reason = before_middleware_reason
+        elsif report.severity != before_callback_severity
+          report.severity_reason = {
+            :type => "userCallbackSeverity"
+          }
+        end
 
         # Deliver
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
