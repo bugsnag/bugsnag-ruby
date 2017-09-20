@@ -31,10 +31,11 @@ guide](https://docs.bugsnag.com/platforms/ruby/capistrano) for more information.
 
 * `notify` now only supports block syntax. Replace usage of the overrides hash with a block
 
-  ```ruby
-  Bugsnag.notify(e) do |report|
-		report.severity = 'info'
-  end
+  ```diff
+  - Bugsnag.notify(e, {severity: 'info'})
+  + Bugsnag.notify(e) do |report|
+  +   report.severity = 'info'
+  + end
   ```
 
 * `Bugsnag.notify_or_ignore` and `Bugsnag.auto_notify` have been removed removed. Call `notify` directly instead.
