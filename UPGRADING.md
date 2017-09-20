@@ -44,4 +44,14 @@ guide](https://docs.bugsnag.com/platforms/ruby/capistrano) for more information.
 
 #### Logging
 
-* `config.debug` has been removed. Use the logger directly
+* `config.debug` boolean has been removed. Set the logger level directly
+
+  ```diff
+  + require 'logger'
+
+    Bugsnag.configure do |config|
+      # .. set API key and other properties
+  -   config.debug = true
+  +   config.logger.level = Logger::DEBUG
+    end
+  ```
