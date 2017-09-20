@@ -17,7 +17,6 @@ module Bugsnag
     attr_accessor :app_version
     attr_accessor :configuration
     attr_accessor :context
-    attr_accessor :default_severity
     attr_accessor :delivery_method
     attr_accessor :exceptions
     attr_accessor :hostname
@@ -26,12 +25,12 @@ module Bugsnag
     attr_accessor :raw_exceptions
     attr_accessor :release_stage
     attr_accessor :severity
+    attr_accessor :severity_reason
     attr_accessor :user
 
     def initialize(exception, passed_configuration, auto_notify=false)
       @should_ignore = false
-      @auto_notify = auto_notify
-      @unhandled = false
+      @unhandled = auto_notify
 
       self.configuration = passed_configuration
 
@@ -46,7 +45,9 @@ module Bugsnag
       self.meta_data = {}
       self.release_stage = configuration.release_stage
       self.severity = "warning"
-      self.default_severity = true
+      self.severity_reason = {
+        :type => "handledException"
+      }
       self.user = {}
     end
 
@@ -81,7 +82,6 @@ module Bugsnag
           type: app_type
         },
         context: context,
-        defaultSeverity: default_severity,
         device: {
           hostname: hostname
         },
@@ -89,15 +89,11 @@ module Bugsnag
         groupingHash: grouping_hash,
         payloadVersion: CURRENT_PAYLOAD_VERSION,
         severity: severity,
+        severityReason: severity_reason,
         unhandled: @unhandled,
         user: user
       }
 
-      # add severity_reason if necessary
-      if @unhandled
-        payload_event[:severityReason] = @severity_reason
-      end
-      
       # cleanup character encodings
       payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
 
@@ -115,13 +111,6 @@ module Bugsnag
         },
         :events => [payload_event]
       }
-    end
-
-    def set_handled_state(handled_state)
-      if @auto_notify && !@unhandled
-        @unhandled = true
-        @severity_reason = handled_state
-      end
     end
 
     def ignore?
