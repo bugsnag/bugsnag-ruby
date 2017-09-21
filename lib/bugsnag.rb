@@ -86,7 +86,7 @@ module Bugsnag
         end
 
         # Test whether severity has been changed and ensure severity_reason is consistant in auto_notify case
-        if report.severity != before_callback_severity
+        if report.severity != initial_severity
           report.severity_reason = {
             :type => Bugsnag::Report::USER_CALLBACK_SET_SEVERITY
           }

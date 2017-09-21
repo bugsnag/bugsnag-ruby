@@ -882,19 +882,18 @@ describe Bugsnag::Report do
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = payload["events"][0]
       expect(event["unhandled"]).to be false
-      expect(event["severityReason"].nil?).to be true
-      expect(event["defaultSeverity"]).to be true
+      expect(event["severityReason"]).to eq({"type" => "handledException"})
     }
   end
 
   it 'should attach severity reason through a block when auto_notify is true' do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
-      report.set_handled_state({
+      report.severity_reason = {
         :type => "middleware_handler",
         :attributes => {
           :name => "middleware_test"
         }
-      })
+      }
     end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
@@ -911,30 +910,20 @@ describe Bugsnag::Report do
     }
   end
 
-  it 'should not attach severity reason when auto_notify is false' do
+  it 'should not attach severity reason from callback when auto_notify is false' do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
-      report.set_handled_state({
+      report.severity_reason = {
         :type => "middleware_handler",
         :attributes => {
           :name => "middleware_test"
         }
-      })
+      }
     end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = payload["events"][0]
       expect(event["unhandled"]).to be false
-      expect(event["severityReason"].nil?).to be true
-    }
-  end
-
-  it 'should set default_severity flag if severity is changed' do
-    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
-      report.severity = "info"
-    end
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      expect(payload["events"][0]["defaultSeverity"]).to be false
+      expect(event["severityReason"]).to eq({"type" => "handledException"})
     }
   end
 
