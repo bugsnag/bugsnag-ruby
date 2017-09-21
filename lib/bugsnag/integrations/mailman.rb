@@ -2,6 +2,11 @@ require 'mailman'
 
 module Bugsnag
   class Mailman
+
+    FRAMEWORK_ATTRIBUTES = {
+      :framework => "Mailman"
+    }
+
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Mailman)
       Bugsnag.configuration.app_type = "mailman"
@@ -15,12 +20,10 @@ module Bugsnag
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
         Bugsnag.notify(ex, true) do |report|
           report.severity = "error"
-          report.set_handled_state({
-            :type => "unhandledExceptionMiddleware",
-            :attributes => {
-              :framework => "Mailman"
-            }
-          })
+          report.severity_reason = {
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+            :attributes => FRAMEWORK_ATTRIBUTES
+          }
         end
         raise
       ensure

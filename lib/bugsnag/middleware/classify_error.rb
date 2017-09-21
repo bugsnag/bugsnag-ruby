@@ -20,20 +20,23 @@ module Bugsnag::Middleware
 
     def call(report)
       report.raw_exceptions.each do |ex|
-        ancestor_chain = ex.class.ancestors.select { |ancestor| ancestor.is_a?(Class) }.map { |ancestor| ancestor.to_s }
+
+        ancestor_chain = ex.class.ancestors.select {
+          |ancestor| ancestor.is_a?(Class) 
+        }.map {
+          |ancestor| ancestor.to_s
+        }
 
         INFO_CLASSES.each do |info_class|
           if ancestor_chain.include?(info_class) 
-            report.set_handled_state(
-              {
-                :type => "error_class",
-                :attributes => {
-                  :errorClass => info_class
-                }
+            report.severity_reason = {
+              :type => Bugsnag::Report::ERROR_CLASS,
+              :attributes => {
+                :errorClass => info_class
               }
-            )
+            }
             report.severity = 'info'
-            break;
+            break
           end
         end
       end

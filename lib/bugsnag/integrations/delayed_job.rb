@@ -9,6 +9,11 @@ unless defined? Delayed::Plugins::Bugsnag
   module Delayed
     module Plugins
       class Bugsnag < Plugin
+
+        FRAMEWORK_ATTRIBUTES = {
+          :framework => "DelayedJob"
+        }
+
         module Notify
           def error(job, error)
             overrides = {
@@ -36,12 +41,10 @@ unless defined? Delayed::Plugins::Bugsnag
 
             ::Bugsnag.notify(error, true) do |report|
               report.severity = "error"
-              report.set_handled_state({
-                :type => "unhandledExceptionMiddleware",
-                :attributes => {
-                  :framework => "DelayedJob"
-                }
-              })
+              report.severity_reason = {
+                :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+                :attributes => FRAMEWORK_ATTRIBUTES
+              }
               report.meta_data.merge! overrides
             end
 

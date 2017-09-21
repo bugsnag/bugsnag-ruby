@@ -1,5 +1,10 @@
 module Bugsnag
   class Rack
+
+    FRAMEWORK_ATTRIBUTES = {
+      :framework => "Rack"
+    }
+
     def initialize(app)
       @app = app
 
@@ -35,12 +40,10 @@ module Bugsnag
         # Notify bugsnag of rack exceptions
         Bugsnag.notify(raised, true) do |report|
           report.severity = "error"
-          report.set_handled_state({
-            :type => "unhandledExceptionMiddleware",
-            :attirbutes => {
-              :framework => "Rack"
-            }
-          })
+          report.severity_reason = {
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+            :attributes => Bugsnag::Rack::FRAMEWORK_ATTRIBUTES
+          }
         end
 
         # Re-raise the exception
@@ -51,12 +54,10 @@ module Bugsnag
       if env["rack.exception"]
         Bugsnag.notify(env["rack.exception"], true) do |report|
           report.severity = "error"
-          report.set_handled_state({
-            :type => "middleware_handler",
-            :attributes => {
-              :name => "rack"
-            }
-          })
+          report.severity_reason = {
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+            :attributes => FRAMEWORK_ATTRIBUTES
+          }
         end
       end
 

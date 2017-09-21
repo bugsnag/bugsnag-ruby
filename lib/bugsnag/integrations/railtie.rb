@@ -7,6 +7,11 @@ require "bugsnag/middleware/rack_request"
 
 module Bugsnag
   class Railtie < Rails::Railtie
+
+    FRAMEWORK_ATTRIBUTES = {
+      :framework => "Rails"
+    }
+
     rake_tasks do
       require "bugsnag/integrations/rake"
       load "bugsnag/tasks/bugsnag.rake"
@@ -19,12 +24,10 @@ module Bugsnag
           if $!
             Bugsnag.notify($!, true) do |report|
               report.severity = "error"
-              report.set_handled_state({
-                :type => "unhandledExceptionMiddleware",
-                :attributes => {
-                  :framework => "Rails"
-                }
-              })
+              report.severity_reason = {
+                :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+                :attributes => FRAMEWORK_ATTRIBUTES
+              }
             end
           end
         end

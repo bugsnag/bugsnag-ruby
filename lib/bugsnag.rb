@@ -34,8 +34,7 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, auto_notify=false, &block)
-      report = Report.new(exception, configuration, auto_notify)
-
+      
       if !configuration.auto_notify && auto_notify
         configuration.debug("Not notifying because auto_notify is disabled")
         return
@@ -50,6 +49,8 @@ module Bugsnag
         configuration.debug("Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
         return
       end
+
+      report = Report.new(exception, configuration, auto_notify)     
 
       # If this is an auto_notify we yield the block before the any middleware is run
       yield(report) if block_given? && auto_notify
@@ -66,8 +67,8 @@ module Bugsnag
       end
 
       # Store before_middleware severity reason for future reference
-      before_middleware_severity = report.severity
-      before_middleware_reason = report.severity_reason
+      initial_severity = report.severity
+      initial_reason = report.severity_reason
 
       # Run users middleware
       configuration.middleware.run(report) do
@@ -75,16 +76,6 @@ module Bugsnag
           configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided middleware")
           return
         end
-
-        # Update severity reason if necessary
-        if report.severity != before_middleware_severity
-          report.severity_reason = {
-            :type => "userSpecifiedSeverity"
-          }
-        end
-
-        # Store severity before user callbacks
-        before_callback_severity = report.severity
 
         # If this is not an auto_notify then the block was provided by the user. This should be the last
         # block that is run as it is the users "most specific" block.
@@ -95,13 +86,12 @@ module Bugsnag
         end
 
         # Test whether severity has been changed and ensure severity_reason is consistant in auto_notify case
-        if auto_notify
-          report.severity = before_middleware_severity
-          report.severity_reason = before_middleware_reason
-        elsif report.severity != before_callback_severity
+        if report.severity != before_callback_severity
           report.severity_reason = {
-            :type => "userCallbackSeverity"
+            :type => Bugsnag::Report::USER_CALLBACK_SET_SEVERITY
           }
+        else
+          report.severity_reason = initial_reason
         end
 
         # Deliver
