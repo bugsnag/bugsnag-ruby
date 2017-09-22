@@ -19,7 +19,7 @@ module Bugsnag
     UNHANDLED_EXCEPTION = "unhandledException"
     UNHANDLED_EXCEPTION_MIDDLEWARE = "unhandledExceptionMiddleware"
     ERROR_CLASS = "errorClass"
-    USER_SPECFIEID_SEVERITY = "userSpecifiedSeverity"
+    USER_SPECIFIED_SEVERITY = "userSpecifiedSeverity"
     USER_CALLBACK_SET_SEVERITY = "userCallbackSetSeverity"
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
@@ -78,7 +78,7 @@ module Bugsnag
       elsif valid_severity
         @severity = @overrides[:severity]
         @severity_reason = {
-          :type => USER_SPECFIEID_SEVERITY
+          :type => USER_SPECIFIED_SEVERITY
         }
       elsif has_reason
         @severity_reason = @overrides[:severity_reason]
