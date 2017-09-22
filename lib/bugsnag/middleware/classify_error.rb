@@ -30,7 +30,7 @@ module Bugsnag::Middleware
         }
 
         INFO_CLASSES.each do |info_class|
-          if ancestor_chain.include?(info_class) 
+          if ancestor_chain.include?(info_class)
             notification.severity_reason = {
               :type => Bugsnag::Notification::ERROR_CLASS,
               :attributes => {
@@ -46,7 +46,7 @@ module Bugsnag::Middleware
         break if outer_break
       end
 
-      @bugsnag.call(report)
+      @bugsnag.call(notification)
     end
   end
 end

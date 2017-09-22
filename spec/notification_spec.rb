@@ -175,6 +175,21 @@ describe Bugsnag::Notification do
     }
   end
 
+  it "sets correct severity and reason for specific error classes" do
+    Bugsnag.notify(SignalException.new("TERM"))
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be false
+      expect(event["severity"]).to eq("info")
+      expect(event["severityReason"]).to eq({
+        "type" => "errorClass",
+        "attributes" => {
+          "errorClass" => "SignalException"
+        }
+      })
+    }
+  end
+
   # TODO: nested context
 
   it "accepts tabs in overrides and adds them to metaData" do
@@ -640,12 +655,6 @@ describe Bugsnag::Notification do
       expect(event["metaData"]["request"]["params"]).not_to be_nil
       expect(event["metaData"]["request"]["params"]).to have_key("nil_param")
     }
-  end
-
-  it "does not notify if the exception class is in the default ignore_classes list" do
-    Bugsnag.notify_or_ignore(ActiveRecord::RecordNotFound.new("It crashed"))
-
-    expect(Bugsnag).not_to have_sent_notification
   end
 
   it "does not notify if the non-default exception class is added to the ignore_classes" do
