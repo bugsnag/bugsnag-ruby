@@ -24,6 +24,7 @@ require "bugsnag/middleware/sidekiq"
 require "bugsnag/middleware/mailman"
 require "bugsnag/middleware/rake"
 require "bugsnag/middleware/callbacks"
+require "bugsnag/middleware/classify_error"
 
 module Bugsnag
   LOG_PREFIX = "** [Bugsnag] "
@@ -42,6 +43,9 @@ module Bugsnag
 
       # Use resque for asynchronous notification if required
       require "bugsnag/delay/resque" if configuration.delay_with_resque && defined?(Resque)
+
+      # Add info error classifier to internal middleware
+      configuration.internal_middleware.use(Bugsnag::Middleware::ClassifyError)
 
       # Warn if an api_key hasn't been set
       @key_warning = false unless defined?(@key_warning)
