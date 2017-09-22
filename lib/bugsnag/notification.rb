@@ -15,6 +15,13 @@ module Bugsnag
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
 
+    HANDLED_EXCEPTION = "handledException"
+    UNHANDLED_EXCEPTION = "unhandledException"
+    UNHANDLED_EXCEPTION_MIDDLEWARE = "unhandledExceptionMiddleware"
+    ERROR_CLASS = "errorClass"
+    USER_SPECFIEID_SEVERITY = "userSpecifiedSeverity"
+    USER_CALLBACK_SET_SEVERITY = "userCallbackSetSeverity"
+
     API_KEY_REGEX = /[0-9a-f]{32}/i
 
     # e.g. "org/jruby/RubyKernel.java:1264:in `catch'"
@@ -32,7 +39,7 @@ module Bugsnag
     attr_accessor :context
     attr_reader :user
     attr_reader :severity
-    attr_reader :default_severity
+    attr_accessor :severity_reason
     attr_accessor :configuration
     attr_accessor :meta_data
 
@@ -56,25 +63,32 @@ module Bugsnag
       @severity_reason = nil
       @grouping_hash = nil
       @delivery_method = nil
-      @default_severity = true
-      @initial_severity = nil
 
       if @overrides.key? :unhandled
         @unhandled = @overrides[:unhandled]
         @overrides.delete :unhandled
       end
-      
-      if @overrides.key? :severity_reason
+
+      valid_severity = @overrides.key?(:severity) && SUPPORTED_SEVERITIES.include?(@overrides[:severity])
+      has_reason = @overrides.key? :severity_reason
+
+      if valid_severity && has_reason
+        @severity = @overrides[:severity]
         @severity_reason = @overrides[:severity_reason]
-        @overrides.delete :severity_reason 
+      elsif valid_severity
+        @severity = @overrides[:severity]
+        @severity_reason = {
+          :type => USER_SPECFIEID_SEVERITY
+        }
+      elsif has_reason
+        @severity_reason = @overrides[:severity_reason]
+      else
+        @severity_reason = {
+          :type => HANDLED_EXCEPTION
+        }
       end
-
-      if !@unhandled && (@overrides.key? :severity)
-        @default_severity = false
-      end
-
-      self.severity = @overrides[:severity]
-      @initial_severity = self.severity
+      
+      @overrides.delete :severity_reason
       @overrides.delete :severity
 
       if @overrides.key? :grouping_hash
@@ -235,6 +249,8 @@ module Bugsnag
       # make meta_data available to public middleware
       @meta_data = generate_meta_data(@exceptions, @overrides)
 
+      initial_severity = self.severity
+
       # Run the middleware here (including Bugsnag::Middleware::Callbacks)
       # at the end of the middleware stack, execute the actual notification delivery
       @configuration.middleware.run(self) do
@@ -242,8 +258,8 @@ module Bugsnag
         return if @should_ignore
 
         # Check to see if the severity has been changed
-        if @initial_severity != self.severity
-          @default_severity = false
+        if initial_severity != self.severity
+
         end
 
         # Build the endpoint url
@@ -265,18 +281,14 @@ module Bugsnag
           :type => @configuration.app_type
         },
         :context => self.context,
-        :defaultSeverity => @default_severity,
         :user => @user,
         :payloadVersion => payload_version,
         :exceptions => exception_list,
         :severity => self.severity,
         :unhandled => @unhandled,
+        :severityReason => @severity_reason,
         :groupingHash => self.grouping_hash,
       }
-
-      if @unhandled
-        payload_event[:severityReason] = @severity_reason
-      end
 
       payload_event[:device] = {:hostname => @configuration.hostname} if @configuration.hostname
 

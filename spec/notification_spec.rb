@@ -114,57 +114,62 @@ describe Bugsnag::Notification do
   end
 
   it "uses correct unhandled defaults" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:grouping_hash => "this is my grouping hash"})
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
     
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
       expect(event["unhandled"]).to be false
-      expect(event["defaultSeverity"]).to be true
-      expect(event["severityReason"].nil?).to be true
+      expect(event["severity"]).to eq("warning")
+      expect(event["severityReason"]).to eq({
+        "type" => "handledException"
+      })
     }
   end
 
-  it "sets defaultSeverity if severity is modified" do
+  it "sets correct severityReason if severity is modified" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"), {:severity => "info"})
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
       expect(event["unhandled"]).to be false
-      expect(event["defaultSeverity"]).to be false
-      expect(event["severityReason"].nil?).to be true
+      expect(event["severity"]).to eq("info")
+      expect(event["severityReason"]).to eq({
+        "type" => "userSpecifiedSeverity"
+      })
     }
   end
 
-  it "sets defaultSeverity if severity is modified in a block" do
+  it "sets correct severityReason if severity is modified in a block" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |notification|
       notification.severity = "info"
     end
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
       expect(event["unhandled"]).to be false
-      expect(event["defaultSeverity"]).to be false
-      expect(event["severityReason"].nil?).to be true
+      expect(event["severity"]).to eq("info")
+      expect(event["severityReason"]).to eq({
+        "type" => "userCallbackSetSeverity"
+      })
     }
   end
 
   it "sets unhandled and severityReasons through auto_notify" do
     Bugsnag.auto_notify(BugsnagTestException.new("It crashed"), {
       :severity_reason => {
-        :type => "middleware_handler",
+        :type => "unhandledExceptionMiddleware",
         :attributes => {
-          :name => "ruby test"
+          :framework => "ruby test"
         }
       }
     })
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
       expect(event["unhandled"]).to be true
-      expect(event["defaultSeverity"]).to be true
-      expect(event["severityReason"].nil?).to be false
+      expect(event["severity"]).to eq("error")
       expect(event["severityReason"]).to eq({
-        "type" => "middleware_handler",
+        "type" => "unhandledExceptionMiddleware",
         "attributes" => {
-          "name" => "ruby test"
+          "framework" => "ruby test"
         }
       })
     }

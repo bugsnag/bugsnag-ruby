@@ -2,9 +2,9 @@ module Bugsnag
   class Rack
 
     SEVERITY_REASON = {
-      :type => "middleware_handler",
+      :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
       :attributes => {
-        :name => "rack"
+        :framework => "Rack"
       }
     }
 

@@ -30,9 +30,9 @@ module Bugsnag
         :context => "#{payload['class']}@#{queue}",
         :payload => payload,
         :severity_reason => {
-          :type => "middleware_handler",
+          :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
           :attributes => {
-            :name => "resque"
+            :framework => "Resque"
           }
         }
       })

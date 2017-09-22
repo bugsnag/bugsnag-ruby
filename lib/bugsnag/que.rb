@@ -5,9 +5,9 @@ if defined?(::Que)
 
       Bugsnag.auto_notify(error, {
         :severity_reason => {
-          :type => "middleware_handler",
+          :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
           :attributes => {
-            :name => "que"
+            :framework => "Que"
           }
         }
       }) do |notification|

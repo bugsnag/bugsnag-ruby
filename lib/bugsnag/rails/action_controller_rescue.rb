@@ -3,9 +3,9 @@ module Bugsnag::Rails
   module ActionControllerRescue
 
     SEVERITY_REASON = {
-      :type => "middleware_handler",
+      :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
       :attributes => {
-        :name => "rails"
+        :framework => "Rails"
       }
     }
 

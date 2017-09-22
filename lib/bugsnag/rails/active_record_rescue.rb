@@ -10,9 +10,9 @@ module Bugsnag::Rails
           # This exception will NOT be escalated, so notify it here.
           Bugsnag.auto_notify(exception, {
             :severity_reason => {
-              :type => "middleware_handler",
+              :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
               :attributes => {
-                :name => "rails"
+                :framework => "Rails"
               }
             }
           })

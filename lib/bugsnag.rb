@@ -64,7 +64,18 @@ module Bugsnag
     def notify(exception, overrides=nil, request_data=nil, &block)
       notification = Notification.new(exception, configuration, overrides, request_data)
 
+      initial_severity = notification.severity
+      initial_reason = notification.severity_reason
+
       yield(notification) if block_given?
+
+      if notification.severity != initial_severity
+        notification.severity_reason = {
+          :type => Bugsnag::Notification::USER_CALLBACK_SET_SEVERITY
+        }
+      else
+        notification.severity_reason = initial_reason
+      end
 
       unless notification.ignore?
         notification.deliver
@@ -80,7 +91,8 @@ module Bugsnag
     # error class
     def auto_notify(exception, overrides=nil, request_data=nil, &block)
       overrides ||= {}
-      overrides.merge!({:severity => "error", :unhandled => true})
+      overrides[:severity] = "error" unless overrides.has_key? :severity
+      overrides[:unhandled] = true unless overrides.has_key? :unhandled
       notify_or_ignore(exception, overrides, request_data, &block) if configuration.auto_notify
     end
 

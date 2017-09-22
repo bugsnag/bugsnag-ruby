@@ -39,9 +39,9 @@ describe Bugsnag::Rack do
         event = get_event_from_payload(payload)
         expect(event["unhandled"]).to be true
         expect(event["severityReason"]).to eq({
-          "type" => "middleware_handler",
+          "type" => "unhandledExceptionMiddleware",
           "attributes" => {
-            "name" => "rack"
+            "framework" => "Rack"
           }
         })
       }

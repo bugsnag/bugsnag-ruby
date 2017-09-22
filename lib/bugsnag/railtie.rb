@@ -19,9 +19,9 @@ module Bugsnag
           if $!
             Bugsnag.auto_notify($!, {
               :severity_reason => {
-                :type => "middleware_handler",
+                :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
                 :attributes => {
-                  :name => "railtie"
+                  :framework => "Rails"
                 }
               }
             })

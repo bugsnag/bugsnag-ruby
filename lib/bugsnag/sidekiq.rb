@@ -18,9 +18,9 @@ module Bugsnag
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
         Bugsnag.auto_notify(ex, {
           :severity_reason => {
-            :type => "middleware_handler",
+            :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
             :attributes => {
-              :name => "sidekiq"
+              :framework => "Sidekiq"
             }
           }
         })

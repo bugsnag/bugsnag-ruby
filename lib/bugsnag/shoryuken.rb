@@ -20,9 +20,9 @@ module Bugsnag
       rescue Exception => ex
         Bugsnag.auto_notify(ex, {
           :severity_reason => {
-            :type => "middleware_handler",
+            :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
             :attributes => {
-              :name => "shoryuken"
+              :framework => "Shoryuken"
             }
           }
         }) unless [Interrupt, SystemExit, SignalException].include?(ex.class)
