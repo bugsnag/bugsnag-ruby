@@ -2,7 +2,7 @@ module Bugsnag::Middleware
   class SuggestionData
 
     CAPTURE_REGEX = /Did you mean\?([\s\S]+)$/
-    DELIMITTER = "\n"
+    DELIMITER = "\n"
 
     def initialize(bugsnag)
       @bugsnag = bugsnag
@@ -14,12 +14,12 @@ module Bugsnag::Middleware
         match = CAPTURE_REGEX.match(exception.message)
         next unless match
         
-        suggestions = match.captures[0].split(DELIMITTER).each { |suggestion|
+        suggestions = match.captures[0].split(DELIMITER).each { |suggestion|
           matches[matches.size] = suggestion.strip
         }
       end
 
-      report.add_tab(:"did you mean", matches) if matches.size > 0
+      report.add_tab(:suggestion, matches) if matches.size > 0
       
       @bugsnag.call(report)
     end
