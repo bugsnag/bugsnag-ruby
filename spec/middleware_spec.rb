@@ -190,7 +190,7 @@ describe Bugsnag::MiddlewareStack do
         expect(Bugsnag).to have_sent_notification{ |payload|
           event = get_event_from_payload(payload)
           expect(event["metaData"]["did you mean"]).to_not be_nil
-          expect(event["metaData"]["did you mean"]).to eq({"0" => "start_with?"})
+          expect(event["metaData"]["did you mean"]).to eq({"suggestion" => "start_with?"})
         }
       end
     end
