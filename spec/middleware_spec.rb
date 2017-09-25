@@ -178,4 +178,38 @@ describe Bugsnag::MiddlewareStack do
     }
   end
 
+  if ruby_version_greater_equal?("2.3.0")
+    context "with a ruby version >= 2.3.0" do
+      it "attaches did you mean metadata when necessary" do
+        begin
+          "Test".starts_with? "T"
+        rescue Exception => e
+          Bugsnag.notify(e)
+        end
+
+        expect(Bugsnag).to have_sent_notification{ |payload|
+          event = get_event_from_payload(payload)
+          expect(event["metaData"]["did you mean"]).to_not be_nil
+          expect(event["metaData"]["did you mean"]).to eq({"0" => "start_with?"})
+        }
+      end
+    end
+  end
+
+  context "with a ruby version < 2.3.0" do
+    if !ruby_version_greater_equal?("2.3.0")
+      it "doesn't attach did you mean metadata" do
+        begin
+          "Test".starts_with? "T"
+        rescue Exception => e
+          Bugsnag.notify(e)
+        end
+
+        expect(Bugsnag).to have_sent_notification{ |payload|
+          event = get_event_from_payload(payload)
+          expect(event["metaData"]["did you mean"]).to be_nil
+        }
+      end
+    end
+  end
 end
