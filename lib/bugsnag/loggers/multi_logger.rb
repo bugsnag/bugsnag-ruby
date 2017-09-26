@@ -70,7 +70,7 @@ module Bugsnag::Loggers
 
     private
     def supports_level?(level)
-      @loggers.any {|logger| logger.send(level)}
+      @loggers.any? {|logger| logger.send(level)}
     end
   end
 end
