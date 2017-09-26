@@ -19,7 +19,7 @@ module Bugsnag::Loggers
       @level = level
     end
 
-    def add(severity, message = nil, progname = nil)
+    def add(severity, message = nil, progname = nil, &block)
       if supports_level?(severity)
         Bugsnag.leave_breadcrumb(message, Bugsnag::Breadcrumbs::LOG_TYPE, {
           :progname => progname,
@@ -27,23 +27,24 @@ module Bugsnag::Loggers
         })
       end
     end
+    alias :log :add
 
     def <<(message)
       add "unknown", message
     end
 
-    alias :sev_threshold :level
     def level(severity)
-      if Loggers::LEVELS.include? severity
+      if Bugsnag::Loggers::LEVELS.include? severity
         @level = severity
       end
     end
+    alias :sev_threshold :level
 
     def info(message)
       add "info", message
     end
 
-    def info(progname=nil, &block)
+    def info(progname = nil, &block)
       yield message="" if block_given?
       add "info", message, progname
     end
@@ -52,7 +53,7 @@ module Bugsnag::Loggers
       supports_level?("info")
     end
 
-    def debug(progname=nil, &block)
+    def debug(progname = nil, &block)
       yield message="" if block_given?
       add "debug", message, progname
     end
@@ -61,7 +62,7 @@ module Bugsnag::Loggers
       supports_level?("debug")
     end
 
-    def error(progname=nil, &block)
+    def error(progname = nil, &block)
       yield message="" if block_given?
       add "error", message, progname
     end
@@ -70,7 +71,7 @@ module Bugsnag::Loggers
       supports_level?("error")
     end
 
-    def fatal(progname=nil, &block)
+    def fatal(progname = nil, &block)
       yield message="" if block_given?
       add "fatal", message, progname
     end
@@ -79,7 +80,7 @@ module Bugsnag::Loggers
       supports_level?("fatal")
     end
 
-    def warn(progname=nil, &block)
+    def warn(progname = nil, &block)
       yield message="" if block_given?
       add "warn", message, progname
     end
@@ -102,7 +103,7 @@ module Bugsnag::Loggers
       if level == "unknown"
         true
       else 
-        Loggers::LEVELS.index(level) >= Loggers::LEVELS.index(@level)
+        Bugsnag::Loggers::LEVELS.index(level) >= Bugsnag::Loggers::LEVELS.index(@level)
       end
     end
 
