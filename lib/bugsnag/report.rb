@@ -51,10 +51,8 @@ module Bugsnag
       self.hostname = configuration.hostname
       self.meta_data = {}
       self.release_stage = configuration.release_stage
-      self.severity = "warning"
-      self.severity_reason = {
-        :type => HANDLED_EXCEPTION
-      }
+      self.severity = auto_notify ? "error" : "warning"
+      self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
       self.user = {}
     end
 
