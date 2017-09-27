@@ -5,12 +5,6 @@ module Bugsnag::Loggers
       @loggers = loggers
     end
 
-    def call_loggers(method, *args)
-      @loggers.each do |logger|
-        logger.send(method, *args)
-      end
-    end
-
     def <<(*args)
       call_loggers(:<<, *args)
     end
@@ -72,9 +66,20 @@ module Bugsnag::Loggers
       supports_level?(:fatal?)
     end
 
+    def level?
+      Bugsnag::Loggers::LEVELS.find { |level| supports_level? level + "?" }
+    end
+
     private
     def supports_level?(level)
       @loggers.any? {|logger| logger.send(level)}
+    end
+
+    private
+    def call_loggers(method, *args)
+      @loggers.each do |logger|
+        logger.send(method, *args)
+      end
     end
   end
 end
