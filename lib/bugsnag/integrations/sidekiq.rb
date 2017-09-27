@@ -24,7 +24,7 @@ module Bugsnag
         Bugsnag.notify(ex, true) do |report|
           report.severity = "error"
           report.severity_reason = {
-            :type => Bugsnag::Report::UNHANDLED_MIDDLEWARE_EXCEPTION,
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
             :attributes => FRAMEWORK_ATTRIBUTES
           }
         end
