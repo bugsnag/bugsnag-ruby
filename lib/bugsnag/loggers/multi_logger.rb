@@ -44,6 +44,10 @@ module Bugsnag::Loggers
       call_loggers(:unknown, *args)
     end
 
+    def reopen(*args)
+      call_loggers(:reopen, *args)
+    end
+
     def close
       call_loggers(:close)
     end
