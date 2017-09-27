@@ -42,7 +42,7 @@ unless defined? Delayed::Plugins::Bugsnag
             ::Bugsnag.notify(error, true) do |report|
               report.severity = "error"
               report.severity_reason = {
-                :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+                :type => ::Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
                 :attributes => FRAMEWORK_ATTRIBUTES
               }
               report.meta_data.merge! overrides
