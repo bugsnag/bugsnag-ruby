@@ -34,12 +34,12 @@ module Bugsnag::Loggers
       add "unknown", message
     end
 
-    def level(severity)
+    def level=(severity)
       if Bugsnag::Loggers::LEVELS.include? severity
         @level = severity
       end
     end
-    alias :sev_threshold :level
+    alias :sev_threshold= :level=
 
     def info(message)
       add "info", message
