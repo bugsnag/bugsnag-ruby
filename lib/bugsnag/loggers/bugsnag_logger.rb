@@ -17,10 +17,11 @@ module Bugsnag::Loggers
 
     def initialize(level="info")
       @level = level
+      @open = true
     end
 
     def add(severity, message = nil, progname = nil, &block)
-      if supports_level?(severity)
+      if supports_level?(severity) && @open
         Bugsnag.leave_breadcrumb(message, Bugsnag::Breadcrumbs::LOG_TYPE, {
           :progname => progname,
           :severity => severity
@@ -95,6 +96,12 @@ module Bugsnag::Loggers
     end
 
     def close
+      @open = false
+      true
+    end
+
+    def reopen
+      @open = true
       true
     end
 
