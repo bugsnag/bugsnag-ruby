@@ -68,7 +68,7 @@ module Bugsnag::Loggers
       add "error", message, progname
     end
 
-    def error
+    def error?
       supports_level?("error")
     end
 
