@@ -18,20 +18,20 @@ class ApplicationController < ActionController::Base
       }
       report.add_tab(:diagnostics, new_tab)
     }
-    raise RuntimeError.new('Bugsnag Rack demo says: It crashed! But, due to the attached callback' +
+    raise RuntimeError.new('Bugsnag Rails demo says: It crashed! But, due to the attached callback' +
       ' the exception has meta information. Go check' +
       ' bugsnag.com for a new notification (see the Diagnostics tab)!')
   end
 
   def notify
-    Bugsnag.notify(RuntimeError.new("Bugsnag Rack demo says: False alarm, your application didn't crash"))
+    Bugsnag.notify(RuntimeError.new("Bugsnag Rails demo says: False alarm, your application didn't crash"))
     @text = "Bugsnag Rack demo says: It didn't crash! " +
       'But still go check <a href="https://bugsnag.com">https://bugsnag.com</a>' +
       ' for a new notification.'
   end
 
   def data
-    error = RuntimeError.new("Bugsnag Rack demo says: False alarm, your application didn't crash")
+    error = RuntimeError.new("Bugsnag Rails demo says: False alarm, your application didn't crash")
     Bugsnag.notify error do |report|
       report.add_tab(:user, {
         :username => "bob-hoskins",
@@ -43,13 +43,13 @@ class ApplicationController < ActionController::Base
         :code => 200
       })
     end
-    @text = "Bugsnag Rack demo says: It didn't crash! " +
+    @text = "Bugsnag Rails demo says: It didn't crash! " +
       'But still go check <a href="https://bugsnag.com">https://bugsnag.com</a>' +
       ' for a new notification. Check out the User tab for the meta data'
   end
 
   def severity
-    msg = "Bugsnag Rack demo says: Look at the circle on the right side. It's different"
+    msg = "Bugsnag Rails demo says: Look at the circle on the right side. It's different"
     error = RuntimeError.new(msg)
     Bugsnag.notify error do |report|
       report.severity = 'info'
