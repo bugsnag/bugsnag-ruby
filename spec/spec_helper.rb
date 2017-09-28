@@ -52,6 +52,8 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do
+    Thread.current[Bugsnag::Configuration::THREAD_RECORDER] = nil
+    Thread.current[Bugsnag::Configuration::THREAD_LOCAL_NAME] = nil
     Bugsnag.configuration.clear_request_data
   end
 end
