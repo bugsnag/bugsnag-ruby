@@ -39,7 +39,7 @@ class ApplicationController < ActionController::Base
         :registered_user => true
       })
       report.add_tab(:diagnostics, {
-        :message => 'Rack demo says: Everything is great',
+        :message => 'Rails demo says: Everything is great',
         :code => 200
       })
     end
