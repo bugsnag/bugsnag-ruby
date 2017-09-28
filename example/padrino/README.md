@@ -11,7 +11,7 @@ bundle install
 
 ## Configuring Bugsnag and Padrino
 
-1. Set up the Padrino Bugsnag configuration in ```config/boot.rb```     in the `before_load` call according to the [available configuration options](https://docs.bugsnag.com/platforms/ruby/rack/configuration-options/):
+1. Set up the Padrino Bugsnag configuration in ```config/boot.rb``` in the `before_load` call according to the [available configuration options](https://docs.bugsnag.com/platforms/ruby/rack/configuration-options/):
   ```ruby
   Padrino.before_load do
     Bugsnag.configure do |config|
@@ -27,23 +27,10 @@ bundle install
   end
   ```
 
-## Capturing errors and exceptions
-
-In `production` automatic notification of exceptions and errors will be enabled by default.  If you want to enable notifications in `development`, open ```app/app.rb``` and set the following options:
+3. In `production` automatic notification of exceptions and errors will be enabled by default.  If you want to enable notifications in `development`, open ```app/app.rb``` and set the following options:
 ```ruby
 set :raise_errors, true
 set :show_exceptions, false
-```
-
-When using custom error handlers the errors will not be propogated to Bugsnag.  If you still want to notify Bugsnag of these occurences use the `notify` function:
-```ruby
-error 500 do
-  Bugsnag.notify($!) do |report|
-    report.severity = "error"
-  end
-  
-  erb :'errors/500'
-end
 ```
 
 ## Running the example
