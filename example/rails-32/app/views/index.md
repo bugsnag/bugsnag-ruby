@@ -1,6 +1,6 @@
-# Bugsnag Rack demo
+# Bugsnag Rails v3.2 demo
 
-This application demonstrates the use of Bugsnag with the Rack web framework.
+This application demonstrates the use of Bugsnag with the Rails web framework.
 
 While testing the examples open [your dashboard](https://app.bugsnag.com) in order to see the example errors and exceptions being received.
 
