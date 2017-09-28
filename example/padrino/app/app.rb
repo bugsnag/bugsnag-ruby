@@ -67,7 +67,7 @@ module BugsnagPadrino
         fenced_code_blocks: true
       }
       renderer = Redcarpet::Markdown.new(Redcarpet::Render::HTML, opts)
-      renderer.render(File.read(File.expand_path('README.md')))
+      renderer.render(File.read(File.expand_path('app/templates/index.md')))
     end
 
     get '/crash' do
@@ -76,12 +76,12 @@ module BugsnagPadrino
     end
 
     get '/crash_with_callback' do
-      Bugsnag.before_notify_callbacks << proc { |notification|
+      Bugsnag.before_notify_callbacks << proc { |report|
         new_tab = {
           message: 'Padrino demo says: Everything is great',
           code: 200
         }
-        notification.add_tab(:diagnostics, new_tab)
+        report.add_tab(:diagnostics, new_tab)
       }
 
       msg = 'Bugsnag Padrino demo says: It crashed! But, due to the attached callback' +
@@ -98,31 +98,31 @@ module BugsnagPadrino
         ' for a new notification.'
     end
 
-    get '/notify_meta' do
-      meta_data = {
-        :user => {
+    get '/notify_data' do
+      error = RuntimeError.new("Bugsnag Padrino demo says: False alarm, your application didn't crash")
+      Bugsnag.notify error do |report|
+        report.add_tab(:user, {
           :username => "bob-hoskins",
           :email => 'bugsnag@bugsnag.com',
           :registered_user => true
-        },
-
-        :diagnostics => {
+        })
+        report.add_tab(:diagnostics, {
           :message => 'Padrino demo says: Everything is great',
           :code => 200
-        }
-      }
-      error = RuntimeError.new("Bugsnag Padrino demo says: False alarm, your application didn't crash")
-      Bugsnag.notify(error, meta_data)
+        })
+      end
 
       "Bugsnag Padrino demo says: It didn't crash! " +
         'But still go check <a href="https://bugsnag.com">https://bugsnag.com</a>' +
         ' for a new notification. Check out the User tab for the meta data'
     end
 
-    get '/severity' do
+    get '/notify_severity' do
       msg = "Bugsnag Padrino demo says: Look at the circle on the right side. It's different"
       error = RuntimeError.new(msg)
-      Bugsnag.notify(error, severity: 'info')
+      Bugsnag.notify error do |report|
+        report.severity = 'info'
+      end
       msg
     end
   end
