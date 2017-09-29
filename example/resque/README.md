@@ -11,7 +11,7 @@ bundle install
 
 ## Configuring Bugsnag and Resque
 
-Configure your `API_KEY` and any other configuration as detailed in the [available configuration options](https://docs.bugsnag.com/platforms/ruby/rack/configuration-options/) by calling `Bugsnag.configure` and passing the options to the `configuration` object returned to a provided block:
+Configure your `API_KEY` and any other configuration as detailed in the [available configuration options](https://docs.bugsnag.com/platforms/ruby/other/configuration-options/) by calling `Bugsnag.configure` and passing the options to the `configuration` object returned to a provided block:
   ```ruby
   Bugsnag.configure do |configuration|
     configuration.api_key = "YOUR_API_KEY"

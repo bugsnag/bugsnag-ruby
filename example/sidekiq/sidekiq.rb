@@ -2,7 +2,7 @@ require 'sidekiq'
 require 'bugsnag'
 
 Bugsnag.configure do |config|
-  config.api_key = '066f5ad3590596f9aa8d601ea89af845'
+  config.api_key = 'f35a2472bd230ac0ab0f52715bbdc65d'
 end
 
 # If your client is single-threaded, we just need a single connection in our Redis connection pool
@@ -15,18 +15,75 @@ Sidekiq.configure_server do |config|
   config.redis = { :namespace => 'x' }
 end
 
-# Start up sidekiq via
-# bundle exec sidekiq -r ./sidekiq.rb
-# and then you can open up an IRB session like so:
-# irb -r ./sidekiq.rb
-# where you can then say
-# PlainOldRuby.perform_async "like a dog", 3
-#
-class PlainOldRuby
+# Unhandled example
+class Crash
   include Sidekiq::Worker
+  sidekiq_options :retry => false
 
-  def perform(how_hard="super hard", how_long=1)
-    puts "Workin' #{how_hard} #{how_long}"
-    raise 'Uh oh!'
+  def perform
+    raise Exception.new "Crashed - Check your Bugsnag dashboard"
+  end
+end
+
+# Unhandled example with callback
+class Callback
+  include Sidekiq::Worker
+  sidekiq_options :retry => false
+
+  def perform
+    Bugsnag.before_notify_callbacks << proc { |report|
+      new_tab = {
+        message: 'Sidekiq demo says: Everything is great',
+        code: 200
+      }
+      report.add_tab(:diagnostics, new_tab)
+    }
+    raise Exception.new "Crashed - Check the Bugsnag dashboard for diagnostic data"
+  end
+end
+
+# Handled example
+class Notify
+  include Sidekiq::Worker
+  sidekiq_options :retry => false
+
+  def perform
+    Bugsnag.notify(Exception.new "Didn't crash, but sent a notification anyway")
+    puts "The Sidekiq worker hasn't crashed, but it has sent a notification, so go check out the dashboard!"
+  end
+end
+
+# Handled example with additional data
+class Metadata
+  include Sidekiq::Worker
+  sidekiq_options :retry => false
+
+  def perform
+    error = Exception.new "Didn't crash, but sent a notification anyway"
+    Bugsnag.notify error do |report|
+      report.add_tab(:function, {
+        :name => "Metadata",
+        :fatal => false
+      })
+      report.add_tab(:diagnostics, {
+        :message => 'Sidekiq demo says: Everything is great',
+      })
+    end
+    puts "The Sidekiq worker hasn't crashed, but it has sent a notification, with additional data to the dashboard"
+  end
+end
+
+
+# Handled example with set severity
+class Severity
+  include Sidekiq::Worker
+  sidekiq_options :retry => false
+
+  def perform
+    error = Exception.new "Didn't crash, but sent a notification anyway"
+    Bugsnag.notify error do |report|
+      report.severity = "info"
+    end
+    puts "The Sidekiq worker hasn't crashed but check the severity of the dashboard notification"
   end
 end
