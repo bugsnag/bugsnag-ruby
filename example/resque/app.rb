@@ -52,7 +52,7 @@ class Data
         :fatal => false
       })
       report.add_tab(:diagnostics, {
-        :message => 'Rack demo says: Everything is great',
+        :message => 'Resque demo says: Everything is great',
       })
     end
     puts "The Resque worker hasn't crashed, but it has sent a notification, with additional data to the dashboard"
