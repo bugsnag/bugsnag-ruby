@@ -21,7 +21,7 @@ class Callback
   def self.perform
     Bugsnag.before_notify_callbacks << proc { |report|
       new_tab = {
-        message: 'Rack demo says: Everything is great',
+        message: 'Resque demo says: Everything is great',
         code: 200
       }
       report.add_tab(:diagnostics, new_tab)
