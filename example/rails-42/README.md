@@ -1,6 +1,6 @@
-# Bugsnag Rails v3.2 demo
+# Bugsnag Rails v4.2 demo
 
-This Rails application demonstrates how to use Bugsnag with Rails v3.2.
+This Rails application demonstrates how to use Bugsnag with Rails v4.2.
 Further details about integrating Bugsnag with Rack applications can be found [here.](https://docs.bugsnag.com/platforms/ruby/rails/)
 
 Install dependencies
@@ -9,7 +9,7 @@ Install dependencies
 bundle install
 ```
 
-## Configuring Bugsnag and Rails v3.2
+## Configuring Bugsnag and Rails v4.2
 
 There are two methods of configuring Bugsnag within a Rails application:
 
