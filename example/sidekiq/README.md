@@ -13,7 +13,7 @@ Sidekiq requires a datastore to run, this examples uses [redis](https://redis.io
 
 ## Configuring Bugsnag and Sidekiq
 
-Configure your `API_KEY` and any other configuration as detailed in the [available configuration options](https://docs.bugsnag.com/platforms/ruby/sidekiq/configuration-options/) by calling `Bugsnag.configure` and passing the options to the `configuration` object returned to a provided block:
+Configure your `API_KEY` and any other configuration as detailed in the [available configuration options](https://docs.bugsnag.com/platforms/ruby/sidekiq/configuration-options/) by calling `Bugsnag.configure` and passing the options to the `configuration` object yielded to a provided block:
   ```ruby
   Bugsnag.configure do |configuration|
     configuration.api_key = "YOUR_API_KEY"
