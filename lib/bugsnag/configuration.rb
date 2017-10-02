@@ -6,6 +6,7 @@ require "bugsnag/middleware/callbacks"
 require "bugsnag/middleware/exception_meta_data"
 require "bugsnag/middleware/ignore_error_class"
 require "bugsnag/middleware/suggestion_data"
+require "bugsnag/middleware/classify_error"
 
 module Bugsnag
   class Configuration
@@ -75,6 +76,7 @@ module Bugsnag
       self.internal_middleware.use Bugsnag::Middleware::ExceptionMetaData
       self.internal_middleware.use Bugsnag::Middleware::IgnoreErrorClass
       self.internal_middleware.use Bugsnag::Middleware::SuggestionData
+      self.internal_middleware.use Bugsnag::Middleware::ClassifyError
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks

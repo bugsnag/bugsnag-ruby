@@ -34,7 +34,8 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, auto_notify=false, &block)
-      if auto_notify && !configuration.auto_notify
+      
+      if !configuration.auto_notify && auto_notify
         configuration.debug("Not notifying because auto_notify is disabled")
         return
       end
@@ -49,7 +50,7 @@ module Bugsnag
         return
       end
 
-      report = Report.new(exception, configuration)
+      report = Report.new(exception, configuration, auto_notify)     
 
       # If this is an auto_notify we yield the block before the any middleware is run
       yield(report) if block_given? && auto_notify
@@ -65,6 +66,10 @@ module Bugsnag
         return
       end
 
+      # Store before_middleware severity reason for future reference
+      initial_severity = report.severity
+      initial_reason = report.severity_reason
+
       # Run users middleware
       configuration.middleware.run(report) do
         if report.ignore?
@@ -78,6 +83,15 @@ module Bugsnag
         if report.ignore?
           configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided block")
           return
+        end
+
+        # Test whether severity has been changed and ensure severity_reason is consistant in auto_notify case
+        if report.severity != initial_severity
+          report.severity_reason = {
+            :type => Bugsnag::Report::USER_CALLBACK_SET_SEVERITY
+          }
+        else
+          report.severity_reason = initial_reason
         end
 
         # Deliver

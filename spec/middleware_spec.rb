@@ -212,4 +212,43 @@ describe Bugsnag::MiddlewareStack do
       end
     end
   end
+
+  it "doesn't allow handledState properties to be changed in middleware" do
+    HandledStateChanger = Class.new do
+      def initialize(bugsnag)
+        @bugsnag = bugsnag
+      end
+
+      def call(report)
+        report.severity_reason = {
+          :test => "test"
+        }
+        @bugsnag.call(report)
+      end
+    end
+
+    Bugsnag.configure do |c|
+      c.middleware.use HandledStateChanger
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
+      report.severity_reason = {
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "middleware_test"
+        }
+      }
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be true
+      expect(event["severityReason"]).to eq({
+        "type" => "middleware_handler",
+        "attributes" => {
+          "name" => "middleware_test"
+        }
+      })
+    }
+  end
 end

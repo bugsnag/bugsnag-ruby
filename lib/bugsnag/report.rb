@@ -8,6 +8,13 @@ module Bugsnag
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
 
+    UNHANDLED_EXCEPTION = "unhandledException"
+    UNHANDLED_EXCEPTION_MIDDLEWARE = "unhandledExceptionMiddleware"
+    ERROR_CLASS = "errorClass"
+    HANDLED_EXCEPTION = "handledException"
+    USER_SPECIFIED_SEVERITY = "userSpecifiedSeverity"
+    USER_CALLBACK_SET_SEVERITY = "userCallbackSetSeverity"
+
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
     CURRENT_PAYLOAD_VERSION = "2"
@@ -25,10 +32,12 @@ module Bugsnag
     attr_accessor :raw_exceptions
     attr_accessor :release_stage
     attr_accessor :severity
+    attr_accessor :severity_reason
     attr_accessor :user
 
-    def initialize(exception, passed_configuration)
+    def initialize(exception, passed_configuration, auto_notify=false)
       @should_ignore = false
+      @unhandled = auto_notify
 
       self.configuration = passed_configuration
 
@@ -42,7 +51,8 @@ module Bugsnag
       self.hostname = configuration.hostname
       self.meta_data = {}
       self.release_stage = configuration.release_stage
-      self.severity = "warning"
+      self.severity = auto_notify ? "error" : "warning"
+      self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
       self.user = {}
     end
 
@@ -84,6 +94,8 @@ module Bugsnag
         groupingHash: grouping_hash,
         payloadVersion: CURRENT_PAYLOAD_VERSION,
         severity: severity,
+        severityReason: severity_reason,
+        unhandled: @unhandled,
         user: user
       }
 
