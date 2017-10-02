@@ -10,18 +10,18 @@ module Bugsnag::Middleware
 
     def call(report)
       matches = []
-      report.raw_exceptions.each do |exception| 
+      report.raw_exceptions.each do |exception|
         match = CAPTURE_REGEX.match(exception.message)
         next unless match
-        
+
         suggestions = match.captures[0].split(DELIMITER)
         matches.concat suggestions.map{ |suggestion| suggestion.strip }
       end
 
       if matches.size == 1
-        report.add_tab(:"did you mean", {:suggestion => matches.first})
+        report.add_tab(:error, {:suggestion => matches.first})
       elsif matches.size > 1
-        report.add_tab(:"did you mean", {:suggestions => matches})
+        report.add_tab(:error, {:suggestions => matches})
       end
 
       @bugsnag.call(report)
