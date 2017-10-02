@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 5.4.0 (02 Oct 2017)
+
+### Enhancements
+
+* Add a one-time warning if the API key is not set
+* Track whether errors were captured automatically and by which middleware
+
 ## 5.3.3 (16 June 2017)
 
 * [Rails] Fix failure to report when encountering objects which throw in `to_s`
