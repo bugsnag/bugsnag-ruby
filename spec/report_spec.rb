@@ -387,18 +387,6 @@ describe Bugsnag::Report do
     }
   end
 
-  it "autonotifies errors" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
-      report.severity = "error"
-    end
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      event = get_event_from_payload(payload)
-      expect(event["severity"]).to eq("error")
-    }
-  end
-
-
   it "accepts a context in overrides" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.context = 'test_context'
@@ -421,7 +409,7 @@ describe Bugsnag::Report do
     }
   end
 
-  it "does not send a notification if auto_notify is false" do
+  it "does not send an automatic notification if auto_notify is false" do
     Bugsnag.configure do |config|
       config.auto_notify = false
     end
@@ -885,6 +873,57 @@ describe Bugsnag::Report do
     expect(Bugsnag).to have_sent_notification { |payload|
       exception = get_exception_from_payload(payload)
       expect(exception['stacktrace'].size).to be > 0
+    }
+  end
+
+  it 'should use defaults when notify is called' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+    
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = payload["events"][0]
+      expect(event["unhandled"]).to be false
+      expect(event["severityReason"]).to eq({"type" => "handledException"})
+    }
+  end
+
+  it 'should attach severity reason through a block when auto_notify is true' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
+      report.severity_reason = {
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "middleware_test"
+        }
+      }
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = payload["events"][0]
+      expect(event["severityReason"]).to eq(
+        {
+          "type" => "middleware_handler",
+          "attributes" => {
+            "name" => "middleware_test"
+          }
+        }
+      )
+      expect(event["unhandled"]).to be true
+    }
+  end
+
+  it 'should not attach severity reason from callback when auto_notify is false' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.severity_reason = {
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "middleware_test"
+        }
+      }
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = payload["events"][0]
+      expect(event["unhandled"]).to be false
+      expect(event["severityReason"]).to eq({"type" => "handledException"})
     }
   end
 

@@ -1,6 +1,9 @@
 module Bugsnag::Rails
   module ActiveRecordRescue
     KINDS = [:commit, :rollback].freeze
+    FRAMEWORK_ATTRIBUTES = {
+      :framework => "Rails"
+    }
 
     def run_callbacks(kind, *args, &block)
       if KINDS.include?(kind)
@@ -10,6 +13,10 @@ module Bugsnag::Rails
           # This exception will NOT be escalated, so notify it here.
           Bugsnag.notify(exception, true) do |report|
             report.severity = "error"
+            report.severity_reason = {
+              :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+              :attributes => FRAMEWORK_ATTRIBUTES
+            }
           end
           raise
         end

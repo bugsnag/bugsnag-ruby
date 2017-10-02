@@ -2,6 +2,11 @@ require 'sidekiq'
 
 module Bugsnag
   class Sidekiq
+
+    FRAMEWORK_ATTRIBUTES = {
+      :framework => "Sidekiq"
+    }
+
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
       Bugsnag.configuration.app_type = "sidekiq"
@@ -18,6 +23,10 @@ module Bugsnag
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
         Bugsnag.notify(ex, true) do |report|
           report.severity = "error"
+          report.severity_reason = {
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+            :attributes => FRAMEWORK_ATTRIBUTES
+          }
         end
         raise
       ensure

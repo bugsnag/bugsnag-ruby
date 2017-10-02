@@ -4,6 +4,10 @@ Rake::TaskManager.record_task_metadata = true
 
 class Rake::Task
 
+  FRAMEWORK_ATTRIBUTES = {
+    :framework => "Rake"
+  }
+
   def execute_with_bugsnag(args=nil)
     Bugsnag.configuration.app_type = "rake"
     old_task = Bugsnag.configuration.request_data[:bugsnag_running_task]
@@ -14,6 +18,10 @@ class Rake::Task
   rescue Exception => ex
     Bugsnag.notify(ex, true) do |report|
       report.severity = "error"
+      report.severity_reason = {
+        :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+        :attributes => FRAMEWORK_ATTRIBUTES
+      }
     end
     raise
   ensure

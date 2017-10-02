@@ -3,6 +3,11 @@ require "resque/failure/multiple"
 
 module Bugsnag
   class Resque < ::Resque::Failure::Base
+
+    FRAMEWORK_ATTRIBUTES = {
+      :framework => "Resque"
+    }
+
     def self.configure(&block)
       add_failure_backend
       Bugsnag.configure(&block)
@@ -28,6 +33,10 @@ module Bugsnag
     def save
       Bugsnag.notify(exception, true) do |report|
         report.severity = "error"
+        report.severity_reason = {
+          :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+          :attributes => FRAMEWORK_ATTRIBUTES
+        }
         report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload, :delivery_method => :synchronous})
       end
     end
