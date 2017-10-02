@@ -966,7 +966,7 @@ describe Bugsnag::Notification do
 
       expect(Bugsnag).to have_sent_notification{ |payload|
         exception = get_exception_from_payload(payload)
-        expect(exception["errorClass"]).to eq('Java::JavaLang::ArrayIndexOutOfBoundsException')
+        expect(exception["errorClass"]).to eq('Java::JavaLang::NullPointerException')
         expect(exception["message"]).to eq("2")
         expect(exception["stacktrace"].size).to be > 0
       }
