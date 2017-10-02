@@ -17,7 +17,14 @@ module Bugsnag
       runner do
         at_exit do
           if $!
-            Bugsnag.auto_notify($!)
+            Bugsnag.auto_notify($!, {
+              :severity_reason => {
+                :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
+                :attributes => {
+                  :framework => "Rails"
+                }
+              }
+            })
           end
         end
       end

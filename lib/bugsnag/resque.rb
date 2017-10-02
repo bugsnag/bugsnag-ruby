@@ -26,7 +26,16 @@ module Bugsnag
     end
 
     def save
-      Bugsnag.auto_notify(exception, {:context => "#{payload['class']}@#{queue}", :payload => payload})
+      Bugsnag.auto_notify(exception, {
+        :context => "#{payload['class']}@#{queue}",
+        :payload => payload,
+        :severity_reason => {
+          :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
+          :attributes => {
+            :framework => "Resque"
+          }
+        }
+      })
     end
   end
 end

@@ -1,5 +1,13 @@
 module Bugsnag
   class Rack
+
+    SEVERITY_REASON = {
+      :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
+      :attributes => {
+        :framework => "Rack"
+      }
+    }
+
     def initialize(app)
       @app = app
 
@@ -34,7 +42,9 @@ module Bugsnag
         response = @app.call(env)
       rescue Exception => raised
         # Notify bugsnag of rack exceptions
-        Bugsnag.auto_notify(raised)
+        Bugsnag.auto_notify(raised, {
+          :severity_reason => SEVERITY_REASON
+        })
 
         # Re-raise the exception
         raise
@@ -42,7 +52,9 @@ module Bugsnag
 
       # Notify bugsnag of rack exceptions
       if env["rack.exception"]
-        Bugsnag.auto_notify(env["rack.exception"])
+        Bugsnag.auto_notify(env["rack.exception"], {
+          :severity_reason => SEVERITY_REASON
+        })
       end
 
       response

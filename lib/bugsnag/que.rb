@@ -3,7 +3,14 @@ if defined?(::Que)
     begin
       job = job.dup # Make sure the original job object is not mutated.
 
-      Bugsnag.auto_notify(error) do |notification|
+      Bugsnag.auto_notify(error, {
+        :severity_reason => {
+          :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
+          :attributes => {
+            :framework => "Que"
+          }
+        }
+      }) do |notification|
         job[:error_count] += 1
 
         # If the job was scheduled using ActiveJob then unwrap the job details for clarity:

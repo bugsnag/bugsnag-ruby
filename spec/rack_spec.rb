@@ -32,6 +32,21 @@ describe Bugsnag::Rack do
 
     end
 
+    it "applies the correct severity reason" do
+      rack_stack.call(rack_env) rescue nil
+
+      expect(Bugsnag).to have_sent_notification{ |payload|
+        event = get_event_from_payload(payload)
+        expect(event["unhandled"]).to be true
+        expect(event["severityReason"]).to eq({
+          "type" => "unhandledExceptionMiddleware",
+          "attributes" => {
+            "framework" => "Rack"
+          }
+        })
+      }
+    end
+
     it "does not deliver an exception if auto_notify is disabled" do
       Bugsnag.configure do |config|
         config.auto_notify = false

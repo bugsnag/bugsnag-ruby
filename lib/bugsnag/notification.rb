@@ -15,6 +15,13 @@ module Bugsnag
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
 
+    HANDLED_EXCEPTION = "handledException"
+    UNHANDLED_EXCEPTION = "unhandledException"
+    UNHANDLED_EXCEPTION_MIDDLEWARE = "unhandledExceptionMiddleware"
+    ERROR_CLASS = "errorClass"
+    USER_SPECIFIED_SEVERITY = "userSpecifiedSeverity"
+    USER_CALLBACK_SET_SEVERITY = "userCallbackSetSeverity"
+
     API_KEY_REGEX = /[0-9a-f]{32}/i
 
     # e.g. "org/jruby/RubyKernel.java:1264:in `catch'"
@@ -31,6 +38,8 @@ module Bugsnag
 
     attr_accessor :context
     attr_reader :user
+    attr_reader :severity
+    attr_accessor :severity_reason
     attr_accessor :configuration
     attr_accessor :meta_data
 
@@ -50,10 +59,36 @@ module Bugsnag
       @user = {}
       @should_ignore = false
       @severity = nil
+      @unhandled = false
+      @severity_reason = nil
       @grouping_hash = nil
       @delivery_method = nil
 
-      self.severity = @overrides[:severity]
+      if @overrides.key? :unhandled
+        @unhandled = @overrides[:unhandled]
+        @overrides.delete :unhandled
+      end
+
+      valid_severity = @overrides.key?(:severity) && SUPPORTED_SEVERITIES.include?(@overrides[:severity])
+      has_reason = @overrides.key? :severity_reason
+
+      if valid_severity && has_reason
+        @severity = @overrides[:severity]
+        @severity_reason = @overrides[:severity_reason]
+      elsif valid_severity
+        @severity = @overrides[:severity]
+        @severity_reason = {
+          :type => USER_SPECIFIED_SEVERITY
+        }
+      elsif has_reason
+        @severity_reason = @overrides[:severity_reason]
+      else
+        @severity_reason = {
+          :type => HANDLED_EXCEPTION
+        }
+      end
+      
+      @overrides.delete :severity_reason
       @overrides.delete :severity
 
       if @overrides.key? :grouping_hash
@@ -214,11 +249,18 @@ module Bugsnag
       # make meta_data available to public middleware
       @meta_data = generate_meta_data(@exceptions, @overrides)
 
+      initial_severity = self.severity
+
       # Run the middleware here (including Bugsnag::Middleware::Callbacks)
       # at the end of the middleware stack, execute the actual notification delivery
       @configuration.middleware.run(self) do
         # This supports self.ignore! for before_notify_callbacks.
         return if @should_ignore
+
+        # Check to see if the severity has been changed
+        if initial_severity != self.severity
+
+        end
 
         # Build the endpoint url
         endpoint = (@configuration.use_ssl ? "https://" : "http://") + @configuration.endpoint
@@ -243,6 +285,8 @@ module Bugsnag
         :payloadVersion => payload_version,
         :exceptions => exception_list,
         :severity => self.severity,
+        :unhandled => @unhandled,
+        :severityReason => @severity_reason,
         :groupingHash => self.grouping_hash,
       }
 

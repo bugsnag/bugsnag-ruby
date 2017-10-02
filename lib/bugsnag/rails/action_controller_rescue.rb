@@ -1,6 +1,14 @@
 # Rails 2.x only
 module Bugsnag::Rails
   module ActionControllerRescue
+
+    SEVERITY_REASON = {
+      :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
+      :attributes => {
+        :framework => "Rails"
+      }
+    }
+
     def self.included(base)
       base.extend(ClassMethods)
 
@@ -22,13 +30,17 @@ module Bugsnag::Rails
     end
 
     def rescue_action_in_public_with_bugsnag(exception)
-      Bugsnag.auto_notify(exception)
+      Bugsnag.auto_notify(exception, {
+        :severity_reason => SEVERITY_REASON
+      })
 
       rescue_action_in_public_without_bugsnag(exception)
     end
 
     def rescue_action_locally_with_bugsnag(exception)
-      Bugsnag.auto_notify(exception)
+      Bugsnag.auto_notify(exception, {
+        :severity_reason => SEVERITY_REASON
+      })
 
       rescue_action_locally_without_bugsnag(exception)
     end

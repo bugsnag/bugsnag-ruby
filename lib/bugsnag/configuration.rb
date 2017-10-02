@@ -45,20 +45,6 @@ module Bugsnag
       "rack.request.form_vars"
     ].freeze
 
-    DEFAULT_IGNORE_CLASSES = [
-      "AbstractController::ActionNotFound",
-      "ActionController::InvalidAuthenticityToken",
-      "ActionController::ParameterMissing",
-      "ActionController::UnknownAction",
-      "ActionController::UnknownFormat",
-      "ActionController::UnknownHttpMethod",
-      "ActiveRecord::RecordNotFound",
-      "CGI::Session::CookieStore::TamperedWithCookie",
-      "Mongoid::Errors::DocumentNotFound",
-      "SignalException",
-      "SystemExit",
-    ].freeze
-
     DEFAULT_IGNORE_USER_AGENTS = [].freeze
 
     DEFAULT_DELIVERY_METHOD = :thread_queue
@@ -72,7 +58,7 @@ module Bugsnag
       self.send_environment = false
       self.send_code = true
       self.params_filters = Set.new(DEFAULT_PARAMS_FILTERS)
-      self.ignore_classes = Set.new(DEFAULT_IGNORE_CLASSES)
+      self.ignore_classes = Set.new()
       self.ignore_user_agents = Set.new(DEFAULT_IGNORE_USER_AGENTS)
       self.endpoint = DEFAULT_ENDPOINT
       self.hostname = default_hostname
