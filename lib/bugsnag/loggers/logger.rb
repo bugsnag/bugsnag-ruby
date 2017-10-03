@@ -1,6 +1,5 @@
 require "logger"
 require "bugsnag"
-require "bugsnag/loggers/log_device"
 
 module Bugsnag::Loggers
 
@@ -17,8 +16,7 @@ module Bugsnag::Loggers
 
     def initialize(level=Logger::INFO)
       @open = true
-      @log_device = Bugsnag::Loggers::LogDevice.new
-      super @log_device, level
+      super nil, level
     end
 
     def add(severity, message = nil, progname = nil)
@@ -29,14 +27,15 @@ module Bugsnag::Loggers
         message = progname
       end
       if severity >= level
-        @log_device.write(message, progname, Bugsnag::Loggers::SEVERITIES[severity])
+        severity_name =  get_severity_name(severity)
+        log_breadcrumb(message, progname, severity_name)
       end
     end
     alias :log :add
 
     def <<(message)
       return unless @open
-      @log_device.write message
+      log_breadcrumb(message)
     end
 
     def close
@@ -49,5 +48,21 @@ module Bugsnag::Loggers
       true
     end
 
+    private
+    def log_breadcrumb(message, progname = nil, severity = "unknown")
+      Bugsnag.leave_breadcrumb(message, Bugsnag::Breadcrumbs::LOG_TYPE, {
+        :progname => progname,
+        :severity => severity
+      })
+    end
+
+    private
+    def get_severity_name(severity)
+      if (0..5).include? severity
+        Bugsnag::Loggers::SEVERITIES[severity]
+      else
+        severity
+      end
+    end
   end
 end
