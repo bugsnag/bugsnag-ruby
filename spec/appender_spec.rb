@@ -1,5 +1,8 @@
 # encoding: utf-8
 
+# Necessary to avoid monkey patching thread methods
+ENV["LOGGING_INHERIT_CONTEXT"] = "false"
+
 require 'spec_helper'
 require 'logger'
 require 'logging'
