@@ -3,6 +3,7 @@ source "https://rubygems.org"
 group :test, optional: true do
     gem 'rake', '~> 10.1.1'
     gem 'rspec'
+    gem 'logging'
     gem 'rdoc'
     gem 'pry'
     gem 'addressable', '~> 2.3.8'

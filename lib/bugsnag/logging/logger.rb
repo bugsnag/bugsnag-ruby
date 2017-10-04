@@ -1,7 +1,7 @@
 require "logger"
 require "bugsnag"
 
-module Bugsnag::Loggers
+module Bugsnag::Logging
 
   SEVERITIES = [
     "debug",
@@ -11,6 +11,27 @@ module Bugsnag::Loggers
     "fatal",
     "unknown"
   ]
+
+  def self.get_severity_name(severity)
+    if (0..5).include? severity
+      SEVERITIES[severity]
+    else
+      severity
+    end
+  end
+
+  def self.log_breadcrumb(name, data=nil, severity = "unknown")
+    metadata = {
+      :severity => severity
+    }
+    if data.is_a? Hash
+      metadata.merge!(data)
+    elsif !data.nil?
+      metadata[:data] = data
+    end
+
+    Bugsnag.leave_breadcrumb(name, Bugsnag::Breadcrumbs::LOG_TYPE, metadata)
+  end
 
   class Logger < Logger
 
@@ -27,15 +48,15 @@ module Bugsnag::Loggers
         message = progname
       end
       if severity >= level
-        severity_name =  get_severity_name(severity)
-        log_breadcrumb(message, progname, severity_name)
+        severity_name =  Bugsnag::Logging.get_severity_name(severity)
+        Bugsnag::Logging.log_breadcrumb(message, {:progname => progname}, severity_name)
       end
     end
     alias :log :add
 
     def <<(message)
       return unless @open
-      log_breadcrumb(message)
+      Bugsnag::Logging.log_breadcrumb(message)
     end
 
     def close
@@ -46,23 +67,6 @@ module Bugsnag::Loggers
     def reopen
       @open = true
       true
-    end
-
-    private
-    def log_breadcrumb(message, progname = nil, severity = "unknown")
-      Bugsnag.leave_breadcrumb(message, Bugsnag::Breadcrumbs::LOG_TYPE, {
-        :progname => progname,
-        :severity => severity
-      })
-    end
-
-    private
-    def get_severity_name(severity)
-      if (0..5).include? severity
-        Bugsnag::Loggers::SEVERITIES[severity]
-      else
-        severity
-      end
     end
   end
 end

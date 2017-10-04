@@ -2,12 +2,12 @@
 
 require 'spec_helper'
 require 'logger'
-require 'bugsnag/loggers/logger'
+require 'bugsnag/logging/logger'
 
-describe Bugsnag::Loggers::Logger do
+describe Bugsnag::Logging::Logger do
   
   before do
-    @logger = Bugsnag::Loggers::Logger.new
+    @logger = Bugsnag::Logging::Logger.new
   end
 
   it "writes by default" do
@@ -15,7 +15,6 @@ describe Bugsnag::Loggers::Logger do
       "message",
       "log",
       {
-        :progname => nil,
         :severity => "unknown"
       }
     )
@@ -33,7 +32,6 @@ describe Bugsnag::Loggers::Logger do
       "message",
       "log",
       {
-        :progname => nil,
         :severity => "unknown"
       }
     )
@@ -55,7 +53,7 @@ describe Bugsnag::Loggers::Logger do
   end
 
   it "is a logger and a bugsnag logger" do
-    expect(@logger.class.ancestors).to include(Bugsnag::Loggers::Logger, Logger)
+    expect(@logger.class.ancestors).to include(Bugsnag::Logging::Logger, Logger)
   end
 end
 
