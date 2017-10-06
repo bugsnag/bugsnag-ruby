@@ -45,10 +45,10 @@ In order to run the delayed job example:
 bundle exec bin/rails console
 ```
 
-2. Queue up the examples you wish to run.  At the moment there are two examples `crash` and `notify`, which are queued by passing the symbol to the `helpers.test_dj` like:
+2. Queue up the examples you wish to run.  At the moment there are two examples `crash` and `notify`, which are queued by passing the symbol to the `helper.test_dj` like:
 ```ruby
-helpers.test_dj :crash
-helpers.test_dj :notify
+helper.test_dj :crash
+helper.test_dj :notify
 ```
 
 3. Exit the rails console using the `exit` command.
