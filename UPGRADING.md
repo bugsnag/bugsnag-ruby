@@ -26,6 +26,7 @@ guide](https://docs.bugsnag.com/platforms/ruby/capistrano) for more information.
 * `Configuration.delay_with_resque` has been removed
 * `Configuration.vendor_paths` has been removed
 * `Configuration.params_filters` has been renamed to `Configuration.meta_data_filters` to be clearer
+* `Configuration.proxy_host` will now default to `ENV['http_proxy']` if set. It can still be manually set.
 
 #### Notifying
 
