@@ -20,7 +20,11 @@ unless defined? Delayed::Plugins::Bugsnag
               :job => {
                 :class => job.class.name,
                 :id => job.id,
-              }
+              },
+              :severity_reason => {
+                :type => ::Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+                :attributes => FRAMEWORK_ATTRIBUTES,
+              },
             }
             if payload = job.payload_object
               p = {

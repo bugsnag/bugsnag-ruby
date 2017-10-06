@@ -6,6 +6,7 @@ group :test, optional: true do
     gem 'rdoc'
     gem 'pry'
     gem 'addressable', '~> 2.3.8'
+    gem 'delayed_job'
     gem 'webmock', RUBY_VERSION <= '1.9.3' ? '2.3.2': '>2.3.2'
 end
 
