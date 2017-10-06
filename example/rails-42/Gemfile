@@ -48,3 +48,6 @@ gem "sidekiq"
 
 # Added at 2017-09-29 12:13:32 +0100 by amoinet:
 gem "redcarpet", "~> 3.4"
+
+gem 'delayed_job_active_record'
+gem 'daemons'

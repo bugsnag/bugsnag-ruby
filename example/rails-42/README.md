@@ -1,4 +1,4 @@
-# Bugsnag Rails v4.2 demo
+# Bugsnag Rails v4.2 demo (with delayed_job)
 
 This Rails application demonstrates how to use Bugsnag with Rails v4.2.
 Further details about integrating Bugsnag with Rack applications can be found [here.](https://docs.bugsnag.com/platforms/ruby/rails/)
@@ -31,3 +31,28 @@ bundle exec rails server
 ```
 
 Once the server is running head to the default path for more information on Bugsnag logging examples.
+
+# Running delayed job
+
+This example comes packaged with a delayed job setup to demonstrate how errors are reported through delayed job.  Once the rails setup is complete with an initializer at ```config/initializers/bugsnag.rb``` you don't need to do anything else with delayed job, just run the examples!
+
+The examples can be found at ```app/helpers/test_delayed_job_helper```
+
+In order to run the delayed job example:
+
+1. Open the rails console using the command:
+```shell
+bundle exec bin/rails console
+```
+
+2. Queue up the examples you wish to run.  At the moment there are two examples `crash` and `notify`, which are queued by passing the symbol to the `helpers.test_dj` like:
+```ruby
+helpers.test_dj :crash
+helpers.test_dj :notify
+```
+
+3. Exit the rails console using the `exit` command.
+4. Run the queue using rake:
+```shell
+bundle exec rake jobs:work
+```
