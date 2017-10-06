@@ -1,6 +1,17 @@
 Changelog
 =========
 
+## 5.4.1 (06 Oct 2017)
+
+### Fixes
+
+* [DelayedJob] Fix `NameError` occurring on erroring job notification
+  | [Eito Katagiri](https://github.com/eitoball)
+  | [#377](https://github.com/bugsnag/bugsnag-ruby/pull/377)
+
+* Fixed failing Rake/Java tests
+  | [#378](https://github.com/bugsnag/bugsnag-ruby/pull/378)
+
 ## 5.4.0 (02 Oct 2017)
 
 ### Enhancements
