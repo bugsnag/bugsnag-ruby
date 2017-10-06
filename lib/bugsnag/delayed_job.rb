@@ -19,7 +19,7 @@ unless defined? Delayed::Plugins::Bugsnag
                 :id => job.id,
               },
               :severity_reason => {
-                :type => Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
+                :type => ::Bugsnag::Notification::UNHANDLED_EXCEPTION_MIDDLEWARE,
                 :attributes => {
                   :framework => "DelayedJob"
                 }
