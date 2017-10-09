@@ -14,6 +14,23 @@ Changelog
 
 ## 5.4.0 (02 Oct 2017)
 
+This release removes the default setting of ignoring classes of errors which are commonly associated with typos or server signals (`SystemExit`), instead recording them as `info`-level severity by default. This includes the following classes:
+
+```
+  AbstractController::ActionNotFound,
+  ActionController::InvalidAuthenticityToken,
+  ActionController::ParameterMissing,
+  ActionController::RoutingError,
+  ActionController::UnknownAction,
+  ActionController::UnknownFormat,
+  ActionController::UnknownHttpMethod,
+  ActiveRecord::RecordNotFound,
+  CGI::Session::CookieStore::TamperedWithCookie,
+  Mongoid::Errors::DocumentNotFound,
+  SignalException,
+  SystemExit
+```
+
 ### Enhancements
 
 * Add a one-time warning if the API key is not set
