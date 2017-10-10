@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   root :to => 'application#index'
+  get "log" => 'application#crash_after_log'
   
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

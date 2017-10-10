@@ -6,4 +6,10 @@ class ApplicationController < ActionController::Base
   def index
     raise "YO"
   end
+
+  def crash_after_log
+    @test_model = TestModel.new :foo => "Foo"
+    @test_model.save
+    raise "Crash"
+  end
 end
