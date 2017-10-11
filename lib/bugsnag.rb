@@ -30,6 +30,10 @@ module Bugsnag
     # Configure the Bugsnag notifier application-wide settings.
     def configure
       yield(configuration) if block_given?
+
+      if !configuration.valid_api_key?
+        configuration.warn("No valid API key has been set, notifications will not be sent")
+      end
     end
 
     # Explicitly notify of an exception
