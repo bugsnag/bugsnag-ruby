@@ -17,6 +17,7 @@ require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
 
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
+require "bugsnag/middleware/clearance_user"
 require "bugsnag/middleware/callbacks"
 require "bugsnag/middleware/rails3_request"
 require "bugsnag/middleware/sidekiq"
