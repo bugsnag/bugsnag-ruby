@@ -31,8 +31,10 @@ module Bugsnag
     def configure
       yield(configuration) if block_given?
 
-      if !configuration.valid_api_key?
+      @key_warning = false unless defined?(@key_warning)
+      if !configuration.valid_api_key? && !@key_warning
         configuration.warn("No valid API key has been set, notifications will not be sent")
+        @key_warning = true
       end
     end
 
@@ -119,7 +121,7 @@ module Bugsnag
   end
 end
 
-[:resque, :sidekiq, :mailman, :delayed_job].each do |integration|
+[:resque, :sidekiq, :mailman, :delayed_job, :shoryuken].each do |integration|
   begin
     require "bugsnag/integrations/#{integration}"
   rescue LoadError
