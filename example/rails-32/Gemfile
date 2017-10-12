@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.13'
+gem 'rails', '3.2.22.5'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -37,3 +37,6 @@ gem 'jquery-rails'
 
 # To use debugger
 # gem 'debugger'
+
+# Added at 2017-09-28 14:54:05 +0100 by amoinet:
+gem "redcarpet", "~> 3.4"

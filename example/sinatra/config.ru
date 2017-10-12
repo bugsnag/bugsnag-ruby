@@ -7,7 +7,7 @@ set :raise_errors, true
 set :show_exceptions, false
 
 Bugsnag.configure do |config|
-  config.api_key = 'f35a2472bd230ac0ab0f52715bbdc65d'
+  config.api_key = 'YOUR_API_KEY'
 end
 
 get '/' do
@@ -15,7 +15,7 @@ get '/' do
     fenced_code_blocks: true
   }
   renderer = Redcarpet::Markdown.new(Redcarpet::Render::HTML, opts)
-  renderer.render(File.read(File.expand_path('README.md')))
+  renderer.render(File.read(File.expand_path('templates/index.md')))
 end
 
 get '/crash' do
@@ -46,31 +46,31 @@ get '/notify' do
     ' for a new notification.'
 end
 
-get '/notify_meta' do
-  meta_data = {
-    :user => {
+get '/notify_data' do
+  error = RuntimeError.new("Bugsnag Sinatra demo says: False alarm, your application didn't crash")
+  Bugsnag.notify error do |report|
+    report.add_tab(:user, {
       :username => "bob-hoskins",
       :email => 'bugsnag@bugsnag.com',
       :registered_user => true
-    },
-
-    :diagnostics => {
+    })
+    report.add_tab(:diagnostics, {
       :message => 'Sinatra demo says: Everything is great',
       :code => 200
-    }
-  }
-  error = RuntimeError.new("Bugsnag Sinatra demo says: False alarm, your application didn't crash")
-  Bugsnag.notify(error, meta_data)
+    })
+  end
 
   "Bugsnag Sinatra demo says: It didn't crash! " +
     'But still go check <a href="https://bugsnag.com">https://bugsnag.com</a>' +
     ' for a new notification. Check out the User tab for the meta data'
 end
 
-get '/severity' do
+get '/notify_severity' do
   msg = "Bugsnag Sinatra demo says: Look at the circle on the right side. It's different"
   error = RuntimeError.new(msg)
-  Bugsnag.notify(error, severity: 'info')
+  Bugsnag.notify error do |report|
+    report.severity = 'info'
+  end
   msg
 end
 
