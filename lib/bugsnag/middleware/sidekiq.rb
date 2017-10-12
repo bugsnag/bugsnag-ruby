@@ -8,7 +8,7 @@ module Bugsnag::Middleware
       sidekiq = report.request_data[:sidekiq]
       if sidekiq
         report.add_tab(:sidekiq, sidekiq)
-        report.context ||= "#{sidekiq[:msg]['wrapper'] || sidekiq[:msg]['class']}@#{sidekiq[:msg]['queue']}"
+        report.context ||= "#{sidekiq[:msg]['wrapped'] || sidekiq[:msg]['class']}@#{sidekiq[:msg]['queue']}"
       end
       @bugsnag.call(report)
     end

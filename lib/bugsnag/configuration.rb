@@ -31,7 +31,6 @@ module Bugsnag
     attr_accessor :proxy_password
     attr_accessor :timeout
     attr_accessor :hostname
-    attr_accessor :delivery_method
     attr_accessor :ignore_classes
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
@@ -57,7 +56,6 @@ module Bugsnag
       self.ignore_classes = Set.new([])
       self.endpoint = DEFAULT_ENDPOINT
       self.hostname = default_hostname
-      self.delivery_method = :thread_queue
       self.timeout = 15
       self.notify_release_stages = nil
 
@@ -83,6 +81,18 @@ module Bugsnag
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
+    end
+
+    def delivery_method
+      @delivery_method || @default_delivery_method || :thread_queue
+    end
+
+    def delivery_method=(delivery_method)
+      @delivery_method = delivery_method
+    end
+
+    def default_delivery_method=(delivery_method)
+      @default_delivery_method = delivery_method
     end
 
     def should_notify_release_stage?

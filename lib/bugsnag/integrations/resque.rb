@@ -37,7 +37,7 @@ module Bugsnag
           :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
           :attributes => FRAMEWORK_ATTRIBUTES
         }
-        report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload, :delivery_method => :synchronous})
+        report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload})
       end
     end
   end
@@ -51,5 +51,5 @@ Bugsnag::Resque.add_failure_backend
 
 Resque.before_first_fork do
   Bugsnag.configuration.app_type = "resque"
-  Bugsnag.configuration.delivery_method = :synchronous
+  Bugsnag.configuration.default_delivery_method = :synchronous
 end

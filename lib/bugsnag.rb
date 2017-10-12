@@ -17,6 +17,7 @@ require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
 
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
+require "bugsnag/middleware/clearance_user"
 require "bugsnag/middleware/callbacks"
 require "bugsnag/middleware/rails3_request"
 require "bugsnag/middleware/sidekiq"
@@ -30,6 +31,12 @@ module Bugsnag
     # Configure the Bugsnag notifier application-wide settings.
     def configure
       yield(configuration) if block_given?
+
+      @key_warning = false unless defined?(@key_warning)
+      if !configuration.valid_api_key? && !@key_warning
+        configuration.warn("No valid API key has been set, notifications will not be sent")
+        @key_warning = true
+      end
     end
 
     # Explicitly notify of an exception
@@ -115,7 +122,7 @@ module Bugsnag
   end
 end
 
-[:resque, :sidekiq, :mailman, :delayed_job].each do |integration|
+[:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que].each do |integration|
   begin
     require "bugsnag/integrations/#{integration}"
   rescue LoadError
