@@ -4,7 +4,7 @@ require 'spec_helper'
 describe Bugsnag::Configuration do
   describe "delivery_method" do
     it "should have the default delivery method" do
-      expect(subject.delivery_method).to eq(Bugsnag::Configuration::DEFAULT_DELIVERY_METHOD)
+      expect(subject.delivery_method).to eq(:thread_queue)
     end
 
     it "should have the defined delivery_method" do

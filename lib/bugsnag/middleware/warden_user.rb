@@ -7,9 +7,9 @@ module Bugsnag::Middleware
       @bugsnag = bugsnag
     end
 
-    def call(notification)
-      if notification.request_data[:rack_env] && notification.request_data[:rack_env]["warden"]
-        env = notification.request_data[:rack_env]
+    def call(report)
+      if report.request_data[:rack_env] && report.request_data[:rack_env]["warden"]
+        env = report.request_data[:rack_env]
         session = env["rack.session"] || {}
 
         # Find all warden user scopes
@@ -29,11 +29,11 @@ module Bugsnag::Middleware
           end
 
           # We merge the first warden scope down, so that it is the main "user" for the request
-          notification.user = user unless user.empty?
+          report.user = user unless user.empty?
         end
       end
 
-      @bugsnag.call(notification)
+      @bugsnag.call(report)
     end
   end
 end

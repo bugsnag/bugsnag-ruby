@@ -18,36 +18,30 @@ module Bugsnag::Middleware
       @bugsnag = bugsnag
     end
 
-    def call(notification)
-      notification.exceptions.each do |ex|
-
-        outer_break = false
+    def call(report)
+      report.raw_exceptions.each do |ex|
 
         ancestor_chain = ex.class.ancestors.select {
-          |ancestor| ancestor.is_a?(Class) 
+          |ancestor| ancestor.is_a?(Class)
         }.map {
           |ancestor| ancestor.to_s
         }
 
         INFO_CLASSES.each do |info_class|
           if ancestor_chain.include?(info_class)
-            notification.severity_reason = {
-              :type => Bugsnag::Notification::ERROR_CLASS,
+            report.severity_reason = {
+              :type => Bugsnag::Report::ERROR_CLASS,
               :attributes => {
                 :errorClass => info_class
               }
             }
-            notification.severity = 'info'
-            outer_break = true
+            report.severity = 'info'
             break
           end
         end
-
-        break if outer_break
       end
 
-      @bugsnag.call(notification)
+      @bugsnag.call(report)
     end
   end
 end
-    

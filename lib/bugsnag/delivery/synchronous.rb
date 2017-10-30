@@ -10,13 +10,13 @@ module Bugsnag
         def deliver(url, body, configuration)
           begin
             response = request(url, body, configuration)
-            Bugsnag.debug("Notification to #{url} finished, response was #{response.code}, payload was #{body}")
+            configuration.debug("Notification to #{url} finished, response was #{response.code}, payload was #{body}")
           rescue StandardError => e
             # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
             raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
 
-            Bugsnag.warn("Notification to #{url} failed, #{e.inspect}")
-            Bugsnag.warn(e.backtrace)
+            configuration.warn("Notification to #{url} failed, #{e.inspect}")
+            configuration.warn(e.backtrace)
           end
         end
 
@@ -30,8 +30,6 @@ module Bugsnag
 
           if uri.scheme == "https"
             http.use_ssl = true
-            # the default in 1.9+, but required for 1.8
-            http.verify_mode = OpenSSL::SSL::VERIFY_PEER
             http.ca_file = configuration.ca_file if configuration.ca_file
           end
 

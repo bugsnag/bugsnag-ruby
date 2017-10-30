@@ -1,3 +1,13 @@
+if ARGV.include? "--coverage"
+  require 'simplecov'
+  require 'coveralls'
+
+  SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+  SimpleCov.start do
+    add_filter 'spec'
+  end
+end
+
 require 'bugsnag'
 
 require 'webmock/rspec'
@@ -18,6 +28,14 @@ end
 
 def notify_test_exception(*args)
   Bugsnag.notify(RuntimeError.new("test message"), *args)
+end
+
+def ruby_version_greater_equal?(version)
+  current_version = RUBY_VERSION.split "."
+  target_version = version.split "."
+  (Integer(current_version[0]) >= Integer(target_version[0])) &&
+    (Integer(current_version[1]) >= Integer(target_version[1])) &&
+    (Integer(current_version[2]) >= Integer(target_version[2]))
 end
 
 RSpec.configure do |config|

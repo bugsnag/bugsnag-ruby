@@ -3,8 +3,7 @@ namespace :migrate do
   task :up do
     require_relative 'app/migrations'
     CreateUsersTable.migrate(:up)
-
-    require_relative 'app'
+    require_relative 'app/jobs'
     Que.migrate!
   end
 

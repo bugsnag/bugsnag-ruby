@@ -3,8 +3,9 @@
 require 'rubygems'
 require 'bundler'
 require 'bundler/gem_tasks'
+
 begin
-  Bundler.setup(:default, :development)
+  Bundler.setup(:default)
 rescue Bundler::BundlerError => e
   $stderr.puts e.message
   $stderr.puts "Run `bundle install` to install missing gems"
@@ -24,6 +25,13 @@ end
 # RSpec tasks
 require 'rspec/core'
 require "rspec/core/rake_task"
-RSpec::Core::RakeTask.new(:spec)
+RSpec::Core::RakeTask.new(:spec) do |task|
+  begin
+    require 'sidekiq/testing'
+  rescue LoadError
+    puts "Skipping sidekiq tests, missing dependencies"
+    task.rspec_opts = "--exclude-pattern **/integrations/sidekiq_spec.rb"
+  end
+end
 
 task :default  => :spec

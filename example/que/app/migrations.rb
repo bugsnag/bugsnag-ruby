@@ -1,7 +1,7 @@
 require 'active_record'
 require_relative 'model'
 
-class CreateUsersTable < ActiveRecord::Migration
+class CreateUsersTable < ActiveRecord::Migration[5.1]
   def up
     create_table :users do |t|
       t.string :name
