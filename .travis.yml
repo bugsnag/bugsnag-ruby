@@ -9,6 +9,12 @@ rvm:
 - 1.9.3
 - jruby-19mode
 
+install:
+- bundle _1.12.0_ install
+
+script:
+- bundle _1.12.0_ exec rake
+
 before_install:
 - gem install bundler -v 1.12
 - gem update --system
