@@ -24,7 +24,13 @@ module Bugsnag
 
         def request(url, body, configuration)
           uri = URI.parse(url)
-          http = Net::HTTP.new(uri.host, uri.port, configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password)
+
+          if configuration.proxy_host
+            http = Net::HTTP.new(uri.host, uri.port, configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password)
+          else
+            http = Net::HTTP.new(uri.host, uri.port)
+          end
+
           http.read_timeout = configuration.timeout
           http.open_timeout = configuration.timeout
 
