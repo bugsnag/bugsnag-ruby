@@ -792,24 +792,25 @@ describe Bugsnag::Report do
     }
   end
 
-  it "should handle utf8 encoding errors in exceptions_list" do
-    skip "Irrelevant on newer ruby" if RUBY_VERSION >= '2.3.0'
-    invalid_data = "\"foo\xEBbar\""
-    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
+  if RUBY_VERSION < '2.3.0'
+    it "should handle utf8 encoding errors in exceptions_list" do
+      invalid_data = "\"foo\xEBbar\""
+      invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
 
-    begin
-      JSON.parse(invalid_data)
-    rescue
-      Bugsnag.notify $!
-    end
-
-    expect(Bugsnag).to have_sent_notification { |payload|
-      if defined?(Encoding::UTF_8)
-        expect(payload.to_json).to match(/foo�bar/)
-      else
-        expect(payload.to_json).to match(/foobar/)
+      begin
+        JSON.parse(invalid_data)
+      rescue
+        Bugsnag.notify $!
       end
-    }
+
+      expect(Bugsnag).to have_sent_notification { |payload|
+        if defined?(Encoding::UTF_8)
+          expect(payload.to_json).to match(/foo�bar/)
+        else
+          expect(payload.to_json).to match(/foobar/)
+        end
+      }
+    end
   end
 
   it "should handle utf8 encoding errors in notification context" do
