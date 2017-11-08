@@ -14,18 +14,22 @@ end
 require 'rspec/core'
 require "rspec/core/rake_task"
 RSpec::Core::RakeTask.new(:spec) do |task|
-  task.rspec_opts = ""
+  integration_exclusions = []
   begin
     require 'sidekiq/testing'
   rescue LoadError
     puts "Skipping sidekiq tests, missing dependencies"
-    task.rspec_opts << " --exclude-pattern **/integrations/sidekiq_spec.rb"
+    integration_exclusions << 'sidekiq'
   end
   begin
     require 'delayed_job'
   rescue LoadError
     puts "Skipping delayed_job tests, missing dependencies"
-    task.rspec_opts << " --exclude-pattern **/integrations/delayed_job_spec.rb"
+    integration_exclusions << 'delayed_job'
+  end
+  if integration_exclusions.length > 0
+    pattern = integration_exclusions.join(',')
+    task.rspec_opts = " --exclude-pattern **/integrations/{#{pattern}}_spec.rb"
   end
 end
 
