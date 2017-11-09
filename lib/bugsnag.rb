@@ -43,6 +43,10 @@ module Bugsnag
 
     # Explicitly notify of an exception
     def notify(exception, auto_notify=false, &block)
+      unless auto_notify.is_a? TrueClass or auto_notify.is_a? FalseClass
+        configuration.warn("Adding metadata/severity using a hash is no longer supported, please use block syntax instead")
+        auto_notify = false
+      end
 
       if !configuration.auto_notify && auto_notify
         configuration.debug("Not notifying because auto_notify is disabled")
