@@ -28,8 +28,8 @@ describe Bugsnag::MiddlewareStack do
   it "runs before_bugsnag_notify callbacks, adding custom data" do
     callback_run_count = 0
     Bugsnag.before_notify_callbacks << lambda {|notif|
-      notif.add_custom_data(:info, "here")
-      notif.add_custom_data(:data, "also here")
+      notif.add_tab(:custom, {info: "here"})
+      notif.add_tab(:custom, {data: "also here"})
 
       callback_run_count += 1
     }
@@ -67,51 +67,40 @@ describe Bugsnag::MiddlewareStack do
 
   end
 
-  it "allows overrides to override values set by internal middleware" do
+  it "allows block to override values set by internal middleware" do
     Bugsnag.configuration.internal_middleware.use(InternalInfoSetter)
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:info => "overridden"})
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({custom: {info: 'overridden'}})
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["custom"]).not_to be_nil
-      expect(event["metaData"]["custom"]["info"]).not_to eq(InternalInfoSetter::MESSAGE)
       expect(event["metaData"]["custom"]["info"]).to eq("overridden")
     }
   end
 
-  it "doesn't allow overrides to override public middleware" do
+  it "allows block to override public middleware" do
     Bugsnag.configuration.middleware.use(PublicInfoSetter)
 
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), {:info => "overridden"})
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data.merge!({custom: {info: 'overridden'}})
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["custom"]).not_to be_nil
-      expect(event["metaData"]["custom"]["info"]).not_to eq("overridden")
-      expect(event["metaData"]["custom"]["info"]).to eq(PublicInfoSetter::MESSAGE)
+      expect(event["metaData"]["custom"]["info"]).to eq("overridden")
     }
   end
 
-  it "does not have have before or after callbacks by default" do
+  it "does not have have before callbacks by default" do
     expect(Bugsnag.before_notify_callbacks.size).to eq(0)
-    expect(Bugsnag.after_notify_callbacks.size).to eq(0)
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     expect(Bugsnag).to have_sent_notification{ |payload|
       event = get_event_from_payload(payload)
       expect(event["metaData"].size).to eq(0)
     }
-  end
-
-  it "runs after_bugsnag_notify callbacks" do
-    callback_run_count = 0
-    Bugsnag.after_notify_callbacks << lambda {|notif|
-      callback_run_count += 1
-    }
-
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
-
-    expect(callback_run_count).to eq(1)
-    expect(Bugsnag::Notification).to have_sent_notification { }
   end
 
   it "does not execute disabled bugsnag middleware" do
@@ -133,7 +122,7 @@ describe Bugsnag::MiddlewareStack do
       notif.ignore!
     end
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    expect(Bugsnag::Notification).not_to have_sent_notification { }
+    expect(Bugsnag).not_to have_sent_notification
   end
 
   it "allows inspection of meta_data before ignoring exception" do
@@ -148,34 +137,118 @@ describe Bugsnag::MiddlewareStack do
     end
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    expect(Bugsnag::Notification).not_to have_sent_notification
+    expect(Bugsnag).not_to have_sent_notification
 
   end
 
   it "allows meta_data to be modified in a middleware" do
+    MetaDataAdder = Class.new do
+      def initialize(bugsnag)
+        @bugsnag = bugsnag
+      end
+
+      def call(report)
+        report.meta_data = {test: {value: "abcdef123456abcdef123456abcdef123456"}}
+        @bugsnag.call(report)
+      end
+    end
+
     MetaDataMunger = Class.new do
       def initialize(bugsnag)
         @bugsnag = bugsnag
       end
 
-      def call(notification)
-        token = notification.meta_data[:sidekiq][:args].first
-        notification.meta_data[:sidekiq][:args] = ["#{token[0...6]}*****#{token[-4..-1]}"]
-        @bugsnag.call(notification)
+      def call(report)
+        token = report.meta_data[:test][:value]
+        report.meta_data[:test][:value] = "#{token[0...6]}*****#{token[-4..-1]}"
+        @bugsnag.call(report)
       end
     end
 
     Bugsnag.configure do |c|
+      c.middleware.use MetaDataAdder
       c.middleware.use MetaDataMunger
     end
 
-    notification = Bugsnag.notify(BugsnagTestException.new("It crashed"), {
-      :sidekiq => {
-        :args => ["abcdef123456abcdef123456abcdef123456"]
-      }
-    })
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(notification.meta_data[:sidekiq][:args]).to eq(["abcdef*****3456"])
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]['test']['value']).to eq("abcdef*****3456")
+    }
   end
 
+  if ruby_version_greater_equal?("2.3.0")
+    context "with a ruby version >= 2.3.0" do
+      it "attaches did you mean metadata when necessary" do
+        begin
+          "Test".prepnd "T"
+        rescue Exception => e
+          Bugsnag.notify(e)
+        end
+
+        expect(Bugsnag).to have_sent_notification{ |payload|
+          event = get_event_from_payload(payload)
+          expect(event["metaData"]["error"]).to_not be_nil
+          expect(event["metaData"]["error"]).to eq({"suggestion" => "prepend"})
+        }
+      end
+    end
+  end
+
+  context "with a ruby version < 2.3.0" do
+    if !ruby_version_greater_equal?("2.3.0")
+      it "doesn't attach did you mean metadata" do
+        begin
+          "Test".prepnd "T"
+        rescue Exception => e
+          Bugsnag.notify(e)
+        end
+
+        expect(Bugsnag).to have_sent_notification{ |payload|
+          event = get_event_from_payload(payload)
+          expect(event["metaData"]["error"]).to be_nil
+        }
+      end
+    end
+  end
+
+  it "doesn't allow handledState properties to be changed in middleware" do
+    HandledStateChanger = Class.new do
+      def initialize(bugsnag)
+        @bugsnag = bugsnag
+      end
+
+      def call(report)
+        report.severity_reason = {
+          :test => "test"
+        }
+        @bugsnag.call(report)
+      end
+    end
+
+    Bugsnag.configure do |c|
+      c.middleware.use HandledStateChanger
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
+      report.severity_reason = {
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "middleware_test"
+        }
+      }
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be true
+      expect(event["severityReason"]).to eq({
+        "type" => "middleware_handler",
+        "attributes" => {
+          "name" => "middleware_test"
+        }
+      })
+    }
+  end
 end
