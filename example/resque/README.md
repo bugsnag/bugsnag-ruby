@@ -9,6 +9,8 @@ Install dependencies
 bundle install
 ```
 
+Resque requires a datastore to run, this example uses [redis](https://redis.io), installation instructions for which can be found [here](https://redis.io/topics/quickstart) and an official docker image can be found [here](https://hub.docker.com/_/redis/).
+
 ## Configuring Bugsnag and Resque
 
 Configure your `API_KEY` and any other configuration as detailed in the [available configuration options](https://docs.bugsnag.com/platforms/ruby/other/configuration-options/) by calling `Bugsnag.configure` and passing the options to the `configuration` object returned to a provided block:
