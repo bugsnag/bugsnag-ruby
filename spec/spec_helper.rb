@@ -12,6 +12,7 @@ require 'bugsnag'
 
 require 'webmock/rspec'
 require 'rspec/expectations'
+require 'rspec/mocks'
 
 class BugsnagTestException < RuntimeError; end
 
