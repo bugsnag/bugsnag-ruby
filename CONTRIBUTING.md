@@ -48,7 +48,8 @@ If you're a member of the core team, follow these instructions for releasing bug
 * Commit/push your changes
 
     ```
-    git commit -am v5.X.X
+    git add VERSION CHANGELOG.md README.md
+    git commit -m "Release v6.x.x"
     git push origin master
     ```
 

@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## 6.0.1 (09 Nov 2017)
+
+Adds a warning for the change in usage for the `notify()` method from < 6.0 to
+ease upgrading.
+
 ## 6.0.0 (09 Nov 2017)
 
 This notifier has been extensively re-written to make it easier to add new integrations and maintain in the future.  This has led to several changes that are not backwards compatible.  Please refer to the [upgrading guide](https://github.com/bugsnag/bugsnag-ruby/blob/master/UPGRADING.md) for more information.
