@@ -10,7 +10,7 @@ module Bugsnag
         def deliver(url, body, configuration)
           begin
             response = request(url, body, configuration)
-            configuration.debug("Notification to #{url} finished, response was #{response.code}, payload was #{body}")
+            configuration.debug("Request to #{url} completed, status: #{response.code}")
           rescue StandardError => e
             # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
             raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
