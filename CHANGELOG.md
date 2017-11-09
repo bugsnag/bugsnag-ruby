@@ -1,6 +1,29 @@
 Changelog
 =========
 
+## 6.0.0 (09 Nov 2017)
+
+This notifier has been extensively re-written to make it easier to add new integrations and maintain in the future.  This has led to several changes that are not backwards compatible.  Please refer to the [upgrading guide](https://github.com/bugsnag/bugsnag-ruby/blob/master/UPGRADING.md) for more information.
+
+### Enhancements
+
+* General notifier re-write
+  | [#320](https://github.com/bugsnag/bugsnag-ruby/pull/320)
+  | [#378](https://github.com/bugsnag/bugsnag-ruby/pull/378)
+  | [#368](https://github.com/bugsnag/bugsnag-ruby/pull/368)
+  | [#381](https://github.com/bugsnag/bugsnag-ruby/pull/381)
+  | [#385](https://github.com/bugsnag/bugsnag-ruby/pull/385)
+  | [#386](https://github.com/bugsnag/bugsnag-ruby/pull/386)
+
+* Added Upgrade guide
+  | [#370](https://github.com/bugsnag/bugsnag-ruby/pull/370)
+
+* Did-you-mean suggestions middleware
+  | [#372](https://github.com/bugsnag/bugsnag-ruby/pull/372)
+
+* Updated examples
+  | [#374](https://github.com/bugsnag/bugsnag-ruby/pull/374)
+
 ## 5.5.0 (09 Nov 2017)
 
 ### Enhancements
