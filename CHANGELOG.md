@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 5.5.0 (09 Nov 2017)
+
+### Enhancements
+
+* Allow environment variable proxy config for `Net::HTTP`
+  | [dexhorthy](https://github.com/dexhorthy)
+  | [#380](https://github.com/bugsnag/bugsnag-ruby/pull/380)
+
 ## 5.4.1 (06 Oct 2017)
 
 ### Fixes
