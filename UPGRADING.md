@@ -9,7 +9,7 @@ changes required to use the new integrations_
 
 Support for notifying Bugsnag of deployments has been separated into a separate
 gem named `bugsnag-capistrano`. See the [integration
-guide](https://docs.bugsnag.com/platforms/ruby/capistrano) for more information.
+guide](https://docs.bugsnag.com/api/deploy-tracking/capistrano/) for more information.
 
 
 #### Configuration
