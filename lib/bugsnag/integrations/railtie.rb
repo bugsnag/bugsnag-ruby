@@ -43,17 +43,14 @@ module Bugsnag
         config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
       end
 
-      if defined?(::ActionController::Base)
+      ActiveSupport.on_load(:action_controller) do
         require "bugsnag/integrations/rails/controller_methods"
-        ::ActionController::Base.send(:include, Bugsnag::Rails::ControllerMethods)
+        include Bugsnag::Rails::ControllerMethods
       end
-      if defined?(ActionController::API)
-        require "bugsnag/integrations/rails/controller_methods"
-        ActionController::API.send(:include, Bugsnag::Rails::ControllerMethods)
-      end
-      if defined?(ActiveRecord::Base)
+
+      ActiveSupport.on_load(:active_record) do
         require "bugsnag/integrations/rails/active_record_rescue"
-        ActiveRecord::Base.send(:include, Bugsnag::Rails::ActiveRecordRescue)
+        include Bugsnag::Rails::ActiveRecordRescue
       end
 
       Bugsnag.configuration.app_type = "rails"
