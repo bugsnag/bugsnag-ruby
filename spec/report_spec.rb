@@ -524,6 +524,34 @@ describe Bugsnag::Report do
     }
   end
 
+  it 'marks vendored stack frames as out-of-project' do
+    project_root = File.expand_path File.dirname(__FILE__)
+    Bugsnag.configuration.project_root = project_root
+
+    ex = Exception.new('Division by zero')
+    allow(ex).to receive (:backtrace) {[
+      File.join(project_root, "vendor/strutils/lib/string.rb:508:in `splice'"),
+      File.join(project_root, "vendors/strutils/lib/string.rb:508:in `splice'"),
+      File.join(project_root, "lib/helpers/string.rb:32:in `splice'"),
+      File.join(project_root, "lib/vendor/lib/article.rb:158:in `initialize'"),
+      File.join(project_root, "lib/prog.rb:158:in `read_articles'"),
+      "app.rb:10:in `main'",
+      "(pry):3:in `__pry__'"
+    ]}
+    Bugsnag.notify(ex)
+    expect(Bugsnag).to have_sent_notification{ |payload|
+      exception = get_exception_from_payload(payload)
+
+      expect(exception["stacktrace"][0]["inProject"]).to be_nil
+      expect(exception["stacktrace"][1]["inProject"]).to be true
+      expect(exception["stacktrace"][2]["inProject"]).to be true
+      expect(exception["stacktrace"][3]["inProject"]).to be true
+      expect(exception["stacktrace"][4]["inProject"]).to be true
+      expect(exception["stacktrace"][5]["inProject"]).to be_nil
+      expect(exception["stacktrace"][6]["inProject"]).to be_nil
+    }
+  end
+
   it "adds app_version to the payload if it is set" do
     Bugsnag.configuration.app_version = "1.1.1"
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
