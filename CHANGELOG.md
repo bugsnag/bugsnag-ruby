@@ -1,6 +1,24 @@
 Changelog
 =========
 
+## 6.1.0 (17 Nov 2017)
+
+### Enhancements
+
+* Use lazy load hooks to hook on ActionController::Base
+  | [Edouard-chin](https://github.com/Edouard-chin)
+  | [#393](https://github.com/bugsnag/bugsnag-ruby/pull/393)
+
+### Fixes
+
+* Fix type in Rack/Clearance integration
+  | [geofferymm](https://github.com/geoffreymm)
+  | [#392](https://github.com/bugsnag/bugsnag-ruby/pull/392)
+
+* Fix upgrade link to docs
+  | [duncanhewett](https://github.com/duncanhewett)
+  | [#390](https://github.com/bugsnag/bugsnag-ruby/pull/390)
+
 ## 6.0.1 (09 Nov 2017)
 
 Adds a warning for the change in usage for the `notify()` method from < 6.0 to
