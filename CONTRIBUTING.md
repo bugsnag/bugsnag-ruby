@@ -56,7 +56,8 @@ If you're a member of the core team, follow these instructions for releasing bug
 * Release to rubygems
 
     ```
-    bundle exec rake release
+    gem build bugsnag.gemspec
+    gem push bugsnag-[version].gem
     ```
 
 * Update the version running in the bugsnag-website project
