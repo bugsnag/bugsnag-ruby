@@ -39,6 +39,12 @@ module Bugsnag
         configuration.warn("No valid API key has been set, notifications will not be sent")
         @key_warning = true
       end
+
+      @exit_handler_added = false unless defined?(@exit_handler_added)
+      if configuration.add_exit_handler && !@exit_handler_added
+        register_at_exit
+        @exit_handler_added = true
+      end
     end
 
     # Explicitly notify of an exception
@@ -111,6 +117,21 @@ module Bugsnag
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
         payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
+      end
+    end
+
+    # Registers an at_exit function to automatically catch errors on exit
+    # This can disable by setting the 'add_exit_handler' option to False
+    def register_at_exit
+      at_exit do
+        if $!
+          Bugsnag.notify($!, true) do |report|
+            report.severity = 'error'
+            report.severity_reason = {
+              :type => Bugsnag::Report::UNHANDLED_EXCEPTION
+            }
+          end
+        end
       end
     end
 

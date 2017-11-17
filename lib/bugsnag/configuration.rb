@@ -14,6 +14,7 @@ module Bugsnag
     attr_accessor :release_stage
     attr_accessor :notify_release_stages
     attr_accessor :auto_notify
+    attr_accessor :add_exit_handler
     attr_accessor :ca_file
     attr_accessor :send_environment
     attr_accessor :send_code
@@ -50,6 +51,7 @@ module Bugsnag
 
       # Set up the defaults
       self.auto_notify = true
+      self.add_exit_handler = true
       self.send_environment = false
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
