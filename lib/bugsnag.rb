@@ -13,7 +13,6 @@ require "bugsnag/delivery/synchronous"
 require "bugsnag/delivery/thread_queue"
 
 require "bugsnag/integrations/rack"
-require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
 
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
@@ -127,6 +126,7 @@ module Bugsnag
   end
 end
 
+require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
 [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que].each do |integration|
   begin
     require "bugsnag/integrations/#{integration}"
