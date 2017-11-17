@@ -1,4 +1,4 @@
-if ARGV.include? "--coverage"
+if ENV['GEMSETS'] and ENV['GEMSETS'].include? "coverage"
   require 'simplecov'
   require 'coveralls'
 
