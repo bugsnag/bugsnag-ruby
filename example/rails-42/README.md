@@ -27,6 +27,8 @@ This is sufficient to start reporting unhandled exceptions to Bugsnag.
 Run the example using:
 
 ```shell
+bundle install
+rake db:migrate
 bundle exec rails server
 ```
 
