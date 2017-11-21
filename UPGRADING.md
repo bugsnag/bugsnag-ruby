@@ -56,3 +56,14 @@ guide](https://docs.bugsnag.com/api/deploy-tracking/capistrano/) for more inform
   +   config.logger.level = Logger::DEBUG
     end
   ```
+
+* Log accessor functions on the `Bugsang` object no longer exist. Logging must now be accessed through the configuration object:
+
+  ```diff
+  - Bugsnag.log "Log message"
+  - Bugsnag.warn "Warn message"
+  - Bugsnag.debug "Debug message"
+  + Bugsnag.configuration.info "Info message"
+  + Bugsnag.configuration.warn "Warn message"
+  + Bugsnag.configuration.debug "Debug message"
+  ```
