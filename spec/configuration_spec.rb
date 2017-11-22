@@ -25,10 +25,15 @@ describe Bugsnag::Configuration do
   end
 
   describe "add_exit_handler" do
+
+    before do
+      Bugsnag.reset_exit_handler_added
+    end
+
     it "calls register_at_exit if true" do
       expect(Bugsnag).to receive(:register_at_exit)
       Bugsnag.configure do |conf|
-        conf.api_key = "12312312312312312312312312312312"
+        conf.api_key = "TEST KEY"
         conf.add_exit_handler = true
       end
     end
@@ -36,7 +41,7 @@ describe Bugsnag::Configuration do
     it "doesn't call register_at_exit if false" do
       expect(Bugsnag).to_not receive(:register_at_exit)
       Bugsnag.configure do |conf|
-        conf.api_key = "12312312312312312312312312312312"
+        conf.api_key = "TEST KEY"
         conf.add_exit_handler = false
       end
     end

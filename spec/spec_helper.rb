@@ -70,3 +70,12 @@ def have_sent_notification(&matcher)
     end
   end
 end
+
+# Add reset_exit_handler method for testing purposes
+module Bugsnag
+  class << self
+    def reset_exit_handler_added
+      @exit_handler_added = false
+    end
+  end
+end
