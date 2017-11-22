@@ -57,13 +57,13 @@ guide](https://docs.bugsnag.com/api/deploy-tracking/capistrano/) for more inform
     end
   ```
 
-* Log accessor functions on the `Bugsang` object no longer exist. Logging must now be accessed through the configuration object:
+* Log accessor functions on the `Bugsnag` object no longer exist. Logging must now be accessed through the configuration object:
 
   ```diff
   - Bugsnag.log "Log message"
   - Bugsnag.warn "Warn message"
   - Bugsnag.debug "Debug message"
-  + Bugsnag.configuration.info "Info message"
-  + Bugsnag.configuration.warn "Warn message"
-  + Bugsnag.configuration.debug "Debug message"
+  + Bugsnag.configuration.logger.info "Info message"
+  + Bugsnag.configuration.logger.warn "Warn message"
+  + Bugsnag.configuration.logger.debug "Debug message"
   ```
