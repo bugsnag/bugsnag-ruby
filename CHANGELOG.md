@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 6.1.1 (23 Nov 2017)
+
+### Fixes
+
+* Ensured Bugsnag class intialises before railties initialised
+  | [#396](https://github.com/bugsnag/bugsnag-ruby/pull/396)
+
 ## 6.1.0 (17 Nov 2017)
 
 ### Enhancements
