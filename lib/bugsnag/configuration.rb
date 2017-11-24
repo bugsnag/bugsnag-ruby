@@ -33,10 +33,13 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :ignore_classes
+    attr_accessor :track_sessions
+    attr_accessor :session_endpoint
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
     DEFAULT_ENDPOINT = "https://notify.bugsnag.com"
+    DEFAULT_SESSION_ENDPOINT = "https://sessions.bugsnag.com"
 
     DEFAULT_META_DATA_FILTERS = [
       /authorization/i,
@@ -59,6 +62,8 @@ module Bugsnag
       self.hostname = default_hostname
       self.timeout = 15
       self.notify_release_stages = nil
+      self.track_sessions = false
+      self.session_endpoint = DEFAULT_SESSION_ENDPOINT
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
