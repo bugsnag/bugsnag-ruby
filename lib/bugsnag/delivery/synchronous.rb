@@ -7,9 +7,9 @@ module Bugsnag
       HEADERS = {"Content-Type" => "application/json"}
 
       class << self
-        def deliver(url, body, configuration)
+        def deliver(url, body, configuration, headers={})
           begin
-            response = request(url, body, configuration)
+            response = request(url, body, configuration, headers)
             configuration.debug("Request to #{url} completed, status: #{response.code}")
           rescue StandardError => e
             # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
@@ -22,7 +22,7 @@ module Bugsnag
 
         private
 
-        def request(url, body, configuration)
+        def request(url, body, configuration, headers={})
           uri = URI.parse(url)
 
           if configuration.proxy_host
@@ -39,7 +39,9 @@ module Bugsnag
             http.ca_file = configuration.ca_file if configuration.ca_file
           end
 
-          request = Net::HTTP::Post.new(path(uri), HEADERS)
+          headers = headers.merge(HEADERS)
+
+          request = Net::HTTP::Post.new(path(uri), headers)
           request.body = body
           http.request(request)
         end

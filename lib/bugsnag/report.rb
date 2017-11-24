@@ -19,6 +19,7 @@ module Bugsnag
 
     CURRENT_PAYLOAD_VERSION = "2"
 
+    attr_reader   :unhandled
     attr_accessor :api_key
     attr_accessor :app_type
     attr_accessor :app_version
@@ -31,6 +32,7 @@ module Bugsnag
     attr_accessor :meta_data
     attr_accessor :raw_exceptions
     attr_accessor :release_stage
+    attr_accessor :session
     attr_accessor :severity
     attr_accessor :severity_reason
     attr_accessor :user
@@ -93,6 +95,7 @@ module Bugsnag
         exceptions: exceptions,
         groupingHash: grouping_hash,
         payloadVersion: CURRENT_PAYLOAD_VERSION,
+        session: session,
         severity: severity,
         severityReason: severity_reason,
         unhandled: @unhandled,
