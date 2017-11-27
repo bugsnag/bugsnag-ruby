@@ -7,6 +7,7 @@ require "bugsnag/meta_data"
 require "bugsnag/report"
 require "bugsnag/cleaner"
 require "bugsnag/helpers"
+require "bugsnag/session_tracker"
 
 require "bugsnag/delivery"
 require "bugsnag/delivery/synchronous"
@@ -39,7 +40,7 @@ module Bugsnag
         @key_warning = true
       end
 
-      tracker.config = configuration
+      session_tracker.config = configuration
     end
 
     # Explicitly notify of an exception
@@ -124,7 +125,7 @@ module Bugsnag
 
     def session_tracker
       @session_tracker = nil unless defined?(@session_tracker)
-      @session_tracker || Lock.synchronize { @session_tracker || = Bugsnag::SessionTracker.new(configuration)}
+      @session_tracker || LOCK.synchronize { @session_tracker ||= Bugsnag::SessionTracker.new(configuration)}
     end
 
     # Allow access to "before notify" callbacks

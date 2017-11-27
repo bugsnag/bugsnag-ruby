@@ -5,12 +5,12 @@ module Bugsnag::Middleware
     end
 
     def call(report)
-      session = Thread.current[Bugsnag::Report::THREAD_SESSION]
+      session = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
       unless session.nil?
         if report.unhandled
-          session['events']['unhandled'] += 1
+          session[:events][:unhandled] += 1
         else
-          session['events']['unhandled'] += 1
+          session[:events][:unhandled] += 1
         end
         report.session = session
       end

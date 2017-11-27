@@ -31,10 +31,10 @@ module Bugsnag
         :startedAt => Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
       }
       session_copy = new_session.clone
-      session_copy['user'] = user
+      session_copy[:user] = user
       add_thread = Thread.new { queue_session(session_copy)}
       add_thread.join()
-      new_session['events'] = {
+      new_session[:events] = {
         :handled => 0,
         :unhandled => 0
       }
@@ -55,7 +55,7 @@ module Bugsnag
       @mutex.lock
       begin
         @delivery_queue.push(session)
-        if Time.now() - @last_sent > self.TIME_THRESHOLD
+        if Time.now() - @last_sent > TIME_THRESHOLD
           deliver_sessions
         end
       ensure
@@ -67,11 +67,12 @@ module Bugsnag
     def deliver_sessions
       unless @config.track_sessions
         return
+      end
       sessions = []
-      while !@delivery_queue.empty
+      while !@delivery_queue.empty?
         sessions << @delivery_queue.pop
       end
-      self.deliver(sessions)
+      deliver(sessions)
     end
 
     private

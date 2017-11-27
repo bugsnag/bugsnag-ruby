@@ -17,7 +17,7 @@ module Bugsnag
 
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
-    CURRENT_PAYLOAD_VERSION = "2"
+    CURRENT_PAYLOAD_VERSION = "4.0"
 
     attr_reader   :unhandled
     attr_accessor :api_key
@@ -94,7 +94,6 @@ module Bugsnag
         },
         exceptions: exceptions,
         groupingHash: grouping_hash,
-        payloadVersion: CURRENT_PAYLOAD_VERSION,
         session: session,
         severity: severity,
         severityReason: severity_reason,
@@ -111,13 +110,20 @@ module Bugsnag
 
       # return the payload hash
       {
-        :apiKey => api_key,
         :notifier => {
           :name => NOTIFIER_NAME,
           :version => NOTIFIER_VERSION,
           :url => NOTIFIER_URL
         },
         :events => [payload_event]
+      }
+    end
+
+    def headers
+      {
+        :"Bugsnag-Api-Key" => api_key,
+        :"Bugsnag-Payload-Version" => CURRENT_PAYLOAD_VERSION,
+        :"Bugsnag-Sent-At" => Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
       }
     end
 
