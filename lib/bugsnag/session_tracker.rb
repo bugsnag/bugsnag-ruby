@@ -9,11 +9,12 @@ module Bugsnag
     TIME_THRESHOLD = 60
     SESSION_PAYLOAD_VERSION = "1.0"
 
+    attr_reader :delivery_queue
     attr_accessor :user_callback
     attr_writer :config
 
     def initialize(configuration)
-      @configuration = configuration
+      @config = configuration
       @delivery_queue = Queue.new
       @mutex = Mutex.new
       @last_sent = Time.now

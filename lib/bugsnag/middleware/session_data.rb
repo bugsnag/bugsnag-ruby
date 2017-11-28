@@ -10,7 +10,7 @@ module Bugsnag::Middleware
         if report.unhandled
           session[:events][:unhandled] += 1
         else
-          session[:events][:unhandled] += 1
+          session[:events][:handled] += 1
         end
         report.session = session
       end
