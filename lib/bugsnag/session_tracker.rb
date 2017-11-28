@@ -117,7 +117,7 @@ module Bugsnag
       }
 
       json_payload = ::JSON.dump(payload)
-      Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, json_payload, @config, headers)
+      Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, json_payload, @config, headers, true)
     end
   end
 end

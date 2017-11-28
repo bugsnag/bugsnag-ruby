@@ -5,12 +5,16 @@ module Bugsnag
   module Delivery
     class Synchronous
       HEADERS = {"Content-Type" => "application/json"}
+      BACKOFF_INTERVALS = [0.5, 1, 3, 5, 10, 30, 60, 120, 300, 600]
 
       class << self
-        def deliver(url, body, configuration, headers={})
+        def deliver(url, body, configuration, headers={}, backoff=false)
           begin
             response = request(url, body, configuration, headers)
             configuration.debug("Request to #{url} completed, status: #{response.code}")
+            if backoff && !([200, 202].include?(response.code))
+              backoff(url, body, configuration, headers)
+            end
           rescue StandardError => e
             # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
             raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
@@ -44,6 +48,19 @@ module Bugsnag
           request = Net::HTTP::Post.new(path(uri), headers)
           request.body = body
           http.request(request)
+        end
+
+        def backoff(url, body, configuration, headers={})
+          Thread.new do
+            BACKOFF_INTERVALS.each do |interval|
+              sleep(interval)
+              response = request(url, body, configuration, headers)
+              if [200, 202].include?(response.code)
+                configuration.debug("Request to #{url} completed, status: #{response.code}")
+                break
+              end
+            end
+          end
         end
 
         def path(uri)
