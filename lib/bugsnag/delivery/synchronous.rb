@@ -6,13 +6,14 @@ module Bugsnag
     class Synchronous
       HEADERS = {"Content-Type" => "application/json"}
       BACKOFF_INTERVALS = [0.5, 1, 3, 5, 10, 30, 60, 120, 300, 600]
+      SUCCESS_REGEX = /^2\d{2}$/
 
       class << self
         def deliver(url, body, configuration, headers={}, backoff=false)
           begin
             response = request(url, body, configuration, headers)
             configuration.debug("Request to #{url} completed, status: #{response.code}")
-            if backoff && !([200, 202].include?(response.code))
+            if backoff && !(SUCCESS_REGEX.match(response.code))
               backoff(url, body, configuration, headers)
             end
           rescue StandardError => e
