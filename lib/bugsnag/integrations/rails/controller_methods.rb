@@ -2,9 +2,11 @@ module Bugsnag::Rails
   module ControllerMethods
     def self.included(base)
       base.extend ClassMethods
+      base.before_action proc { Bugsnag.session_tracker.create_session }
     end
 
     module ClassMethods
+
       private
       def before_bugsnag_notify(*methods, &block)
         _add_bugsnag_notify_callback(:before_callbacks, *methods, &block)
