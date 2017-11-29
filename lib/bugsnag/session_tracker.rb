@@ -33,7 +33,7 @@ module Bugsnag
       }
       session_copy = new_session.clone
       session_copy[:user] = user
-      add_thread = Thread.new { queue_session(session_copy)}
+      add_thread = Thread.new { queue_session(session_copy) }
       add_thread.join()
       new_session[:events] = {
         :handled => 0,
@@ -78,7 +78,7 @@ module Bugsnag
 
     private
     def deliver(sessions)
-      if sessions.nil? 
+      if sessions.length == 0
         configuration.debug("No sessions to deliver")
         return
       end
