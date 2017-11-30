@@ -116,7 +116,7 @@ module Bugsnag
         :"Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION
       }
 
-      options = {:headers => headers, :backoff => true}
+      options = {:headers => headers, :backoff => true, :success => '202'}
       Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, payload, @config, options)
     end
   end
