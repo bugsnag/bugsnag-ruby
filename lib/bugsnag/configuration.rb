@@ -23,7 +23,7 @@ module Bugsnag
     attr_accessor :app_type
     attr_accessor :meta_data_filters
     attr_accessor :endpoint
-    attr_accessor :logger
+    attr_accessor :logger 
     attr_accessor :middleware
     attr_accessor :internal_middleware
     attr_accessor :proxy_host

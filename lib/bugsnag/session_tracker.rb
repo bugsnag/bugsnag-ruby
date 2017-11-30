@@ -85,12 +85,17 @@ module Bugsnag
       end
       
       if !@config.valid_api_key?
-        configuration.debug("Not delivering sessions due to an invalid api_key")
+        @config.debug("Not delivering sessions due to an invalid api_key")
         return
       end
       
       if !@config.should_notify_release_stage?
-        configuration.debug("Not delivering sessions due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
+        @config.debug("Not delivering sessions due to notify_release_stages :#{@config.notify_release_stages.inspect}")
+        return
+      end
+
+      if @config.delivery_method != :thread_queue
+        @config.debug("Not delivering sessions due to asynchronous delivery being disabled")
         return
       end
       
