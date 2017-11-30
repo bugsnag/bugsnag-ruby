@@ -7,6 +7,7 @@ module Bugsnag
 
     THREAD_SESSION = "bugsnag_session"
     TIME_THRESHOLD = 60
+    MAXIMUM_SESSION_COUNT = 50
     SESSION_PAYLOAD_VERSION = "1.0"
 
     attr_reader :delivery_queue
@@ -92,7 +93,6 @@ module Bugsnag
         configuration.debug("Not delivering sessions due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
         return
       end
-
       
       payload = {
         :notifier => {
@@ -113,12 +113,11 @@ module Bugsnag
 
       headers = {
         :"Bugsnag-Api-Key" => @config.api_key,
-        :"Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION,
-        :"Bugsnag-Sent-At" => Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
+        :"Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION
       }
 
-      json_payload = ::JSON.dump(payload)
-      Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, json_payload, @config, headers, true)
+      options = {:headers => headers, :backoff => true}
+      Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, payload, @config, options)
     end
   end
 end
