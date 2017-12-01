@@ -22,9 +22,7 @@ module Bugsnag
     end
 
     def create_session(user=nil)
-      unless @config.track_sessions
-        return
-      end
+      return unless @config.track_sessions
       if user.nil? && (defined?(self.user_callback) === "method")
         user = self.user_callback
       end
@@ -65,11 +63,8 @@ module Bugsnag
       end
     end
 
-    private
     def deliver_sessions
-      unless @config.track_sessions
-        return
-      end
+      return unless @config.track_sessions
       sessions = []
       while (!@delivery_queue.empty?) && (sessions.length < MAXIMUM_SESSION_COUNT)
         sessions << @delivery_queue.pop
@@ -77,7 +72,6 @@ module Bugsnag
       deliver(sessions)
     end
 
-    private
     def deliver(sessions)
       if sessions.length == 0
         configuration.debug("No sessions to deliver")
