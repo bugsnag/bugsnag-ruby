@@ -71,7 +71,7 @@ module Bugsnag
         return
       end
       sessions = []
-      while !@delivery_queue.empty?
+      while (!@delivery_queue.empty?) && (sessions.length < MAXIMUM_SESSION_COUNT)
         sessions << @delivery_queue.pop
       end
       deliver(sessions)

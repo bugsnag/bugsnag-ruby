@@ -162,4 +162,22 @@ describe Bugsnag::SessionTracker do
     }
   end
 
+  it 'does not send more than defined MAXIMUM at a time' do
+    Bugsnag.configure do |conf|
+      conf.track_sessions = true
+      conf.delivery_method = :thread_queue
+      conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
+    end
+    WebMock.allow_net_connect!
+    max_sessions = Bugsnag::SessionTracker::MAXIMUM_SESSION_COUNT
+    (1..(max_sessions + 10)).each {Bugsnag.session_tracker.create_session}
+    expect(Bugsnag.session_tracker.delivery_queue.size).to eq(max_sessions + 10)
+    Bugsnag.session_tracker.send_sessions
+    while queue.empty?
+      sleep(0.05)
+    end
+    payload, headers = queue.pop
+    expect(Bugsnag.session_tracker.delivery_queue.size).to eq(10)
+    expect(payload["sessions"].size).to eq(max_sessions)
+  end
 end
