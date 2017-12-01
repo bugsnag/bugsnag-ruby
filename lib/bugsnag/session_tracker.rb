@@ -11,34 +11,29 @@ module Bugsnag
     SESSION_PAYLOAD_VERSION = "1.0"
 
     attr_reader :delivery_queue
-    attr_accessor :user_callback
     attr_writer :config
 
     def initialize(configuration)
+      @session_counts = {}
       @config = configuration
-      @delivery_queue = Queue.new
       @mutex = Mutex.new
       @last_sent = Time.now
     end
 
     def create_session(user=nil)
       return unless @config.track_sessions
-      if user.nil? && (defined?(self.user_callback) === "method")
-        user = self.user_callback
-      end
+      start_time = Time.now().utc().strftime('%Y-%m-%dT%H:%M:00')
       new_session = {
         :id => SecureRandom.uuid,
-        :startedAt => Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
-      }
-      session_copy = new_session.clone
-      session_copy[:user] = user
-      add_thread = Thread.new { queue_session(session_copy) }
-      add_thread.join()
-      new_session[:events] = {
-        :handled => 0,
-        :unhandled => 0
+        :startedAt => start_time,
+        :events => {
+          :handled => 0,
+          :unhandled => 0
+        }
       }
       Thread.current[THREAD_SESSION] = new_session
+      add_thread = Thread.new { add_session(start_time) }
+      add_thread.join()
     end
 
     def send_sessions
@@ -51,10 +46,11 @@ module Bugsnag
     end
 
     private
-    def queue_session(session)
+    def add_session(min)
       @mutex.lock
       begin
-        @delivery_queue.push(session)
+        @session_counts[min] ||= 0
+        @session_counts[min] += 1
         if Time.now() - @last_sent > TIME_THRESHOLD
           deliver_sessions
         end
@@ -66,14 +62,22 @@ module Bugsnag
     def deliver_sessions
       return unless @config.track_sessions
       sessions = []
-      while (!@delivery_queue.empty?) && (sessions.length < MAXIMUM_SESSION_COUNT)
-        sessions << @delivery_queue.pop
+      @session_counts.each do |min, count|
+        sessions << {
+          :startedAt => min,
+          :sessionsStarted => count
+        }
+        if sessions.size >= MAXIMUM_SESSION_COUNT
+          deliver(sessions)
+          sessions = []
+        end
       end
+      @session_counts = {}
       deliver(sessions)
     end
 
-    def deliver(sessions)
-      if sessions.length == 0
+    def deliver(sessionCounts)
+      if sessionCounts.length == 0
         configuration.debug("No sessions to deliver")
         return
       end
@@ -107,7 +111,7 @@ module Bugsnag
           :releaseStage => @config.release_stage,
           :type => @config.app_type
         },
-        :sessions => sessions
+        :sessionCounts => sessionCounts
       }
 
       headers = {
@@ -116,6 +120,7 @@ module Bugsnag
       }
 
       options = {:headers => headers, :backoff => true, :success => '202'}
+      @last_sent = Time.now
       Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, payload, @config, options)
     end
   end

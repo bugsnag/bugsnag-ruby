@@ -55,6 +55,7 @@ module Bugsnag
 
           request = Net::HTTP::Post.new(path(uri), headers)
           request.body = payload
+
           http.request(request)
         end
 
@@ -85,7 +86,7 @@ module Bugsnag
                 end
               end
             end
-            if BACKOFF_REQUESTS[url]
+            if BACKOFF_REQUESTS[url] && !BACKOFF_REQUESTS[url].empty?
               last_request = BACKOFF_REQUESTS[url].last
               new_body_length = ::JSON.dump(body).length
               old_body_length = ::JSON.dump(last_request[:body]).length
@@ -121,7 +122,6 @@ module Bugsnag
                     BACKOFF_LOCK.unlock
                   end
                 end
-                @latest_configuration.debug("Request to #{url} could not be completed")
               end
               BACKOFF_THREADS[url] = new_thread
             end
