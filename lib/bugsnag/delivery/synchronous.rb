@@ -6,7 +6,6 @@ module Bugsnag
     class Synchronous
       BACKOFF_THREADS = {}
       BACKOFF_REQUESTS = {}
-      BACKOFF_INTERVALS = [0.5, 1, 3, 5, 10, 30, 60, 120, 300, 600]
       BACKOFF_LOCK = Mutex.new
 
       class << self
@@ -60,12 +59,31 @@ module Bugsnag
         end
 
         def backoff(url, body, configuration, options)
+          # Ensure we have the latest configuration for making these requests
           @latest_configuration = configuration
+          
           BACKOFF_LOCK.lock
           begin
-            if BACKOFF_THREADS[url]
-              current_thread = BACKOFF_THREADS[url]
-              current_thread.exit
+            # Define an exit function once to handle outstanding requests
+            @registered_at_exit = false unless defined?(@registered_at_exit)
+            if !@registered_at_exit
+              @registered_at_exit = true
+              at_exit do
+                # Kill existing threads
+                BACKOFF_THREADS.each do |url, thread|
+                  thread.exit
+                end
+                # Retry outstanding requests once, then exit
+                BACKOFF_REQUESTS.each do |url, requests|
+                  requests.map! do |req|
+                    response = request(url, req[:body], @latest_configuration, req[:options])
+                    success = req[:options][:success] || '200'
+                    response.code == success
+                  end
+                  requests.reject! { |i| i }
+                  @latest_configuration.warn("Requests to #{url} finished, #{requests.size} failed")
+                end
+              end
             end
             if BACKOFF_REQUESTS[url]
               last_request = BACKOFF_REQUESTS[url].last
@@ -79,29 +97,34 @@ module Bugsnag
             else
               BACKOFF_REQUESTS[url] = [{:body => body, :options => options}]
             end
-            new_thread = Thread.new(url) do |url|
-              BACKOFF_INTERVALS.each do |interval|
-                sleep(interval)
-                BACKOFF_LOCK.lock
-                begin
-                  BACKOFF_REQUESTS[url].map! do |req|
-                    response = request(url, req[:body], @latest_configuration, req[:options])
-                    success = req[:options][:success] || '200'
-                    if response.code == success
-                      @latest_configuration.debug("Request to #{url} completed, status: #{response.code}")
-                      false
-                    else
-                      req
+            if !(BACKOFF_THREADS[url] && BACKOFF_THREADS[url].status)
+              new_thread = Thread.new(url) do |url|
+                interval = 2
+                while BACKOFF_REQUESTS[url].size > 0
+                  sleep(interval)
+                  interval = interval * 2
+                  interval = 600 if interval > 600
+                  BACKOFF_LOCK.lock
+                  begin
+                    BACKOFF_REQUESTS[url].map! do |req|
+                      response = request(url, req[:body], @latest_configuration, req[:options])
+                      success = req[:options][:success] || '200'
+                      if response.code == success
+                        @latest_configuration.debug("Request to #{url} completed, status: #{response.code}")
+                        false
+                      else
+                        req
+                      end
                     end
+                    BACKOFF_REQUESTS[url].reject! { |i| !i }
+                  ensure
+                    BACKOFF_LOCK.unlock
                   end
-                  BACKOFF_REQUESTS[url].reject! { |i| !i }
-                ensure
-                  BACKOFF_LOCK.unlock
                 end
+                @latest_configuration.debug("Request to #{url} could not be completed")
               end
-              @latest_configuration.debug("Request to #{url} could not be completed")
+              BACKOFF_THREADS[url] = new_thread
             end
-            BACKOFF_THREADS[url] = new_thread
           ensure
             BACKOFF_LOCK.unlock
           end
