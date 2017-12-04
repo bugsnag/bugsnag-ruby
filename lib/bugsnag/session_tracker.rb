@@ -85,7 +85,7 @@ module Bugsnag
 
     def deliver(sessionCounts)
       if sessionCounts.length == 0
-        configuration.debug("No sessions to deliver")
+        @config.debug("No sessions to deliver")
         return
       end
       
