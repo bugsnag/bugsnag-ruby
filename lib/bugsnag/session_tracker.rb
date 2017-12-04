@@ -13,6 +13,14 @@ module Bugsnag
     attr_reader :session_counts
     attr_writer :config
 
+    def self.set_current_session(session)
+      Thread.current[THREAD_SESSION] = session
+    end
+
+    def self.get_current_session(session)
+      Thread.current[THREAD_SESSION]
+    end
+
     def initialize(configuration)
       @session_counts = {}
       @config = configuration
@@ -20,7 +28,7 @@ module Bugsnag
       @last_sent = Time.now
     end
 
-    def create_session(user=nil)
+    def create_session
       return unless @config.track_sessions
       start_time = Time.now().utc().strftime('%Y-%m-%dT%H:%M:00')
       new_session = {
@@ -31,7 +39,7 @@ module Bugsnag
           :unhandled => 0
         }
       }
-      Thread.current[THREAD_SESSION] = new_session
+      set_current_session(new_session)
       add_thread = Thread.new { add_session(start_time) }
       add_thread.join()
     end
