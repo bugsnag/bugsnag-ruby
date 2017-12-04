@@ -21,7 +21,8 @@ describe Bugsnag::SessionTracker do
     Thread.new{ server.start }
   end
 
-  after do    Bugsnag.configure do |conf|
+  after do    
+    Bugsnag.configure do |conf|
       conf.track_sessions = false
       conf.delivery_method = :synchronous
     end
@@ -34,27 +35,17 @@ describe Bugsnag::SessionTracker do
     config.track_sessions = false
     tracker = Bugsnag::SessionTracker.new(config)
     tracker.create_session
-    expect(tracker.delivery_queue.size).to eq(0)
+    expect(tracker.session_counts.size).to eq(0)
   end
 
   it 'adds session object to queue' do
     tracker = Bugsnag::SessionTracker.new(@config)
     tracker.create_session
-    expect(tracker.delivery_queue.size).to eq(1)
-    session = tracker.delivery_queue.pop
-    expect(session.include? :id).to be true
-    expect(session.include? :user).to be true
-    expect(session.include? :startedAt).to be true
-    expect(session[:user]).to be nil
-  end
+    expect(tracker.session_counts.size).to eq(1)
+    time = tracker.session_counts.keys.last
+    count = tracker.session_counts[time]
 
-  it 'stores a user object in the session' do
-    tracker = Bugsnag::SessionTracker.new(@config)
-    tracker.create_session({:name => "Jimmy"})
-    expect(tracker.delivery_queue.size).to eq(1)
-    session = tracker.delivery_queue.pop
-    expect(session.include? :user).to be true
-    expect(session[:user]).to eq({:name => "Jimmy"})
+    expect(count).to eq(1)
   end
 
   it 'stores session in thread' do
@@ -62,7 +53,6 @@ describe Bugsnag::SessionTracker do
     tracker.create_session
     session = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     expect(session.include? :id).to be true
-    expect(session.include? :user).to be false
     expect(session.include? :startedAt).to be true
     expect(session.include? :events).to be true
     expect(session[:events].include? :handled).to be true
@@ -74,10 +64,9 @@ describe Bugsnag::SessionTracker do
   it 'gives unique ids to each session' do
     tracker = Bugsnag::SessionTracker.new(@config)
     tracker.create_session
+    session_one = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     tracker.create_session
-    expect(tracker.delivery_queue.size).to eq(2)
-    session_one = tracker.delivery_queue.pop
-    session_two = tracker.delivery_queue.pop
+    session_two = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     expect(session_one[:id]).to_not eq(session_two[:id])
   end
 
@@ -89,9 +78,9 @@ describe Bugsnag::SessionTracker do
     end
     WebMock.allow_net_connect!
     Bugsnag.session_tracker.create_session
-    expect(Bugsnag.session_tracker.delivery_queue.size).to eq(1)
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
-    expect(Bugsnag.session_tracker.delivery_queue.size).to eq(0)
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
     while queue.empty?
       sleep(0.05)
     end
@@ -99,8 +88,8 @@ describe Bugsnag::SessionTracker do
     expect(payload.include?("app")).to be true
     expect(payload.include?("notifier")).to be true
     expect(payload.include?("device")).to be true
-    expect(payload.include?("sessions")).to be true
-    expect(payload["sessions"].size).to eq(1)
+    expect(payload.include?("sessionCounts")).to be true
+    expect(payload["sessionCounts"].size).to eq(1)
   end
 
   it 'sets details from config' do
@@ -112,9 +101,9 @@ describe Bugsnag::SessionTracker do
     end
     WebMock.allow_net_connect!
     Bugsnag.session_tracker.create_session
-    expect(Bugsnag.session_tracker.delivery_queue.size).to eq(1)
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
-    expect(Bugsnag.session_tracker.delivery_queue.size).to eq(0)
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
     while queue.empty?
       sleep(0.05)
     end
@@ -160,24 +149,5 @@ describe Bugsnag::SessionTracker do
       expect(sesevents.include?("handled")).to be true
       expect(sesevents["handled"]).to eq(1)
     }
-  end
-
-  it 'does not send more than defined MAXIMUM at a time' do
-    Bugsnag.configure do |conf|
-      conf.track_sessions = true
-      conf.delivery_method = :thread_queue
-      conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
-    end
-    WebMock.allow_net_connect!
-    max_sessions = Bugsnag::SessionTracker::MAXIMUM_SESSION_COUNT
-    (1..(max_sessions + 10)).each {Bugsnag.session_tracker.create_session}
-    expect(Bugsnag.session_tracker.delivery_queue.size).to eq(max_sessions + 10)
-    Bugsnag.session_tracker.send_sessions
-    while queue.empty?
-      sleep(0.05)
-    end
-    payload, headers = queue.pop
-    expect(Bugsnag.session_tracker.delivery_queue.size).to eq(10)
-    expect(payload["sessions"].size).to eq(max_sessions)
   end
 end
