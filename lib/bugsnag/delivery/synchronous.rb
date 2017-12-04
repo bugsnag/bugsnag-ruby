@@ -70,20 +70,7 @@ module Bugsnag
             if !@registered_at_exit
               @registered_at_exit = true
               at_exit do
-                # Kill existing threads
-                BACKOFF_THREADS.each do |url, thread|
-                  thread.exit
-                end
-                # Retry outstanding requests once, then exit
-                BACKOFF_REQUESTS.each do |url, requests|
-                  requests.map! do |req|
-                    response = request(url, req[:body], @latest_configuration, req[:options])
-                    success = req[:options][:success] || '200'
-                    response.code == success
-                  end
-                  requests.reject! { |i| i }
-                  @latest_configuration.warn("Requests to #{url} finished, #{requests.size} failed")
-                end
+                backoff_exit
               end
             end
             if BACKOFF_REQUESTS[url] && !BACKOFF_REQUESTS[url].empty?
@@ -99,35 +86,56 @@ module Bugsnag
               BACKOFF_REQUESTS[url] = [{:body => body, :options => options}]
             end
             if !(BACKOFF_THREADS[url] && BACKOFF_THREADS[url].status)
-              new_thread = Thread.new(url) do |url|
-                interval = 2
-                while BACKOFF_REQUESTS[url].size > 0
-                  sleep(interval)
-                  interval = interval * 2
-                  interval = 600 if interval > 600
-                  BACKOFF_LOCK.lock
-                  begin
-                    BACKOFF_REQUESTS[url].map! do |req|
-                      response = request(url, req[:body], @latest_configuration, req[:options])
-                      success = req[:options][:success] || '200'
-                      if response.code == success
-                        @latest_configuration.debug("Request to #{url} completed, status: #{response.code}")
-                        false
-                      else
-                        req
-                      end
-                    end
-                    BACKOFF_REQUESTS[url].reject! { |i| !i }
-                  ensure
-                    BACKOFF_LOCK.unlock
-                  end
-                end
-              end
-              BACKOFF_THREADS[url] = new_thread
+              spawn_backoff_thread(url)
             end
           ensure
             BACKOFF_LOCK.unlock
           end
+        end
+
+        def backoff_exit
+          # Kill existing threads
+          BACKOFF_THREADS.each do |url, thread|
+            thread.exit
+          end
+          # Retry outstanding requests once, then exit
+          BACKOFF_REQUESTS.each do |url, requests|
+            requests.map! do |req|
+              response = request(url, req[:body], @latest_configuration, req[:options])
+              success = req[:options][:success] || '200'
+              response.code == success
+            end
+            requests.reject! { |i| i }
+            @latest_configuration.warn("Requests to #{url} finished, #{requests.size} failed")
+          end
+        end
+        
+        def spawn_backoff_thread(url)
+          new_thread = Thread.new(url) do |url|
+            interval = 2
+            while BACKOFF_REQUESTS[url].size > 0
+              sleep(interval)
+              interval = interval * 2
+              interval = 600 if interval > 600
+              BACKOFF_LOCK.lock
+              begin
+                BACKOFF_REQUESTS[url].map! do |req|
+                  response = request(url, req[:body], @latest_configuration, req[:options])
+                  success = req[:options][:success] || '200'
+                  if response.code == success
+                    @latest_configuration.debug("Request to #{url} completed, status: #{response.code}")
+                    false
+                  else
+                    req
+                  end
+                end
+                BACKOFF_REQUESTS[url].reject! { |i| !i }
+              ensure
+                BACKOFF_LOCK.unlock
+              end
+            end
+          end
+          BACKOFF_THREADS[url] = new_thread
         end
 
         def path(uri)
