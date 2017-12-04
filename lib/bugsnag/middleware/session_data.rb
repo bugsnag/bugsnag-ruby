@@ -5,7 +5,7 @@ module Bugsnag::Middleware
     end
 
     def call(report)
-      session = Bugsnag.session_tracker.get_
+      session = Bugsnag::SessionTracker.get_current_session
       unless session.nil?
         if report.unhandled
           session[:events][:unhandled] += 1

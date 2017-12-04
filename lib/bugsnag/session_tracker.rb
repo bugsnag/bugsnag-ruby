@@ -39,7 +39,7 @@ module Bugsnag
           :unhandled => 0
         }
       }
-      set_current_session(new_session)
+      SessionTracker.set_current_session(new_session)
       add_thread = Thread.new { add_session(start_time) }
       add_thread.join()
     end
