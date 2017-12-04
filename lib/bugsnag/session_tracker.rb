@@ -10,7 +10,7 @@ module Bugsnag
     MAXIMUM_SESSION_COUNT = 50
     SESSION_PAYLOAD_VERSION = "1.0"
 
-    attr_reader :delivery_queue
+    attr_reader :session_counts
     attr_writer :config
 
     def initialize(configuration)
@@ -49,6 +49,13 @@ module Bugsnag
     def add_session(min)
       @mutex.lock
       begin
+        @registered_at_exit = false unless defined?(@registered_at_exit)
+        if !@registered_at_exit
+          @registered_at_exit = true
+          at_exit do
+            deliver_sessions
+          end
+        end
         @session_counts[min] ||= 0
         @session_counts[min] += 1
         if Time.now() - @last_sent > TIME_THRESHOLD

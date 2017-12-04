@@ -113,7 +113,6 @@ module Bugsnag
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
         options = {:headers => report.headers, :trim_payload => true}
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, report.as_json, configuration, options)
-        @session_tracker.send_sessions
       end
     end
 
