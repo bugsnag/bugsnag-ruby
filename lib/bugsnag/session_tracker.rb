@@ -17,7 +17,7 @@ module Bugsnag
       Thread.current[THREAD_SESSION] = session
     end
 
-    def self.get_current_session(session)
+    def self.get_current_session
       Thread.current[THREAD_SESSION]
     end
 
