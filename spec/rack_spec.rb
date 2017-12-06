@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'rack'
 
 describe Bugsnag::Rack do
   it "calls the upstream rack app with the environment" do
@@ -55,6 +56,34 @@ describe Bugsnag::Rack do
       rack_stack.call(rack_env) rescue nil
 
       expect(Bugsnag).not_to have_sent_notification
+    end
+
+    it "calls through the rack middleware" do
+      Bugsnag.configure do |config|
+        config.middleware.use(Bugsnag::Middleware::RackRequest)
+      end
+
+      rack_env = {
+        "key" => "value",
+        "rack.session" => {
+          "test" => "testing"
+        }
+      }
+
+      rack_stack.call(rack_env) rescue nil
+
+      expect(Bugsnag).to have_sent_notification{ |payload|
+        event = get_event_from_payload(payload)
+        metadata = event['metaData']
+        expect(metadata).to include("request")
+        expect(metadata['request']).to include("httpMethod" => nil)
+        expect(metadata['request']).to include("params" => {})
+        expect(metadata['request']).to include("referer" => nil)
+        expect(metadata['request']).to include("clientIp" => "")
+        expect(metadata['request']).to include("headers" => {})
+        expect(metadata).to include("session")
+        expect(metadata['session']).to include("test" => "testing")
+      }
     end
   end
 
