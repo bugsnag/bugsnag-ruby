@@ -4,7 +4,7 @@ group :test, optional: true do
     gem 'rake', '~> 10.1.1'
     gem 'rspec'
     gem 'rspec-mocks'
-    gem 'rdoc'
+    gem 'rdoc', '~> 5.1.0'
     gem 'pry'
     gem 'addressable', '~> 2.3.8'
     gem 'delayed_job' if RUBY_VERSION >= '2.2.2'
