@@ -1000,6 +1000,14 @@ describe Bugsnag::Report do
     }
   end
 
+  it 'does not notify if skip_bugsnag is true' do
+    exception = BugsnagTestException.new("It crashed")
+    exception.skip_bugsnag = true
+    Bugsnag.notify(exception)
+    expect(Bugsnag).not_to have_sent_notification
+  end
+    
+
   if defined?(JRUBY_VERSION)
 
     it "should work with java.lang.Throwables" do
