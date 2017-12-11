@@ -7,6 +7,7 @@ module Bugsnag
 
     THREAD_SESSION = "bugsnag_session"
     TIME_THRESHOLD = 60
+    FALLBACK_TIME = 300
     MAXIMUM_SESSION_COUNT = 50
     SESSION_PAYLOAD_VERSION = "1.0"
 
@@ -61,6 +62,7 @@ module Bugsnag
         if !@registered_at_exit
           @registered_at_exit = true
           at_exit do
+            @deliver_fallback.terminate
             deliver_sessions
           end
         end
@@ -88,7 +90,18 @@ module Bugsnag
         end
       end
       @session_counts = {}
+      reset_delivery_thread
       deliver(sessions)
+    end
+
+    def reset_delivery_thread
+      if !@deliver_fallback.nil? && @deliver_fallback.status == 'sleep'
+        @deliver_fallback.terminate
+      end
+      @deliver_fallback = Thread.new do
+        sleep(FALLBACK_TIME)
+        deliver_sessions
+      end
     end
 
     def deliver(sessionCounts)
