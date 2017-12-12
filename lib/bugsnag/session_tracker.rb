@@ -62,7 +62,9 @@ module Bugsnag
         if !@registered_at_exit
           @registered_at_exit = true
           at_exit do
-            @deliver_fallback.terminate
+            if !@deliver_fallback.nil? && @deliver_fallback.status == 'sleep'
+              @deliver_fallback.terminate
+            end
             deliver_sessions
           end
         end
