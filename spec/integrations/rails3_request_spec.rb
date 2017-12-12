@@ -23,6 +23,21 @@ describe Bugsnag::Middleware::Rails3Request do
       }
     end
 
+    it "unsets request metadata" do
+      Bugsnag.configuration.set_request_data(:rack_env, {
+        "action_dispatch.remote_ip" => "10.2.2.224",
+        "action_dispatch.request_id" => "5",
+      })
+      Bugsnag.configuration.unset_request_data(:rack_env, nil)
+      Bugsnag.notify(BugsnagTestException.new('Grimbles'))
+
+      expect(Bugsnag).to have_sent_notification { |payload|
+        event = get_event_from_payload(payload)
+        puts event["metaData"].inspect
+        expect(event["metaData"]["request"]).to be nil
+      }
+    end
+
     context "the Remote IP will throw when serialized" do
 
       it "sets the client IP metdata to [SPOOF]" do
