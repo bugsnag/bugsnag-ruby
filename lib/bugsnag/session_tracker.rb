@@ -145,8 +145,8 @@ module Bugsnag
       }
 
       headers = {
-        :"Bugsnag-Api-Key" => @config.api_key,
-        :"Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION
+        "Bugsnag-Api-Key" => @config.api_key,
+        "Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION
       }
 
       options = {:headers => headers, :backoff => true, :success => '202'}

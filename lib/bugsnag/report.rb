@@ -121,9 +121,9 @@ module Bugsnag
 
     def headers
       {
-        :"Bugsnag-Api-Key" => api_key,
-        :"Bugsnag-Payload-Version" => CURRENT_PAYLOAD_VERSION,
-        :"Bugsnag-Sent-At" => Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
+        "Bugsnag-Api-Key" => api_key,
+        "Bugsnag-Payload-Version" => CURRENT_PAYLOAD_VERSION,
+        "Bugsnag-Sent-At" => Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
       }
     end
 
