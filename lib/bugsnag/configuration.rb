@@ -126,7 +126,7 @@ module Bugsnag
       self.request_data[key] = value
     end
 
-    def unset_request_data(key, value)
+    def unset_request_data(key, value=nil)
       self.request_data.delete(key)
     end
 
