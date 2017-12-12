@@ -57,13 +57,16 @@ module Bugsnag
       self.send_environment = false
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
-      self.ignore_classes = Set.new([])
       self.endpoint = DEFAULT_ENDPOINT
       self.hostname = default_hostname
       self.timeout = 15
       self.notify_release_stages = nil
       self.track_sessions = false
       self.session_endpoint = DEFAULT_SESSION_ENDPOINT
+
+      # SystemExit and Interrupt are common Exception types seen with successful
+      # exits and are not automatically reported to Bugsnag
+      self.ignore_classes = Set.new([SystemExit, Interrupt])
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]

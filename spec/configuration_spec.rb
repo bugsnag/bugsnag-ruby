@@ -28,4 +28,8 @@ describe Bugsnag::Configuration do
       expect(subject.track_sessions).to be false
     end
   end
+
+  it "should have exit exception classes ignored by default" do
+    expect(subject.ignore_classes).to eq(Set.new([SystemExit, Interrupt]))
+  end
 end
