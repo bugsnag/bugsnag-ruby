@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 6.4.0 (21 Dec 2017)
+
+### Enhancements
+
+* Added support for DelayedJob custom job arguments
+  | [#359](https://github.com/bugsnag/bugsnag-ruby/pull/359)
+  | [Calvin Hughes](https://github.com/calvinhughes)
+
 ## 6.3.0 (14 Dec 2017)
 
 ### Enhancements
