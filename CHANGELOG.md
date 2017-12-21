@@ -1,6 +1,27 @@
 Changelog
 =========
 
+## 6.3.0 (14 Dec 2017)
+
+### Enhancements
+
+* Allow skipping report generation using exception property
+  | [#402](https://github.com/bugsnag/bugsnag-ruby/pull/402)
+
+## 6.2.0 (07 Dec 2017)
+
+### Enhancements
+
+* Added common exit exceptions - SystemExit and Interrupt - to default ignore classes.
+  | [#404](https://github.com/bugsnag/bugsnag-ruby/pull/404)
+
+## 6.1.1 (23 Nov 2017)
+
+### Fixes
+
+* Ensured Bugsnag class intialises before railties initialised
+  | [#396](https://github.com/bugsnag/bugsnag-ruby/pull/396)
+
 ## 6.1.0 (17 Nov 2017)
 
 ### Enhancements

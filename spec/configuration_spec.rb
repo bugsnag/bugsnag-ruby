@@ -23,4 +23,8 @@ describe Bugsnag::Configuration do
       expect(subject.delivery_method).to eq(:wow)
     end
   end
+
+  it "should have exit exception classes ignored by default" do
+    expect(subject.ignore_classes).to eq(Set.new([SystemExit, Interrupt]))
+  end
 end
