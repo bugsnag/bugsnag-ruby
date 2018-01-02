@@ -2,7 +2,6 @@ source "https://rubygems.org"
 
 group :test, optional: true do
     gem 'rake', '~> 10.1.1'
-    gem 'rack'
     gem 'rspec'
     gem 'rspec-mocks'
     gem 'rdoc'

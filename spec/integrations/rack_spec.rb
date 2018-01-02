@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'rack'
 
 describe Bugsnag::Rack do
   it "calls the upstream rack app with the environment" do
@@ -57,34 +56,82 @@ describe Bugsnag::Rack do
 
       expect(Bugsnag).not_to have_sent_notification
     end
+  end
 
-    it "calls through the rack middleware" do
-      Bugsnag.configure do |config|
-        config.middleware.use(Bugsnag::Middleware::RackRequest)
+  context "when running against the middleware" do
+    before do
+      unless defined?(::Rack)
+        @mocked_rack = true
+        class ::Rack
+          class ::Request
+          end
+        end
       end
+    end
 
+    it "correctly extracts data from rack middleware" do
+      callback = double
       rack_env = {
-        "key" => "value",
+        :env => true,
+        :HTTP_test_key => "test_key",
         "rack.session" => {
-          "test" => "testing"
+          :session => true
         }
       }
-
-      rack_stack.call(rack_env) rescue nil
-
-      expect(Bugsnag).to have_sent_notification{ |payload|
-        event = get_event_from_payload(payload)
-        metadata = event['metaData']
-        expect(metadata).to include("request")
-        expect(metadata['request']).to include("httpMethod" => nil)
-        expect(metadata['request']).to include("params" => {})
-        expect(metadata['request']).to include("referer" => nil)
-        expect(metadata['request']).to include("clientIp" => "")
-        expect(metadata['request']).to include("headers" => {})
-        expect(metadata).to include("session")
-        expect(metadata['session']).to include("test" => "testing")
+      
+      rack_request = double
+      rack_params = {
+        :param => 'test'
       }
+      allow(rack_request).to receive_messages(
+        :params => rack_params,
+        :ip => "rack_ip",
+        :request_method => "TEST",
+        :path => "/TEST_PATH",
+        :scheme => "http",
+        :host => "test_host",
+        :port => 80,
+        :referer => "referer",
+        :fullpath => "/TEST_PATH"
+      )
+      expect(::Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
+
+      report = double("Bugsnag::Report")
+      allow(report).to receive(:request_data).and_return({
+        :rack_env => rack_env
+      })
+      expect(report).to receive(:context=).with("TEST /TEST_PATH")
+      expect(report).to receive(:user).and_return({})
+
+      config = double
+      allow(config).to receive(:send_environment).and_return(true)
+      allow(config).to receive(:meta_data_filters).and_return(nil)
+      allow(report).to receive(:configuration).and_return(config)
+      expect(report).to receive(:add_tab).once.with(:environment, rack_env)
+      expect(report).to receive(:add_tab).once.with(:request, {
+        :url => "http://test_host/TEST_PATH",
+        :httpMethod => "TEST",
+        :params => rack_params,
+        :referer => "referer",
+        :clientIp => "rack_ip",
+        :headers => {
+          "Test-Key" => "test_key"
+        }
+      })
+      expect(report).to receive(:add_tab).once.with(:session, {
+        :session => true
+      })
+
+      expect(callback).to receive(:call).with(report)
+
+      middleware = Bugsnag::Middleware::RackRequest.new(callback)
+      middleware.call(report)
     end
+
+    after do
+      Object.send(:remove_const, :Rack) if @mocked_rack
+    end
+
   end
 
   it "don't mess with middlewares list on each req" do
