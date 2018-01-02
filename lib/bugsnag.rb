@@ -62,6 +62,11 @@ module Bugsnag
         return
       end
 
+      if exception.respond_to?(:skip_bugsnag) && exception.skip_bugsnag
+        configuration.debug("Not notifying due to skip_bugsnag flag")
+        return
+      end
+
       report = Report.new(exception, configuration, auto_notify)
 
       # If this is an auto_notify we yield the block before the any middleware is run
