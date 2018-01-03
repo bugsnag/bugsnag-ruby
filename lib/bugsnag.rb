@@ -13,7 +13,6 @@ require "bugsnag/delivery/synchronous"
 require "bugsnag/delivery/thread_queue"
 
 require "bugsnag/integrations/rack"
-require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
 
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
@@ -66,6 +65,11 @@ module Bugsnag
 
       if !configuration.should_notify_release_stage?
         configuration.debug("Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
+        return
+      end
+
+      if exception.respond_to?(:skip_bugsnag) && exception.skip_bugsnag
+        configuration.debug("Not notifying due to skip_bugsnag flag")
         return
       end
 
@@ -148,6 +152,7 @@ module Bugsnag
   end
 end
 
+require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
 [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que].each do |integration|
   begin
     require "bugsnag/integrations/#{integration}"

@@ -24,6 +24,10 @@ describe Bugsnag::Configuration do
     end
   end
 
+  it "should have exit exception classes ignored by default" do
+      expect(subject.ignore_classes).to eq(Set.new([SystemExit, Interrupt]))
+  end
+  
   describe "add_exit_handler" do
 
     before do
@@ -50,5 +54,7 @@ describe Bugsnag::Configuration do
       expect(Bugsnag).to receive(:at_exit)
       Bugsnag.register_at_exit
     end
+
   end
+  
 end

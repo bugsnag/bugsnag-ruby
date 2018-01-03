@@ -40,7 +40,13 @@ unless defined? Delayed::Plugins::Bugsnag
               p[:id]           = payload.id           if payload.respond_to?(:id)
               p[:display_name] = payload.display_name if payload.respond_to?(:display_name)
               p[:method_name]  = payload.method_name  if payload.respond_to?(:method_name)
-              p[:args]         = payload.args         if payload.respond_to?(:args)
+
+              if payload.respond_to?(:args)
+                p[:args] = payload.args
+              elsif payload.respond_to?(:to_h)
+                p[:args] = payload.to_h
+              end
+
               if payload.is_a?(::Delayed::PerformableMethod) && (object = payload.object)
                 p[:object] = {
                   :class => object.class.name,

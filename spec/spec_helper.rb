@@ -1,4 +1,4 @@
-if ARGV.include? "--coverage"
+if ENV['GEMSETS'] and ENV['GEMSETS'].include? "coverage"
   require 'simplecov'
   require 'coveralls'
 
@@ -14,7 +14,9 @@ require 'webmock/rspec'
 require 'rspec/expectations'
 require 'rspec/mocks'
 
-class BugsnagTestException < RuntimeError; end
+class BugsnagTestException < RuntimeError
+  attr_accessor :skip_bugsnag
+end
 
 def get_event_from_payload(payload)
   expect(payload["events"].size).to eq(1)
