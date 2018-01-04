@@ -7,6 +7,7 @@ require "bugsnag/meta_data"
 require "bugsnag/report"
 require "bugsnag/cleaner"
 require "bugsnag/helpers"
+require "bugsnag/session_tracker"
 
 require "bugsnag/delivery"
 require "bugsnag/delivery/synchronous"
@@ -38,6 +39,8 @@ module Bugsnag
         configuration.warn("No valid API key has been set, notifications will not be sent")
         @key_warning = true
       end
+
+      session_tracker.config = configuration
     end
 
     # Explicitly notify of an exception
@@ -113,8 +116,8 @@ module Bugsnag
 
         # Deliver
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
-        payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
-        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
+        options = {:headers => report.headers, :trim_payload => true}
+        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, report.as_json, configuration, options)
       end
     end
 
@@ -122,6 +125,11 @@ module Bugsnag
     def configuration
       @configuration = nil unless defined?(@configuration)
       @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
+    end
+
+    def session_tracker
+      @session_tracker = nil unless defined?(@session_tracker)
+      @session_tracker || LOCK.synchronize { @session_tracker ||= Bugsnag::SessionTracker.new(configuration)}
     end
 
     # Allow access to "before notify" callbacks

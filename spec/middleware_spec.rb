@@ -16,7 +16,7 @@ describe Bugsnag::MiddlewareStack do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     expect(callback_run_count).to eq(1)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).not_to be_nil
       expect(event["metaData"]["some_tab"]["info"]).to eq("here")
@@ -37,7 +37,7 @@ describe Bugsnag::MiddlewareStack do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     expect(callback_run_count).to eq(1)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["custom"]).not_to be_nil
       expect(event["metaData"]["custom"]["info"]).to eq("here")
@@ -56,7 +56,7 @@ describe Bugsnag::MiddlewareStack do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     expect(callback_run_count).to eq(1)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["user"]).not_to be_nil
       expect(event["user"]["id"]).to eq("here")
@@ -73,7 +73,7 @@ describe Bugsnag::MiddlewareStack do
       report.meta_data.merge!({custom: {info: 'overridden'}})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["custom"]).not_to be_nil
       expect(event["metaData"]["custom"]["info"]).to eq("overridden")
@@ -87,7 +87,7 @@ describe Bugsnag::MiddlewareStack do
       report.meta_data.merge!({custom: {info: 'overridden'}})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["custom"]).not_to be_nil
       expect(event["metaData"]["custom"]["info"]).to eq("overridden")
@@ -97,7 +97,7 @@ describe Bugsnag::MiddlewareStack do
   it "does not have have before callbacks by default" do
     expect(Bugsnag.before_notify_callbacks.size).to eq(0)
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"].size).to eq(0)
     }
@@ -172,7 +172,7 @@ describe Bugsnag::MiddlewareStack do
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]['test']['value']).to eq("abcdef*****3456")
     }
@@ -187,7 +187,7 @@ describe Bugsnag::MiddlewareStack do
           Bugsnag.notify(e)
         end
 
-        expect(Bugsnag).to have_sent_notification{ |payload|
+        expect(Bugsnag).to have_sent_notification{ |payload, headers|
           event = get_event_from_payload(payload)
           expect(event["metaData"]["error"]).to_not be_nil
           expect(event["metaData"]["error"]).to eq({"suggestion" => "prepend"})
@@ -205,7 +205,7 @@ describe Bugsnag::MiddlewareStack do
           Bugsnag.notify(e)
         end
 
-        expect(Bugsnag).to have_sent_notification{ |payload|
+        expect(Bugsnag).to have_sent_notification{ |payload, headers|
           event = get_event_from_payload(payload)
           expect(event["metaData"]["error"]).to be_nil
         }
@@ -240,7 +240,7 @@ describe Bugsnag::MiddlewareStack do
       }
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["unhandled"]).to be true
       expect(event["severityReason"]).to eq({
