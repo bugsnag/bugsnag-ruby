@@ -22,6 +22,7 @@ There are two methods of configuring Bugsnag within a Rails application:
 
 This is sufficient to start reporting unhandled exceptions to Bugsnag.
 
+
 ## Running the example
 
 Run the example using:
@@ -33,6 +34,11 @@ bundle exec rails server
 Once the server is running head to the default path for more information on Bugsnag logging examples.
 
 # Running delayed job
+
+To run the delayed job example you'll need to first run a database migration:
+```shell
+bundle exec rake db:migrate
+```
 
 This example comes packaged with a delayed job setup to demonstrate how errors are reported through delayed job.  Once the rails setup is complete with an initializer at ```config/initializers/bugsnag.rb``` you don't need to do anything else with delayed job, just run the examples!
 
