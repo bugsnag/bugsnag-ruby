@@ -116,8 +116,9 @@ module Bugsnag
 
         # Deliver
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
-        options = {:headers => report.headers, :trim_payload => true}
-        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, report.as_json, configuration, options)
+        options = {:headers => report.headers}
+        payload = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
+        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload, configuration, options)
       end
     end
 

@@ -126,7 +126,7 @@ module Bugsnag
         return
       end
 
-      payload = {
+      body = {
         :notifier => {
           :name => Bugsnag::Report::NOTIFIER_NAME,
           :url => Bugsnag::Report::NOTIFIER_URL,
@@ -142,6 +142,7 @@ module Bugsnag
         },
         :sessionCounts => sessionCounts
       }
+      payload = ::JSON.dump(body)
 
       headers = {
         "Bugsnag-Api-Key" => @config.api_key,

@@ -31,11 +31,6 @@ module Bugsnag
         def request(url, body, configuration, options)
           uri = URI.parse(url)
 
-          if options[:trim_payload]
-            body = Bugsnag::Helpers.trim_if_needed(body)
-          end
-          payload = ::JSON.dump(body)
-
           if configuration.proxy_host
             http = Net::HTTP.new(uri.host, uri.port, configuration.proxy_host, configuration.proxy_port, configuration.proxy_user, configuration.proxy_password)
           else
@@ -54,7 +49,7 @@ module Bugsnag
           headers.merge!(default_headers)
 
           request = Net::HTTP::Post.new(path(uri), headers)
-          request.body = payload
+          request.body = body
 
           http.request(request)
         end
