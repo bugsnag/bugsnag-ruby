@@ -40,7 +40,9 @@ module Bugsnag
         @key_warning = true
       end
 
-      session_tracker.config = configuration
+      if configuration.track_sessions
+        session_tracker.start_delivery_thread
+      end
     end
 
     # Explicitly notify of an exception
@@ -130,7 +132,7 @@ module Bugsnag
 
     def session_tracker
       @session_tracker = nil unless defined?(@session_tracker)
-      @session_tracker || LOCK.synchronize { @session_tracker ||= Bugsnag::SessionTracker.new(configuration)}
+      @session_tracker || LOCK.synchronize { @session_tracker ||= Bugsnag::SessionTracker.new}
     end
 
     # Allow access to "before notify" callbacks
