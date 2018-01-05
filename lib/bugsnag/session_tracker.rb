@@ -42,7 +42,6 @@ module Bugsnag
       }
       SessionTracker.set_current_session(new_session)
       add_thread = Thread.new { add_session(start_time) }
-      add_thread.join()
     end
 
     def send_sessions

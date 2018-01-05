@@ -41,6 +41,9 @@ describe Bugsnag::SessionTracker do
   it 'adds session object to queue' do
     tracker = Bugsnag::SessionTracker.new(@config)
     tracker.create_session
+    while tracker.session_counts.size == 0
+      sleep(0.05)
+    end
     expect(tracker.session_counts.size).to eq(1)
     time = tracker.session_counts.keys.last
     count = tracker.session_counts[time]
@@ -78,6 +81,9 @@ describe Bugsnag::SessionTracker do
     end
     WebMock.allow_net_connect!
     Bugsnag.session_tracker.create_session
+    while Bugsnag.session_tracker.session_counts.size == 0
+      sleep(0.05)
+    end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
@@ -101,6 +107,9 @@ describe Bugsnag::SessionTracker do
     end
     WebMock.allow_net_connect!
     Bugsnag.session_tracker.create_session
+    while Bugsnag.session_tracker.session_counts.size == 0
+      sleep(0.05)
+    end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
