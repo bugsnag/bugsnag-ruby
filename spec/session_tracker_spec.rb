@@ -8,8 +8,6 @@ describe Bugsnag::SessionTracker do
   queue = Queue.new
 
   before do
-    @config = Bugsnag::Configuration.new
-    @config.track_sessions = true
     server = WEBrick::HTTPServer.new :Port => 0, :Logger => WEBrick::Log.new("/dev/null"), :AccessLog => []
     server.mount_proc '/' do |req, res|
       headers = []
@@ -33,13 +31,14 @@ describe Bugsnag::SessionTracker do
   it 'does not create session object if disabled' do
     config = Bugsnag::Configuration.new
     config.track_sessions = false
-    tracker = Bugsnag::SessionTracker.new(config)
+    tracker = Bugsnag::SessionTracker.new
     tracker.create_session
     expect(tracker.session_counts.size).to eq(0)
   end
 
   it 'adds session object to queue' do
-    tracker = Bugsnag::SessionTracker.new(@config)
+    tracker = Bugsnag::SessionTracker.new
+    tracker.track_sessions = true
     tracker.create_session
     while tracker.session_counts.size == 0
       sleep(0.05)
@@ -52,7 +51,8 @@ describe Bugsnag::SessionTracker do
   end
 
   it 'stores session in thread' do
-    tracker = Bugsnag::SessionTracker.new(@config)
+    tracker = Bugsnag::SessionTracker.new
+    tracker.track_sessions = true
     tracker.create_session
     session = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     expect(session.include? :id).to be true
@@ -65,7 +65,8 @@ describe Bugsnag::SessionTracker do
   end
 
   it 'gives unique ids to each session' do
-    tracker = Bugsnag::SessionTracker.new(@config)
+    tracker = Bugsnag::SessionTracker.new
+    tracker.track_sessions = true
     tracker.create_session
     session_one = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     tracker.create_session
