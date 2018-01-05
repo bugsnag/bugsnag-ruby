@@ -111,12 +111,12 @@ module Bugsnag
         @config.debug("No sessions to deliver")
         return
       end
-      
+
       if !@config.valid_api_key?
         @config.debug("Not delivering sessions due to an invalid api_key")
         return
       end
-      
+
       if !@config.should_notify_release_stage?
         @config.debug("Not delivering sessions due to notify_release_stages :#{@config.notify_release_stages.inspect}")
         return
@@ -126,7 +126,7 @@ module Bugsnag
         @config.debug("Not delivering sessions due to asynchronous delivery being disabled")
         return
       end
-      
+
       payload = {
         :notifier => {
           :name => Bugsnag::Report::NOTIFIER_NAME,

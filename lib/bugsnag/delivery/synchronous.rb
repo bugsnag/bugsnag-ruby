@@ -62,7 +62,7 @@ module Bugsnag
         def backoff(url, body, configuration, options)
           # Ensure we have the latest configuration for making these requests
           @latest_configuration = configuration
-          
+
           BACKOFF_LOCK.lock
           begin
             # Define an exit function once to handle outstanding requests
@@ -109,7 +109,7 @@ module Bugsnag
             @latest_configuration.warn("Requests to #{url} finished, #{requests.size} failed")
           end
         end
-        
+
         def spawn_backoff_thread(url)
           new_thread = Thread.new(url) do |url|
             interval = 2

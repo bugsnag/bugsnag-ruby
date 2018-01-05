@@ -1006,7 +1006,7 @@ describe Bugsnag::Report do
     Bugsnag.notify(exception)
     expect(Bugsnag).not_to have_sent_notification
   end
-    
+
 
   if defined?(JRUBY_VERSION)
 

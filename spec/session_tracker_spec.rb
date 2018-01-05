@@ -21,7 +21,7 @@ describe Bugsnag::SessionTracker do
     Thread.new{ server.start }
   end
 
-  after do    
+  after do
     Bugsnag.configure do |conf|
       conf.track_sessions = false
       conf.delivery_method = :synchronous
