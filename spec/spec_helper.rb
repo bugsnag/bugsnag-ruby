@@ -23,10 +23,6 @@ def get_event_from_payload(payload)
   payload["events"].first
 end
 
-def get_headers_from_payload(payload)
-
-end
-
 def get_exception_from_payload(payload)
   event = get_event_from_payload(payload)
   expect(event["exceptions"].size).to eq(1)
