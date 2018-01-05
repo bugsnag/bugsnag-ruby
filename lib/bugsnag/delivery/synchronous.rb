@@ -1,5 +1,4 @@
 require "net/https"
-require "bugsnag/delivery/retry"
 require "uri"
 
 module Bugsnag
