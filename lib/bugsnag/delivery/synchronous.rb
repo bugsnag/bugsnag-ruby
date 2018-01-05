@@ -11,7 +11,10 @@ module Bugsnag
             configuration.debug("Request to #{url} completed, status: #{response.code}")
             success = options[:success] || '200'
             if !(response.code == success)
-              configuration.warn("Notifications to #{url} was reported unsuccessful with code #{response.code}")
+              configuration.warn("Notification to #{url} was reported unsuccessful with code #{response.code}")
+              if options[:retry]
+                options[:retry].call
+              end
             end
           rescue StandardError => e
             # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec

@@ -6,9 +6,9 @@ module Bugsnag
   class SessionTracker
 
     THREAD_SESSION = "bugsnag_session"
-    TIME_THRESHOLD = 2
+    TIME_THRESHOLD = 60
     FALLBACK_TIME = 300
-    MAXIMUM_SESSION_COUNT = 50
+    MAXIMUM_SESSION_COUNT = 200
     SESSION_PAYLOAD_VERSION = "1.0"
 
     attr_reader :session_counts
@@ -105,6 +105,24 @@ module Bugsnag
       end
     end
 
+  def merge_sessions(sessions)
+      sessions.each do |session|
+        @session_counts[session[:startedAt]] ||= 0
+        @session_counts[session[:startedAt]] += session[:sessionsStarted]
+      end
+      trim_sessions if @session_counts.size > MAXIMUM_SESSION_COUNT
+    end
+
+    def trim_sessions
+      counts = @session_counts.sort_by { |min, count| min }
+      while counts.size > MAXIMUM_SESSION_COUNT
+        current = counts.first
+        counts.slice!(0)
+        counts.first()[1] += current[1]
+      end
+      @session_counts = counts.to_h
+    end
+
     def deliver(sessionCounts)
       if sessionCounts.length == 0
         @config.debug("No sessions to deliver")
@@ -149,9 +167,15 @@ module Bugsnag
         "Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION
       }
 
-      options = {:headers => headers, :success => '202'}
-      @last_sent = Time.now
-      Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, payload, @config, options)
+      retry_proc = proc { merge_sessions(sessionCounts) }
+
+      options = {:headers => headers, :success => '202', :retry => retry_proc}
+      queued = Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, payload, @config, options)
+      if queued.nil?
+        merge_sessions(sessionCounts)
+      else
+        @last_sent = Time.now
+      end
     end
   end
 end
