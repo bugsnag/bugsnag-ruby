@@ -69,7 +69,6 @@ module Bugsnag
         end
         @session_counts[min] ||= 0
         @session_counts[min] += 1
-        puts "Time diff = #{Time.now() - @last_sent}"
         if Time.now() - @last_sent > TIME_THRESHOLD
           deliver_sessions
         end
