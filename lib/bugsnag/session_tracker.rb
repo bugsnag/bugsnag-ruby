@@ -6,7 +6,7 @@ module Bugsnag
   class SessionTracker
 
     THREAD_SESSION = "bugsnag_session"
-    TIME_THRESHOLD = 2
+    TIME_THRESHOLD = 60
     FALLBACK_TIME = 300
     MAXIMUM_SESSION_COUNT = 50
     SESSION_PAYLOAD_VERSION = "1.0"
