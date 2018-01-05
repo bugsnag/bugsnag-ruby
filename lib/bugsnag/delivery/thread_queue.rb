@@ -14,6 +14,7 @@ module Bugsnag
           start_once!
 
           if @queue.length > MAX_OUTSTANDING_REQUESTS
+            puts "Dropping request to #{url}"
             @configuration.warn("Dropping notification, #{@queue.length} outstanding requests")
             return
           end

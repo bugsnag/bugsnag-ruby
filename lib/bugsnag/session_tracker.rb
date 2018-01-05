@@ -6,7 +6,7 @@ module Bugsnag
   class SessionTracker
 
     THREAD_SESSION = "bugsnag_session"
-    TIME_THRESHOLD = 60
+    TIME_THRESHOLD = 2
     FALLBACK_TIME = 300
     MAXIMUM_SESSION_COUNT = 50
     SESSION_PAYLOAD_VERSION = "1.0"
@@ -69,6 +69,7 @@ module Bugsnag
         end
         @session_counts[min] ||= 0
         @session_counts[min] += 1
+        puts "Time diff = #{Time.now() - @last_sent}"
         if Time.now() - @last_sent > TIME_THRESHOLD
           deliver_sessions
         end
@@ -149,7 +150,7 @@ module Bugsnag
         "Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION
       }
 
-      options = {:headers => headers, :backoff => true, :success => '202'}
+      options = {:headers => headers, :success => '202'}
       @last_sent = Time.now
       Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, payload, @config, options)
     end
