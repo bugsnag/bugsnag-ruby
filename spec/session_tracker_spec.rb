@@ -86,6 +86,9 @@ describe Bugsnag::SessionTracker do
     end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
+    while Bugsnag.session_tracker.session_counts.size == 1
+      sleep(0.05)
+    end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
     while queue.empty?
       sleep(0.05)
@@ -112,6 +115,9 @@ describe Bugsnag::SessionTracker do
     end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
+    while Bugsnag.session_tracker.session_counts.size == 1
+      sleep(0.05)
+    end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
     while queue.empty?
       sleep(0.05)
