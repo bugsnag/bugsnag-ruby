@@ -1,12 +1,12 @@
 require 'thread'
 require 'time'
 require 'securerandom'
+require 'concurrent'
 
 module Bugsnag
   class SessionTracker
 
     THREAD_SESSION = "bugsnag_session"
-    MAXIMUM_SESSION_COUNT = 100
     SESSION_PAYLOAD_VERSION = "1.0"
 
     attr_reader :session_counts
@@ -21,7 +21,7 @@ module Bugsnag
     end
 
     def initialize
-      @session_counts = {}
+      @session_counts = Concurrent::Hash.new(0)
       @mutex = Mutex.new
       @track_sessions = false
     end
@@ -43,19 +43,14 @@ module Bugsnag
 
     def send_sessions
       return unless @track_sessions
-      @mutex.lock
-      begin
-        sessions = []
-        @session_counts.each do |min, count|
-          sessions << {
-            :startedAt => min,
-            :sessionsStarted => count
-          }
-        end
-        @session_counts = {}
-      ensure
-        @mutex.unlock
+      sessions = []
+      @session_counts.each do |min, count|
+        sessions << {
+          :startedAt => min,
+          :sessionsStarted => count
+        }
       end
+      @session_counts = Concurrent::Hash.new(0)
       deliver(sessions)
     end
 
@@ -65,19 +60,18 @@ module Bugsnag
       if !@initialised_sessions
         @initialised_sessions = true
         at_exit do
-          if !@delivery_thread.nil? && @delivery_thread.status == 'sleep'
+          if !@delivery_thread.nil?
+            @delivery_thread.execute
             @delivery_thread.terminate
-            send_sessions
           else
-            @delivery_thread.join
-          end
-        end
-        @delivery_thread = Thread.new do
-          while true
-            sleep(30)
             if @session_counts.size > 0
               send_sessions
             end
+          end
+        end
+        @delivery_thread = Concurrent::TimerTask.new(execution_interval: 30) do
+          if @session_counts.size > 0
+            send_sessions
           end
         end
       end
@@ -85,29 +79,22 @@ module Bugsnag
 
     private
     def add_session(min)
-      @mutex.lock
-      begin
-        @session_counts[min] ||= 0
-        @session_counts[min] += 1
-      ensure
-        @mutex.unlock
-      end
+      @session_counts[min] += 1
     end
 
-    def deliver(sessionCounts)
-      config = Bugsnag.configuration
-      if sessionCounts.length == 0
-        config.debug("No sessions to deliver")
+    def deliver(session_counts)
+      if session_counts.length == 0
+        Bugsnag.configuration.debug("No sessions to deliver")
         return
       end
 
       if !Bugsnag.configuration.valid_api_key?
-        config.debug("Not delivering sessions due to an invalid api_key")
+        Bugsnag.configuration.debug("Not delivering sessions due to an invalid api_key")
         return
       end
 
-      if !config.should_notify_release_stage?
-        config.debug("Not delivering sessions due to notify_release_stages :#{@config.notify_release_stages.inspect}")
+      if !Bugsnag.configuration.should_notify_release_stage?
+        Bugsnag.configuration.debug("Not delivering sessions due to notify_release_stages :#{Bugsnag.configuration.notify_release_stages.inspect}")
         return
       end
 
@@ -118,24 +105,24 @@ module Bugsnag
           :version => Bugsnag::Report::NOTIFIER_VERSION
         },
         :device => {
-          :hostname => config.hostname
+          :hostname => Bugsnag.configuration.hostname
         },
         :app => {
-          :version => config.app_version,
-          :releaseStage => config.release_stage,
-          :type => config.app_type
+          :version => Bugsnag.configuration.app_version,
+          :releaseStage => Bugsnag.configuration.release_stage,
+          :type => Bugsnag.configuration.app_type
         },
-        :sessionCounts => sessionCounts
+        :sessionCounts => session_counts
       }
       payload = ::JSON.dump(body)
 
       headers = {
-        "Bugsnag-Api-Key" => config.api_key,
+        "Bugsnag-Api-Key" => Bugsnag.configuration.api_key,
         "Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION
       }
 
       options = {:headers => headers, :success => '202'}
-      Bugsnag::Delivery[config.delivery_method].deliver(config.session_endpoint, payload, config, options)
+      Bugsnag::Delivery[Bugsnag.configuration.delivery_method].deliver(Bugsnag.configuration.session_endpoint, payload, Bugsnag.configuration, options)
     end
   end
 end
