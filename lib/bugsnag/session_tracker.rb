@@ -62,7 +62,7 @@ module Bugsnag
         at_exit do
           if !@delivery_thread.nil?
             @delivery_thread.execute
-            @delivery_thread.terminate
+            @delivery_thread.shutdown
           else
             if @session_counts.size > 0
               send_sessions
