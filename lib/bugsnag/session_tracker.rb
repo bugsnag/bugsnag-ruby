@@ -56,7 +56,7 @@ module Bugsnag
     end
 
     def start_delivery_thread
-      MUTEX.synchronise do
+      MUTEX.synchronize do
         @track_sessions = true
         @started = nil unless defined?(@started)
         return if @started == Process.pid
