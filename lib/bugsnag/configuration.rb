@@ -33,7 +33,7 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :ignore_classes
-    attr_accessor :track_sessions
+    attr_accessor :auto_session_tracking
     attr_accessor :session_endpoint
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
@@ -61,7 +61,7 @@ module Bugsnag
       self.hostname = default_hostname
       self.timeout = 15
       self.notify_release_stages = nil
-      self.track_sessions = false
+      self.auto_session_tracking = false
       self.session_endpoint = DEFAULT_SESSION_ENDPOINT
 
       # SystemExit and Interrupt are common Exception types seen with successful

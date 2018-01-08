@@ -25,7 +25,7 @@ describe Bugsnag::Configuration do
 
     it "should have sensible defaults for session tracking" do
       expect(subject.session_endpoint).to eq("https://sessions.bugsnag.com")
-      expect(subject.track_sessions).to be false
+      expect(subject.auto_session_tracking).to be false
     end
   end
 

@@ -10,7 +10,7 @@ module Bugsnag
     SESSION_PAYLOAD_VERSION = "1.0"
 
     attr_reader :session_counts
-    attr_accessor :track_sessions
+    attr_reader :track_sessions
 
     def self.set_current_session(session)
       Thread.current[THREAD_SESSION] = session
@@ -121,7 +121,7 @@ module Bugsnag
         "Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION
       }
 
-      options = {:headers => headers, :success => '202'}
+      options = {:headers => headers}
       Bugsnag::Delivery[Bugsnag.configuration.delivery_method].deliver(Bugsnag.configuration.session_endpoint, payload, Bugsnag.configuration, options)
     end
   end
