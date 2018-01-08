@@ -9,7 +9,7 @@ module Bugsnag
           begin
             response = request(url, body, configuration, options)
             configuration.debug("Request to #{url} completed, status: #{response.code}")
-            if !(response.code[0] == "2")
+            if response.code[0] != "2"
               configuration.warn("Notifications to #{url} was reported unsuccessful with code #{response.code}")
             end
           rescue StandardError => e

@@ -8,6 +8,7 @@ module Bugsnag
 
     THREAD_SESSION = "bugsnag_session"
     SESSION_PAYLOAD_VERSION = "1.0"
+    MUTEX = Mutex.new
 
     attr_reader :session_counts
     attr_reader :track_sessions
@@ -43,21 +44,23 @@ module Bugsnag
     def send_sessions
       return unless @track_sessions
       sessions = []
-      @session_counts.each do |min, count|
+      counts = @session_counts.dup
+      @session_counts = Concurrent::Hash.new(0)
+      counts.each do |min, count|
         sessions << {
           :startedAt => min,
           :sessionsStarted => count
         }
       end
-      @session_counts = Concurrent::Hash.new(0)
       deliver(sessions)
     end
 
     def start_delivery_thread
-      @track_sessions = true
-      @initialised_sessions = false unless defined?(@initialised_sessions)
-      if !@initialised_sessions
-        @initialised_sessions = true
+      MUTEX.synchronise do
+        @track_sessions = true
+        @started = nil unless defined?(@started)
+        return if @started == Process.pid
+        @started = Process.pid
         at_exit do
           if !@delivery_thread.nil?
             @delivery_thread.execute
