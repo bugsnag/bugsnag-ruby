@@ -34,6 +34,7 @@ module Bugsnag
     attr_accessor :hostname
     attr_accessor :ignore_classes
     attr_accessor :auto_session_tracking
+    attr_accessor :track_sessions
     attr_accessor :session_endpoint
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
@@ -48,6 +49,8 @@ module Bugsnag
       /secret/i,
       "rack.request.form_vars"
     ].freeze
+
+    alias :track_sessions :auto_session_tracking
 
     def initialize
       @mutex = Mutex.new
