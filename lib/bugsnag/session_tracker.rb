@@ -22,7 +22,6 @@ module Bugsnag
 
     def initialize
       @session_counts = Concurrent::Hash.new(0)
-      @mutex = Mutex.new
       @track_sessions = false
     end
 
