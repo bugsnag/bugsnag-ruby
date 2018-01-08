@@ -40,7 +40,7 @@ module Bugsnag
         @key_warning = true
       end
 
-      if configuration.auto_session_tracking
+      if configuration.auto_capture_sessions
         session_tracker.start_delivery_thread
       end
     end

@@ -27,7 +27,7 @@ describe Bugsnag::SessionTracker do
 
   after do
     Bugsnag.configure do |conf|
-      conf.auto_session_tracking = false
+      conf.auto_capture_sessions = false
       conf.delivery_method = :synchronous
     end
     server.stop
@@ -36,7 +36,7 @@ describe Bugsnag::SessionTracker do
 
   it 'does not create session object if disabled' do
     config = Bugsnag::Configuration.new
-    config.auto_session_tracking = false
+    config.auto_capture_sessions = false
     tracker = Bugsnag::SessionTracker.new
     tracker.create_session
     expect(tracker.session_counts.size).to eq(0)
@@ -82,7 +82,7 @@ describe Bugsnag::SessionTracker do
 
   it 'sends sessions when send_sessions is called' do
     Bugsnag.configure do |conf|
-      conf.auto_session_tracking = true
+      conf.auto_capture_sessions = true
       conf.delivery_method = :thread_queue
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
     end
@@ -110,7 +110,7 @@ describe Bugsnag::SessionTracker do
 
   it 'sets details from config' do
     Bugsnag.configure do |conf|
-      conf.auto_session_tracking = true
+      conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
       conf.delivery_method = :thread_queue
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
@@ -153,7 +153,7 @@ describe Bugsnag::SessionTracker do
 
   it 'uses middleware to attach session to notification' do
     Bugsnag.configure do |conf|
-      conf.auto_session_tracking = true
+      conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
     end
     Bugsnag.session_tracker.create_session
