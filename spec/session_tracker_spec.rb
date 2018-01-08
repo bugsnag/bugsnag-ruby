@@ -3,6 +3,12 @@ require 'webrick'
 require 'spec_helper'
 require 'json'
 
+module Bugsnag
+  class SessionTracker
+    attr_accessor :track_sessions
+  end
+end
+
 describe Bugsnag::SessionTracker do
   server = nil
   queue = Queue.new
@@ -38,7 +44,7 @@ describe Bugsnag::SessionTracker do
 
   it 'adds session object to queue' do
     tracker = Bugsnag::SessionTracker.new
-    tracker.auto_session_tracking = true
+    tracker.track_sessions = true
     tracker.create_session
     while tracker.session_counts.size == 0
       sleep(0.05)
@@ -52,7 +58,7 @@ describe Bugsnag::SessionTracker do
 
   it 'stores session in thread' do
     tracker = Bugsnag::SessionTracker.new
-    tracker.auto_session_tracking = true
+    tracker.track_sessions = true
     tracker.create_session
     session = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     expect(session.include? :id).to be true
@@ -66,7 +72,7 @@ describe Bugsnag::SessionTracker do
 
   it 'gives unique ids to each session' do
     tracker = Bugsnag::SessionTracker.new
-    tracker.auto_session_tracking = true
+    tracker.track_sessions = true
     tracker.create_session
     session_one = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     tracker.create_session
