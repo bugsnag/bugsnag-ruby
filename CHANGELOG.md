@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## 6.6.0 (09 Jan 2018)
+
+### Enhancements
+
+* Session tracking update:
+  * Refactor of session tracking to adhere to a common interface, and simplify usage.
+  * Includes several performance enhancements.
+  * Reverts potentially breaking change of json body sanitation within delivery function.
+  | [#412](https://github.com/bugsnag/bugsnag-ruby/pull/412)
+  * Maintains backwards compatibility with previous session-tracking changes.
+  | [#413](https://github.com/bugsnag/bugsnag-ruby/pull/413)
+
 ## 6.5.0 (04 Jan 2018)
 
 ### Enhancements
