@@ -5,8 +5,8 @@ Changelog
 
 ### Enhancements
 
-* Adds support for tracking sessions and crash rate by setting the configuration option `configuration.track_sessions` to `true`.
-  Sessions can be manually created using `Bugsnag.start_session`, and manually delivered using `Bugsnag.send_sessions`.
+* Adds support for tracking sessions and crash rate by setting the configuration option `configuration.auto_capture_sessions` to `true`.
+  Sessions can be manually created using `Bugsnag.start_session`.
   | [#411](https://github.com/bugsnag/bugsnag-ruby/pull/411)
 
 ## 6.4.0 (21 Dec 2017)

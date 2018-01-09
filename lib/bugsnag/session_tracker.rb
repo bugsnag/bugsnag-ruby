@@ -1,18 +1,16 @@
 require 'thread'
 require 'time'
 require 'securerandom'
+require 'concurrent'
 
 module Bugsnag
   class SessionTracker
 
     THREAD_SESSION = "bugsnag_session"
-    TIME_THRESHOLD = 60
-    FALLBACK_TIME = 300
-    MAXIMUM_SESSION_COUNT = 50
     SESSION_PAYLOAD_VERSION = "1.0"
+    MUTEX = Mutex.new
 
     attr_reader :session_counts
-    attr_writer :config
 
     def self.set_current_session(session)
       Thread.current[THREAD_SESSION] = session
@@ -22,15 +20,12 @@ module Bugsnag
       Thread.current[THREAD_SESSION]
     end
 
-    def initialize(configuration)
-      @session_counts = {}
-      @config = configuration
-      @mutex = Mutex.new
-      @last_sent = Time.now
+    def initialize
+      @session_counts = Concurrent::Hash.new(0)
     end
 
-    def create_session
-      return unless @config.track_sessions
+    def start_session
+      start_delivery_thread
       start_time = Time.now().utc().strftime('%Y-%m-%dT%H:%M:00')
       new_session = {
         :id => SecureRandom.uuid,
@@ -41,117 +36,93 @@ module Bugsnag
         }
       }
       SessionTracker.set_current_session(new_session)
-      add_thread = Thread.new { add_session(start_time) }
-      add_thread.join()
+      add_session(start_time)
     end
 
+    alias :create_session :start_session
+
     def send_sessions
-      @mutex.lock
-      begin
-        deliver_sessions
-      ensure
-        @mutex.unlock
+      sessions = []
+      counts = @session_counts
+      @session_counts = Concurrent::Hash.new(0)
+      counts.each do |min, count|
+        sessions << {
+          :startedAt => min,
+          :sessionsStarted => count
+        }
+      end
+      deliver(sessions)
+    end
+
+    def start_delivery_thread
+      MUTEX.synchronize do
+        @started = nil unless defined?(@started)
+        return if @started == Process.pid
+        @started = Process.pid
+        at_exit do
+          if !@delivery_thread.nil?
+            @delivery_thread.execute
+            @delivery_thread.shutdown
+          else
+            if @session_counts.size > 0
+              send_sessions
+            end
+          end
+        end
+        @delivery_thread = Concurrent::TimerTask.new(execution_interval: 30) do
+          if @session_counts.size > 0
+            send_sessions
+          end
+        end
       end
     end
 
     private
     def add_session(min)
-      @mutex.lock
-      begin
-        @registered_at_exit = false unless defined?(@registered_at_exit)
-        if !@registered_at_exit
-          @registered_at_exit = true
-          at_exit do
-            if !@deliver_fallback.nil? && @deliver_fallback.status == 'sleep'
-              @deliver_fallback.terminate
-            end
-            deliver_sessions
-          end
-        end
-        @session_counts[min] ||= 0
-        @session_counts[min] += 1
-        if Time.now() - @last_sent > TIME_THRESHOLD
-          deliver_sessions
-        end
-      ensure
-        @mutex.unlock
-      end
+      @session_counts[min] += 1
     end
 
-    def deliver_sessions
-      return unless @config.track_sessions
-      sessions = []
-      @session_counts.each do |min, count|
-        sessions << {
-          :startedAt => min,
-          :sessionsStarted => count
-        }
-        if sessions.size >= MAXIMUM_SESSION_COUNT
-          deliver(sessions)
-          sessions = []
-        end
-      end
-      @session_counts = {}
-      reset_delivery_thread
-      deliver(sessions)
-    end
-
-    def reset_delivery_thread
-      if !@deliver_fallback.nil? && @deliver_fallback.status == 'sleep'
-        @deliver_fallback.terminate
-      end
-      @deliver_fallback = Thread.new do
-        sleep(FALLBACK_TIME)
-        deliver_sessions
-      end
-    end
-
-    def deliver(sessionCounts)
-      if sessionCounts.length == 0
-        @config.debug("No sessions to deliver")
-        return
-      end
-      
-      if !@config.valid_api_key?
-        @config.debug("Not delivering sessions due to an invalid api_key")
-        return
-      end
-      
-      if !@config.should_notify_release_stage?
-        @config.debug("Not delivering sessions due to notify_release_stages :#{@config.notify_release_stages.inspect}")
+    def deliver(session_payload)
+      if session_payload.length == 0
+        Bugsnag.configuration.debug("No sessions to deliver")
         return
       end
 
-      if @config.delivery_method != :thread_queue
-        @config.debug("Not delivering sessions due to asynchronous delivery being disabled")
+      if !Bugsnag.configuration.valid_api_key?
+        Bugsnag.configuration.debug("Not delivering sessions due to an invalid api_key")
         return
       end
-      
-      payload = {
+
+      if !Bugsnag.configuration.should_notify_release_stage?
+        Bugsnag.configuration.debug("Not delivering sessions due to notify_release_stages :#{Bugsnag.configuration.notify_release_stages.inspect}")
+        return
+      end
+
+      body = {
         :notifier => {
           :name => Bugsnag::Report::NOTIFIER_NAME,
           :url => Bugsnag::Report::NOTIFIER_URL,
           :version => Bugsnag::Report::NOTIFIER_VERSION
         },
         :device => {
-          :hostname => @config.hostname
+          :hostname => Bugsnag.configuration.hostname
         },
         :app => {
-          :version => @config.app_version,
-          :releaseStage => @config.release_stage,
-          :type => @config.app_type
+          :version => Bugsnag.configuration.app_version,
+          :releaseStage => Bugsnag.configuration.release_stage,
+          :type => Bugsnag.configuration.app_type
         },
-        :sessionCounts => sessionCounts
+        :sessionCounts => session_payload
       }
+      payload = ::JSON.dump(body)
 
       headers = {
-        "Bugsnag-Api-Key" => @config.api_key,
+        "Bugsnag-Api-Key" => Bugsnag.configuration.api_key,
         "Bugsnag-Payload-Version" => SESSION_PAYLOAD_VERSION
       }
 
-      options = {:headers => headers, :backoff => true, :success => '202'}
-      @last_sent = Time.now
-      Bugsnag::Delivery[@config.delivery_method].deliver(@config.session_endpoint, payload, @config, options)
+      options = {:headers => headers}
+      Bugsnag::Delivery[Bugsnag.configuration.delivery_method].deliver(Bugsnag.configuration.session_endpoint, payload, Bugsnag.configuration, options)
     end
   end
 end

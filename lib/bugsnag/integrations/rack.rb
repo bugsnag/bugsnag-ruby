@@ -34,7 +34,9 @@ module Bugsnag
     def call(env)
       # Set the request data for bugsnag middleware to use
       Bugsnag.configuration.set_request_data(:rack_env, env)
-      Bugsnag.session_tracker.create_session
+      if Bugsnag.configuration.auto_capture_sessions
+        Bugsnag.start_session
+      end
 
       begin
         response = @app.call(env)

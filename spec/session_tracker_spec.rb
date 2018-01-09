@@ -8,8 +8,6 @@ describe Bugsnag::SessionTracker do
   queue = Queue.new
 
   before do
-    @config = Bugsnag::Configuration.new
-    @config.track_sessions = true
     server = WEBrick::HTTPServer.new :Port => 0, :Logger => WEBrick::Log.new("/dev/null"), :AccessLog => []
     server.mount_proc '/' do |req, res|
       headers = []
@@ -21,26 +19,18 @@ describe Bugsnag::SessionTracker do
     Thread.new{ server.start }
   end
 
-  after do    
+  after do
     Bugsnag.configure do |conf|
-      conf.track_sessions = false
+      conf.auto_capture_sessions = false
       conf.delivery_method = :synchronous
     end
     server.stop
     queue.clear
   end
 
-  it 'does not create session object if disabled' do
-    config = Bugsnag::Configuration.new
-    config.track_sessions = false
-    tracker = Bugsnag::SessionTracker.new(config)
-    tracker.create_session
-    expect(tracker.session_counts.size).to eq(0)
-  end
-
   it 'adds session object to queue' do
-    tracker = Bugsnag::SessionTracker.new(@config)
-    tracker.create_session
+    tracker = Bugsnag::SessionTracker.new
+    tracker.start_session
     expect(tracker.session_counts.size).to eq(1)
     time = tracker.session_counts.keys.last
     count = tracker.session_counts[time]
@@ -49,8 +39,8 @@ describe Bugsnag::SessionTracker do
   end
 
   it 'stores session in thread' do
-    tracker = Bugsnag::SessionTracker.new(@config)
-    tracker.create_session
+    tracker = Bugsnag::SessionTracker.new
+    tracker.start_session
     session = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     expect(session.include? :id).to be true
     expect(session.include? :startedAt).to be true
@@ -62,28 +52,25 @@ describe Bugsnag::SessionTracker do
   end
 
   it 'gives unique ids to each session' do
-    tracker = Bugsnag::SessionTracker.new(@config)
-    tracker.create_session
+    tracker = Bugsnag::SessionTracker.new
+    tracker.start_session
     session_one = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
-    tracker.create_session
+    tracker.start_session
     session_two = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     expect(session_one[:id]).to_not eq(session_two[:id])
   end
 
   it 'sends sessions when send_sessions is called' do
     Bugsnag.configure do |conf|
-      conf.track_sessions = true
-      conf.delivery_method = :thread_queue
+      conf.auto_capture_sessions = true
+      conf.delivery_method = :synchronous
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
     end
     WebMock.allow_net_connect!
-    Bugsnag.session_tracker.create_session
+    Bugsnag.start_session
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
-    while queue.empty?
-      sleep(0.05)
-    end
     payload, headers = queue.pop
     expect(payload.include?("app")).to be true
     expect(payload.include?("notifier")).to be true
@@ -94,19 +81,16 @@ describe Bugsnag::SessionTracker do
 
   it 'sets details from config' do
     Bugsnag.configure do |conf|
-      conf.track_sessions = true
+      conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
-      conf.delivery_method = :thread_queue
+      conf.delivery_method = :synchronous
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
     end
     WebMock.allow_net_connect!
-    Bugsnag.session_tracker.create_session
+    Bugsnag.start_session
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
-    while queue.empty?
-      sleep(0.05)
-    end
     payload, headers = queue.pop
     notifier = payload["notifier"]
     expect(notifier.include?("name")).to be true
@@ -131,10 +115,10 @@ describe Bugsnag::SessionTracker do
 
   it 'uses middleware to attach session to notification' do
     Bugsnag.configure do |conf|
-      conf.track_sessions = true
+      conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
     end
-    Bugsnag.session_tracker.create_session
+    Bugsnag.start_session
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = payload["events"][0]

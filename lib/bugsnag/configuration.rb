@@ -23,7 +23,7 @@ module Bugsnag
     attr_accessor :app_type
     attr_accessor :meta_data_filters
     attr_accessor :endpoint
-    attr_accessor :logger 
+    attr_accessor :logger
     attr_accessor :middleware
     attr_accessor :internal_middleware
     attr_accessor :proxy_host
@@ -33,6 +33,7 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :ignore_classes
+    attr_accessor :auto_capture_sessions
     attr_accessor :track_sessions
     attr_accessor :session_endpoint
 
@@ -49,6 +50,8 @@ module Bugsnag
       "rack.request.form_vars"
     ].freeze
 
+    alias :track_sessions :auto_capture_sessions
+
     def initialize
       @mutex = Mutex.new
 
@@ -61,7 +64,7 @@ module Bugsnag
       self.hostname = default_hostname
       self.timeout = 15
       self.notify_release_stages = nil
-      self.track_sessions = false
+      self.auto_capture_sessions = false
       self.session_endpoint = DEFAULT_SESSION_ENDPOINT
 
       # SystemExit and Interrupt are common Exception types seen with successful
