@@ -34,18 +34,10 @@ describe Bugsnag::SessionTracker do
     queue.clear
   end
 
-  it 'does not create session object if disabled' do
-    config = Bugsnag::Configuration.new
-    config.auto_capture_sessions = false
-    tracker = Bugsnag::SessionTracker.new
-    tracker.create_session
-    expect(tracker.session_counts.size).to eq(0)
-  end
-
   it 'adds session object to queue' do
     tracker = Bugsnag::SessionTracker.new
     tracker.track_sessions = true
-    tracker.create_session
+    tracker.start_session
     while tracker.session_counts.size == 0
       sleep(0.05)
     end
@@ -59,7 +51,7 @@ describe Bugsnag::SessionTracker do
   it 'stores session in thread' do
     tracker = Bugsnag::SessionTracker.new
     tracker.track_sessions = true
-    tracker.create_session
+    tracker.start_session
     session = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     expect(session.include? :id).to be true
     expect(session.include? :startedAt).to be true
@@ -73,9 +65,9 @@ describe Bugsnag::SessionTracker do
   it 'gives unique ids to each session' do
     tracker = Bugsnag::SessionTracker.new
     tracker.track_sessions = true
-    tracker.create_session
+    tracker.start_session
     session_one = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
-    tracker.create_session
+    tracker.start_session
     session_two = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     expect(session_one[:id]).to_not eq(session_two[:id])
   end
@@ -87,7 +79,7 @@ describe Bugsnag::SessionTracker do
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
     end
     WebMock.allow_net_connect!
-    Bugsnag.session_tracker.create_session
+    Bugsnag.session_tracker.start_session
     while Bugsnag.session_tracker.session_counts.size == 0
       sleep(0.05)
     end
@@ -116,7 +108,7 @@ describe Bugsnag::SessionTracker do
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
     end
     WebMock.allow_net_connect!
-    Bugsnag.session_tracker.create_session
+    Bugsnag.session_tracker.start_session
     while Bugsnag.session_tracker.session_counts.size == 0
       sleep(0.05)
     end
@@ -156,7 +148,7 @@ describe Bugsnag::SessionTracker do
       conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
     end
-    Bugsnag.session_tracker.create_session
+    Bugsnag.session_tracker.start_session
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = payload["events"][0]

@@ -39,10 +39,6 @@ module Bugsnag
         configuration.warn("No valid API key has been set, notifications will not be sent")
         @key_warning = true
       end
-
-      if configuration.auto_capture_sessions
-        session_tracker.start_delivery_thread
-      end
     end
 
     # Explicitly notify of an exception

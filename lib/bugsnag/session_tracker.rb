@@ -11,7 +11,8 @@ module Bugsnag
     MUTEX = Mutex.new
 
     attr_reader :session_counts
-    attr_reader :track_sessions
+
+    alias :create_session :start_session
 
     def self.set_current_session(session)
       Thread.current[THREAD_SESSION] = session
@@ -23,11 +24,10 @@ module Bugsnag
 
     def initialize
       @session_counts = Concurrent::Hash.new(0)
-      @track_sessions = false
     end
 
-    def create_session
-      return unless @track_sessions
+    def start_session
+      start_delivery_thread
       start_time = Time.now().utc().strftime('%Y-%m-%dT%H:%M:00')
       new_session = {
         :id => SecureRandom.uuid,
@@ -42,7 +42,6 @@ module Bugsnag
     end
 
     def send_sessions
-      return unless @track_sessions
       sessions = []
       counts = @session_counts.dup
       @session_counts = Concurrent::Hash.new(0)
@@ -57,7 +56,6 @@ module Bugsnag
 
     def start_delivery_thread
       MUTEX.synchronize do
-        @track_sessions = true
         @started = nil unless defined?(@started)
         return if @started == Process.pid
         @started = Process.pid
