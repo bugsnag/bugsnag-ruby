@@ -67,7 +67,7 @@ describe Bugsnag::SessionTracker do
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
     end
     WebMock.allow_net_connect!
-    Bugsnag.session_tracker.start_session
+    Bugsnag.start_session
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
@@ -87,7 +87,7 @@ describe Bugsnag::SessionTracker do
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
     end
     WebMock.allow_net_connect!
-    Bugsnag.session_tracker.start_session
+    Bugsnag.start_session
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
@@ -118,7 +118,7 @@ describe Bugsnag::SessionTracker do
       conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
     end
-    Bugsnag.session_tracker.start_session
+    Bugsnag.start_session
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = payload["events"][0]
