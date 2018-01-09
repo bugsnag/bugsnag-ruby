@@ -3,12 +3,6 @@ require 'webrick'
 require 'spec_helper'
 require 'json'
 
-module Bugsnag
-  class SessionTracker
-    attr_accessor :track_sessions
-  end
-end
-
 describe Bugsnag::SessionTracker do
   server = nil
   queue = Queue.new
@@ -36,11 +30,7 @@ describe Bugsnag::SessionTracker do
 
   it 'adds session object to queue' do
     tracker = Bugsnag::SessionTracker.new
-    tracker.track_sessions = true
     tracker.start_session
-    while tracker.session_counts.size == 0
-      sleep(0.05)
-    end
     expect(tracker.session_counts.size).to eq(1)
     time = tracker.session_counts.keys.last
     count = tracker.session_counts[time]
@@ -50,7 +40,6 @@ describe Bugsnag::SessionTracker do
 
   it 'stores session in thread' do
     tracker = Bugsnag::SessionTracker.new
-    tracker.track_sessions = true
     tracker.start_session
     session = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     expect(session.include? :id).to be true
@@ -64,7 +53,6 @@ describe Bugsnag::SessionTracker do
 
   it 'gives unique ids to each session' do
     tracker = Bugsnag::SessionTracker.new
-    tracker.track_sessions = true
     tracker.start_session
     session_one = Thread.current[Bugsnag::SessionTracker::THREAD_SESSION]
     tracker.start_session
@@ -75,23 +63,14 @@ describe Bugsnag::SessionTracker do
   it 'sends sessions when send_sessions is called' do
     Bugsnag.configure do |conf|
       conf.auto_capture_sessions = true
-      conf.delivery_method = :thread_queue
+      conf.delivery_method = :synchronous
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
     end
     WebMock.allow_net_connect!
     Bugsnag.session_tracker.start_session
-    while Bugsnag.session_tracker.session_counts.size == 0
-      sleep(0.05)
-    end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
-    while Bugsnag.session_tracker.session_counts.size == 1
-      sleep(0.05)
-    end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
-    while queue.empty?
-      sleep(0.05)
-    end
     payload, headers = queue.pop
     expect(payload.include?("app")).to be true
     expect(payload.include?("notifier")).to be true
@@ -104,23 +83,14 @@ describe Bugsnag::SessionTracker do
     Bugsnag.configure do |conf|
       conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
-      conf.delivery_method = :thread_queue
+      conf.delivery_method = :synchronous
       conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
     end
     WebMock.allow_net_connect!
     Bugsnag.session_tracker.start_session
-    while Bugsnag.session_tracker.session_counts.size == 0
-      sleep(0.05)
-    end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
     Bugsnag.session_tracker.send_sessions
-    while Bugsnag.session_tracker.session_counts.size == 1
-      sleep(0.05)
-    end
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
-    while queue.empty?
-      sleep(0.05)
-    end
     payload, headers = queue.pop
     notifier = payload["notifier"]
     expect(notifier.include?("name")).to be true
