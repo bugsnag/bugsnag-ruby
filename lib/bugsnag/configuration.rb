@@ -51,6 +51,7 @@ module Bugsnag
     ].freeze
 
     alias :track_sessions :auto_capture_sessions
+    alias :track_sessions= :auto_capture_sessions=
 
     def initialize
       @mutex = Mutex.new
