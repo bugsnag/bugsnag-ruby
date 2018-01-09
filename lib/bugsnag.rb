@@ -126,9 +126,14 @@ module Bugsnag
       @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
     end
 
+    # Session tracking
     def session_tracker
       @session_tracker = nil unless defined?(@session_tracker)
       @session_tracker || LOCK.synchronize { @session_tracker ||= Bugsnag::SessionTracker.new}
+    end
+
+    def start_session
+      session_tracker.start_session
     end
 
     # Allow access to "before notify" callbacks

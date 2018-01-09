@@ -35,7 +35,7 @@ module Bugsnag
       # Set the request data for bugsnag middleware to use
       Bugsnag.configuration.set_request_data(:rack_env, env)
       if Bugsnag.configuration.auto_capture_sessions
-        Bugsnag.session_tracker.start_session
+        Bugsnag.start_session
       end
 
       begin

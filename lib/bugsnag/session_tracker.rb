@@ -43,7 +43,7 @@ module Bugsnag
 
     def send_sessions
       sessions = []
-      counts = @session_counts.dup
+      counts = @session_counts
       @session_counts = Concurrent::Hash.new(0)
       counts.each do |min, count|
         sessions << {
@@ -82,8 +82,8 @@ module Bugsnag
       @session_counts[min] += 1
     end
 
-    def deliver(session_counts)
-      if session_counts.length == 0
+    def deliver(session_payload)
+      if session_payload.length == 0
         Bugsnag.configuration.debug("No sessions to deliver")
         return
       end
@@ -112,7 +112,7 @@ module Bugsnag
           :releaseStage => Bugsnag.configuration.release_stage,
           :type => Bugsnag.configuration.app_type
         },
-        :sessionCounts => session_counts
+        :sessionCounts => session_payload
       }
       payload = ::JSON.dump(body)
 
