@@ -12,8 +12,6 @@ module Bugsnag
 
     attr_reader :session_counts
 
-    alias :create_session :start_session
-
     def self.set_current_session(session)
       Thread.current[THREAD_SESSION] = session
     end
@@ -40,6 +38,8 @@ module Bugsnag
       SessionTracker.set_current_session(new_session)
       add_session(start_time)
     end
+
+    alias :create_session :start_session
 
     def send_sessions
       sessions = []
