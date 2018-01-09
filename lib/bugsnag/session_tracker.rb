@@ -39,7 +39,7 @@ module Bugsnag
       add_session(start_time)
     end
 
-    alias :create_session :start_session
+    alias_method :create_session, :start_session
 
     def send_sessions
       sessions = []
