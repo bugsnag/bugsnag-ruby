@@ -119,6 +119,12 @@ describe Bugsnag::SessionTracker do
       conf.release_stage = "test_stage"
     end
     Bugsnag.start_session
+    session = Bugsnag::SessionTracker.get_current_session
+    expect(session.include?(:events)).to be true
+    expect(session[:events].include?(:unhandled)).to be true
+    expect(session[:events][:unhandled]).to eq(0)
+    expect(session[:events].include?(:handled)).to be true
+    expect(session[:events][:handled]).to eq(0)
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = payload["events"][0]
@@ -133,5 +139,11 @@ describe Bugsnag::SessionTracker do
       expect(sesevents.include?("handled")).to be true
       expect(sesevents["handled"]).to eq(1)
     }
+    session = Bugsnag::SessionTracker.get_current_session
+    expect(session.include?(:events)).to be true
+    expect(session[:events].include?(:unhandled)).to be true
+    expect(session[:events][:unhandled]).to eq(0)
+    expect(session[:events].include?(:handled)).to be true
+    expect(session[:events][:handled]).to eq(1)
   end
 end

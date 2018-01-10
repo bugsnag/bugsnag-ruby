@@ -12,6 +12,7 @@ module Bugsnag::Middleware
         else
           session[:events][:handled] += 1
         end
+        Bugsnag::SessionTracker.set_current_session session
         report.session = session
       end
 
