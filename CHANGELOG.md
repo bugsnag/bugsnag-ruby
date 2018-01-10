@@ -3,6 +3,13 @@ Changelog
 
 ## 6.6.0 (09 Jan 2018)
 
+### Bug fixes
+
+* Fix failure to launch session polling task
+  | [#414](https://github.com/bugsnag/bugsnag-ruby/pull/414)
+
+## 6.6.0 (09 Jan 2018)
+
 ### Enhancements
 
 * Session tracking update:
