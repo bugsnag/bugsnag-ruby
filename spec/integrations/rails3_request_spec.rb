@@ -31,7 +31,7 @@ describe Bugsnag::Middleware::Rails3Request do
       Bugsnag.configuration.unset_request_data(:rack_env, nil)
       Bugsnag.notify(BugsnagTestException.new('Grimbles'))
 
-      expect(Bugsnag).to have_sent_notification { |payload|
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
         event = get_event_from_payload(payload)
         puts event["metaData"].inspect
         expect(event["metaData"]["request"]).to be nil
