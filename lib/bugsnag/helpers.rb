@@ -23,6 +23,30 @@ module Bugsnag
       remove_metadata_from_events(reduced_value)
     end
 
+    def self.deep_merge(l_hash, r_hash)
+      l_hash.merge(r_hash) do |key, l_val, r_val|
+        if l_val.is_a?(Hash) && r_val.is_a?(Hash)
+          deep_merge(l_val, r_val)
+        elsif l_val.is_a?(Array) && r_val.is_a?(Array)
+          l_val.concat(r_val)
+        else
+          r_val
+        end
+      end
+    end
+
+    def self.deep_merge!(l_hash, r_hash)
+      l_hash.merge!(r_hash) do |key, l_val, r_val|
+        if l_val.is_a?(Hash) && r_val.is_a?(Hash)
+          deep_merge(l_val, r_val)
+        elsif l_val.is_a?(Array) && r_val.is_a?(Array)
+          l_val.concat(r_val)
+        else
+          r_val
+        end
+      end
+    end
+
     private
 
     TRUNCATION_INFO = '[TRUNCATED]'

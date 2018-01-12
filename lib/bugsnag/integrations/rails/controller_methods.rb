@@ -5,6 +5,7 @@ module Bugsnag::Rails
     end
 
     module ClassMethods
+
       private
       def before_bugsnag_notify(*methods, &block)
         _add_bugsnag_notify_callback(:before_callbacks, *methods, &block)

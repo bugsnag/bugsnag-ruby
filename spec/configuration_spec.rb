@@ -22,6 +22,11 @@ describe Bugsnag::Configuration do
       subject.delivery_method = :wow
       expect(subject.delivery_method).to eq(:wow)
     end
+
+    it "should have sensible defaults for session tracking" do
+      expect(subject.session_endpoint).to eq("https://sessions.bugsnag.com")
+      expect(subject.auto_capture_sessions).to be false
+    end
   end
 
   it "should have exit exception classes ignored by default" do

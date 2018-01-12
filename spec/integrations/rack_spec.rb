@@ -25,7 +25,7 @@ describe Bugsnag::Rack do
     it "delivers an exception if auto_notify is enabled" do
       rack_stack.call(rack_env) rescue nil
 
-      expect(Bugsnag).to have_sent_notification{ |payload|
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
         exception_class = payload["events"].first["exceptions"].first["errorClass"]
         expect(exception_class).to eq(exception.class.to_s)
       }
@@ -35,7 +35,7 @@ describe Bugsnag::Rack do
     it "applies the correct severity reason" do
       rack_stack.call(rack_env) rescue nil
 
-      expect(Bugsnag).to have_sent_notification{ |payload|
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
         event = get_event_from_payload(payload)
         expect(event["unhandled"]).to be true
         expect(event["severityReason"]).to eq({
