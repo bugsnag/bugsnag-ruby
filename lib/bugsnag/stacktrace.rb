@@ -42,7 +42,7 @@ module Bugsnag
 
         # Clean up the file path in the stacktrace
         if defined?(@configuration.project_root) && @configuration.project_root.to_s != ''
-          trace_hash[:inProject] = true if file.start_with?(@configuration.project_root)
+          trace_hash[:inProject] = true if file.start_with?(@configuration.project_root.to_s)
           file.sub!(/#{@configuration.project_root}\//, "")
           trace_hash.delete(:inProject) if file.start_with?(VENDOR_PATH)
         end
