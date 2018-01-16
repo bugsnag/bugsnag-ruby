@@ -26,7 +26,7 @@ module Bugsnag
         yield
       rescue Exception => ex
         unless [Interrupt, SystemExit, SignalException].include?(ex.class)
-          Bugsnag.auto_notify(ex, true) do |report|
+          Bugsnag.notify(ex, true) do |report|
             report.severity = "error"
             report.severity_reason = {
               :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
