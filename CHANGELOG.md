@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 6.6.2 (18 Jan 2018)
+
+* Fix Shoryuken integration & `project_root` `Pathname` issue
+  | [#416](https://github.com/bugsnag/bugsnag-ruby/pull/416)
+  | [Sergei Maximov](https://github.com/smaximov)
+
 ## 6.6.1 (09 Jan 2018)
 
 ### Bug fixes
