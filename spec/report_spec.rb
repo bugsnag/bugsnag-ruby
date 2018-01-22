@@ -33,6 +33,7 @@ describe Bugsnag::Report do
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       expect(headers["Bugsnag-Api-Key"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b8")
+      expect(payload["apiKey"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b8")
     }
   end
 

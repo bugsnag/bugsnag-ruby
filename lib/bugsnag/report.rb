@@ -110,6 +110,7 @@ module Bugsnag
 
       # return the payload hash
       {
+        :apiKey => api_key,
         :notifier => {
           :name => NOTIFIER_NAME,
           :version => NOTIFIER_VERSION,
