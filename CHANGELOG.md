@@ -1,7 +1,17 @@
 Changelog
 =========
 
+## 6.6.3 (23 Jan 2018)
+
+### Fixes
+
+* Re-added apiKey to payload for compatibility
+  | [#418](https://github.com/bugsnag/bugsnag-ruby/pull/418)
+
+
 ## 6.6.2 (18 Jan 2018)
+
+### Fixes
 
 * Fix Shoryuken integration & `project_root` `Pathname` issue
   | [#416](https://github.com/bugsnag/bugsnag-ruby/pull/416)
