@@ -28,6 +28,7 @@ require "bugsnag/middleware/classify_error"
 
 module Bugsnag
   LOCK = Mutex.new
+  INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que]
 
   class << self
     # Configure the Bugsnag notifier application-wide settings.
@@ -140,13 +141,30 @@ module Bugsnag
     def before_notify_callbacks
       Bugsnag.configuration.request_data[:before_callbacks] ||= []
     end
+
+    # Attempts to load all integrations through auto-discovery
+    def load_integrations
+      require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
+      INTEGRATIONS.each do |integration|
+        begin
+          require "bugsnag/integrations/#{integration}"
+        rescue LoadError
+        end
+      end
+    end
+
+    # Load a specific integration
+    def load_integration(integration)
+      integration = :railtie if integration == :rails
+      if INTEGRATIONS.include?(integration) || integration == :railtie
+        require "bugsnag/integrations/#{integration}"
+      else
+        configuration.debug("Integration #{integration} is not currently supported")
+      end
+    end
   end
 end
 
-require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
-[:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que].each do |integration|
-  begin
-    require "bugsnag/integrations/#{integration}"
-  rescue LoadError
-  end
+if !ENV["BUGSNAG_DISABLE_AUTOCONFIGURE"]
+  Bugsnag.load_integrations
 end
