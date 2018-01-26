@@ -8,7 +8,7 @@ module Bugsnag
     JAVA_BACKTRACE_REGEX = /^(.*)\((.*)(?::([0-9]+))?\)$/
 
     # Path to vendored code. Used to mark file paths as out of project.
-    VENDOR_PATH = /^(vendor\/|.bundle\/)/
+    VENDOR_PATH = /^(vendor\/|\.bundle\/)/
 
     def initialize(backtrace, configuration)
       @configuration = configuration
