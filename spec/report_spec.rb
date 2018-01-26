@@ -536,6 +536,9 @@ describe Bugsnag::Report do
       File.join(project_root, "lib/helpers/string.rb:32:in `splice'"),
       File.join(project_root, "lib/vendor/lib/article.rb:158:in `initialize'"),
       File.join(project_root, "lib/prog.rb:158:in `read_articles'"),
+      File.join(project_root, ".bundle/strutils/lib.string.rb:508:in `splice'"),
+      File.join(project_root, ".bundles/strutils/lib.string.rb:508:in `splice'"),
+      File.join(project_root, "lib/.bundle/article.rb:158:in `initialize'"),
       "app.rb:10:in `main'",
       "(pry):3:in `__pry__'"
     ]}
@@ -549,7 +552,10 @@ describe Bugsnag::Report do
       expect(exception["stacktrace"][3]["inProject"]).to be true
       expect(exception["stacktrace"][4]["inProject"]).to be true
       expect(exception["stacktrace"][5]["inProject"]).to be_nil
-      expect(exception["stacktrace"][6]["inProject"]).to be_nil
+      expect(exception["stacktrace"][6]["inProject"]).to be true
+      expect(exception["stacktrace"][7]["inProject"]).to be true
+      expect(exception["stacktrace"][8]["inProject"]).to be_nil
+      expect(exception["stacktrace"][9]["inProject"]).to be_nil
     }
   end
 
