@@ -13,8 +13,6 @@ require "bugsnag/delivery"
 require "bugsnag/delivery/synchronous"
 require "bugsnag/delivery/thread_queue"
 
-require "bugsnag/integrations/rack"
-
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
 require "bugsnag/middleware/clearance_user"
@@ -28,7 +26,7 @@ require "bugsnag/middleware/classify_error"
 
 module Bugsnag
   LOCK = Mutex.new
-  INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que]
+  INTEGRATIONS = [:rack, :resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que]
 
   class << self
     # Configure the Bugsnag notifier application-wide settings.

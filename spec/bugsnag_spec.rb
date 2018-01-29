@@ -45,7 +45,7 @@ describe Bugsnag do
       Kernel::REQUIRED = []
       ENV["BUGSNAG_DISABLE_AUTOCONFIGURE"] = 'true'
       load "./lib/bugsnag.rb"
-      expect(Kernel::REQUIRED).to eq(['bugsnag/integrations/rack'])
+      expect(Kernel::REQUIRED).to eq([])
     end
 
     it 'loads all integrations if requested' do
