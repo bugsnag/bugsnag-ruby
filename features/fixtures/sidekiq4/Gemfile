@@ -1,0 +1,4 @@
+source 'https://rubygems.org'
+
+gem 'bugsnag'
+gem 'sidekiq', '~> 4'

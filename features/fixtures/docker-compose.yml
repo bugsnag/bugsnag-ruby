@@ -1,0 +1,123 @@
+version: '3.4'
+services:
+  # dep for job systems
+  redis:
+    image: redis
+
+  delayed_job:
+    build:
+      context: delayed_job
+      args:
+        - ruby_version
+    depends_on:
+      - redis
+    environment:
+      - endpoint
+    restart: "no"
+
+  rack1:
+    build:
+      context: rack1
+      args:
+        - ruby_version
+    environment:
+      - endpoint
+    ports:
+      - "3001:3000"
+    restart: "no"
+  rack2:
+    build:
+      context: rack2
+      args:
+        - ruby_version
+    environment:
+      - endpoint
+    ports:
+      - "3002:3000"
+    restart: "no"
+
+  rails3:
+    build:
+      context: rails3
+      args:
+        - ruby_version
+    environment:
+      - endpoint
+    ports:
+      - "3003:3000"
+    restart: "no"
+  rails4:
+    build:
+      context: rails4
+      args:
+        - ruby_version
+    environment:
+      - endpoint
+    ports:
+      - "3004:3000"
+    restart: "no"
+  rails5:
+    build:
+      context: rails5
+      args:
+        - ruby_version
+    environment:
+      - endpoint
+    ports:
+      - "3005:3000"
+    restart: "no"
+
+  resque:
+    build:
+      context: resque
+      args:
+        - ruby_version
+    depends_on:
+      - redis
+    environment:
+      - endpoint
+    restart: "no"
+
+  sidekiq4:
+    build:
+      context: sidekiq4
+      args:
+        - ruby_version
+    depends_on:
+      - redis
+    environment:
+      - endpoint
+    restart: "no"
+
+  sidekiq5:
+    build:
+      context: sidekiq5
+      args:
+        - ruby_version
+    depends_on:
+      - redis
+    environment:
+      - endpoint
+    restart: "no"
+
+  sinatra1:
+    build:
+      context: sinatra1
+      args:
+        - ruby_version
+    environment:
+      - endpoint
+    ports:
+      - "3006:3000"
+    restart: "no"
+
+  sinatra2:
+    build:
+      context: sinatra2
+      args:
+        - ruby_version
+    environment:
+      - endpoint
+    ports:
+      - "3007:3000"
+    restart: "no"

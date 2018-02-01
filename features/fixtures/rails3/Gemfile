@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+gem 'bugsnag'
+gem 'rails', '~> 3'
+gem 'sqlite3'
+gem 'nokogiri', '1.6.8.1' # Allows us to test on ruby 1.9.2
