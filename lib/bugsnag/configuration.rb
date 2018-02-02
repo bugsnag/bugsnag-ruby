@@ -7,6 +7,7 @@ require "bugsnag/middleware/exception_meta_data"
 require "bugsnag/middleware/ignore_error_class"
 require "bugsnag/middleware/suggestion_data"
 require "bugsnag/middleware/classify_error"
+require "bugsnag/middleware/session_data"
 
 module Bugsnag
   class Configuration
@@ -33,10 +34,14 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :ignore_classes
+    attr_accessor :auto_capture_sessions
+    attr_accessor :track_sessions
+    attr_accessor :session_endpoint
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
     DEFAULT_ENDPOINT = "https://notify.bugsnag.com"
+    DEFAULT_SESSION_ENDPOINT = "https://sessions.bugsnag.com"
 
     DEFAULT_META_DATA_FILTERS = [
       /authorization/i,
@@ -45,6 +50,9 @@ module Bugsnag
       /secret/i,
       "rack.request.form_vars"
     ].freeze
+
+    alias :track_sessions :auto_capture_sessions
+    alias :track_sessions= :auto_capture_sessions=
 
     def initialize
       @mutex = Mutex.new
@@ -59,6 +67,8 @@ module Bugsnag
       self.hostname = default_hostname
       self.timeout = 15
       self.notify_release_stages = nil
+      self.auto_capture_sessions = false
+      self.session_endpoint = DEFAULT_SESSION_ENDPOINT
 
       # SystemExit and Interrupt are common Exception types seen with successful
       # exits and are not automatically reported to Bugsnag
@@ -83,6 +93,7 @@ module Bugsnag
       self.internal_middleware.use Bugsnag::Middleware::IgnoreErrorClass
       self.internal_middleware.use Bugsnag::Middleware::SuggestionData
       self.internal_middleware.use Bugsnag::Middleware::ClassifyError
+      self.internal_middleware.use Bugsnag::Middleware::SessionData
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks

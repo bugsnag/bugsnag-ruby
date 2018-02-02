@@ -1,6 +1,49 @@
 Changelog
 =========
 
+## 6.6.3 (23 Jan 2018)
+
+### Fixes
+
+* Re-added apiKey to payload for compatibility
+  | [#418](https://github.com/bugsnag/bugsnag-ruby/pull/418)
+
+
+## 6.6.2 (18 Jan 2018)
+
+### Fixes
+
+* Fix Shoryuken integration & `project_root` `Pathname` issue
+  | [#416](https://github.com/bugsnag/bugsnag-ruby/pull/416)
+  | [Sergei Maximov](https://github.com/smaximov)
+
+## 6.6.1 (09 Jan 2018)
+
+### Bug fixes
+
+* Fix failure to launch session polling task
+  | [#414](https://github.com/bugsnag/bugsnag-ruby/pull/414)
+
+## 6.6.0 (09 Jan 2018)
+
+### Enhancements
+
+* Session tracking update:
+  * Refactor of session tracking to adhere to a common interface, and simplify usage.
+  * Includes several performance enhancements.
+  * Reverts potentially breaking change of json body sanitation within delivery function.
+  | [#412](https://github.com/bugsnag/bugsnag-ruby/pull/412)
+  * Maintains backwards compatibility with previous session-tracking changes.
+  | [#413](https://github.com/bugsnag/bugsnag-ruby/pull/413)
+
+## 6.5.0 (04 Jan 2018)
+
+### Enhancements
+
+* Adds support for tracking sessions and crash rate by setting the configuration option `configuration.auto_capture_sessions` to `true`.
+  Sessions can be manually created using `Bugsnag.start_session`.
+  | [#411](https://github.com/bugsnag/bugsnag-ruby/pull/411)
+
 ## 6.4.0 (21 Dec 2017)
 
 ### Enhancements

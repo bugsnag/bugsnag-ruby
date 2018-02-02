@@ -8,7 +8,7 @@ module Bugsnag
     JAVA_BACKTRACE_REGEX = /^(.*)\((.*)(?::([0-9]+))?\)$/
 
     # Path to vendored code. Used to mark file paths as out of project.
-    VENDOR_PATH = 'vendor/'
+    VENDOR_PATH = /^(vendor\/|\.bundle\/)/
 
     def initialize(backtrace, configuration)
       @configuration = configuration
@@ -42,9 +42,9 @@ module Bugsnag
 
         # Clean up the file path in the stacktrace
         if defined?(@configuration.project_root) && @configuration.project_root.to_s != ''
-          trace_hash[:inProject] = true if file.start_with?(@configuration.project_root)
+          trace_hash[:inProject] = true if file.start_with?(@configuration.project_root.to_s)
           file.sub!(/#{@configuration.project_root}\//, "")
-          trace_hash.delete(:inProject) if file.start_with?(VENDOR_PATH)
+          trace_hash.delete(:inProject) if file.match(VENDOR_PATH)
         end
 
 

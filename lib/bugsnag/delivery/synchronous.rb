@@ -4,13 +4,14 @@ require "uri"
 module Bugsnag
   module Delivery
     class Synchronous
-      HEADERS = {"Content-Type" => "application/json"}
-
       class << self
-        def deliver(url, body, configuration)
+        def deliver(url, body, configuration, options={})
           begin
-            response = request(url, body, configuration)
+            response = request(url, body, configuration, options)
             configuration.debug("Request to #{url} completed, status: #{response.code}")
+            if response.code[0] != "2"
+              configuration.warn("Notifications to #{url} was reported unsuccessful with code #{response.code}")
+            end
           rescue StandardError => e
             # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
             raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
@@ -22,7 +23,7 @@ module Bugsnag
 
         private
 
-        def request(url, body, configuration)
+        def request(url, body, configuration, options)
           uri = URI.parse(url)
 
           if configuration.proxy_host
@@ -39,13 +40,24 @@ module Bugsnag
             http.ca_file = configuration.ca_file if configuration.ca_file
           end
 
-          request = Net::HTTP::Post.new(path(uri), HEADERS)
+          headers = options.key?(:headers) ? options[:headers] : {}
+          headers.merge!(default_headers)
+
+          request = Net::HTTP::Post.new(path(uri), headers)
           request.body = body
+
           http.request(request)
         end
 
         def path(uri)
           uri.path == "" ? "/" : uri.path
+        end
+
+        def default_headers
+          {
+            "Content-Type" => "application/json",
+            "Bugsnag-Sent-At" =>  Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
+          }
         end
       end
     end

@@ -13,13 +13,28 @@ describe Bugsnag::Middleware::Rails3Request do
       })
       Bugsnag.notify(BugsnagTestException.new('Grimbles'))
 
-      expect(Bugsnag).to have_sent_notification { |payload|
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
         event = get_event_from_payload(payload)
         puts event["metaData"].inspect
         expect(event["metaData"]["request"]).to eq({
           "clientIp" => "10.2.2.224",
           "requestId" => "5"
         })
+      }
+    end
+
+    it "unsets request metadata" do
+      Bugsnag.configuration.set_request_data(:rack_env, {
+        "action_dispatch.remote_ip" => "10.2.2.224",
+        "action_dispatch.request_id" => "5",
+      })
+      Bugsnag.configuration.unset_request_data(:rack_env, nil)
+      Bugsnag.notify(BugsnagTestException.new('Grimbles'))
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        puts event["metaData"].inspect
+        expect(event["metaData"]["request"]).to be nil
       }
     end
 
@@ -38,7 +53,7 @@ describe Bugsnag::Middleware::Rails3Request do
 
         Bugsnag.notify(BugsnagTestException.new('Grimbles'))
 
-        expect(Bugsnag).to have_sent_notification { |payload|
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
           event = get_event_from_payload(payload)
           puts event["metaData"].inspect
           expect(event["metaData"]["request"]).to eq({

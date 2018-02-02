@@ -7,6 +7,7 @@ require "bugsnag/meta_data"
 require "bugsnag/report"
 require "bugsnag/cleaner"
 require "bugsnag/helpers"
+require "bugsnag/session_tracker"
 
 require "bugsnag/delivery"
 require "bugsnag/delivery/synchronous"
@@ -119,8 +120,9 @@ module Bugsnag
 
         # Deliver
         configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
-        payload_string = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
-        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload_string, configuration)
+        options = {:headers => report.headers}
+        payload = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
+        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload, configuration, options)
       end
     end
 
@@ -143,6 +145,16 @@ module Bugsnag
     def configuration
       @configuration = nil unless defined?(@configuration)
       @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
+    end
+
+    # Session tracking
+    def session_tracker
+      @session_tracker = nil unless defined?(@session_tracker)
+      @session_tracker || LOCK.synchronize { @session_tracker ||= Bugsnag::SessionTracker.new}
+    end
+
+    def start_session
+      session_tracker.start_session
     end
 
     # Allow access to "before notify" callbacks

@@ -46,6 +46,7 @@ RSpec.configure do |config|
 
   config.before(:each) do
     WebMock.stub_request(:post, "https://notify.bugsnag.com/")
+    WebMock.stub_request(:post, "https://sessions.bugsnag.com/")
 
     Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
     Bugsnag.configure do |bugsnag|
@@ -62,10 +63,21 @@ RSpec.configure do |config|
   end
 end
 
+def have_sent_sessions(&matcher)
+  have_requested(:post, "https://sessions.bugsnag.com/").with do |request|
+    if matcher
+      matcher.call([JSON.parse(request.body), request.headers])
+      true
+    else
+      raise "no matcher provided to have_sent_sessions (did you use { })"
+    end
+  end
+end
+
 def have_sent_notification(&matcher)
   have_requested(:post, "https://notify.bugsnag.com/").with do |request|
     if matcher
-      matcher.call JSON.parse(request.body)
+      matcher.call([JSON.parse(request.body), request.headers])
       true
     else
       raise "no matcher provided to have_sent_notification (did you use { })"
