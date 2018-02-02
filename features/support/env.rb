@@ -1,8 +1,6 @@
 require 'open3'
 
-After do
-  run_command "docker-compose -f features/fixtures/docker-compose.yml down"
-end
+$compose_stacks ||= Set.new
 
 def current_ip
   `ifconfig | grep -Eo 'inet (addr:)?([0-9]*\\\.){3}[0-9]*' | grep -Eo '([0-9]*\\\.){3}[0-9]*' | grep -v '127.0.0.1'`.strip
@@ -20,4 +18,8 @@ def run_command(cmd, print_output: false)
 
     thread.join
   end
+end
+
+at_exit do
+  $compose_stacks.each { |filename| run_command "docker-compose -f #{filename} down" }
 end

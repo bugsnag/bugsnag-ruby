@@ -17,4 +17,9 @@ class ApplicationController < ActionController::Base
     Bugsnag.notify("handled string")
     render json: {}
   end
+
+  def inline_notify_callback
+    Bugsnag.notify(RuntimeError.new("handled error")) do |report|
+    end
+  end
 end

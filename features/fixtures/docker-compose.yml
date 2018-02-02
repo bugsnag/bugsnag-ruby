@@ -8,7 +8,7 @@ services:
     build:
       context: delayed_job
       args:
-        - ruby_version
+        ruby_version: 2.0
     depends_on:
       - redis
     environment:
@@ -45,16 +45,6 @@ services:
       - endpoint
     ports:
       - "3003:3000"
-    restart: "no"
-  rails4:
-    build:
-      context: rails4
-      args:
-        - ruby_version
-    environment:
-      - endpoint
-    ports:
-      - "3004:3000"
     restart: "no"
   rails5:
     build:

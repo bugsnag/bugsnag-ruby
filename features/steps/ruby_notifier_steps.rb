@@ -7,13 +7,13 @@ When("I configure the bugsnag endpoint") do
   }
 end
 
-When("I start the compose app {string}") do |app|
+When("I start the compose stack {string}") do |filename|
+  $compose_stacks << filename
   environment = @script_env.inject('') {|curr,(k,v)| curr + "#{k}=#{v} "}
-  run_command "#{environment} docker-compose -f features/fixtures/docker-compose.yml up -d --build #{app}"
+  run_command "#{environment} docker-compose -f #{filename} up -d --build"
 end
 
 When("I wait for the app to respond on port {string}") do |port|
-  @port = port
   attempts = 0
   up = false
   until attempts >= 10 || up
@@ -29,9 +29,9 @@ When("I wait for the app to respond on port {string}") do |port|
   raise "App not ready in time!" unless up
 end
 
-When("I navigate to the route {string}") do |route|
+When("I navigate to the route {string} on port {string}") do |route, port|
   steps %Q{
-    When I open the URL "http://localhost:#{@port}#{route}"
+    When I open the URL "http://localhost:#{port}#{route}"
     And I wait for 1 second
   }
 end

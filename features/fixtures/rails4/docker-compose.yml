@@ -1,0 +1,62 @@
+version: '3'
+services:
+  ruby-2.0:
+    build:
+      context: .
+      args:
+        ruby_version: 2.0
+    environment:
+      - endpoint
+    ports:
+      - "3000:3000"
+    restart: "no"
+  ruby-2.1:
+    build:
+      context: .
+      args:
+        ruby_version: 2.1
+    environment:
+      - endpoint
+    ports:
+      - "3001:3000"
+    restart: "no"
+  ruby-2.2:
+    build:
+      context: .
+      args:
+        ruby_version: 2.2
+    environment:
+      - endpoint
+    ports:
+      - "3002:3000"
+    restart: "no"
+  ruby-2.3:
+    build:
+      context: .
+      args:
+        ruby_version: 2.3
+    environment:
+      - endpoint
+    ports:
+      - "3003:3000"
+    restart: "no"
+  ruby-2.4:
+    build:
+      context: .
+      args:
+        ruby_version: 2.4
+    environment:
+      - endpoint
+    ports:
+      - "3004:3000"
+    restart: "no"
+  ruby-2.5:
+    build:
+      context: .
+      args:
+        ruby_version: 2.5
+    environment:
+      - endpoint
+    ports:
+      - "3005:3000"
+    restart: "no"
