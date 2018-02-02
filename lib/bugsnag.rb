@@ -120,18 +120,22 @@ module Bugsnag
       end
     end
 
-    # Configuration getters
+    ##
+    # Returns the client's Configuration object, or creates one if not yet created.
     def configuration
       @configuration = nil unless defined?(@configuration)
       @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
     end
 
-    # Session tracking
+    ##
+    # Returns the client's SessionTracker object, or creates one if not yet created.
     def session_tracker
       @session_tracker = nil unless defined?(@session_tracker)
       @session_tracker || LOCK.synchronize { @session_tracker ||= Bugsnag::SessionTracker.new}
     end
 
+    ##
+    # Starts a session .
     def start_session
       session_tracker.start_session
     end
