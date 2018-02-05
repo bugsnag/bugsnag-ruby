@@ -3,10 +3,14 @@ module Bugsnag::Middleware
     SCOPE_PATTERN = /^warden\.user\.([^.]+)\.key$/
     COMMON_USER_FIELDS = [:email, :name, :first_name, :last_name, :created_at, :id]
 
+    ##
+    # Extracts and attaches warden user data to the report.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
+    ##
+    # Executes the callback.
     def call(report)
       if report.request_data[:rack_env] && report.request_data[:rack_env]["warden"]
         env = report.request_data[:rack_env]

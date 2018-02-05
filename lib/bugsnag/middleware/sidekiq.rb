@@ -1,9 +1,14 @@
 module Bugsnag::Middleware
   class Sidekiq
+
+    ##
+    # Extracts and attaches sidekiq data to the request.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
+    ##
+    # Executes the callback.
     def call(report)
       sidekiq = report.request_data[:sidekiq]
       if sidekiq

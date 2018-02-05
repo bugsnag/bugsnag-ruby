@@ -1,9 +1,13 @@
 module Bugsnag::Middleware
   class ExceptionMetaData
+    ##
+    # Extracts data from the exception.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
+    ##
+    # Executes the callback.
     def call(report)
       # Apply the user's information attached to the exceptions
       report.raw_exceptions.each do |exception|

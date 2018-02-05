@@ -2,10 +2,14 @@ module Bugsnag::Middleware
   class ClearanceUser
     COMMON_USER_FIELDS = [:email, :name, :first_name, :last_name, :created_at, :id]
 
+    ##
+    # Extracts and appends clearance user information
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
+    ##
+    # Executes the callback.
     def call(report)
       if report.request_data[:rack_env] &&
         report.request_data[:rack_env][:clearance] &&

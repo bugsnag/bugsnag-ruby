@@ -2,10 +2,14 @@ module Bugsnag::Middleware
   class Rails3Request
     SPOOF = "[SPOOF]".freeze
 
+    ##
+    # Extracts and attaches rails data to the request.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
+    ##
+    # Executes the callback.
     def call(report)
       if report.request_data[:rack_env]
         env = report.request_data[:rack_env]

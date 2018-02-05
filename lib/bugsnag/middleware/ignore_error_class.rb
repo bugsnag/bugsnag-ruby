@@ -1,9 +1,14 @@
 module Bugsnag::Middleware
   class IgnoreErrorClass
+
+    ##
+    # Determines if the exception should be ignored.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
+    ##
+    # Executes the callback.
     def call(report)
       ignore_error_class = report.raw_exceptions.any? do |ex|
         ancestor_chain = ex.class.ancestors.select { |ancestor| ancestor.is_a?(Class) }.to_set

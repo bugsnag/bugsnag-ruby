@@ -14,10 +14,14 @@ module Bugsnag::Middleware
         "SystemExit"
     ]
 
+    ##
+    # Sets the severity to info for the given classes.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
+    ##
+    # Executes the callback.
     def call(report)
       report.raw_exceptions.each do |ex|
 
