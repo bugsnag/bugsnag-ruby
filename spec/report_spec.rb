@@ -201,6 +201,42 @@ describe Bugsnag::Report do
     }
   end
 
+  it "accepts context from an exception that mixes in Bugsnag::MetaData" do
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_context = "Some context here"
+
+    Bugsnag.notify(exception)
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("Some context here")
+    }
+  end
+
+  it "accepts a user id from an exception that mixes in Bugsnag::MetaData" do
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_user_id = "HAL"
+
+    Bugsnag.notify(exception)
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["user"]["id"]).to eq("HAL")
+    }
+  end
+
+  it "accepts a grouping hash from an exception that mixes in Bugsnag::MetaData" do
+    exception = BugsnagTestExceptionWithMetaData.new("It crashed")
+    exception.bugsnag_grouping_hash = "ABCDEFG"
+
+    Bugsnag.notify(exception)
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["groupingHash"]).to eq("ABCDEFG")
+    }
+  end
+
   it "removes tabs" do
     exception = BugsnagTestExceptionWithMetaData.new("It crashed")
     exception.bugsnag_meta_data = {

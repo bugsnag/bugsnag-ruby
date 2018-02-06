@@ -19,7 +19,7 @@ module Bugsnag::Middleware
           report.grouping_hash = exception.bugsnag_grouping_hash
         end
 
-        if exception.respond_to?(:bugsnag_meta_data) && exception.bugsnag_meta_data
+        if exception.respond_to?(:bugsnag_meta_data) && exception.bugsnag_meta_data.is_a?(Hash)
           exception.bugsnag_meta_data.each do |key, value|
             report.add_tab key, value
           end
