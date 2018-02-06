@@ -7,11 +7,15 @@ module Bugsnag
       :framework => "Mailman"
     }
 
+    ##
+    # Extracts and appends mailman data to error notifications.
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Mailman)
       Bugsnag.configuration.app_type = "mailman"
     end
 
+    ##
+    # Calls the mailman middleware.
     def call(mail)
       begin
         Bugsnag.configuration.set_request_data :mailman_msg, mail.to_s

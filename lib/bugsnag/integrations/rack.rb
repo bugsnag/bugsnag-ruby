@@ -5,6 +5,8 @@ module Bugsnag
       :framework => "Rack"
     }
 
+    ##
+    # Automatically captures and adds Rack data to error notifications.
     def initialize(app)
       @app = app
 
@@ -31,6 +33,8 @@ module Bugsnag
       end
     end
 
+    ##
+    # Wraps a call to the application with error capturing.
     def call(env)
       # Set the request data for bugsnag middleware to use
       Bugsnag.configuration.set_request_data(:rack_env, env)
