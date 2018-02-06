@@ -36,3 +36,7 @@ jobs:
   - stage: test
     env: GEMSETS="test sidekiq"
     rvm: 2.4.1
+  - stage: test
+    env: GEMSETS="test rubocop"
+    rvm: 2.4.1
+    script: bundle exec ./bin/rubocop lib/
