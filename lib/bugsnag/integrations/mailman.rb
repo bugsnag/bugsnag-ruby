@@ -1,14 +1,14 @@
 require 'mailman'
 
 module Bugsnag
+  ##
+  # Extracts and appends mailman message information to error reports
   class Mailman
 
     FRAMEWORK_ATTRIBUTES = {
       :framework => "Mailman"
     }
 
-    ##
-    # Extracts and appends mailman data to error notifications.
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Mailman)
       Bugsnag.configuration.app_type = "mailman"

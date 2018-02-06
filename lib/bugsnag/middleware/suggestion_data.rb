@@ -1,17 +1,15 @@
 module Bugsnag::Middleware
+  ##
+  # Attaches any "Did you mean?" suggestions to the report
   class SuggestionData
 
     CAPTURE_REGEX = /Did you mean\?([\s\S]+)$/
     DELIMITER = "\n"
 
-    ##
-    # Attaches any "Did you mean?" style suggestion data to the report.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
-    ##
-    # Executes the callback.
     def call(report)
       matches = []
       report.raw_exceptions.each do |exception|

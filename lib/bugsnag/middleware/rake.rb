@@ -1,13 +1,11 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts and attaches rake task information to an error report
   class Rake
-    ##
-    # Extracts and attaches rake data to the request.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
-    ##
-    # Executes the callback.
     def call(report)
       task = report.request_data[:bugsnag_running_task]
 

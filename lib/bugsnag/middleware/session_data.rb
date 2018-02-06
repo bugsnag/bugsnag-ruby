@@ -1,14 +1,12 @@
 module Bugsnag::Middleware
+  ##
+  # Attaches information about current session to an error report
   class SessionData
 
-    ##
-    # Attaches the current session data to the report if necessary.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
-    ##
-    # Executes the callback.
     def call(report)
       session = Bugsnag::SessionTracker.get_current_session
       unless session.nil?

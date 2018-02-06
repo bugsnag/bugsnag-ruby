@@ -1,15 +1,13 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts and attaches rack data to an error report
   class RackRequest
     SPOOF = "[SPOOF]".freeze
 
-    ##
-    # Extracts and attaches rack data to the request.
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
 
-    ##
-    # Executes the callback.
     def call(report)
       if report.request_data[:rack_env]
         env = report.request_data[:rack_env]
