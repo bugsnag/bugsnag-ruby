@@ -7,12 +7,16 @@ module Bugsnag
       :framework => "Sidekiq"
     }
 
+    ##
+    # Extracts and attaches additional information about sidekiq applications.
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
       Bugsnag.configuration.app_type = "sidekiq"
       Bugsnag.configuration.default_delivery_method = :synchronous
     end
 
+    ##
+    # Exectures the middleware.
     def call(worker, msg, queue)
       begin
         # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq

@@ -8,11 +8,15 @@ module Bugsnag
       :framework => "Resque"
     }
 
+    ##
+    # Callthrough to Bugsnag configuration.
     def self.configure(&block)
       add_failure_backend
       Bugsnag.configure(&block)
     end
 
+    ##
+    # Sets up the Resque failure backend.
     def self.add_failure_backend
       return if ::Resque::Failure.backend == self
 
@@ -30,6 +34,8 @@ module Bugsnag
       end
     end
 
+    ##
+    # Notifies Bugsnag of a raised exception.
     def save
       Bugsnag.notify(exception, true) do |report|
         report.severity = "error"

@@ -7,6 +7,8 @@ module Bugsnag
       :framework => "Shoryuken"
     }
 
+    ##
+    # Extracts and attaches additional shoryuken application data to the report.
     def initialize
       Bugsnag.configure do |config|
         config.app_type ||= "shoryuken"
@@ -14,6 +16,8 @@ module Bugsnag
       end
     end
 
+    ##
+    # Exectures the middleware.
     def call(_, queue, _, body)
       begin
         Bugsnag.before_notify_callbacks << lambda {|report|
