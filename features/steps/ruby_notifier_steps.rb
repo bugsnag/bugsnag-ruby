@@ -3,7 +3,7 @@ require 'open3'
 
 When("I configure the bugsnag endpoint") do
   steps %Q{
-    When I set environment variable "endpoint" to "http://#{current_ip}:9291"
+    When I set environment variable "MAZE_ENDPOINT" to "http://#{current_ip}:9291"
   }
 end
 

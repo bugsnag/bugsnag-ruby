@@ -6,7 +6,29 @@ services:
       args:
         ruby_version: 2.0
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - http_proxy
+      - MAZE_API_KEY
+      - MAZE_APP_TYPE
+      - MAZE_APP_VERSION
+      - MAZE_AUTO_CAPTURE_SESSIONS
+      - MAZE_AUTO_NOTIFY
+      - MAZE_ENDPOINT
+      - MAZE_IGNORE_CLASS
+      - MAZE_IGNORE_MESSAGE
+      - MAZE_META_DATA_FILTERS
+      - MAZE_NOTIFY_RELEASE_STAGE
+      - MAZE_PROJECT_ROOT
+      - MAZE_PROXY_HOST
+      - MAZE_PROXY_PASSWORD
+      - MAZE_PROXY_PORT
+      - MAZE_PROXY_USER
+      - MAZE_RELEASE_STAGE
+      - MAZE_SEND_CODE
+      - MAZE_SEND_ENVIRONMENT
+      - MAZE_SESSION_ENDPOINT
+      - MAZE_TIMEOUT
+      - RAILS_ENV
     ports:
       - "3000:3000"
     restart: "no"
@@ -16,7 +38,29 @@ services:
       args:
         ruby_version: 2.1
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - http_proxy
+      - MAZE_API_KEY
+      - MAZE_APP_TYPE
+      - MAZE_APP_VERSION
+      - MAZE_AUTO_CAPTURE_SESSIONS
+      - MAZE_AUTO_NOTIFY
+      - MAZE_ENDPOINT
+      - MAZE_IGNORE_CLASS
+      - MAZE_IGNORE_MESSAGE
+      - MAZE_META_DATA_FILTERS
+      - MAZE_NOTIFY_RELEASE_STAGE
+      - MAZE_PROJECT_ROOT
+      - MAZE_PROXY_HOST
+      - MAZE_PROXY_PASSWORD
+      - MAZE_PROXY_PORT
+      - MAZE_PROXY_USER
+      - MAZE_RELEASE_STAGE
+      - MAZE_SEND_CODE
+      - MAZE_SEND_ENVIRONMENT
+      - MAZE_SESSION_ENDPOINT
+      - MAZE_TIMEOUT
+      - RAILS_ENV
     ports:
       - "3001:3000"
     restart: "no"
@@ -26,7 +70,29 @@ services:
       args:
         ruby_version: 2.2
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - http_proxy
+      - MAZE_API_KEY
+      - MAZE_APP_TYPE
+      - MAZE_APP_VERSION
+      - MAZE_AUTO_CAPTURE_SESSIONS
+      - MAZE_AUTO_NOTIFY
+      - MAZE_ENDPOINT
+      - MAZE_IGNORE_CLASS
+      - MAZE_IGNORE_MESSAGE
+      - MAZE_META_DATA_FILTERS
+      - MAZE_NOTIFY_RELEASE_STAGE
+      - MAZE_PROJECT_ROOT
+      - MAZE_PROXY_HOST
+      - MAZE_PROXY_PASSWORD
+      - MAZE_PROXY_PORT
+      - MAZE_PROXY_USER
+      - MAZE_RELEASE_STAGE
+      - MAZE_SEND_CODE
+      - MAZE_SEND_ENVIRONMENT
+      - MAZE_SESSION_ENDPOINT
+      - MAZE_TIMEOUT
+      - RAILS_ENV
     ports:
       - "3002:3000"
     restart: "no"
@@ -36,7 +102,29 @@ services:
       args:
         ruby_version: 2.3
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - http_proxy
+      - MAZE_API_KEY
+      - MAZE_APP_TYPE
+      - MAZE_APP_VERSION
+      - MAZE_AUTO_CAPTURE_SESSIONS
+      - MAZE_AUTO_NOTIFY
+      - MAZE_ENDPOINT
+      - MAZE_IGNORE_CLASS
+      - MAZE_IGNORE_MESSAGE
+      - MAZE_META_DATA_FILTERS
+      - MAZE_NOTIFY_RELEASE_STAGE
+      - MAZE_PROJECT_ROOT
+      - MAZE_PROXY_HOST
+      - MAZE_PROXY_PASSWORD
+      - MAZE_PROXY_PORT
+      - MAZE_PROXY_USER
+      - MAZE_RELEASE_STAGE
+      - MAZE_SEND_CODE
+      - MAZE_SEND_ENVIRONMENT
+      - MAZE_SESSION_ENDPOINT
+      - MAZE_TIMEOUT
+      - RAILS_ENV
     ports:
       - "3003:3000"
     restart: "no"
@@ -46,7 +134,29 @@ services:
       args:
         ruby_version: 2.4
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - http_proxy
+      - MAZE_API_KEY
+      - MAZE_APP_TYPE
+      - MAZE_APP_VERSION
+      - MAZE_AUTO_CAPTURE_SESSIONS
+      - MAZE_AUTO_NOTIFY
+      - MAZE_ENDPOINT
+      - MAZE_IGNORE_CLASS
+      - MAZE_IGNORE_MESSAGE
+      - MAZE_META_DATA_FILTERS
+      - MAZE_NOTIFY_RELEASE_STAGE
+      - MAZE_PROJECT_ROOT
+      - MAZE_PROXY_HOST
+      - MAZE_PROXY_PASSWORD
+      - MAZE_PROXY_PORT
+      - MAZE_PROXY_USER
+      - MAZE_RELEASE_STAGE
+      - MAZE_SEND_CODE
+      - MAZE_SEND_ENVIRONMENT
+      - MAZE_SESSION_ENDPOINT
+      - MAZE_TIMEOUT
+      - RAILS_ENV
     ports:
       - "3004:3000"
     restart: "no"
@@ -56,7 +166,29 @@ services:
       args:
         ruby_version: 2.5
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - http_proxy
+      - MAZE_API_KEY
+      - MAZE_APP_TYPE
+      - MAZE_APP_VERSION
+      - MAZE_AUTO_CAPTURE_SESSIONS
+      - MAZE_AUTO_NOTIFY
+      - MAZE_ENDPOINT
+      - MAZE_IGNORE_CLASS
+      - MAZE_IGNORE_MESSAGE
+      - MAZE_META_DATA_FILTERS
+      - MAZE_NOTIFY_RELEASE_STAGE
+      - MAZE_PROJECT_ROOT
+      - MAZE_PROXY_HOST
+      - MAZE_PROXY_PASSWORD
+      - MAZE_PROXY_PORT
+      - MAZE_PROXY_USER
+      - MAZE_RELEASE_STAGE
+      - MAZE_SEND_CODE
+      - MAZE_SEND_ENVIRONMENT
+      - MAZE_SESSION_ENDPOINT
+      - MAZE_TIMEOUT
+      - RAILS_ENV
     ports:
       - "3005:3000"
     restart: "no"
