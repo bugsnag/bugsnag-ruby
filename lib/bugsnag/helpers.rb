@@ -10,6 +10,7 @@ module Bugsnag
     MAX_ARRAY_LENGTH = 40
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
+    ##
     # Trim the size of value if the serialized JSON value is longer than is
     # accepted by Bugsnag
     def self.trim_if_needed(value)
@@ -23,6 +24,10 @@ module Bugsnag
       remove_metadata_from_events(reduced_value)
     end
 
+    ##
+    # Merges r_hash into l_hash recursively, favouring the values in r_hash.
+    #
+    # Returns a new array consisting of the merged values
     def self.deep_merge(l_hash, r_hash)
       l_hash.merge(r_hash) do |key, l_val, r_val|
         if l_val.is_a?(Hash) && r_val.is_a?(Hash)
@@ -35,6 +40,10 @@ module Bugsnag
       end
     end
 
+    ##
+    # Merges r_hash into l_hash recursively, favouring the values in r_hash.
+    #
+    # Overwrites the values in the existing l_hash
     def self.deep_merge!(l_hash, r_hash)
       l_hash.merge!(r_hash) do |key, l_val, r_val|
         if l_val.is_a?(Hash) && r_val.is_a?(Hash)
@@ -51,6 +60,7 @@ module Bugsnag
 
     TRUNCATION_INFO = '[TRUNCATED]'
 
+    ##
     # Check if a value is a raw type which should not be trimmed, truncated
     # or converted to a string
     def self.is_json_raw_type?(value)
