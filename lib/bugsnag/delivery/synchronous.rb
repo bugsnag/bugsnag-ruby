@@ -5,6 +5,8 @@ module Bugsnag
   module Delivery
     class Synchronous
       class << self
+        ##
+        # Attempts to deliver a payload to the given endpoint synchronously.
         def deliver(url, body, configuration, options={})
           begin
             response = request(url, body, configuration, options)

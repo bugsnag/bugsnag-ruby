@@ -37,6 +37,8 @@ module Bugsnag
     attr_accessor :severity_reason
     attr_accessor :user
 
+    ##
+    # Initializes a new report from an exception.
     def initialize(exception, passed_configuration, auto_notify=false)
       @should_ignore = false
       @unhandled = auto_notify
@@ -58,7 +60,8 @@ module Bugsnag
       self.user = {}
     end
 
-    # Add a new tab to this notification
+    ##
+    # Add a new metadata tab to this notification.
     def add_tab(name, value)
       return if name.nil?
 
@@ -72,14 +75,16 @@ module Bugsnag
       end
     end
 
-    # Remove a tab from this notification
+    ##
+    # Removes a metadata tab from this notification.
     def remove_tab(name)
       return if name.nil?
 
       meta_data.delete(name)
     end
 
-    # Build an exception payload
+    ##
+    # Builds and returns the exception payload for this notification.
     def as_json
       # Build the payload's exception event
       payload_event = {
@@ -120,6 +125,8 @@ module Bugsnag
       }
     end
 
+    ##
+    # Returns the headers required for the notification.
     def headers
       {
         "Bugsnag-Api-Key" => api_key,
@@ -128,14 +135,20 @@ module Bugsnag
       }
     end
 
+    ##
+    # Whether this report should be ignored and not sent.
     def ignore?
       @should_ignore
     end
 
+    ##
+    # Data set on the configuration to be attached to every error notification.
     def request_data
       configuration.request_data
     end
 
+    ##
+    # Tells the client this report should not be sent.
     def ignore!
       @should_ignore = true
     end

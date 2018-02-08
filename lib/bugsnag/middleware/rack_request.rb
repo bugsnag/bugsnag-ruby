@@ -1,4 +1,6 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts and attaches rack data to an error report
   class RackRequest
     SPOOF = "[SPOOF]".freeze
 

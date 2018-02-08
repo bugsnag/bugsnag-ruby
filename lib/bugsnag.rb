@@ -30,7 +30,11 @@ module Bugsnag
   LOCK = Mutex.new
 
   class << self
+
+    ##
     # Configure the Bugsnag notifier application-wide settings.
+    #
+    # Yields a configuration object to use to set application settings.
     def configure
       yield(configuration) if block_given?
 
@@ -47,7 +51,10 @@ module Bugsnag
       end
     end
 
-    # Explicitly notify of an exception
+    ##
+    # Explicitly notify of an exception.
+    #
+    # Optionally accepts a block to append metadata to the yielded report.
     def notify(exception, auto_notify=false, &block)
       unless auto_notify.is_a? TrueClass or auto_notify.is_a? FalseClass
         configuration.warn("Adding metadata/severity using a hash is no longer supported, please use block syntax instead")
@@ -126,8 +133,9 @@ module Bugsnag
       end
     end
 
+    ##
     # Registers an at_exit function to automatically catch errors on exit
-    # This can be disabled by setting the 'add_exit_handler' option to false
+    # This can be disabled by setting the 'add_exit_handler' configuration option to false
     def register_at_exit
       at_exit do
         if $!
@@ -142,22 +150,32 @@ module Bugsnag
     end
 
     # Configuration getters
+    ##
+    # Returns the client's Configuration object, or creates one if not yet created.
     def configuration
       @configuration = nil unless defined?(@configuration)
       @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
     end
 
-    # Session tracking
+    ##
+    # Returns the client's SessionTracker object, or creates one if not yet created.
     def session_tracker
       @session_tracker = nil unless defined?(@session_tracker)
       @session_tracker || LOCK.synchronize { @session_tracker ||= Bugsnag::SessionTracker.new}
     end
 
+    ##
+    # Starts a session.
+    #
+    # Allows Bugsnag to track error rates across releases.
     def start_session
       session_tracker.start_session
     end
 
-    # Allow access to "before notify" callbacks
+    ##
+    # Allow access to "before notify" callbacks as an array.
+    #
+    # These callbacks will be called whenever an error notification is being made.
     def before_notify_callbacks
       Bugsnag.configuration.request_data[:before_callbacks] ||= []
     end

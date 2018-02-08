@@ -1,6 +1,8 @@
 require 'shoryuken'
 
 module Bugsnag
+  ##
+  # Extracts and attaches Shoryuken queue information to an error report
   class Shoryuken
 
     FRAMEWORK_ATTRIBUTES = {
