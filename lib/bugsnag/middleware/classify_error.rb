@@ -1,4 +1,6 @@
 module Bugsnag::Middleware
+  ##
+  # Sets the severity to info for low-importance errors
   class ClassifyError
     INFO_CLASSES = [
         "AbstractController::ActionNotFound",

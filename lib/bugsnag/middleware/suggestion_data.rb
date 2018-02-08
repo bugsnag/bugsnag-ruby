@@ -1,4 +1,6 @@
 module Bugsnag::Middleware
+  ##
+  # Attaches any "Did you mean?" suggestions to the report
   class SuggestionData
 
     CAPTURE_REGEX = /Did you mean\?([\s\S]+)$/

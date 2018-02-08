@@ -1,6 +1,8 @@
 require 'sidekiq'
 
 module Bugsnag
+  ##
+  # Extracts and attaches Sidekiq job and queue information to an error report
   class Sidekiq
 
     FRAMEWORK_ATTRIBUTES = {

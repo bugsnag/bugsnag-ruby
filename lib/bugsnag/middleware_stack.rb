@@ -1,11 +1,17 @@
 module Bugsnag
   class MiddlewareStack
+    ##
+    # Creates the middleware stack.
     def initialize
       @middlewares = []
       @disabled_middleware = []
       @mutex = Mutex.new
     end
 
+    ##
+    # Defines a new middleware to use in the middleware call sequence.
+    #
+    # Will return early if given middleware is disabled or already included.
     def use(new_middleware)
       @mutex.synchronize do
         return if @disabled_middleware.include?(new_middleware)
@@ -15,6 +21,11 @@ module Bugsnag
       end
     end
 
+    ##
+    # Inserts a new middleware to use after a given middleware already added.
+    #
+    # Will return early if given middleware is disabled or already added.
+    # New middleware will be inserted last if the existing middleware is not already included.
     def insert_after(after, new_middleware)
       @mutex.synchronize do
         return if @disabled_middleware.include?(new_middleware)
@@ -34,6 +45,11 @@ module Bugsnag
       end
     end
 
+    ##
+    # Inserts a new middleware to use before a given middleware already added.
+    #
+    # Will return early if given middleware is disabled or already added.
+    # New middleware will be inserted last if the existing middleware is not already included.
     def insert_before(before, new_middleware)
       @mutex.synchronize do
         return if @disabled_middleware.include?(new_middleware)
@@ -57,12 +73,14 @@ module Bugsnag
       end
     end
 
-    # This allows people to proxy methods to the array if they want to do more complex stuff
+    ##
+    # Allows the user to proxy methods for more complex functionality.
     def method_missing(method, *args, &block)
       @middlewares.send(method, *args, &block)
     end
 
-    # Runs the middleware stack and calls
+    ##
+    # Runs the middleware stack.
     def run(report)
       # The final lambda is the termination of the middleware stack. It calls deliver on the notification
       lambda_has_run = false

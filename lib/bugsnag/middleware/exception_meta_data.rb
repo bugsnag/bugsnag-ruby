@@ -1,4 +1,6 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts data from the exception.
   class ExceptionMetaData
     def initialize(bugsnag)
       @bugsnag = bugsnag

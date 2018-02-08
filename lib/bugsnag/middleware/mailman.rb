@@ -1,5 +1,8 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts and attaches mailman data to an error report
   class Mailman
+
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end

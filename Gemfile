@@ -24,4 +24,8 @@ group :sidekiq, optional: true do
     gem 'sidekiq', '~> 5.0.4'
 end
 
+group :doc, optional: true do
+  gem 'hanna-nouveau'
+end
+
 gemspec
