@@ -6,6 +6,12 @@ require 'ostruct'
 module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class NestedException < StandardError; attr_accessor :original_exception; end
 class BugsnagTestExceptionWithMetaData < Exception; include Bugsnag::MetaData; end
+class BugsnagTestExceptionWithoutMetaData < Exception
+  attr_accessor :bugsnag_meta_data
+  attr_accessor :bugsnag_user_id
+  attr_accessor :bugsnag_context
+  attr_accessor :bugsnag_grouping_hash
+end
 class BugsnagSubclassTestException < BugsnagTestException; end
 
 class Ruby21Exception < RuntimeError
@@ -377,6 +383,32 @@ describe Bugsnag::Report do
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["context"]).to eq("override_context")
+    }
+  end
+
+  it "accepts MetaData attributes without mixing Bugsnag::MetaData" do
+    exception = BugsnagTestExceptionWithoutMetaData.new("It crashed")
+    exception.bugsnag_meta_data = {
+      :some_tab => {
+        :info => "here",
+        :data => "also here"
+      }
+    }
+    exception.bugsnag_user_id = "override_user_id"
+    exception.bugsnag_grouping_hash = "exception_hash"
+    exception.bugsnag_context = "exception_context"
+
+    Bugsnag.notify(exception)
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]["some_tab"]).to eq(
+        "info" => "here",
+        "data" => "also here"
+      )
+      expect(event["user"]["id"]).to eq("override_user_id")
+      expect(event["groupingHash"]).to eq("exception_hash")
+      expect(event["context"]).to eq("exception_context")
     }
   end
 
