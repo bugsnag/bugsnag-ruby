@@ -1,3 +1,5 @@
+require 'pp'
+
 module Bugsnag
   class Stacktrace
 
@@ -14,6 +16,7 @@ module Bugsnag
       @configuration = configuration
 
       backtrace = caller if !backtrace || backtrace.empty?
+
       @processed_backtrace = backtrace.map do |trace|
         if trace.match(BACKTRACE_LINE_REGEX)
           file, line_str, method = [$1, $2, $3]

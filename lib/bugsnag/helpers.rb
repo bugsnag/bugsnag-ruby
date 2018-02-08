@@ -1,12 +1,13 @@
 require 'uri'
 require 'set'
 require 'json'
+require 'pp'
 
 
 module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 3072
-    MAX_PAYLOAD_LENGTH = 256000
+    MAX_PAYLOAD_LENGTH = 512000
     MAX_ARRAY_LENGTH = 40
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
@@ -14,13 +15,27 @@ module Bugsnag
     # accepted by Bugsnag
     def self.trim_if_needed(value)
       value = "" if value.nil?
+
+      # Sanitize object
       sanitized_value = Bugsnag::Cleaner.clean_object_encoding(value)
       return sanitized_value unless payload_too_long?(sanitized_value)
-      reduced_value = trim_strings_in_value(sanitized_value)
+
+      # Reduce metadata
+      reduced_value = trim_metadata(sanitized_value)
       return reduced_value unless payload_too_long?(reduced_value)
-      reduced_value = truncate_arrays_in_value(reduced_value)
+
+      # Remove metadata
+      reduced_value = remove_metadata_from_events(reduced_value)
       return reduced_value unless payload_too_long?(reduced_value)
-      remove_metadata_from_events(reduced_value)
+
+      # Recursively trim code from functions, oldest first
+      threshold = get_payload_length(reduced_value) - MAX_PAYLOAD_LENGTH
+      reduced_value = trim_stacktrace_code(reduced_value, threshold)
+      return reduced_value unless payload_too_long?(reduced_value)
+
+      # Recursively remove oldest functions in stacktrace
+      threshold = get_payload_length(reduced_value) - MAX_PAYLOAD_LENGTH
+      trim_stacktrace_functions(reduced_value, threshold)
     end
 
     def self.deep_merge(l_hash, r_hash)
@@ -50,6 +65,52 @@ module Bugsnag
     private
 
     TRUNCATION_INFO = '[TRUNCATED]'
+
+    def self.trim_stacktrace_code(payload, threshold)
+      return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
+      payload[:events].map do |event|
+        event[:exceptions].map do |exception|
+          traces = exception[:stacktrace].reverse
+          initial_size = get_payload_length(traces)
+          traces.map! do |trace|
+            if trace.include?(:code) && (initial_size - get_payload_length(traces)) < threshold
+              trace.delete(:code)
+            end
+            trace
+          end
+          exception[:stacktrace] = traces.reverse
+        end
+      end
+      payload
+    end
+
+    def self.trim_stacktrace_functions(payload, threshold)
+      return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
+      payload[:events].map do |event|
+        event[:exceptions].map do |exception|
+          traces = exception[:stacktrace].reverse
+          initial_size = get_payload_length(traces)
+          traces.map! do |trace|
+            if (initial_size - get_payload_length(traces)) >= threshold
+              trace
+            end
+          end
+          traces.reject! { |trace| trace.nil? }
+          exception[:stacktrace] = traces.reverse
+        end
+      end
+      payload
+    end
+
+    # Take the metadata from the events and trim it down
+    def self.trim_metadata(payload)
+      return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
+      payload[:events].map do |event|
+        event[:metaData] = trim_strings_in_value(event[:metaData])
+        event[:metaData] = truncate_arrays_in_value(event[:metaData])
+      end
+      payload
+    end
 
     # Check if a value is a raw type which should not be trimmed, truncated
     # or converted to a string
@@ -81,10 +142,14 @@ module Bugsnag
     # Validate that the serialized JSON string value is below maximum payload
     # length
     def self.payload_too_long?(value)
+      get_payload_length(value) >= MAX_PAYLOAD_LENGTH
+    end
+
+    def self.get_payload_length(value)
       if value.is_a?(String)
-        value.length >= MAX_PAYLOAD_LENGTH
+        value.length
       else
-        ::JSON.dump(value).length >= MAX_PAYLOAD_LENGTH
+        ::JSON.dump(value).length
       end
     end
 
