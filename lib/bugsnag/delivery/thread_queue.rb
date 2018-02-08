@@ -8,7 +8,6 @@ module Bugsnag
       MUTEX = Mutex.new
 
       class << self
-
         ##
         # Queues a given payload to be delivered asynchronously.
         def deliver(url, body, configuration, options={})
