@@ -1,28 +1,34 @@
 sudo: false
 language: ruby
 
+env:
+- BUNDLE_VERSION=1.12.0
+- GEMSETS=test
+
 before_install:
 - gem update --system 2.6.14
+- gem --version
+- gem install bundler -v $BUNDLE_VERSION
+- bundle _${BUNDLE_VERSION}_ --version
 
 install:
-- bundle install --with "$GEMSETS" --binstubs
+- bundle _${BUNDLE_VERSION}_ install --with "$GEMSETS" --binstubs
 
 script:
-- bundle exec ./bin/rake spec
+- bundle _${BUNDLE_VERSION}_ exec ./bin/rake spec
 
 jobs:
   include:
   - stage: test
-    env: GEMSETS=test
+    env:
+    - GEMSETS=test
+    - BUNDLE_VERSION=1.16.1
     rvm: jruby-19mode
   - stage: test
-    env: GEMSETS=test
     rvm: 1.9.3
   - stage: test
-    env: GEMSETS=test
     rvm: 2.0.0
   - stage: test
-    env: GEMSETS=test
     rvm: 2.1.10
   - stage: test
     env: GEMSETS="test sidekiq"
