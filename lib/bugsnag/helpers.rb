@@ -8,7 +8,8 @@ module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 3072
     MAX_PAYLOAD_LENGTH = 512000
-    MAX_ARRAY_LENGTH = 40
+    MAX_ARRAY_LENGTH = 80
+    MAX_STACKTRACE_LENGTH = 160
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
     # Trim the size of value if the serialized JSON value is longer than is
@@ -24,11 +25,15 @@ module Bugsnag
       reduced_value = trim_metadata(sanitized_value)
       return reduced_value unless payload_too_long?(reduced_value)
 
+      # Reduce everything else to stacktrace limit
+      reduced_value = truncate_arrays_in_value(reduced_value, MAX_STACKTRACE_LENGTH)
+      return reduced_value unless payload_too_long?(reduced_value)
+
       # Remove metadata
       reduced_value = remove_metadata_from_events(reduced_value)
       return reduced_value unless payload_too_long?(reduced_value)
 
-      # Recursively trim code from functions, oldest first
+      # Recursively trim code from stacktrace, oldest function first
       threshold = get_payload_length(reduced_value) - MAX_PAYLOAD_LENGTH
       reduced_value = trim_stacktrace_code(reduced_value, threshold)
       return reduced_value unless payload_too_long?(reduced_value)
@@ -70,15 +75,14 @@ module Bugsnag
       return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
       payload[:events].map do |event|
         event[:exceptions].map do |exception|
-          traces = exception[:stacktrace].reverse
-          initial_size = get_payload_length(traces)
-          traces.map! do |trace|
-            if trace.include?(:code) && (initial_size - get_payload_length(traces)) < threshold
-              trace.delete(:code)
+          initial_size = get_payload_length(exception[:stacktrace])
+          (exception[:stacktrace].length - 1).downto(0).each do |i|
+            if (initial_size - get_payload_length(exception[:stacktrace])) < threshold
+              exception[:stacktrace][i].delete(:code) if exception[:stacktrace][i].include?(:code)
+            else
+              break
             end
-            trace
           end
-          exception[:stacktrace] = traces.reverse
         end
       end
       payload
@@ -88,15 +92,14 @@ module Bugsnag
       return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
       payload[:events].map do |event|
         event[:exceptions].map do |exception|
-          traces = exception[:stacktrace].reverse
-          initial_size = get_payload_length(traces)
-          traces.map! do |trace|
-            if (initial_size - get_payload_length(traces)) >= threshold
-              trace
+          initial_size = get_payload_length(exception[:stacktrace])
+          (exception[:stacktrace].length - 1).downto(0).each do |i|
+            if (initial_size - get_payload_length(exception[:stacktrace])) < threshold
+              exception[:stacktrace].pop
+            else
+              break
             end
           end
-          traces.reject! { |trace| trace.nil? }
-          exception[:stacktrace] = traces.reverse
         end
       end
       payload
@@ -119,10 +122,10 @@ module Bugsnag
     end
 
     # Shorten array until it fits within the payload size limit when serialized
-    def self.truncate_array(array)
+    def self.truncate_array(array, limit=MAX_ARRAY_LENGTH)
       return [] unless array.respond_to?(:slice)
-      array.slice(0, MAX_ARRAY_LENGTH).map do |item|
-        truncate_arrays_in_value(item)
+      array.slice(0, limit).map do |item|
+        truncate_arrays_in_value(item, limit)
       end
     end
 
@@ -179,12 +182,12 @@ module Bugsnag
       collection.map {|value| trim_strings_in_value(value)}
     end
 
-    def self.truncate_arrays_in_value(value)
+    def self.truncate_arrays_in_value(value, limit=MAX_ARRAY_LENGTH)
       case value
       when Hash
-        truncate_arrays_in_hash(value)
+        truncate_arrays_in_hash(value, limit)
       when Array, Set
-        truncate_array(value)
+        truncate_array(value, limit)
       else
         value
       end
