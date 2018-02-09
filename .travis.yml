@@ -11,7 +11,7 @@ install:
 - bundle _${BUNDLE_VERSION}_ install --with "$GEMSETS" --binstubs
 
 script:
-- bundle _${BUNDLE_VERSION}_ exec ./bin/rake spec
+- bundle exec ./bin/rake spec
 
 jobs:
   include:
