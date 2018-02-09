@@ -17,8 +17,8 @@ jobs:
   include:
   - stage: test
     env:
-    - GEMSETS=test
     - BUNDLE_VERSION=1.16.1
+    - GEMSETS=test
     rvm: jruby-19mode
   - stage: test
     rvm: 1.9.3
