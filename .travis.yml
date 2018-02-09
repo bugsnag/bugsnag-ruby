@@ -2,8 +2,7 @@ sudo: false
 language: ruby
 
 env:
-- BUNDLE_VERSION=1.12.0
-- GEMSETS=test
+- BUNDLE_VERSION=1.12.0 GEMSETS=test
 
 before_install:
 - gem update --system 2.6.14
