@@ -2,7 +2,8 @@ sudo: false
 language: ruby
 
 env:
-- BUNDLE_VERSION=1.12.0 GEMSETS=test
+- BUNDLE_VERSION=1.12.0
+- GEMSETS=test
 
 before_install:
 - gem update --system 2.6.14
@@ -30,16 +31,20 @@ jobs:
   - stage: test
     rvm: 2.1.10
   - stage: test
-    env: GEMSETS="test sidekiq"
+    env:
+    - GEMSETS="test sidekiq"
     rvm: 2.2.4
   - stage: test
-    env: GEMSETS="test sidekiq coverage"
+    env:
+    - GEMSETS="test sidekiq coverage"
     rvm: 2.3.0
   - stage: test
-    env: GEMSETS="test sidekiq"
+    env:
+    - GEMSETS="test sidekiq"
     rvm: 2.4.1
   - stage: deploy
-    env: GEMSETS="test doc"
+    env:
+    - GEMSETS="test doc"
     rvm: 2.4.1
     script: bundle exec rake rdoc
     if: tag =~ ^v[1-9]
