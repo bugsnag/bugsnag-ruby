@@ -1,9 +1,6 @@
 sudo: false
 language: ruby
 
-env:
-- GEMSETS=test
-
 before_install:
 - gem update --system 2.6.14
 - gem --version
@@ -27,12 +24,17 @@ jobs:
     rvm: 1.9.3
     env:
     - BUNDLE_VERSION=1.12.0
+    - GEMSETS=test
   - stage: test
     rvm: 2.0.0
     env:
     - BUNDLE_VERSION=1.12.0
+    - GEMSETS=test
   - stage: test
-    rvm: 2.1.10
+    rvm: 2.1.
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS=test
   - stage: test
     env:
     - BUNDLE_VERSION=1.12.0
