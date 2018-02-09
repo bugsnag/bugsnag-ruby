@@ -2,7 +2,7 @@ sudo: false
 language: ruby
 
 env:
-- BUNDLE_VERSION=1.12.0 GEMSETS=test
+- GEMSETS=test
 
 before_install:
 - gem update --system 2.6.14
@@ -25,24 +25,32 @@ jobs:
     rvm: jruby-19mode
   - stage: test
     rvm: 1.9.3
+    env:
+    - BUNDLE_VERSION=1.12.0
   - stage: test
     rvm: 2.0.0
+    env:
+    - BUNDLE_VERSION=1.12.0
   - stage: test
     rvm: 2.1.10
   - stage: test
     env:
+    - BUNDLE_VERSION=1.12.0
     - GEMSETS="test sidekiq"
     rvm: 2.2.4
   - stage: test
     env:
+    - BUNDLE_VERSION=1.12.0
     - GEMSETS="test sidekiq coverage"
     rvm: 2.3.0
   - stage: test
     env:
+    - BUNDLE_VERSION=1.12.0
     - GEMSETS="test sidekiq"
     rvm: 2.4.1
   - stage: deploy
     env:
+    - BUNDLE_VERSION=1.12.0
     - GEMSETS="test doc"
     rvm: 2.4.1
     script: bundle exec rake rdoc
