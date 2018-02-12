@@ -4,11 +4,11 @@ language: ruby
 before_install:
 - gem update --system 2.6.14
 - gem --version
-- gem install bundler -v 1.12
-- bundle _1.12.0_ --version
+- gem install bundler -v $BUNDLE_VERSION
+- bundle _${BUNDLE_VERSION}_ --version
 
 install:
-- bundle _1.12.0_ install --with "$GEMSETS" --binstubs
+- bundle _${BUNDLE_VERSION}_ install --with "$GEMSETS" --binstubs
 
 script:
 - bundle exec ./bin/rake spec
@@ -16,28 +16,44 @@ script:
 jobs:
   include:
   - stage: test
-    env: GEMSETS=test
+    env:
+    - BUNDLE_VERSION=1.16.1
+    - GEMSETS=test
     rvm: jruby-19mode
   - stage: test
-    env: GEMSETS=test
     rvm: 1.9.3
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS=test
   - stage: test
-    env: GEMSETS=test
     rvm: 2.0.0
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS=test
   - stage: test
-    env: GEMSETS=test
-    rvm: 2.1.10
+    rvm: 2.1.
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS=test
   - stage: test
-    env: GEMSETS="test sidekiq"
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test sidekiq"
     rvm: 2.2.4
   - stage: test
-    env: GEMSETS="test sidekiq coverage"
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test sidekiq coverage"
     rvm: 2.3.0
   - stage: test
-    env: GEMSETS="test sidekiq"
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test sidekiq"
     rvm: 2.4.1
   - stage: deploy
-    env: GEMSETS="test doc"
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test doc"
     rvm: 2.4.1
     script: bundle exec rake rdoc
     if: tag =~ ^v[1-9]
