@@ -2,7 +2,6 @@ module Bugsnag::Middleware
   ##
   # Attaches Sidekiq job information to an error report
   class Sidekiq
-
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end

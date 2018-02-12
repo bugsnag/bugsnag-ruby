@@ -50,6 +50,10 @@ jobs:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS="test sidekiq"
     rvm: 2.4.1
+  - stage: test
+    env: GEMSETS="test rubocop"
+    rvm: 2.4.1
+    script: bundle exec ./bin/rubocop lib/
   - stage: deploy
     env:
     - BUNDLE_VERSION=1.12.0

@@ -2,7 +2,6 @@ module Bugsnag::Middleware
   ##
   # Attaches information about current session to an error report
   class SessionData
-
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
