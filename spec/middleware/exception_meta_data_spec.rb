@@ -43,6 +43,20 @@ describe Bugsnag::Middleware::ExceptionMetaData do
     expect(report.tabs).to eq({"foo" => "bar"})
   end
 
+  it "does nothing when metadata not a Hash" do
+    error = bugsnag_error_class.new
+    error.bugsnag_meta_data = 4
+
+    report = report_class.new(error)
+
+    middleware.call(report)
+
+    expect(report.user).to eq(nil)
+    expect(report.tabs).to eq(nil)
+    expect(report.grouping_hash).to eq(nil)
+    expect(report.context).to eq(nil)
+  end
+
   it "sets user ID when a string" do
     error = bugsnag_error_class.new
     error.bugsnag_user_id = "1234"
