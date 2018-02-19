@@ -202,10 +202,10 @@ module Bugsnag
       object
     end
 
-    def self.truncate_arrays_in_hash(hash)
+    def self.truncate_arrays_in_hash(hash, limit=MAX_ARRAY_LENGTH)
       return {} unless hash.is_a?(Hash)
       hash.each_with_object({}) do |(key, value), reduced_hash|
-        if reduced_value = truncate_arrays_in_value(value)
+        if reduced_value = truncate_arrays_in_value(value, limit)
           reduced_hash[key] = reduced_value
         end
       end
