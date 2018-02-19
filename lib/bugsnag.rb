@@ -182,6 +182,4 @@ module Bugsnag
   end
 end
 
-if !ENV["BUGSNAG_DISABLE_AUTOCONFIGURE"]
-  Bugsnag.load_integrations
-end
+Bugsnag.load_integrations unless ENV["BUGSNAG_DISABLE_AUTOCONFIGURE"]
