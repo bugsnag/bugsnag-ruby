@@ -1,4 +1,7 @@
 module Bugsnag::Middleware
+  ##
+  # Determines if the exception should be ignored based on the configured
+  # `ignore_classes`
   class IgnoreErrorClass
     def initialize(bugsnag)
       @bugsnag = bugsnag

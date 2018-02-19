@@ -2,12 +2,13 @@
 
 require 'rdoc/task'
 RDoc::Task.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "bugsnag #{version}"
-  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('README.md')
+  rdoc.rdoc_files.include('CONTRIBUTING.md')
+  rdoc.rdoc_files.include('CHANGELOG.md')
   rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.options.push '-f', 'hanna'
+  rdoc.markup = 'markdown'
 end
 
 # RSpec tasks

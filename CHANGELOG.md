@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## 6.6.4 (14 Feb 2018)
+
+### Fixes
+
+* Mark files in `.bundle/` directory as not "in project"
+  | [#420](https://github.com/bugsnag/bugsnag-ruby/pull/420)
+  | [Alex Moinet](https://github.com/Cawllec)
+* Restore support for attaching `bugsnag_*` metadata to exceptions without
+  extending `Bugsnag::Middleware::ExceptionMetaData`
+  | [#426](https://github.com/bugsnag/bugsnag-ruby/pull/426)
+  | [Jordan Raine](https://github.com/jnraine)
+
 ## 6.6.3 (23 Jan 2018)
 
 ### Fixes

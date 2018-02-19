@@ -1,4 +1,6 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts and appends clearance user information
   class ClearanceUser
     COMMON_USER_FIELDS = [:email, :name, :first_name, :last_name, :created_at, :id]
 

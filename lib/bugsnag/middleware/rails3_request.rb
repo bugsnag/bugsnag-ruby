@@ -1,4 +1,6 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts and attaches rails and rack environment data to an error report
   class Rails3Request
     SPOOF = "[SPOOF]".freeze
 
