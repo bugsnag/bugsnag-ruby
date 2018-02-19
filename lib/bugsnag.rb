@@ -30,7 +30,6 @@ module Bugsnag
   LOCK = Mutex.new
 
   class << self
-
     ##
     # Configure the Bugsnag notifier application-wide settings.
     #
