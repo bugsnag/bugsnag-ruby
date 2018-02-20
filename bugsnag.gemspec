@@ -18,4 +18,5 @@ Gem::Specification.new do |s|
   ]
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 1.9.2'
+  s.add_runtime_dependency 'concurrent-ruby', '~> 1.0'
 end

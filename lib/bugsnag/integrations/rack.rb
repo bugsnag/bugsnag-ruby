@@ -1,5 +1,12 @@
 module Bugsnag
+  ##
+  # Automatically captures and adds Rack request information to error reports
   class Rack
+
+    FRAMEWORK_ATTRIBUTES = {
+      :framework => "Rack"
+    }
+
     def initialize(app)
       @app = app
 
@@ -20,14 +27,20 @@ module Bugsnag
         # Hook up rack-based notification middlewares
         config.middleware.insert_before([Bugsnag::Middleware::Rails3Request,Bugsnag::Middleware::Callbacks], Bugsnag::Middleware::RackRequest) if defined?(::Rack)
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::WardenUser) if defined?(Warden)
+        config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::ClearanceUser) if defined?(Clearance)
 
         config.app_type ||= "rack"
       end
     end
 
+    ##
+    # Wraps a call to the application with error capturing
     def call(env)
       # Set the request data for bugsnag middleware to use
       Bugsnag.configuration.set_request_data(:rack_env, env)
+      if Bugsnag.configuration.auto_capture_sessions
+        Bugsnag.start_session
+      end
 
       begin
         response = @app.call(env)
@@ -35,6 +48,10 @@ module Bugsnag
         # Notify bugsnag of rack exceptions
         Bugsnag.notify(raised, true) do |report|
           report.severity = "error"
+          report.severity_reason = {
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+            :attributes => Bugsnag::Rack::FRAMEWORK_ATTRIBUTES
+          }
         end
 
         # Re-raise the exception
@@ -45,6 +62,10 @@ module Bugsnag
       if env["rack.exception"]
         Bugsnag.notify(env["rack.exception"], true) do |report|
           report.severity = "error"
+          report.severity_reason = {
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+            :attributes => FRAMEWORK_ATTRIBUTES
+          }
         end
       end
 

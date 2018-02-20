@@ -39,6 +39,19 @@ describe Bugsnag::Helpers do
       expect(value[4]).to be_a(String)
     end
 
+    context "an object will throw if `to_s` is called" do
+      class StringRaiser
+        def to_s
+          raise 'Oh no you do not!'
+        end
+      end
+
+      it "uses the string '[RAISED]' instead" do
+        value = Bugsnag::Helpers.trim_if_needed([1, 3, StringRaiser.new])
+        expect(value[2]).to eq "[RAISED]"
+      end
+    end
+
     context "payload length is less than allowed" do
 
       it "does not change strings" do

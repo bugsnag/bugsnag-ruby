@@ -1,11 +1,18 @@
 require 'sidekiq'
 
 module Bugsnag
+  ##
+  # Extracts and attaches Sidekiq job and queue information to an error report
   class Sidekiq
+
+    FRAMEWORK_ATTRIBUTES = {
+      :framework => "Sidekiq"
+    }
+
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
       Bugsnag.configuration.app_type = "sidekiq"
-      Bugsnag.configuration.delivery_method = :synchronous
+      Bugsnag.configuration.default_delivery_method = :synchronous
     end
 
     def call(worker, msg, queue)
@@ -18,6 +25,10 @@ module Bugsnag
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
         Bugsnag.notify(ex, true) do |report|
           report.severity = "error"
+          report.severity_reason = {
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+            :attributes => FRAMEWORK_ATTRIBUTES
+          }
         end
         raise
       ensure
@@ -29,6 +40,10 @@ end
 
 ::Sidekiq.configure_server do |config|
   config.server_middleware do |chain|
-    chain.add ::Bugsnag::Sidekiq
+    if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('3.3.0')
+      chain.prepend ::Bugsnag::Sidekiq
+    else
+      chain.add ::Bugsnag::Sidekiq
+    end
   end
 end

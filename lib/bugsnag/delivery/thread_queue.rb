@@ -8,7 +8,9 @@ module Bugsnag
       MUTEX = Mutex.new
 
       class << self
-        def deliver(url, body, configuration)
+        ##
+        # Queues a given payload to be delivered asynchronously.
+        def deliver(url, body, configuration, options={})
           @configuration = configuration
 
           start_once!
@@ -19,7 +21,7 @@ module Bugsnag
           end
 
           # Add delivery to the worker thread
-          @queue.push proc { super(url, body, configuration) }
+          @queue.push proc { super(url, body, configuration, options) }
         end
 
         private

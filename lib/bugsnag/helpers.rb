@@ -10,9 +10,11 @@ module Bugsnag
     MAX_ARRAY_LENGTH = 40
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
+    ##
     # Trim the size of value if the serialized JSON value is longer than is
     # accepted by Bugsnag
     def self.trim_if_needed(value)
+      value = "" if value.nil?
       sanitized_value = Bugsnag::Cleaner.clean_object_encoding(value)
       return sanitized_value unless payload_too_long?(sanitized_value)
       reduced_value = trim_strings_in_value(sanitized_value)
@@ -22,10 +24,43 @@ module Bugsnag
       remove_metadata_from_events(reduced_value)
     end
 
+    ##
+    # Merges r_hash into l_hash recursively, favouring the values in r_hash.
+    #
+    # Returns a new array consisting of the merged values
+    def self.deep_merge(l_hash, r_hash)
+      l_hash.merge(r_hash) do |key, l_val, r_val|
+        if l_val.is_a?(Hash) && r_val.is_a?(Hash)
+          deep_merge(l_val, r_val)
+        elsif l_val.is_a?(Array) && r_val.is_a?(Array)
+          l_val.concat(r_val)
+        else
+          r_val
+        end
+      end
+    end
+
+    ##
+    # Merges r_hash into l_hash recursively, favouring the values in r_hash.
+    #
+    # Overwrites the values in the existing l_hash
+    def self.deep_merge!(l_hash, r_hash)
+      l_hash.merge!(r_hash) do |key, l_val, r_val|
+        if l_val.is_a?(Hash) && r_val.is_a?(Hash)
+          deep_merge(l_val, r_val)
+        elsif l_val.is_a?(Array) && r_val.is_a?(Array)
+          l_val.concat(r_val)
+        else
+          r_val
+        end
+      end
+    end
+
     private
 
     TRUNCATION_INFO = '[TRUNCATED]'
 
+    ##
     # Check if a value is a raw type which should not be trimmed, truncated
     # or converted to a string
     def self.is_json_raw_type?(value)
@@ -56,7 +91,7 @@ module Bugsnag
     # Validate that the serialized JSON string value is below maximum payload
     # length
     def self.payload_too_long?(value)
-      if value.is_a? String
+      if value.is_a?(String)
         value.length >= MAX_PAYLOAD_LENGTH
       else
         ::JSON.dump(value).length >= MAX_PAYLOAD_LENGTH

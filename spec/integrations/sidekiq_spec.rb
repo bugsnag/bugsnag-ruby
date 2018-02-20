@@ -23,7 +23,7 @@ describe Bugsnag::Sidekiq do
     rescue
     end
 
-    expect(Bugsnag).to have_sent_notification {|payload|
+    expect(Bugsnag).to have_sent_notification {|payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["sidekiq"]["msg"]["class"]).to eq("FailingWorker")
       expect(event["metaData"]["sidekiq"]["msg"]["args"]).to eq([-0])

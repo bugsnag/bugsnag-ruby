@@ -1,6 +1,303 @@
 Changelog
 =========
 
+## 6.6.4 (14 Feb 2018)
+
+### Fixes
+
+* Mark files in `.bundle/` directory as not "in project"
+  | [#420](https://github.com/bugsnag/bugsnag-ruby/pull/420)
+  | [Alex Moinet](https://github.com/Cawllec)
+* Restore support for attaching `bugsnag_*` metadata to exceptions without
+  extending `Bugsnag::Middleware::ExceptionMetaData`
+  | [#426](https://github.com/bugsnag/bugsnag-ruby/pull/426)
+  | [Jordan Raine](https://github.com/jnraine)
+
+## 6.6.3 (23 Jan 2018)
+
+### Fixes
+
+* Re-added apiKey to payload for compatibility
+  | [#418](https://github.com/bugsnag/bugsnag-ruby/pull/418)
+
+
+## 6.6.2 (18 Jan 2018)
+
+### Fixes
+
+* Fix Shoryuken integration & `project_root` `Pathname` issue
+  | [#416](https://github.com/bugsnag/bugsnag-ruby/pull/416)
+  | [Sergei Maximov](https://github.com/smaximov)
+
+## 6.6.1 (09 Jan 2018)
+
+### Bug fixes
+
+* Fix failure to launch session polling task
+  | [#414](https://github.com/bugsnag/bugsnag-ruby/pull/414)
+
+## 6.6.0 (09 Jan 2018)
+
+### Enhancements
+
+* Session tracking update:
+  * Refactor of session tracking to adhere to a common interface, and simplify usage.
+  * Includes several performance enhancements.
+  * Reverts potentially breaking change of json body sanitation within delivery function.
+  | [#412](https://github.com/bugsnag/bugsnag-ruby/pull/412)
+  * Maintains backwards compatibility with previous session-tracking changes.
+  | [#413](https://github.com/bugsnag/bugsnag-ruby/pull/413)
+
+## 6.5.0 (04 Jan 2018)
+
+### Enhancements
+
+* Adds support for tracking sessions and crash rate by setting the configuration option `configuration.auto_capture_sessions` to `true`.
+  Sessions can be manually created using `Bugsnag.start_session`.
+  | [#411](https://github.com/bugsnag/bugsnag-ruby/pull/411)
+
+## 6.4.0 (21 Dec 2017)
+
+### Enhancements
+
+* Added support for DelayedJob custom job arguments
+  | [#359](https://github.com/bugsnag/bugsnag-ruby/pull/359)
+  | [Calvin Hughes](https://github.com/calvinhughes)
+
+## 6.3.0 (14 Dec 2017)
+
+### Enhancements
+
+* Allow skipping report generation using exception property
+  | [#402](https://github.com/bugsnag/bugsnag-ruby/pull/402)
+
+## 6.2.0 (07 Dec 2017)
+
+### Enhancements
+
+* Added common exit exceptions - SystemExit and Interrupt - to default ignore classes.
+  | [#404](https://github.com/bugsnag/bugsnag-ruby/pull/404)
+
+## 6.1.1 (23 Nov 2017)
+
+### Fixes
+
+* Ensured Bugsnag class intialises before railties initialised
+  | [#396](https://github.com/bugsnag/bugsnag-ruby/pull/396)
+
+## 6.1.0 (17 Nov 2017)
+
+### Enhancements
+
+* Use lazy load hooks to hook on ActionController::Base
+  | [Edouard-chin](https://github.com/Edouard-chin)
+  | [#393](https://github.com/bugsnag/bugsnag-ruby/pull/393)
+
+### Fixes
+
+* Fix type in Rack/Clearance integration
+  | [geofferymm](https://github.com/geoffreymm)
+  | [#392](https://github.com/bugsnag/bugsnag-ruby/pull/392)
+
+* Fix upgrade link to docs
+  | [duncanhewett](https://github.com/duncanhewett)
+  | [#390](https://github.com/bugsnag/bugsnag-ruby/pull/390)
+
+## 6.0.1 (09 Nov 2017)
+
+Adds a warning for the change in usage for the `notify()` method from < 6.0 to
+ease upgrading.
+
+## 6.0.0 (09 Nov 2017)
+
+This notifier has been extensively re-written to make it easier to add new integrations and maintain in the future.  This has led to several changes that are not backwards compatible.  Please refer to the [upgrading guide](https://github.com/bugsnag/bugsnag-ruby/blob/master/UPGRADING.md) for more information.
+
+### Enhancements
+
+* General notifier re-write
+  | [#320](https://github.com/bugsnag/bugsnag-ruby/pull/320)
+  | [#378](https://github.com/bugsnag/bugsnag-ruby/pull/378)
+  | [#368](https://github.com/bugsnag/bugsnag-ruby/pull/368)
+  | [#381](https://github.com/bugsnag/bugsnag-ruby/pull/381)
+  | [#385](https://github.com/bugsnag/bugsnag-ruby/pull/385)
+  | [#386](https://github.com/bugsnag/bugsnag-ruby/pull/386)
+
+* Added Upgrade guide
+  | [#370](https://github.com/bugsnag/bugsnag-ruby/pull/370)
+
+* Did-you-mean suggestions middleware
+  | [#372](https://github.com/bugsnag/bugsnag-ruby/pull/372)
+
+* Updated examples
+  | [#374](https://github.com/bugsnag/bugsnag-ruby/pull/374)
+
+## 5.5.0 (09 Nov 2017)
+
+### Enhancements
+
+* Allow environment variable proxy config for `Net::HTTP`
+  | [dexhorthy](https://github.com/dexhorthy)
+  | [#380](https://github.com/bugsnag/bugsnag-ruby/pull/380)
+
+## 5.4.1 (06 Oct 2017)
+
+### Fixes
+
+* [DelayedJob] Fix `NameError` occurring on erroring job notification
+  | [Eito Katagiri](https://github.com/eitoball)
+  | [#377](https://github.com/bugsnag/bugsnag-ruby/pull/377)
+
+* Fixed failing Rake/Java tests
+  | [#378](https://github.com/bugsnag/bugsnag-ruby/pull/378)
+
+## 5.4.0 (02 Oct 2017)
+
+This release removes the default setting of ignoring classes of errors which are commonly associated with typos or server signals (`SystemExit`), instead recording them as `info`-level severity by default. This includes the following classes:
+
+```
+  AbstractController::ActionNotFound,
+  ActionController::InvalidAuthenticityToken,
+  ActionController::ParameterMissing,
+  ActionController::RoutingError,
+  ActionController::UnknownAction,
+  ActionController::UnknownFormat,
+  ActionController::UnknownHttpMethod,
+  ActiveRecord::RecordNotFound,
+  CGI::Session::CookieStore::TamperedWithCookie,
+  Mongoid::Errors::DocumentNotFound,
+  SignalException,
+  SystemExit
+```
+
+### Enhancements
+
+* Add a one-time warning if the API key is not set
+* Track whether errors were captured automatically and by which middleware
+
+## 5.3.3 (16 June 2017)
+
+* [Rails] Fix failure to report when encountering objects which throw in `to_s`
+  [#361](https://github.com/bugsnag/bugsnag-ruby/pull/361)
+
+## 5.3.2 (27 April 2017)
+
+### Bug fixes
+
+* [Sidekiq] Revert commit [c7862ea](https://github.com/bugsnag/bugsnag-ruby/commit/c7862ea90397357f8daad8698c1572230f65075c)
+  because Sidekiq's logging middleware was removed in version 5.0.0
+  | [Reuben Brown](https://github.com/reubenbrown)
+  | [#358](https://github.com/bugsnag/bugsnag-ruby/pull/358)
+
+## 5.3.1 (20 April 2017)
+
+### Bug fixes
+
+* [Resque] Fix error when creating a worker without a queue
+  | [Dean Galvin](https://github.com/FreekingDean)
+  | [#355](https://github.com/bugsnag/bugsnag-ruby/pull/355)
+
+## 5.3.0 (07 April 2017)
+
+### Enhancements
+
+* [Resque] Fix leaking config into parent process
+  | [Martin Holman](https://github.com/martin308)
+  | [#347](https://github.com/bugsnag/bugsnag-ruby/pull/347)
+* Add new integration for Que
+  | [Sjoerd Andringa](https://github.com/s-andringa)
+  | [#305](https://github.com/bugsnag/bugsnag-ruby/pull/305)
+* [Sidekiq] Start Bugsnag after the logger in the middleware chain
+  | [Stephen Bussey](https://github.com/sb8244)
+  | [Akhil Naini](https://github.com/akhiln)
+  | [#326](https://github.com/bugsnag/bugsnag-ruby/pull/326)
+  | [#350](https://github.com/bugsnag/bugsnag-ruby/pull/350)
+* [Rake] Allow overriding `app_type` apps
+  | [#351](https://github.com/bugsnag/bugsnag-ruby/issues/351)
+* Send the dyno name as the hostname when running on Heroku
+  | [#333](https://github.com/bugsnag/bugsnag-ruby/issues/333)
+* [Delayed Job] Add additional job information such as arguments and number of
+  attempts when available
+  | [Tim Diggins](https://github.com/timdiggins)
+  | [Abraham Chan](https://github.com/abraham-chan)
+  | [Johnny Shields](https://github.com/johnnyshields)
+  | [#329](https://github.com/bugsnag/bugsnag-ruby/pull/329)
+  | [#332](https://github.com/bugsnag/bugsnag-ruby/pull/332)
+  | [#321](https://github.com/bugsnag/bugsnag-ruby/pull/321)
+
+### Bug fixes
+
+* Initialize Railtie after Bugsnag class
+  | [#343](https://github.com/bugsnag/bugsnag-ruby/issues/343)
+* Alias `notify_or_ignore` to `notify`
+  | [Simon Maynard](https://github.com/snmaynard)
+  | [#319](https://github.com/bugsnag/bugsnag-ruby/pull/319)
+
+## 5.2.0 (10 February 2017)
+
+### Enhancements
+
+* Allow provider attribute in Deploy#notify
+  | [@jbaranov](https://github.com/jbaranov)
+  | [#339](https://github.com/bugsnag/bugsnag-ruby/pull/339)
+
+### Bug fixes
+
+* Correctly hook on Action Controller
+  | [@rafaelfranca](https://github.com/rafaelfranca)
+  | [#338](https://github.com/bugsnag/bugsnag-ruby/pull/338)
+* Fix Bugsnag error message typo
+  | [@Adsidera](https://github.com/Adsidera)
+  | [#344](https://github.com/bugsnag/bugsnag-ruby/pull/344)
+* Default delivery method
+  | [@martin308](https://github.com/martin308)
+  | [#346](https://github.com/bugsnag/bugsnag-ruby/pull/346)
+
+## 5.1.0 (23 January 2017)
+
+### Bug fixes
+
+* Fix behavior to not override Rails 5 `belongs_to` association
+  | [#314](https://github.com/bugsnag/bugsnag-ruby/pull/314)
+
+### Enhancements
+
+* Add Clearance support
+  | [Jonathan Rochkind](https://github.com/jrochkind)
+  | [#313](https://github.com/bugsnag/bugsnag-ruby/pull/313)
+* Add Shoruken support
+  | [Nigel Ramsay](https://github.com/nigelramsay)
+  | [#324](https://github.com/bugsnag/bugsnag-ruby/pull/324)
+
+## 5.0.1 (7 September 2016)
+
+### Bug fixes
+
+* Show the job class name for Sidekiq jobs, not the wrapper class name
+  | [Simon Maynard](https://github.com/snmaynard)
+  | [#323](https://github.com/bugsnag/bugsnag-ruby/pull/323)
+
+## 5.0.0 (23 August 2016)
+
+### Enhancements
+
+* Remove RoutingError from default ignore classes
+  | [#308](https://github.com/bugsnag/bugsnag-ruby/issues/308)
+* Prefer BUGSNAG_RELEASE_STAGE over RAILS_ENV for release_stage
+  | [#298](https://github.com/bugsnag/bugsnag-ruby/issues/298)
+* Apply grouping hash if method `bugsnag_grouping_hash` is available on the object
+  | [#318](https://github.com/bugsnag/bugsnag-ruby/issues/318)
+  | [#311](https://github.com/bugsnag/bugsnag-ruby/issues/311)
+* Sidekiq improvements
+  | [#317](https://github.com/bugsnag/bugsnag-ruby/issues/317)
+  | [#282](https://github.com/bugsnag/bugsnag-ruby/issues/282)
+  | [#309](https://github.com/bugsnag/bugsnag-ruby/issues/309)
+  | [#306](https://github.com/bugsnag/bugsnag-ruby/issues/306)
+
+### Fixes
+
+* Exception backtrace could be empty
+  | [#307](https://github.com/bugsnag/bugsnag-ruby/issues/307)
+
 ## 4.2.1 (23 Jun 2016)
 
 ### Fixes
