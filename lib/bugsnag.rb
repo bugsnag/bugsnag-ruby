@@ -37,13 +37,7 @@ module Bugsnag
     def configure
       yield(configuration) if block_given?
 
-      unless configuration.valid_api_key?
-        @key_warning ||= false
-        unless @key_warning
-          @key_warning = true
-          configuration.warn("No valid API key has been set, notifications will not be sent")
-        end
-      end
+      warn_invalid_api_key unless configuration.valid_api_key?
 
       register_at_exit if configuration.add_exit_handler
     end
@@ -134,20 +128,33 @@ module Bugsnag
     # Registers an at_exit function to automatically catch errors on exit
     # This can be disabled by setting the 'add_exit_handler' configuration option to false
     def register_at_exit
-      @exit_handler_added ||= false
-      unless @exit_handler_added
-        @exit_handler_added = true
-        at_exit do
-          if $!
-            Bugsnag.notify($!, true) do |report|
-              report.severity = 'error'
-              report.severity_reason = {
-                :type => Bugsnag::Report::UNHANDLED_EXCEPTION
-              }
-            end
+      return if at_exit_handler_installed?
+      @exit_handler_added = true
+      at_exit do
+        if $!
+          Bugsnag.notify($!, true) do |report|
+            report.severity = 'error'
+            report.severity_reason = {
+              :type => Bugsnag::Report::UNHANDLED_EXCEPTION
+            }
           end
         end
       end
+    end
+
+    ##
+    # Checks if an at_exit handler has been added
+    def at_exit_handler_installed?
+      @exit_handler_added ||= false
+    end
+
+    ##
+    # Warns once if the API key isn't valid
+    def warn_invalid_api_key
+      @key_warning ||= false
+      return if @key_warning
+      @key_warning = true
+      configuration.warn("No valid API key has been set, notifications will not be sent")
     end
 
     # Configuration getters
