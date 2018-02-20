@@ -37,9 +37,9 @@ module Bugsnag
     def configure
       yield(configuration) if block_given?
 
-      if !configuration.valid_api_key?
+      unless configuration.valid_api_key?
         @key_warning ||= false
-        if !@key_warning
+        unless @key_warning
           @key_warning = true
           configuration.warn("No valid API key has been set, notifications will not be sent")
         end
@@ -135,7 +135,7 @@ module Bugsnag
     # This can be disabled by setting the 'add_exit_handler' configuration option to false
     def register_at_exit
       @exit_handler_added ||= false
-      if !@exit_handler_added
+      unless @exit_handler_added
         @exit_handler_added = true
         at_exit do
           if $!
