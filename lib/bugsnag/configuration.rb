@@ -59,7 +59,7 @@ module Bugsnag
 
       # Set up the defaults
       self.auto_notify = true
-      self.add_exit_handler = false
+      self.add_exit_handler = true
       self.send_environment = false
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
