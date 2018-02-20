@@ -39,7 +39,7 @@ module Bugsnag
 
       warn_invalid_api_key unless configuration.valid_api_key?
 
-      register_at_exit if configuration.add_exit_handler
+      register_at_exit
     end
 
     ##
