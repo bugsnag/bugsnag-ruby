@@ -32,26 +32,17 @@ describe Bugsnag::Configuration do
   it "should have exit exception classes ignored by default" do
       expect(subject.ignore_classes).to eq(Set.new([SystemExit, Interrupt]))
   end
-  
+
   describe "add_exit_handler" do
 
     before do
       Bugsnag.reset_exit_handler_added
     end
 
-    it "calls register_at_exit if true" do
+    it "automatically adds an exit handler" do
       expect(Bugsnag).to receive(:register_at_exit)
       Bugsnag.configure do |conf|
         conf.api_key = "TEST KEY"
-        conf.add_exit_handler = true
-      end
-    end
-
-    it "doesn't call register_at_exit if false" do
-      expect(Bugsnag).to_not receive(:register_at_exit)
-      Bugsnag.configure do |conf|
-        conf.api_key = "TEST KEY"
-        conf.add_exit_handler = false
       end
     end
 
@@ -60,6 +51,12 @@ describe Bugsnag::Configuration do
       Bugsnag.register_at_exit
     end
 
+    it "doesn't call at_exit on subsequent calls" do
+      expect(Bugsnag).to receive(:at_exit).once
+      Bugsnag.register_at_exit
+      Bugsnag.register_at_exit
+    end
+
   end
-  
+
 end
