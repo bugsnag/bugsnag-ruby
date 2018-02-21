@@ -90,7 +90,7 @@ module Bugsnag
         event[:exceptions].map do |exception|
           initial_size = get_payload_length(exception[:stacktrace])
           (exception[:stacktrace].length - 1).downto(0).each do |i|
-            break if (initial_size - get_payload_length(exception[:stacktrace])) < threshold
+            break unless (initial_size - get_payload_length(exception[:stacktrace])) < threshold
             exception[:stacktrace][i].delete(:code) if exception[:stacktrace][i].include?(:code)
           end
         end
@@ -105,7 +105,7 @@ module Bugsnag
         event[:exceptions].map do |exception|
           initial_size = get_payload_length(exception[:stacktrace])
           (exception[:stacktrace].length - 1).downto(0).each do |i|
-            break if (initial_size - get_payload_length(exception[:stacktrace])) < threshold
+            break unless (initial_size - get_payload_length(exception[:stacktrace])) < threshold
             exception[:stacktrace].pop
           end
         end
