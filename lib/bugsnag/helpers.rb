@@ -90,11 +90,8 @@ module Bugsnag
         event[:exceptions].map do |exception|
           initial_size = get_payload_length(exception[:stacktrace])
           (exception[:stacktrace].length - 1).downto(0).each do |i|
-            if (initial_size - get_payload_length(exception[:stacktrace])) < threshold
-              exception[:stacktrace][i].delete(:code) if exception[:stacktrace][i].include?(:code)
-            else
-              break
-            end
+            break if (initial_size - get_payload_length(exception[:stacktrace])) < threshold
+            exception[:stacktrace][i].delete(:code) if exception[:stacktrace][i].include?(:code)
           end
         end
       end
@@ -108,11 +105,8 @@ module Bugsnag
         event[:exceptions].map do |exception|
           initial_size = get_payload_length(exception[:stacktrace])
           (exception[:stacktrace].length - 1).downto(0).each do |i|
-            if (initial_size - get_payload_length(exception[:stacktrace])) < threshold
-              exception[:stacktrace].pop
-            else
-              break
-            end
+            break if (initial_size - get_payload_length(exception[:stacktrace])) < threshold
+            exception[:stacktrace].pop
           end
         end
       end
@@ -136,7 +130,7 @@ module Bugsnag
     end
 
     # Shorten array until it fits within the payload size limit when serialized
-    def self.truncate_array(array, limit=MAX_ARRAY_LENGTH)
+    def self.truncate_array(array, limit = MAX_ARRAY_LENGTH)
       return [] unless array.respond_to?(:slice)
       array.slice(0, limit).map do |item|
         truncate_arrays_in_value(item, limit)
@@ -196,7 +190,7 @@ module Bugsnag
       collection.map {|value| trim_strings_in_value(value)}
     end
 
-    def self.truncate_arrays_in_value(value, limit=MAX_ARRAY_LENGTH)
+    def self.truncate_arrays_in_value(value, limit = MAX_ARRAY_LENGTH)
       case value
       when Hash
         truncate_arrays_in_hash(value, limit)
@@ -216,7 +210,7 @@ module Bugsnag
       object
     end
 
-    def self.truncate_arrays_in_hash(hash, limit=MAX_ARRAY_LENGTH)
+    def self.truncate_arrays_in_hash(hash, limit = MAX_ARRAY_LENGTH)
       return {} unless hash.is_a?(Hash)
       hash.each_with_object({}) do |(key, value), reduced_hash|
         if reduced_value = truncate_arrays_in_value(value, limit)
