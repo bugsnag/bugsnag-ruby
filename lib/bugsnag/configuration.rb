@@ -15,7 +15,6 @@ module Bugsnag
     attr_accessor :release_stage
     attr_accessor :notify_release_stages
     attr_accessor :auto_notify
-    attr_accessor :add_exit_handler
     attr_accessor :ca_file
     attr_accessor :send_environment
     attr_accessor :send_code
