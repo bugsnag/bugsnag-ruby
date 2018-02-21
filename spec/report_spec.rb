@@ -367,8 +367,8 @@ describe Bugsnag::Report do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({
         some_tab: {
-          giant: SecureRandom.hex(500_000/2),
-          mega: SecureRandom.hex(500_000/2)
+          giant: SecureRandom.hex(1_000_000/2),
+          mega: SecureRandom.hex(1_000_000/2)
         }
       })
     end

@@ -224,12 +224,12 @@ describe Bugsnag::Helpers do
                   {
                     :lineNumber => 1,
                     :file => '/trace1',
-                    :code => 50000.times.map {|i| "123456" }
+                    :code => 200.times.map {|i| SecureRandom.hex(3072) }
                   },
                   {
                     :lineNumber => 2,
                     :file => '/trace2',
-                    :code => 50000.times.map {|i| "123456" }
+                    :code => 200.times.map {|i| SecureRandom.hex(3072) }
                   }
                 ]
               }]
@@ -242,7 +242,7 @@ describe Bugsnag::Helpers do
           expect(trace.length).to eq(2)
           expect(trace[0][:lineNumber]).to eq(1)
           expect(trace[0][:file]).to eq('/trace1')
-          expect(trace[0][:code].length).to be > Bugsnag::Helpers::MAX_ARRAY_LENGTH
+          expect(trace[0][:code].length).to eq(Bugsnag::Helpers::MAX_ARRAY_LENGTH)
           expect(trace[1][:lineNumber]).to eq(2)
           expect(trace[1][:file]).to eq('/trace2')
           expect(trace[1][:code]).to be_nil
@@ -256,12 +256,12 @@ describe Bugsnag::Helpers do
                   {
                     :lineNumber => 1,
                     :file => '/trace1',
-                    :something => 50000.times.map {|i| "123456" }
+                    :something => 200.times.map {|i| 2.times.map { |k| SecureRandom.hex(700) } }
                   },
                   {
                     :lineNumber => 2,
                     :file => '/trace2',
-                    :something => 50000.times.map {|i| "123456" }
+                    :something => 200.times.map {|i| 2.times.map { |k| SecureRandom.hex(1500) } }
                   }
                 ]
               }]
@@ -274,7 +274,7 @@ describe Bugsnag::Helpers do
           expect(trace.length).to eq(1)
           expect(trace[0][:lineNumber]).to eq(1)
           expect(trace[0][:file]).to eq('/trace1')
-          expect(trace[0][:something].length).to be > Bugsnag::Helpers::MAX_ARRAY_LENGTH
+          expect(trace[0][:something].length).to eq(Bugsnag::Helpers::MAX_ARRAY_LENGTH)
         end
       end
     end
