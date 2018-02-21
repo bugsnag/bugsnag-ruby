@@ -1,4 +1,6 @@
 module Bugsnag
+  ##
+  # Automatically captures and adds Rack request information to error reports
   class Rack
 
     FRAMEWORK_ATTRIBUTES = {
@@ -31,6 +33,8 @@ module Bugsnag
       end
     end
 
+    ##
+    # Wraps a call to the application with error capturing
     def call(env)
       # Set the request data for bugsnag middleware to use
       Bugsnag.configuration.set_request_data(:rack_env, env)

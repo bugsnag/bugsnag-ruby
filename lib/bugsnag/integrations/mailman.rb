@@ -1,6 +1,8 @@
 require 'mailman'
 
 module Bugsnag
+  ##
+  # Extracts and appends mailman message information to error reports
   class Mailman
 
     FRAMEWORK_ATTRIBUTES = {
@@ -12,6 +14,8 @@ module Bugsnag
       Bugsnag.configuration.app_type = "mailman"
     end
 
+    ##
+    # Calls the mailman middleware.
     def call(mail)
       begin
         Bugsnag.configuration.set_request_data :mailman_msg, mail.to_s

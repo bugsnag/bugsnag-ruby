@@ -1,4 +1,6 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts and attaches rake task information to an error report
   class Rake
     def initialize(bugsnag)
       @bugsnag = bugsnag

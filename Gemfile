@@ -16,8 +16,16 @@ group :coverage, optional: true do
     gem 'coveralls'
 end
 
+group :rubocop, optional: true do
+    gem 'rubocop', '~> 0.52.1'
+end
+
 group :sidekiq, optional: true do
     gem 'sidekiq', '~> 5.0.4'
+end
+
+group :doc, optional: true do
+  gem 'hanna-nouveau'
 end
 
 gemspec
