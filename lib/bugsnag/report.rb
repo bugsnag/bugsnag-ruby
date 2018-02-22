@@ -21,6 +21,7 @@ module Bugsnag
 
     attr_reader   :unhandled
     attr_accessor :api_key
+    attr_accessor :app_framework_versions
     attr_accessor :app_type
     attr_accessor :app_version
     attr_accessor :configuration
@@ -51,6 +52,9 @@ module Bugsnag
       self.api_key = configuration.api_key
       self.app_type = configuration.app_type
       self.app_version = configuration.app_version
+      self.app_framework_versions = {
+        :RUBY_VERSION => RUBY_VERSION
+      }
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
       self.meta_data = {}
@@ -86,13 +90,16 @@ module Bugsnag
     ##
     # Builds and returns the exception payload for this notification.
     def as_json
+      # Build the app data
+      app = {
+        version: app_version,
+        releaseStage: release_stage,
+        type: app_type
+      }.merge(app_framework_versions)
+
       # Build the payload's exception event
       payload_event = {
-        app: {
-          version: app_version,
-          releaseStage: release_stage,
-          type: app_type
-        },
+        app: app,
         context: context,
         device: {
           hostname: hostname

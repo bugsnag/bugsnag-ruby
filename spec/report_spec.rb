@@ -1016,6 +1016,25 @@ describe Bugsnag::Report do
     expect(Bugsnag).not_to have_sent_notification
   end
 
+  it 'contains a ruby version' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["app"]["RUBY_VERSION"]).to eq(RUBY_VERSION)
+    }
+  end
+
+  it 'allows further framework versions to be defined' do
+    Bugsnag.notify(BugsnagTestException.new("it crashed")) do |report|
+      report.app_framework_versions[:testVersion] = 'test_version'
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["app"]["testVersion"]).to eq('test_version')
+    }
+  end
 
   if defined?(JRUBY_VERSION)
 
