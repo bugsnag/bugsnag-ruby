@@ -11,6 +11,7 @@ module Bugsnag::Middleware
       if sidekiq
         report.add_tab(:sidekiq, sidekiq)
         report.context ||= "#{sidekiq[:msg]['wrapped'] || sidekiq[:msg]['class']}@#{sidekiq[:msg]['queue']}"
+        report.app_framework_versions[:sidekiqVersion] = ::Sidekiq::VERSION
       end
       @bugsnag.call(report)
     end

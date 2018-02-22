@@ -33,6 +33,8 @@ module Bugsnag::Middleware
 
         report.user["id"] = client_ip
 
+        report.app_framework_versions[:railsVersion] = Rails::VERSION::STRING
+
         # Add the rails version
         if report.configuration.send_environment
           report.add_tab(:environment, {
