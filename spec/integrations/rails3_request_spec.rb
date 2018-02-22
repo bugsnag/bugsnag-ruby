@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Bugsnag::Middleware::Rails3Request do
   before(:each) do
     Bugsnag.configuration.middleware.use(described_class)
+    stub_const('::Rails::VERSION::STRING', 'test_version')
   end
 
   describe "#call" do
@@ -20,6 +21,7 @@ describe Bugsnag::Middleware::Rails3Request do
           "clientIp" => "10.2.2.224",
           "requestId" => "5"
         })
+        expect(event["app"]).to include("railsVersion" => "test_version")
       }
     end
 

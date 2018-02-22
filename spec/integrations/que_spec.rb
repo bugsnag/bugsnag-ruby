@@ -6,6 +6,7 @@ describe 'Bugsnag::Que', :order => :defined do
     unless defined?(::Que)
       @mocked_que = true
       class ::Que
+        Version = 'test'
       end
     end
   end
@@ -40,6 +41,9 @@ describe 'Bugsnag::Que', :order => :defined do
       }
     })
 
+    framework_versions = {}
+    expect(report).to receive(:app_framework_versions).and_return(framework_versions)
+
     allow(Que).to receive(:respond_to?).with(:error_notifier=).and_return(true)
     config = double('config')
     allow(Bugsnag).to receive(:configuration).and_return(config)
@@ -52,6 +56,8 @@ describe 'Bugsnag::Que', :order => :defined do
 
     #Kick off
     load './lib/bugsnag/integrations/que.rb'
+
+    expect(framework_versions).to include(:queVersion => 'test')
   end
 
   after do
