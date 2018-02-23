@@ -23,26 +23,33 @@ module Bugsnag
         yield
       rescue Exception => ex
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
-        Bugsnag.notify(ex, true) do |report|
-          report.severity = "error"
-          report.severity_reason = {
-            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
-            :attributes => FRAMEWORK_ATTRIBUTES
-          }
-        end
+        notify(ex)
         raise
       ensure
         Bugsnag.configuration.clear_request_data
+      end
+    end
+
+    def notify(exception)
+      Bugsnag.notify(exception, true) do |report|
+        report.severity = "error"
+        report.severity_reason = {
+          :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+          :attributes => FRAMEWORK_ATTRIBUTES
+        }
       end
     end
   end
 end
 
 ::Sidekiq.configure_server do |config|
-  config.server_middleware do |chain|
-    if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('3.3.0')
-      chain.prepend ::Bugsnag::Sidekiq
-    else
+  if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('3.0.0')
+    config.error_handlers << proc do |ex,context|
+      bugsnag_handler = ::Bugsnag::Sidekiq.new
+      bugsnag_handler.notify(ex)
+    end
+  else
+    config.server_middleware do |chain|
       chain.add ::Bugsnag::Sidekiq
     end
   end
