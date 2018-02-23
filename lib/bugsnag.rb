@@ -126,7 +126,6 @@ module Bugsnag
 
     ##
     # Registers an at_exit function to automatically catch errors on exit
-    # This can be disabled by setting the 'add_exit_handler' configuration option to false
     def register_at_exit
       return if at_exit_handler_installed?
       @exit_handler_added = true
