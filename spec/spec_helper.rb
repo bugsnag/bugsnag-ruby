@@ -48,6 +48,15 @@ RSpec.configure do |config|
     WebMock.stub_request(:post, "https://notify.bugsnag.com/")
     WebMock.stub_request(:post, "https://sessions.bugsnag.com/")
 
+    module Kernel
+      alias_method :original_at_exit, :at_exit
+      def at_exit &block
+        unless caller[0].include?("bugsnag.rb") || caller[0].include?("session_tracker.rb")
+          original_at_exit(&block)
+        end
+      end
+    end
+
     Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
     Bugsnag.configure do |bugsnag|
       bugsnag.api_key = "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
@@ -59,6 +68,10 @@ RSpec.configure do |config|
   end
 
   config.after(:each) do
+    module Kernel
+      alias_method :at_exit, :original_at_exit
+    end
+
     Bugsnag.configuration.clear_request_data
   end
 end
