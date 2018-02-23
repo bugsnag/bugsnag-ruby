@@ -7,7 +7,7 @@ module Bugsnag::Middleware
     end
 
     def call(report)
-      report.app_framework_versions[:sinatraVersion] = ::Sinatra::VERSION
+      report.add_tab(:app, :sinatraVersion => ::Sinatra::VERSION)
       @bugsnag.call(report)
     end
   end

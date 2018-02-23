@@ -288,8 +288,6 @@ Metrics/BlockNesting:
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
   Max: 149
-  Exclude:
-    - 'lib/bugsnag/report.rb'
 
 # Offense count: 12
 Metrics/CyclomaticComplexity:

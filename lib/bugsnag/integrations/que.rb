@@ -26,7 +26,7 @@ if defined?(::Que)
             :framework => 'Que'
           }
         }
-        report.app_framework_versions[:queVersion] = Que::Version
+        report.add_tab(:app, :queVersion => Que::Version)
       end
     rescue => e
       # Que supresses errors raised by its error handler to avoid killing the worker. Log them somewhere:

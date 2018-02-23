@@ -97,15 +97,12 @@ describe Bugsnag::Rack do
       expect(::Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
       expect(::Rack).to receive(:version).and_return("test")
 
-      framework_versions = {}
-
       report = double("Bugsnag::Report")
       allow(report).to receive(:request_data).and_return({
         :rack_env => rack_env
       })
       expect(report).to receive(:context=).with("TEST /TEST_PATH")
       expect(report).to receive(:user).and_return({})
-      expect(report).to receive(:app_framework_versions).and_return(framework_versions)
 
       config = double
       allow(config).to receive(:send_environment).and_return(true)
@@ -125,13 +122,14 @@ describe Bugsnag::Rack do
       expect(report).to receive(:add_tab).once.with(:session, {
         :session => true
       })
+      expect(report).to receive(:add_tab).once.with(:app, {
+        :rackVersion => "test"
+      })
 
       expect(callback).to receive(:call).with(report)
 
       middleware = Bugsnag::Middleware::RackRequest.new(callback)
       middleware.call(report)
-
-      expect(framework_versions).to include(:rackVersion => "test")
     end
 
     after do

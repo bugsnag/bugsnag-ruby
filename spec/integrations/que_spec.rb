@@ -40,9 +40,9 @@ describe 'Bugsnag::Que', :order => :defined do
         :framework => 'Que'
       }
     })
-
-    framework_versions = {}
-    expect(report).to receive(:app_framework_versions).and_return(framework_versions)
+    expect(report).to receive(:add_tab).with(:app, {
+      :queVersion => ::Que::Version
+    })
 
     allow(Que).to receive(:respond_to?).with(:error_notifier=).and_return(true)
     config = double('config')
@@ -56,8 +56,6 @@ describe 'Bugsnag::Que', :order => :defined do
 
     #Kick off
     load './lib/bugsnag/integrations/que.rb'
-
-    expect(framework_versions).to include(:queVersion => 'test')
   end
 
   after do

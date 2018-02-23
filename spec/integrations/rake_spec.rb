@@ -14,9 +14,7 @@ describe "Bugsnag Rake integration" do
         :arg_description =>"TEST_ARGS"
       )
 
-      framework_versions = {}
-
-      report = double("Bugsnag::Report") 
+      report = double("Bugsnag::Report")
       expect(report).to receive(:request_data).and_return({
         :bugsnag_running_task => task
       })
@@ -25,17 +23,16 @@ describe "Bugsnag Rake integration" do
         :description => "TEST_COMMENT",
         :arguments => "TEST_ARGS"
       })
+      expect(report).to receive(:add_tab).with(:app, {
+        :rakeVersion => 'test'
+      })
       expect(report).to receive(:context).with(no_args)
       expect(report).to receive(:context=).with("TEST_NAME")
-      expect(report).to receive(:app_framework_versions).and_return(framework_versions)
-
       expect(callback).to receive(:call).with(report)
       stub_const("Rake::VERSION", 'test')
 
       middleware = Bugsnag::Middleware::Rake.new(callback)
       middleware.call(report)
-
-      expect(framework_versions).to include(:rakeVersion => 'test')
     end
   end
 

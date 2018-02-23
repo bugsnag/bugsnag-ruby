@@ -21,7 +21,7 @@ describe Bugsnag::Middleware::Rails3Request do
           "clientIp" => "10.2.2.224",
           "requestId" => "5"
         })
-        expect(event["app"]).to include("railsVersion" => "test_version")
+        expect(event["metaData"]["app"]).to include("railsVersion" => "test_version")
       }
     end
 

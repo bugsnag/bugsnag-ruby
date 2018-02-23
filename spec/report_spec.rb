@@ -1025,17 +1025,6 @@ describe Bugsnag::Report do
     }
   end
 
-  it 'allows further framework versions to be defined' do
-    Bugsnag.notify(BugsnagTestException.new("it crashed")) do |report|
-      report.app_framework_versions[:testVersion] = 'test_version'
-    end
-
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
-      event = get_event_from_payload(payload)
-      expect(event["app"]["testVersion"]).to eq('test_version')
-    }
-  end
-
   if defined?(JRUBY_VERSION)
 
     it "should work with java.lang.Throwables" do

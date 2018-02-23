@@ -17,7 +17,7 @@ module Bugsnag::Middleware
         })
 
         report.context ||= task.name
-        report.app_framework_versions[:rakeVersion] = ::Rake::VERSION
+        report.add_tab(:app, :rakeVersion => ::Rake::VERSION)
       end
 
       @bugsnag.call(report)

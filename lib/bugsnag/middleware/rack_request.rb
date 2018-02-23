@@ -22,7 +22,7 @@ module Bugsnag::Middleware
         report.context = "#{request.request_method} #{request.path}"
 
         # Set the app version
-        report.app_framework_versions[:rackVersion] = ::Rack.version
+        report.add_tab(:app, :rackVersion => ::Rack.version)
 
         # Set a sensible default for user_id
         report.user["id"] = request.ip
