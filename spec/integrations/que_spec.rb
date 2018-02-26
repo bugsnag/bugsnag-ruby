@@ -2,16 +2,11 @@
 require 'spec_helper'
 
 describe 'Bugsnag::Que', :order => :defined do
-  before do
-    unless defined?(::Que)
-      @mocked_que = true
-      class ::Que
-        Version = 'test'
-      end
-    end
-  end
-
   it "should create and register a que handler" do
+
+    #setup Que
+    stub_const('Que::Version', 'test')
+
     error = RuntimeError.new("oops")
     job = double('que_job')
     expect(job).to receive(:dup).and_return({
@@ -41,7 +36,7 @@ describe 'Bugsnag::Que', :order => :defined do
       }
     })
     expect(report).to receive(:add_tab).with(:app, {
-      :queVersion => ::Que::Version
+      :queVersion => 'test'
     })
 
     allow(Que).to receive(:respond_to?).with(:error_notifier=).and_return(true)
@@ -56,9 +51,5 @@ describe 'Bugsnag::Que', :order => :defined do
 
     #Kick off
     load './lib/bugsnag/integrations/que.rb'
-  end
-
-  after do
-    Object.send(:remove_const, :Que) if @mocked_que
   end
 end
