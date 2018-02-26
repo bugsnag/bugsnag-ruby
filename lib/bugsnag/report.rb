@@ -92,7 +92,7 @@ module Bugsnag
           version: app_version,
           releaseStage: release_stage,
           type: app_type,
-          RUBY_VERSION: RUBY_VERSION
+          rubyVersion: RUBY_VERSION
         },
         context: context,
         device: {
