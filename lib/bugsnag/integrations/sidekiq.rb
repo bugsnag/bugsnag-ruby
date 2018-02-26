@@ -44,7 +44,7 @@ end
 
 ::Sidekiq.configure_server do |config|
   if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('3.0.0')
-    config.error_handlers << proc do |ex,context|
+    config.error_handlers << proc do |ex, _context|
       bugsnag_handler = ::Bugsnag::Sidekiq.new
       bugsnag_handler.notify(ex)
     end
