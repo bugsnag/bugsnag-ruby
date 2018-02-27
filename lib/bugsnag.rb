@@ -128,7 +128,7 @@ module Bugsnag
 
         summary = {
           :message => exception.message,
-          :severity => report.severity
+          :severity => report.severity,
           :unhandled => auto_notify
         }
         leave_breadcrumb(exception, Bugsnag::Breadcrumbs::ERROR_TYPE, summary)

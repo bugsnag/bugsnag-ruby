@@ -121,7 +121,7 @@ describe Bugsnag::Report do
   it "attaches added breadcrumbs" do
     Bugsnag.leave_breadcrumb("Test", Bugsnag::Breadcrumbs::MANUAL_TYPE, {:foo => "foo", :bar => "bar"})
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       breadcrumb = get_breadcrumb_from_payload(payload)
       expect(breadcrumb).to include("name" => "Test")
       expect(breadcrumb).to include("type" => Bugsnag::Breadcrumbs::MANUAL_TYPE)
