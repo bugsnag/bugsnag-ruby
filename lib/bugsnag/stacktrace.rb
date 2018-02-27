@@ -1,5 +1,3 @@
-require 'pp'
-
 module Bugsnag
   class Stacktrace
 

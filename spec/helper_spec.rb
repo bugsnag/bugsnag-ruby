@@ -173,109 +173,107 @@ describe Bugsnag::Helpers do
         end
       end
 
-      context "and new trimming priorities are in place" do
-        it "trims metadata strings first" do
-          payload = {
-            :events => [{
-              :metaData => 50000.times.map {|i| "should truncate" }.join(""),
-              :preserved => "Foo"
-            }]
-          }
-          expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          trimmed = Bugsnag::Helpers.trim_if_needed(payload)
-          expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          expect(trimmed[:events][0][:metaData].length).to be <= Bugsnag::Helpers::MAX_STRING_LENGTH
-          expect(trimmed[:events][0][:preserved]).to eq("Foo")
-        end
+      it "trims metadata strings first" do
+        payload = {
+          :events => [{
+            :metaData => 50000.times.map {|i| "should truncate" }.join(""),
+            :preserved => "Foo"
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        expect(trimmed[:events][0][:metaData].length).to be <= Bugsnag::Helpers::MAX_STRING_LENGTH
+        expect(trimmed[:events][0][:preserved]).to eq("Foo")
+      end
 
-        it "truncates metadata arrays" do
-          payload = {
-            :events => [{
-              :metaData => 50000.times.map {|i| "should truncate" },
-              :preserved => "Foo"
-            }]
-          }
-          expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          trimmed = Bugsnag::Helpers.trim_if_needed(payload)
-          expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          expect(trimmed[:events][0][:metaData].length).to be <= Bugsnag::Helpers::MAX_ARRAY_LENGTH
-          expect(trimmed[:events][0][:preserved]).to eq("Foo")
-        end
+      it "truncates metadata arrays" do
+        payload = {
+          :events => [{
+            :metaData => 50000.times.map {|i| "should truncate" },
+            :preserved => "Foo"
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        expect(trimmed[:events][0][:metaData].length).to be <= Bugsnag::Helpers::MAX_ARRAY_LENGTH
+        expect(trimmed[:events][0][:preserved]).to eq("Foo")
+      end
 
-        it "removes metadata altogether" do
-          payload = {
-            :events => [{
-              :metaData => 20.times.map {|i| 20.times.map { |i| SecureRandom.hex(3000) } },
-              :preserved => "Foo"
-            }]
-          }
-          expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          trimmed = Bugsnag::Helpers.trim_if_needed(payload)
-          expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          expect(trimmed[:events][0][:metaData]).to be_nil
-          expect(trimmed[:events][0][:preserved]).to eq("Foo")
-        end
+      it "removes metadata altogether" do
+        payload = {
+          :events => [{
+            :metaData => 20.times.map {|i| 20.times.map { |i| SecureRandom.hex(3000) } },
+            :preserved => "Foo"
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        expect(trimmed[:events][0][:metaData]).to be_nil
+        expect(trimmed[:events][0][:preserved]).to eq("Foo")
+      end
 
-        it "trims stacktrace code, oldest first" do
-          payload = {
-            :events => [{
-              :exceptions => [{
-                :stacktrace => [
-                  {
-                    :lineNumber => 1,
-                    :file => '/trace1',
-                    :code => 200.times.map {|i| SecureRandom.hex(3072) }
-                  },
-                  {
-                    :lineNumber => 2,
-                    :file => '/trace2',
-                    :code => 200.times.map {|i| SecureRandom.hex(3072) }
-                  }
-                ]
-              }]
+      it "trims stacktrace code, oldest first" do
+        payload = {
+          :events => [{
+            :exceptions => [{
+              :stacktrace => [
+                {
+                  :lineNumber => 1,
+                  :file => '/trace1',
+                  :code => 200.times.map {|i| SecureRandom.hex(3072) }
+                },
+                {
+                  :lineNumber => 2,
+                  :file => '/trace2',
+                  :code => 200.times.map {|i| SecureRandom.hex(3072) }
+                }
+              ]
             }]
-          }
-          expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          trimmed = Bugsnag::Helpers.trim_if_needed(payload)
-          expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          trace = trimmed[:events][0][:exceptions][0][:stacktrace]
-          expect(trace.length).to eq(2)
-          expect(trace[0][:lineNumber]).to eq(1)
-          expect(trace[0][:file]).to eq('/trace1')
-          expect(trace[0][:code].length).to eq(Bugsnag::Helpers::MAX_ARRAY_LENGTH)
-          expect(trace[1][:lineNumber]).to eq(2)
-          expect(trace[1][:file]).to eq('/trace2')
-          expect(trace[1][:code]).to be_nil
-        end
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trace = trimmed[:events][0][:exceptions][0][:stacktrace]
+        expect(trace.length).to eq(2)
+        expect(trace[0][:lineNumber]).to eq(1)
+        expect(trace[0][:file]).to eq('/trace1')
+        expect(trace[0][:code].length).to eq(Bugsnag::Helpers::MAX_ARRAY_LENGTH)
+        expect(trace[1][:lineNumber]).to eq(2)
+        expect(trace[1][:file]).to eq('/trace2')
+        expect(trace[1][:code]).to be_nil
+      end
 
-        it "trims stacktrace entries, oldest first" do
-          payload = {
-            :events => [{
-              :exceptions => [{
-                :stacktrace => [
-                  {
-                    :lineNumber => 1,
-                    :file => '/trace1',
-                    :something => 200.times.map {|i| 2.times.map { |k| SecureRandom.hex(700) } }
-                  },
-                  {
-                    :lineNumber => 2,
-                    :file => '/trace2',
-                    :something => 200.times.map {|i| 2.times.map { |k| SecureRandom.hex(1500) } }
-                  }
-                ]
-              }]
+      it "trims stacktrace entries, oldest first" do
+        payload = {
+          :events => [{
+            :exceptions => [{
+              :stacktrace => [
+                {
+                  :lineNumber => 1,
+                  :file => '/trace1',
+                  :something => 200.times.map {|i| 2.times.map { |k| SecureRandom.hex(700) } }
+                },
+                {
+                  :lineNumber => 2,
+                  :file => '/trace2',
+                  :something => 200.times.map {|i| 2.times.map { |k| SecureRandom.hex(1500) } }
+                }
+              ]
             }]
-          }
-          expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          trimmed = Bugsnag::Helpers.trim_if_needed(payload)
-          expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          trace = trimmed[:events][0][:exceptions][0][:stacktrace]
-          expect(trace.length).to eq(1)
-          expect(trace[0][:lineNumber]).to eq(1)
-          expect(trace[0][:file]).to eq('/trace1')
-          expect(trace[0][:something].length).to eq(Bugsnag::Helpers::MAX_ARRAY_LENGTH)
-        end
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trace = trimmed[:events][0][:exceptions][0][:stacktrace]
+        expect(trace.length).to eq(1)
+        expect(trace[0][:lineNumber]).to eq(1)
+        expect(trace[0][:file]).to eq('/trace1')
+        expect(trace[0][:something].length).to eq(Bugsnag::Helpers::MAX_ARRAY_LENGTH)
       end
     end
   end
