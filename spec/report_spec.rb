@@ -1021,7 +1021,7 @@ describe Bugsnag::Report do
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
-      expect(event["app"]["RUBY_VERSION"]).to eq(RUBY_VERSION)
+      expect(event["app"]["rubyVersion"]).to eq(RUBY_VERSION)
     }
   end
 
