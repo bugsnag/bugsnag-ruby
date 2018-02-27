@@ -6,6 +6,7 @@ module Bugsnag
     FILTERED = '[FILTERED]'.freeze
     RECURSION = '[RECURSION]'.freeze
     OBJECT = '[OBJECT]'.freeze
+    RAISED = '[RAISED]'.freeze
 
     def initialize(filters)
       @filters = Array(filters)
@@ -37,13 +38,13 @@ module Bugsnag
         end
         clean_hash
       when Array, Set
-        obj.map { |el| traverse_object(el, seen, scope) }.compact
+        obj.map { |el| traverse_object(el, seen, scope) }
       when Numeric, TrueClass, FalseClass
         obj
       when String
         clean_string(obj)
       else
-        str = obj.to_s
+        str = obj.to_s rescue RAISED
         # avoid leaking potentially sensitive data from objects' #inspect output
         if str =~ /#<.*>/
           OBJECT

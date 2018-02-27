@@ -49,6 +49,11 @@ Rails32::Application.routes.draw do
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
   root :to => 'application#index'
+  match 'crash' => 'application#crash'
+  match 'crash_with_callback' => 'application#callback'
+  match 'notify' => 'application#notify'
+  match 'notify_data' => 'application#data'
+  match 'notify_severity' => 'application#severity'
 
   # See how all your routes lay out with "rake routes"
 

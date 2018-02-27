@@ -8,10 +8,18 @@ module Bugsnag
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "http://www.bugsnag.com"
 
+    UNHANDLED_EXCEPTION = "unhandledException"
+    UNHANDLED_EXCEPTION_MIDDLEWARE = "unhandledExceptionMiddleware"
+    ERROR_CLASS = "errorClass"
+    HANDLED_EXCEPTION = "handledException"
+    USER_SPECIFIED_SEVERITY = "userSpecifiedSeverity"
+    USER_CALLBACK_SET_SEVERITY = "userCallbackSetSeverity"
+
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
-    CURRENT_PAYLOAD_VERSION = "2"
+    CURRENT_PAYLOAD_VERSION = "4.0"
 
+    attr_reader   :unhandled
     attr_accessor :api_key
     attr_accessor :app_type
     attr_accessor :app_version
@@ -25,11 +33,16 @@ module Bugsnag
     attr_accessor :breadcrumbs
     attr_accessor :raw_exceptions
     attr_accessor :release_stage
+    attr_accessor :session
     attr_accessor :severity
+    attr_accessor :severity_reason
     attr_accessor :user
 
-    def initialize(exception, passed_configuration)
+    ##
+    # Initializes a new report from an exception.
+    def initialize(exception, passed_configuration, auto_notify=false)
       @should_ignore = false
+      @unhandled = auto_notify
 
       self.configuration = passed_configuration
 
@@ -43,11 +56,13 @@ module Bugsnag
       self.hostname = configuration.hostname
       self.meta_data = {}
       self.release_stage = configuration.release_stage
-      self.severity = "warning"
+      self.severity = auto_notify ? "error" : "warning"
+      self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
       self.user = {}
     end
 
-    # Add a new tab to this notification
+    ##
+    # Add a new metadata tab to this notification.
     def add_tab(name, value)
       return if name.nil?
 
@@ -61,14 +76,16 @@ module Bugsnag
       end
     end
 
-    # Remove a tab from this notification
+    ##
+    # Removes a metadata tab from this notification.
     def remove_tab(name)
       return if name.nil?
 
       meta_data.delete(name)
     end
 
-    # Build an exception payload
+    ##
+    # Builds and returns the exception payload for this notification.
     def as_json
       # Build the payload's exception event
       payload_event = {
@@ -83,8 +100,10 @@ module Bugsnag
         },
         exceptions: exceptions,
         groupingHash: grouping_hash,
-        payloadVersion: CURRENT_PAYLOAD_VERSION,
+        session: session,
         severity: severity,
+        severityReason: severity_reason,
+        unhandled: @unhandled,
         user: user
       }
 
@@ -116,14 +135,30 @@ module Bugsnag
       }
     end
 
+    ##
+    # Returns the headers required for the notification.
+    def headers
+      {
+        "Bugsnag-Api-Key" => api_key,
+        "Bugsnag-Payload-Version" => CURRENT_PAYLOAD_VERSION,
+        "Bugsnag-Sent-At" => Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
+      }
+    end
+
+    ##
+    # Whether this report should be ignored and not sent.
     def ignore?
       @should_ignore
     end
 
+    ##
+    # Data set on the configuration to be attached to every error notification.
     def request_data
       configuration.request_data
     end
 
+    ##
+    # Tells the client this report should not be sent.
     def ignore!
       @should_ignore = true
     end

@@ -10,7 +10,7 @@ describe Bugsnag::Stacktrace do
     _e = 5
     _f = 6
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       starting_line = __LINE__ - 10
       expect(exception["stacktrace"][1]["code"]).to eq({
@@ -30,7 +30,7 @@ describe Bugsnag::Stacktrace do
 
     notify_test_exception
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["stacktrace"][1]["code"]).to eq(nil)
     }
@@ -39,7 +39,7 @@ describe Bugsnag::Stacktrace do
   it 'should send the first 7 lines of the file for exceptions near the top' do
     load 'spec/fixtures/crashes/start_of_file.rb' rescue Bugsnag.notify $!
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
 
       expect(exception["stacktrace"][0]["code"]).to eq({
@@ -57,7 +57,7 @@ describe Bugsnag::Stacktrace do
   it 'should send the last 7 lines of the file for exceptions near the bottom' do
     load 'spec/fixtures/crashes/end_of_file.rb' rescue Bugsnag.notify $!
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
 
       expect(exception["stacktrace"][0]["code"]).to eq({
@@ -75,7 +75,7 @@ describe Bugsnag::Stacktrace do
   it 'should send the last 7 lines of the file for exceptions near the bottom' do
     load 'spec/fixtures/crashes/short_file.rb' rescue Bugsnag.notify $!
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
 
       expect(exception["stacktrace"][0]["code"]).to eq({

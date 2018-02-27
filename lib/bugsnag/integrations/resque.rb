@@ -3,11 +3,20 @@ require "resque/failure/multiple"
 
 module Bugsnag
   class Resque < ::Resque::Failure::Base
+
+    FRAMEWORK_ATTRIBUTES = {
+      :framework => "Resque"
+    }
+
+    ##
+    # Callthrough to Bugsnag configuration.
     def self.configure(&block)
       add_failure_backend
       Bugsnag.configure(&block)
     end
 
+    ##
+    # Sets up the Resque failure backend.
     def self.add_failure_backend
       return if ::Resque::Failure.backend == self
 
@@ -25,10 +34,16 @@ module Bugsnag
       end
     end
 
+    ##
+    # Notifies Bugsnag of a raised exception.
     def save
       Bugsnag.notify(exception, true) do |report|
         report.severity = "error"
-        report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload, :delivery_method => :synchronous})
+        report.severity_reason = {
+          :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+          :attributes => FRAMEWORK_ATTRIBUTES
+        }
+        report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload})
       end
     end
   end
@@ -40,7 +55,14 @@ Resque::Failure::Bugsnag = Bugsnag::Resque
 # Auto-load the failure backend
 Bugsnag::Resque.add_failure_backend
 
-Resque.before_first_fork do
-  Bugsnag.configuration.app_type = "resque"
-  Bugsnag.configuration.delivery_method = :synchronous
+if Resque::Worker.new(:bugsnag_fork_check).fork_per_job?
+  Resque.after_fork do
+    Bugsnag.configuration.app_type = "resque"
+    Bugsnag.configuration.default_delivery_method = :synchronous
+  end
+else
+  Resque.before_first_fork do
+    Bugsnag.configuration.app_type = "resque"
+    Bugsnag.configuration.default_delivery_method = :synchronous
+  end
 end

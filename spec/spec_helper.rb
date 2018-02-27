@@ -1,4 +1,4 @@
-if ARGV.include? "--coverage"
+if ENV['GEMSETS'] and ENV['GEMSETS'].include? "coverage"
   require 'simplecov'
   require 'coveralls'
 
@@ -12,8 +12,11 @@ require 'bugsnag'
 
 require 'webmock/rspec'
 require 'rspec/expectations'
+require 'rspec/mocks'
 
-class BugsnagTestException < RuntimeError; end
+class BugsnagTestException < RuntimeError
+  attr_accessor :skip_bugsnag
+end
 
 def get_event_from_payload(payload)
   expect(payload["events"].size).to eq(1)
@@ -35,11 +38,20 @@ def notify_test_exception(*args)
   Bugsnag.notify(RuntimeError.new("test message"), *args)
 end
 
+def ruby_version_greater_equal?(version)
+  current_version = RUBY_VERSION.split "."
+  target_version = version.split "."
+  (Integer(current_version[0]) >= Integer(target_version[0])) &&
+    (Integer(current_version[1]) >= Integer(target_version[1])) &&
+    (Integer(current_version[2]) >= Integer(target_version[2]))
+end
+
 RSpec.configure do |config|
   config.order = "random"
 
   config.before(:each) do
     WebMock.stub_request(:post, "https://notify.bugsnag.com/")
+    WebMock.stub_request(:post, "https://sessions.bugsnag.com/")
 
     Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
     Bugsnag.configure do |bugsnag|
@@ -58,10 +70,21 @@ RSpec.configure do |config|
   end
 end
 
+def have_sent_sessions(&matcher)
+  have_requested(:post, "https://sessions.bugsnag.com/").with do |request|
+    if matcher
+      matcher.call([JSON.parse(request.body), request.headers])
+      true
+    else
+      raise "no matcher provided to have_sent_sessions (did you use { })"
+    end
+  end
+end
+
 def have_sent_notification(&matcher)
   have_requested(:post, "https://notify.bugsnag.com/").with do |request|
     if matcher
-      matcher.call JSON.parse(request.body)
+      matcher.call([JSON.parse(request.body), request.headers])
       true
     else
       raise "no matcher provided to have_sent_notification (did you use { })"

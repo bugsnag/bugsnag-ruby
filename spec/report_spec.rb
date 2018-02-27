@@ -31,7 +31,8 @@ describe Bugsnag::Report do
   it "should contain an api_key if one is set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      expect(headers["Bugsnag-Api-Key"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b8")
       expect(payload["apiKey"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b8")
     }
   end
@@ -57,8 +58,8 @@ describe Bugsnag::Report do
       report.api_key = "9d84383f9be2ca94902e45c756a9979d"
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      expect(payload["apiKey"]).to eq("9d84383f9be2ca94902e45c756a9979d")
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      expect(headers["Bugsnag-Api-Key"]).to eq("9d84383f9be2ca94902e45c756a9979d")
     }
   end
 
@@ -68,7 +69,7 @@ describe Bugsnag::Report do
       report.grouping_hash = "this is my grouping hash"
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["groupingHash"]).to eq("this is my grouping hash")
     }
@@ -85,15 +86,15 @@ describe Bugsnag::Report do
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      expect(payload["apiKey"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b9")
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      expect(headers["Bugsnag-Api-Key"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b9")
     }
   end
 
   it "has the right exception class" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["errorClass"]).to eq("BugsnagTestException")
     }
@@ -102,7 +103,7 @@ describe Bugsnag::Report do
   it "has the right exception message" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["message"]).to eq("It crashed")
     }
@@ -111,7 +112,7 @@ describe Bugsnag::Report do
   it "has a valid stacktrace" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["stacktrace"].length).to be > 0
     }
@@ -120,7 +121,7 @@ describe Bugsnag::Report do
   it "attaches added breadcrumbs" do
     Bugsnag.leave_breadcrumb("Test", Bugsnag::Breadcrumbs::MANUAL_TYPE, {:foo => "foo", :bar => "bar"})
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       breadcrumb = get_breadcrumb_from_payload(payload)
       expect(breadcrumb).to include("name" => "Test")
       expect(breadcrumb).to include("type" => Bugsnag::Breadcrumbs::MANUAL_TYPE)
@@ -128,6 +129,50 @@ describe Bugsnag::Report do
       expect(breadcrumb).to include("metaData" => {"foo" => "foo", "bar" => "bar"})
     }
   end
+
+  it "uses correct unhandled defaults" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be false
+      expect(event["severity"]).to eq("warning")
+      expect(event["severityReason"]).to eq({
+        "type" => "handledException"
+      })
+    }
+  end
+
+  it "sets correct severityReason if severity is modified in a block" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |notification|
+      notification.severity = "info"
+    end
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be false
+      expect(event["severity"]).to eq("info")
+      expect(event["severityReason"]).to eq({
+        "type" => "userCallbackSetSeverity"
+      })
+    }
+  end
+
+  it "sets correct severity and reason for specific error classes" do
+    Bugsnag.notify(SignalException.new("TERM"))
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["unhandled"]).to be false
+      expect(event["severity"]).to eq("info")
+      expect(event["severityReason"]).to eq({
+        "type" => "errorClass",
+        "attributes" => {
+          "errorClass" => "SignalException"
+        }
+      })
+    }
+  end
+
+  # TODO: nested context
 
   it "accepts tabs in overrides and adds them to metaData" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
@@ -139,7 +184,7 @@ describe Bugsnag::Report do
       })
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).to eq(
         "info" => "here",
@@ -159,7 +204,7 @@ describe Bugsnag::Report do
 
     Bugsnag.notify(exception)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).to eq(
         "info" => "here",
@@ -181,7 +226,7 @@ describe Bugsnag::Report do
       report.remove_tab(:some_tab)
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).to be_nil
     }
@@ -200,7 +245,7 @@ describe Bugsnag::Report do
       report.remove_tab(nil)
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).to eq(
         "info" => "here",
@@ -216,7 +261,7 @@ describe Bugsnag::Report do
       report.add_tab(:some_tab, "added")
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["custom"]).to eq(
         "some_tab" => "added",
@@ -237,7 +282,7 @@ describe Bugsnag::Report do
       report.add_tab(:some_tab, {:info => "overridden"})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).to eq(
         "info" => "overridden",
@@ -252,7 +297,7 @@ describe Bugsnag::Report do
 
     Bugsnag.notify(exception)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["user"]["id"]).to eq("exception_user_id")
     }
@@ -266,7 +311,7 @@ describe Bugsnag::Report do
       report.user.merge!({:id => "override_user_id"})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["user"]["id"]).to eq("override_user_id")
     }
@@ -278,7 +323,7 @@ describe Bugsnag::Report do
 
     Bugsnag.notify(exception)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["context"]).to eq("exception_context")
     }
@@ -290,7 +335,7 @@ describe Bugsnag::Report do
 
     Bugsnag.notify(exception)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["groupingHash"]).to eq("exception_hash")
     }
@@ -305,7 +350,7 @@ describe Bugsnag::Report do
       report.context = "override_context"
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["context"]).to eq("override_context")
     }
@@ -321,7 +366,7 @@ describe Bugsnag::Report do
       })
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).to eq(
         "info" => "here",
@@ -340,7 +385,7 @@ describe Bugsnag::Report do
       })
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       # Truncated body should be no bigger than
       # 2 truncated hashes (4096*2) + rest of payload (20000)
       expect(::JSON.dump(payload).length).to be < 4096*2 + 20000
@@ -357,7 +402,7 @@ describe Bugsnag::Report do
       })
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       # Truncated body should be no bigger than
       # 2 truncated hashes (4096*2) + rest of payload (20000)
       expect(::JSON.dump(payload).length).to be < 4096*2 + 20000
@@ -371,7 +416,7 @@ describe Bugsnag::Report do
     ex.set_backtrace(stacktrace)
     Bugsnag.notify(ex)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       # Truncated body should be no bigger than
       # 400 stacktrace lines * approx 60 chars per line + rest of payload (20000)
       expect(::JSON.dump(payload).length).to be < 400*60 + 20000
@@ -383,7 +428,7 @@ describe Bugsnag::Report do
       report.severity = "info"
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["severity"]).to eq("info")
     }
@@ -393,30 +438,18 @@ describe Bugsnag::Report do
   it "defaults to warning severity" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["severity"]).to eq("warning")
     }
   end
-
-  it "autonotifies errors" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
-      report.severity = "error"
-    end
-
-    expect(Bugsnag).to have_sent_notification{ |payload|
-      event = get_event_from_payload(payload)
-      expect(event["severity"]).to eq("error")
-    }
-  end
-
 
   it "accepts a context in overrides" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.context = 'test_context'
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["context"]).to eq("test_context")
     }
@@ -427,13 +460,13 @@ describe Bugsnag::Report do
       report.user = {id: 'test_user'}
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["user"]["id"]).to eq("test_user")
     }
   end
 
-  it "does not send a notification if auto_notify is false" do
+  it "does not send an automatic notification if auto_notify is false" do
     Bugsnag.configure do |config|
       config.auto_notify = false
     end
@@ -450,7 +483,7 @@ describe Bugsnag::Report do
 
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["app"]["releaseStage"]).to eq("production")
     }
@@ -470,7 +503,7 @@ describe Bugsnag::Report do
     Bugsnag.configuration.notify_release_stages = ["development"]
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["exceptions"].length).to eq(1)
     }
@@ -486,7 +519,7 @@ describe Bugsnag::Report do
     Bugsnag.configuration.project_root = "/Random/location/here"
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["stacktrace"].size).to be >= 1
       expect(exception["stacktrace"].first["inProject"]).to be_nil
@@ -497,10 +530,46 @@ describe Bugsnag::Report do
     Bugsnag.configuration.project_root = File.expand_path File.dirname(__FILE__)
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["stacktrace"].size).to be >= 1
       expect(exception["stacktrace"].first["inProject"]).to eq(true)
+    }
+  end
+
+  it 'marks vendored stack frames as out-of-project' do
+    project_root = File.expand_path File.dirname(__FILE__)
+    Bugsnag.configuration.project_root = project_root
+
+    ex = Exception.new('Division by zero')
+    allow(ex).to receive (:backtrace) {[
+      File.join(project_root, "vendor/strutils/lib/string.rb:508:in `splice'"),
+      File.join(project_root, "vendors/strutils/lib/string.rb:508:in `splice'"),
+      File.join(project_root, "lib/helpers/string.rb:32:in `splice'"),
+      File.join(project_root, "lib/vendor/lib/article.rb:158:in `initialize'"),
+      File.join(project_root, "lib/prog.rb:158:in `read_articles'"),
+      File.join(project_root, ".bundle/strutils/lib.string.rb:508:in `splice'"),
+      File.join(project_root, "abundle/article.rb:158:in `initialize'"),
+      File.join(project_root, ".bundles/strutils/lib.string.rb:508:in `splice'"),
+      File.join(project_root, "lib/.bundle/article.rb:158:in `initialize'"),
+      "app.rb:10:in `main'",
+      "(pry):3:in `__pry__'"
+    ]}
+    Bugsnag.notify(ex)
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      exception = get_exception_from_payload(payload)
+
+      expect(exception["stacktrace"][0]["inProject"]).to be_nil
+      expect(exception["stacktrace"][1]["inProject"]).to be true
+      expect(exception["stacktrace"][2]["inProject"]).to be true
+      expect(exception["stacktrace"][3]["inProject"]).to be true
+      expect(exception["stacktrace"][4]["inProject"]).to be true
+      expect(exception["stacktrace"][5]["inProject"]).to be_nil
+      expect(exception["stacktrace"][6]["inProject"]).to be true
+      expect(exception["stacktrace"][7]["inProject"]).to be true
+      expect(exception["stacktrace"][8]["inProject"]).to be true
+      expect(exception["stacktrace"][9]["inProject"]).to be_nil
+      expect(exception["stacktrace"][10]["inProject"]).to be_nil
     }
   end
 
@@ -508,7 +577,7 @@ describe Bugsnag::Report do
     Bugsnag.configuration.app_version = "1.1.1"
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["app"]["version"]).to eq("1.1.1")
     }
@@ -520,7 +589,7 @@ describe Bugsnag::Report do
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "12345", :other_data => "123456"}}})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]).not_to be_nil
       expect(event["metaData"]["request"]).not_to be_nil
@@ -538,7 +607,7 @@ describe Bugsnag::Report do
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]).not_to be_nil
       expect(event["metaData"]["request"]).not_to be_nil
@@ -556,7 +625,7 @@ describe Bugsnag::Report do
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]).not_to be_nil
       expect(event["metaData"]["request"]).not_to be_nil
@@ -574,7 +643,7 @@ describe Bugsnag::Report do
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]).not_to be_nil
       expect(event["metaData"]["request"]).not_to be_nil
@@ -590,7 +659,7 @@ describe Bugsnag::Report do
       report.meta_data.merge!({:request => {:params => {:nil_param => nil}}})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]).not_to be_nil
       expect(event["metaData"]["request"]).not_to be_nil
@@ -652,7 +721,7 @@ describe Bugsnag::Report do
       Bugsnag.notify $!
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["exceptions"].size).to eq(2)
     }
@@ -664,7 +733,7 @@ describe Bugsnag::Report do
 
     Bugsnag.notify(ex)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["exceptions"].size).to eq(1)
     }
@@ -678,7 +747,7 @@ describe Bugsnag::Report do
     end
 
     Bugsnag.notify(first_ex)
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["exceptions"].size).to eq(5)
     }
@@ -687,7 +756,7 @@ describe Bugsnag::Report do
   it "calls to_exception on i18n error objects" do
     Bugsnag.notify(OpenStruct.new(:to_exception => BugsnagTestException.new("message")))
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["errorClass"]).to eq("BugsnagTestException")
       expect(exception["message"]).to eq("message")
@@ -697,7 +766,7 @@ describe Bugsnag::Report do
   it "generates runtimeerror for non exceptions" do
     notify_test_exception
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["errorClass"]).to eq("RuntimeError")
       expect(exception["message"]).to eq("test message")
@@ -713,7 +782,7 @@ describe Bugsnag::Report do
 
     Bugsnag.notify(ex)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["stacktrace"].length).to eq(2)
 
@@ -738,7 +807,7 @@ describe Bugsnag::Report do
 
     Bugsnag.notify(ex)
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["stacktrace"].length).to eq(2)
 
@@ -762,7 +831,7 @@ describe Bugsnag::Report do
       report.meta_data.merge!({fluff: {fluff: invalid_data}})
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload|
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       if defined?(Encoding::UTF_8)
         expect(event['metaData']['fluff']['fluff']).to match(/fl�ff/)
@@ -772,24 +841,25 @@ describe Bugsnag::Report do
     }
   end
 
-  it "should handle utf8 encoding errors in exceptions_list" do
-    skip "Irrelevant on newer ruby" if RUBY_VERSION >= '2.3.0'
-    invalid_data = "\"foo\xEBbar\""
-    invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
+  if RUBY_VERSION < '2.3.0'
+    it "should handle utf8 encoding errors in exceptions_list" do
+      invalid_data = "\"foo\xEBbar\""
+      invalid_data = invalid_data.force_encoding("utf-8") if invalid_data.respond_to?(:force_encoding)
 
-    begin
-      JSON.parse(invalid_data)
-    rescue
-      Bugsnag.notify $!
-    end
-
-    expect(Bugsnag).to have_sent_notification { |payload|
-      if defined?(Encoding::UTF_8)
-        expect(payload.to_json).to match(/foo�bar/)
-      else
-        expect(payload.to_json).to match(/foobar/)
+      begin
+        JSON.parse(invalid_data)
+      rescue
+        Bugsnag.notify $!
       end
-    }
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        if defined?(Encoding::UTF_8)
+          expect(payload.to_json).to match(/foo�bar/)
+        else
+          expect(payload.to_json).to match(/foobar/)
+        end
+      }
+    end
   end
 
   it "should handle utf8 encoding errors in notification context" do
@@ -804,7 +874,7 @@ describe Bugsnag::Report do
       end
     end
 
-    expect(Bugsnag).to have_sent_notification { |payload|
+    expect(Bugsnag).to have_sent_notification { |payload, headers|
       if defined?(Encoding::UTF_8)
         expect(payload.to_json).to match(/foo�bar/)
       else
@@ -827,7 +897,7 @@ describe Bugsnag::Report do
       Bugsnag.notify $!
     end
 
-    expect(Bugsnag).to have_sent_notification { |payload|
+    expect(Bugsnag).to have_sent_notification { |payload, headers|
       if defined?(Encoding::UTF_8)
         expect(payload.to_json).to match(/foo�bar/)
       else
@@ -850,7 +920,7 @@ describe Bugsnag::Report do
       Bugsnag.notify $!
     end
 
-    expect(Bugsnag).to have_sent_notification { |payload|
+    expect(Bugsnag).to have_sent_notification { |payload, headers|
       if defined?(Encoding::UTF_8)
         expect(payload.to_json).to match(/foo�bar/)
       else
@@ -876,7 +946,7 @@ describe Bugsnag::Report do
       Bugsnag.notify $!
     end
 
-    expect(Bugsnag).to have_sent_notification { |payload|
+    expect(Bugsnag).to have_sent_notification { |payload, headers|
       if defined?(Encoding::UTF_8)
         expect(payload.to_json).to match(/foo�bar/)
       else
@@ -894,11 +964,70 @@ describe Bugsnag::Report do
       Bugsnag.notify $!
     end
 
-    expect(Bugsnag).to have_sent_notification { |payload|
+    expect(Bugsnag).to have_sent_notification { |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception['stacktrace'].size).to be > 0
     }
   end
+
+  it 'should use defaults when notify is called' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = payload["events"][0]
+      expect(event["unhandled"]).to be false
+      expect(event["severityReason"]).to eq({"type" => "handledException"})
+    }
+  end
+
+  it 'should attach severity reason through a block when auto_notify is true' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"), true) do |report|
+      report.severity_reason = {
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "middleware_test"
+        }
+      }
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = payload["events"][0]
+      expect(event["severityReason"]).to eq(
+        {
+          "type" => "middleware_handler",
+          "attributes" => {
+            "name" => "middleware_test"
+          }
+        }
+      )
+      expect(event["unhandled"]).to be true
+    }
+  end
+
+  it 'should not attach severity reason from callback when auto_notify is false' do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.severity_reason = {
+        :type => "middleware_handler",
+        :attributes => {
+          :name => "middleware_test"
+        }
+      }
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = payload["events"][0]
+      expect(event["unhandled"]).to be false
+      expect(event["severityReason"]).to eq({"type" => "handledException"})
+    }
+  end
+
+  it 'does not notify if skip_bugsnag is true' do
+    exception = BugsnagTestException.new("It crashed")
+    exception.skip_bugsnag = true
+    Bugsnag.notify(exception)
+    expect(Bugsnag).not_to have_sent_notification
+  end
+
 
   if defined?(JRUBY_VERSION)
 
@@ -909,7 +1038,7 @@ describe Bugsnag::Report do
         Bugsnag.notify $!
       end
 
-      expect(Bugsnag).to have_sent_notification{ |payload|
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
         exception = get_exception_from_payload(payload)
         expect(exception["errorClass"]).to eq('Java::JavaLang::NullPointerException')
         expect(exception["message"]).to eq("")

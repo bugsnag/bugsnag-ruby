@@ -1,5 +1,9 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts and attaches rails and rack environment data to an error report
   class Rails3Request
+    SPOOF = "[SPOOF]".freeze
+
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
@@ -8,6 +12,7 @@ module Bugsnag::Middleware
       if report.request_data[:rack_env]
         env = report.request_data[:rack_env]
         params = env["action_dispatch.request.parameters"]
+        client_ip = env["action_dispatch.remote_ip"].to_s rescue SPOOF
 
         if params
           # Set the context
@@ -22,11 +27,11 @@ module Bugsnag::Middleware
 
         # Use action_dispatch.remote_ip for IP address fields and send request id
         report.add_tab(:request, {
-          :clientIp => env["action_dispatch.remote_ip"],
+          :clientIp => client_ip,
           :requestId => env["action_dispatch.request_id"]
         })
 
-        report.user["id"] = env["action_dispatch.remote_ip"]
+        report.user["id"] = client_ip
 
         # Add the rails version
         if report.configuration.send_environment

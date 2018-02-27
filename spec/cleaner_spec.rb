@@ -19,6 +19,11 @@ describe Bugsnag::Cleaner do
       expect(subject.clean_object(a)).to eq(["[RECURSION]", "hello"])
     end
 
+    it "doesn't remove nil from arrays" do
+      a = ["b", nil, "c"]
+      expect(subject.clean_object(a)).to eq(["b", nil, "c"])
+    end
+
     it "allows multiple copies of the same string" do
       a = {:name => "bugsnag"}
       a[:second] = a[:name]
@@ -82,6 +87,15 @@ describe Bugsnag::Cleaner do
     it "filters deeply nested request parameters" do
       params = {:request => {:params => {:foo => {:bar => "baz"}}}}
       expect(described_class.new([/^foo\.bar/]).clean_object(params)).to eq({:request => {:params => {:foo => {:bar => '[FILTERED]'}}}})
+    end
+
+    it "filters objects which can't be stringified" do
+      class StringRaiser
+        def to_s
+          raise 'Oh no you do not!'
+        end
+      end
+      expect(subject.clean_object({ :foo => StringRaiser.new })).to eq({ :foo => '[RAISED]' })
     end
   end
 
