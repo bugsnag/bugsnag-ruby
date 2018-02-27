@@ -19,7 +19,6 @@ module Bugsnag
       begin
         # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq
         Bugsnag.configuration.set_request_data :sidekiq, { :msg => msg, :queue => queue }
-
         yield
       rescue Exception => ex
         raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
@@ -44,7 +43,8 @@ end
 
 ::Sidekiq.configure_server do |config|
   if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('3.0.0')
-    config.error_handlers << proc do |ex, _context|
+    config.error_handlers << proc do |ex, context|
+      Bugsnag.configuration.set_request_data :sidekiq, { :msg => context, :queue => context['queue'] }
       bugsnag_handler = ::Bugsnag::Sidekiq.new
       bugsnag_handler.notify(ex)
     end
