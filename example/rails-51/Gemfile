@@ -5,7 +5,13 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem "bugsnag" ,  path: "../../"
+# Install Bugsnag
+gem "bugsnag",  path: "../../"
+
+# Example task queues
+gem "sidekiq"
+gem "que"
+gem "resque"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.4'
