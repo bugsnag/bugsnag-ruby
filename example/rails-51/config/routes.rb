@@ -14,10 +14,13 @@ Rails.application.routes.draw do
   get '/sidekiq/crash_with_callback', to: 'sidekiq#callbacks'
 
   # Que routing
+  get '/que', to: 'que#index'
+  get '/que/crash', to: 'que#crash'
+  get '/que/notify_data', to: 'que#metadata'
+  get '/que/crash_with_callback', to: 'que#callbacks'
 
   # Resque routing
   get '/resque', to: 'resque#index'
   get '/resque/crash', to: 'resque#crash'
-  get '/resque/notify_data', to: 'resque#metadata'
   get '/resque/crash_with_callback', to: 'resque#callbacks'
 end

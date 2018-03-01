@@ -16,4 +16,4 @@ Make sure you have a Redis instance running that your test application can conne
 
 3. [Notify with data](/sidekiq/notify_data)
 <br/>
-    Same as `notify` but allows you to attach additional data within a `block`, similar to the `before_notify_callbacks` example above.  In this case we're adding information about the user to go into the `user` tab, and additional diagnostics as a `diagnostics` tab.
+    Same as `notify` but allows you to attach additional data within a `block`, similar to the `before_notify_callbacks` example above.  In this case we're adding information about the function being called to go into the `function` tab, and additional diagnostics as a `diagnostics` tab.

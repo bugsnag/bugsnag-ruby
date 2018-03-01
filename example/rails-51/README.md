@@ -58,6 +58,37 @@ The worker code can be found in `app/workers/sidekiq_workers.rb`.
 
 ## Que in Rails
 
+Que requires a database backend in order to queue jobs.  By default this database will be PostgreSQL although this can be changed via options as detailed in [the que documentation](https://github.com/chanks/que).
+
+Once PostgreSQL is set up as detailed using [the PostgreSQL documentation](https://www.postgresql.org/docs/), ensure Que can connect correctly before running and of the following examples. You may need to configure your connection in the `config/database.yml` file.
+
+### Configuration
+
+Ensure that the initial Que setup is complete by running:
+
+```shell
+bundle exec bin/rake que:install
+```
+
+and
+
+```shell
+bundle exec bin/rake db:migrate
+```
+
+Further configuration will be taken from the Rails environment.
+
+### Running the examples
+
+Start the Rails server as mentioned above.
+
+Navigate to the `/que` page and queue jobs for any of the examples using links provided.
+
+To process the jobs, run Que using the cli command:
+
+```shell
+bundle exec que ./config/environment.rb
+```
 
 ## Resque in Rails
 

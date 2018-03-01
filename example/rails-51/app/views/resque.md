@@ -22,4 +22,4 @@ QUEUE=crash,callback,metadata bundle exec rake resque:work
 
 3. [Notify with data](/resque/notify_data)
 <br/>
-    Same as `notify` but allows you to attach additional data within a `block`, similar to the `before_notify_callbacks` example above.  In this case we're adding information about the user to go into the `user` tab, and additional diagnostics as a `diagnostics` tab.
+    Same as `notify` but allows you to attach additional data within a `block`, similar to the `before_notify_callbacks` example above.  In this case we're adding information about the queue to go into the `queue` tab, and additional diagnostics as a `diagnostics` tab.
