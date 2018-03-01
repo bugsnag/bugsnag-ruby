@@ -8,18 +8,18 @@ class SidekiqController < ActionController::Base
   end
 
   def crash
-    SidekiqCrashWorker.perform_async
+    SidekiqWorkers::CrashWorker.perform_async
     @text = "Sidekiq is performing a task that will crash, so check your dashboard for the result!"
   end
 
   def metadata
-    SidekiqMetadataWorker.perform_async
+    SidekiqWorkers::MetadataWorker.perform_async
     @text = "Sidekiq is performing a task that will notify an error with some metadata without crashing.
     Check out your dashboard!"
   end
 
   def callbacks
-    SidekiqCallbackWorker.perform_async
+    SidekiqWorkers::CallbackWorker.perform_async
     @text = "Sidekiq is performing a task that will crash, but registers a callback before this to attach additional metadata."
   end
 end

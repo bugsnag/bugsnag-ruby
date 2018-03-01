@@ -9,6 +9,12 @@ Install dependencies
 bundle install
 ```
 
+Install local binaries (if needed):
+
+```shell
+bundle exec rake app:update:bin
+```
+
 ## Rails v5.1
 
 ### Configuration
@@ -36,8 +42,45 @@ Once the server is running head to the default path for more information on Bugs
 
 ## Sidekiq in Rails
 
+Sidekiq requires a datastore to run, this example uses [redis](https://redis.io/), installation instructions for which can be found [here](https://redis.io/topics/quickstart) and an official docker image can be found [here](https://hub.docker.com/_/redis/).
 
+### Configuration
+
+Once the configuration has been added to the Rails environment there is no need to further configure Sidekiq.
+
+### Running the examples
+
+Start the Rails server as mentioned above.
+
+Navigate to the `/sidekiq` page and run any of the examples using the links provided.
+
+The worker code can be found in `app/workers/sidekiq_workers.rb`.
 
 ## Que in Rails
 
+
 ## Resque in Rails
+
+Resque requires a datastore to run, this example uses [redis](https://redis.io/), installation instructions for which can be found [here](https://redis.io/topics/quickstart) and an official docker image can be found [here](https://hub.docker.com/_/redis/).
+
+### Configuration
+
+Resque can be configured by using the Rails environment by making sure it depends on the `environment` task.  This can be achieved when running the worker:
+
+```shell
+QUEUE=crash bundle exec rake environment resque:work
+```
+
+Or by creating a task, `resque:setup`, that depends on the `environment` task.  An example of this can be found in `lib/tasks/resque:setup.rake`.
+
+### Running the examples
+
+Start the Rails server as mentioned above.
+
+Navigate to the `/resque` page and queue any of the examples using links provided.
+
+To process the queues, run the `resque:work` task as stated in the example webpage. In order to process any of the queues on a single thread start the resque worker using the command:
+
+```shell
+QUEUE=crash,callback,metadata bundle exec rake resque:work
+```

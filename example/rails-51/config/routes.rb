@@ -16,4 +16,8 @@ Rails.application.routes.draw do
   # Que routing
 
   # Resque routing
+  get '/resque', to: 'resque#index'
+  get '/resque/crash', to: 'resque#crash'
+  get '/resque/notify_data', to: 'resque#metadata'
+  get '/resque/crash_with_callback', to: 'resque#callbacks'
 end
