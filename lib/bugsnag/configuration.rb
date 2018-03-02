@@ -76,7 +76,13 @@ module Bugsnag
       self.api_key = ENV["BUGSNAG_API_KEY"]
 
       # Read NET::HTTP proxy environment variable
-      self.proxy_host = ENV["http_proxy"]
+      if ENV["http_proxy"]
+        uri = URI.parse(ENV["http_proxy"])
+        self.proxy_host = uri.host
+        self.proxy_port = uri.port
+        self.proxy_user = uri.user
+        self.proxy_password = uri.password
+      end
 
       # Set up logging
       self.logger = Logger.new(STDOUT)
@@ -121,40 +127,58 @@ module Bugsnag
       @default_delivery_method = delivery_method
     end
 
+    ##
+    # Indicates whether the notifier should send a notification based on the
+    # configured release stage.
     def should_notify_release_stage?
       @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
     end
 
+    ##
+    # Tests whether the configured API key is valid.
     def valid_api_key?
       !api_key.nil? && api_key =~ API_KEY_REGEX
     end
 
+    ##
+    # Returns the array of data that will be automatically attached to every
+    # error notification.
     def request_data
       Thread.current[THREAD_LOCAL_NAME] ||= {}
     end
 
+    ##
+    # Sets an entry in the array of data attached to every error notification.
     def set_request_data(key, value)
       self.request_data[key] = value
     end
 
+    ##
+    # Unsets an entry in the array of data attached to every error notification.
     def unset_request_data(key, value)
       self.request_data.delete(key)
     end
 
+    ##
+    # Clears the array of data attached to every error notification.
     def clear_request_data
       Thread.current[THREAD_LOCAL_NAME] = nil
     end
 
+    ##
+    # Logs an info level message
     def info(message)
       logger.info(message)
     end
 
-    # Warning logger
+    ##
+    # Logs a warning level message
     def warn(message)
       logger.warn(message)
     end
 
-    # Debug logger
+    ##
+    # Logs a debug level message
     def debug(message)
       logger.debug(message)
     end

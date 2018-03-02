@@ -39,7 +39,7 @@ guide](https://docs.bugsnag.com/api/deploy-tracking/capistrano/) for more inform
   + end
   ```
 
-* `Bugsnag.notify_or_ignore` and `Bugsnag.auto_notify` have been removed removed. Call `notify` directly instead.
+* `Bugsnag.notify_or_ignore` and `Bugsnag.auto_notify` have been removed. Call `notify` directly instead.
 * `after_notify_callbacks` has been removed
 * `Bugsnag::Notification` has been renamed to `Bugsnag::Report`
 

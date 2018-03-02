@@ -1,4 +1,6 @@
 module Bugsnag::Middleware
+  ##
+  # Extracts and attaches user information from Warden to an error report
   class WardenUser
     SCOPE_PATTERN = /^warden\.user\.([^.]+)\.key$/
     COMMON_USER_FIELDS = [:email, :name, :first_name, :last_name, :created_at, :id]

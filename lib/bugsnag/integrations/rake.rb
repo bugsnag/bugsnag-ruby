@@ -8,6 +8,8 @@ class Rake::Task
     :framework => "Rake"
   }
 
+  ##
+  # Executes the rake task with Bugsnag setup with contextual data.
   def execute_with_bugsnag(args=nil)
     Bugsnag.configuration.app_type ||= "rake"
     old_task = Bugsnag.configuration.request_data[:bugsnag_running_task]

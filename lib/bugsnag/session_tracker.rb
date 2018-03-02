@@ -12,18 +12,28 @@ module Bugsnag
 
     attr_reader :session_counts
 
+    ##
+    # Sets the session information for this thread.
     def self.set_current_session(session)
       Thread.current[THREAD_SESSION] = session
     end
 
+    ##
+    # Returns the session information for this thread.
     def self.get_current_session
       Thread.current[THREAD_SESSION]
     end
 
+    ##
+    # Initializes the session tracker.
     def initialize
       @session_counts = Concurrent::Hash.new(0)
     end
 
+    ##
+    # Starts a new session, storing it on the current thread.
+    #
+    # This allows Bugsnag to track error rates for a release.
     def start_session
       start_delivery_thread
       start_time = Time.now().utc().strftime('%Y-%m-%dT%H:%M:00')
@@ -41,6 +51,8 @@ module Bugsnag
 
     alias_method :create_session, :start_session
 
+    ##
+    # Delivers the current session_counts lists to the session endpoint.
     def send_sessions
       sessions = []
       counts = @session_counts
@@ -54,6 +66,7 @@ module Bugsnag
       deliver(sessions)
     end
 
+    private
     def start_delivery_thread
       MUTEX.synchronize do
         @started = nil unless defined?(@started)
@@ -77,7 +90,6 @@ module Bugsnag
       end
     end
 
-    private
     def add_session(min)
       @session_counts[min] += 1
     end

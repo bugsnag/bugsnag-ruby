@@ -1,4 +1,6 @@
 module Bugsnag::Middleware
+  ##
+  # Calls all configured callbacks passing an error report
   class Callbacks
     def initialize(bugsnag)
       @bugsnag = bugsnag
