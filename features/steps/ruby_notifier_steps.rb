@@ -16,7 +16,7 @@ end
 
 When("I build the service {string} from the compose file {string}") do |service, filename|
   environment = @script_env.inject('') {|curr,(k,v)| curr + "#{k}=#{v} "}
-  run_command "#{environment} docker-compose -f #{filename} build --no-cache #{service}"
+  run_command "#{environment} docker-compose -f #{filename} build #{service}"
 end
 
 When("I run the command {string} on the service {string}") do |command, filename|
