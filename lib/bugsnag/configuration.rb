@@ -75,13 +75,9 @@ module Bugsnag
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
 
-      # Read NET::HTTP proxy environment variable
-      if ENV["http_proxy"]
-        uri = URI.parse(ENV["http_proxy"])
-        self.proxy_host = uri.host
-        self.proxy_port = uri.port
-        self.proxy_user = uri.user
-        self.proxy_password = uri.password
+      # Read NET::HTTP proxy environment variables
+      if proxy_uri = ENV["https_proxy"] || ENV['http_proxy']
+        set_proxy(proxy_uri)
       end
 
       # Set up logging
@@ -181,6 +177,16 @@ module Bugsnag
     # Logs a debug level message
     def debug(message)
       logger.debug(message)
+    end
+
+    ##
+    # Parses and sets proxy from a uri
+    def set_proxy(uri)
+      proxy = URI.parse(uri)
+      self.proxy_host = proxy.host
+      self.proxy_port = proxy.port
+      self.proxy_user = proxy.user
+      self.proxy_password = proxy.password
     end
 
     private
