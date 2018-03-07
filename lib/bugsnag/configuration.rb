@@ -77,7 +77,7 @@ module Bugsnag
 
       # Read NET::HTTP proxy environment variables
       if proxy_uri = ENV["https_proxy"] || ENV['http_proxy']
-        set_proxy(proxy_uri)
+        parse_proxy(proxy_uri)
       end
 
       # Set up logging
@@ -181,7 +181,7 @@ module Bugsnag
 
     ##
     # Parses and sets proxy from a uri
-    def set_proxy(uri)
+    def parse_proxy(uri)
       proxy = URI.parse(uri)
       self.proxy_host = proxy.host
       self.proxy_port = proxy.port

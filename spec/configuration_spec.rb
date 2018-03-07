@@ -49,7 +49,7 @@ describe Bugsnag::Configuration do
     end
 
     it "parses a uri if provided" do
-      subject.set_proxy("http://user:password@localhost:34000")
+      subject.parse_proxy("http://user:password@localhost:34000")
       expect(subject.proxy_host).to eq("localhost")
       expect(subject.proxy_port).to eq(34000)
       expect(subject.proxy_user).to eq("user")
