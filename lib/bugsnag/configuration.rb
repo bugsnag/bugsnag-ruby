@@ -76,7 +76,7 @@ module Bugsnag
       self.api_key = ENV["BUGSNAG_API_KEY"]
 
       # Read NET::HTTP proxy environment variables
-      if proxy_uri = ENV["https_proxy"] || ENV['http_proxy']
+      if (proxy_uri = ENV["https_proxy"] || ENV['http_proxy'])
         parse_proxy(proxy_uri)
       end
 
