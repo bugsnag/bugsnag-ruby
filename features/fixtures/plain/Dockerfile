@@ -6,7 +6,7 @@ ARG APP_PATH
 RUN mkdir -p $APP_PATH
 WORKDIR $APP_PATH
 
-COPY Gemfile $APP_PATH
+COPY app/Gemfile $APP_PATH
 RUN bundle install
 
-COPY . $APP_PATH
+COPY app $APP_PATH

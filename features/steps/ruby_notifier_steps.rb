@@ -47,6 +47,21 @@ When("I navigate to the route {string} on port {string}") do |route, port|
   }
 end
 
+Then("the request used payload v4 headers") do
+  steps %Q{
+    Then the "bugsnag-api-key" header is not null
+    And the "bugsnag-payload-version" header equals "4.0"
+    And the "bugsnag-sent-at" header is a timestamp
+  }
+end
+
+Then("the request contained the api key {string}") do |api_key|
+  steps %Q{
+    Then the "bugsnag-api-key" header equals "#{api_key}"
+    And the payload field "apiKey" equals "#{api_key}"
+  }
+end
+
 Then("the request used the Ruby notifier") do
   steps %Q{
     Then the payload field "notifier.name" equals "Ruby Bugsnag Notifier"
