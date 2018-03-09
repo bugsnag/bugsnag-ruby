@@ -23,63 +23,63 @@ Scenario Outline: An unhandled error sends a report
   And the "lineNumber" of stack frame 0 equals <lineNumber>
 
   Examples:
-  | ruby version | file            | error          | lineNumber |
-  | 1.9.3        | RuntimeError    | RuntimeError   | 6          |
-  | 1.9.3        | LoadError       | LoadError      | 6          |
-  | 1.9.3        | SyntaxError     | SyntaxError    | 6          |
-  | 1.9.3        | LocalJumpError  | LocalJumpError | 7          |
-  | 1.9.3        | NameError       | NameError      | 6          |
-  | 1.9.3        | NoMethodError   | NoMethodError  | 6          |
-  | 1.9.3        | SystemCallError | Errno::ENOENT  | 6          |
-  | 1.9.3        | CustomError     | CustomError    | 9          |
-  | 2.0          | RuntimeError    | RuntimeError   | 6          |
-  | 2.0          | LoadError       | LoadError      | 6          |
-  | 2.0          | SyntaxError     | SyntaxError    | 6          |
-  | 2.0          | LocalJumpError  | LocalJumpError | 7          |
-  | 2.0          | NameError       | NameError      | 6          |
-  | 2.0          | NoMethodError   | NoMethodError  | 6          |
-  | 2.0          | SystemCallError | Errno::ENOENT  | 6          |
-  | 2.0          | CustomError     | CustomError    | 9          |
-  | 2.1          | RuntimeError    | RuntimeError   | 6          |
-  | 2.1          | LoadError       | LoadError      | 6          |
-  | 2.1          | SyntaxError     | SyntaxError    | 6          |
-  | 2.1          | LocalJumpError  | LocalJumpError | 7          |
-  | 2.1          | NameError       | NameError      | 6          |
-  | 2.1          | NoMethodError   | NoMethodError  | 6          |
-  | 2.1          | SystemCallError | Errno::ENOENT  | 6          |
-  | 2.1          | CustomError     | CustomError    | 9          |
-  | 2.2          | RuntimeError    | RuntimeError   | 6          |
-  | 2.2          | LoadError       | LoadError      | 6          |
-  | 2.2          | SyntaxError     | SyntaxError    | 6          |
-  | 2.2          | LocalJumpError  | LocalJumpError | 7          |
-  | 2.2          | NameError       | NameError      | 6          |
-  | 2.2          | NoMethodError   | NoMethodError  | 6          |
-  | 2.2          | SystemCallError | Errno::ENOENT  | 6          |
-  | 2.2          | CustomError     | CustomError    | 9          |
-  | 2.3          | RuntimeError    | RuntimeError   | 6          |
-  | 2.3          | LoadError       | LoadError      | 6          |
-  | 2.3          | SyntaxError     | SyntaxError    | 6          |
-  | 2.3          | LocalJumpError  | LocalJumpError | 7          |
-  | 2.3          | NameError       | NameError      | 6          |
-  | 2.3          | NoMethodError   | NoMethodError  | 6          |
-  | 2.3          | SystemCallError | Errno::ENOENT  | 6          |
-  | 2.3          | CustomError     | CustomError    | 9          |
-  | 2.4          | RuntimeError    | RuntimeError   | 6          |
-  | 2.4          | LoadError       | LoadError      | 6          |
-  | 2.4          | SyntaxError     | SyntaxError    | 6          |
-  | 2.4          | LocalJumpError  | LocalJumpError | 7          |
-  | 2.4          | NameError       | NameError      | 6          |
-  | 2.4          | NoMethodError   | NoMethodError  | 6          |
-  | 2.4          | SystemCallError | Errno::ENOENT  | 6          |
-  | 2.4          | CustomError     | CustomError    | 9          |
-  | 2.5          | RuntimeError    | RuntimeError   | 6          |
-  | 2.5          | LoadError       | LoadError      | 6          |
-  | 2.5          | SyntaxError     | SyntaxError    | 6          |
-  | 2.5          | LocalJumpError  | LocalJumpError | 7          |
-  | 2.5          | NameError       | NameError      | 6          |
-  | 2.5          | NoMethodError   | NoMethodError  | 6          |
-  | 2.5          | SystemCallError | Errno::ENOENT  | 6          |
-  | 2.5          | CustomError     | CustomError    | 9          |
+  | ruby version | file              | error          | lineNumber |
+  | 1.9.3        | runtime_error     | RuntimeError   | 6          |
+  | 1.9.3        | load_error        | LoadError      | 6          |
+  | 1.9.3        | syntax_error      | SyntaxError    | 6          |
+  | 1.9.3        | local_jump_error  | LocalJumpError | 7          |
+  | 1.9.3        | name_error        | NameError      | 6          |
+  | 1.9.3        | no_method_error   | NoMethodError  | 6          |
+  | 1.9.3        | system_call_error | Errno::ENOENT  | 6          |
+  | 1.9.3        | custom_error      | CustomError    | 9          |
+  | 2.0          | runtime_error     | RuntimeError   | 6          |
+  | 2.0          | load_error        | LoadError      | 6          |
+  | 2.0          | syntax_error      | SyntaxError    | 6          |
+  | 2.0          | local_jump_error  | LocalJumpError | 7          |
+  | 2.0          | name_error        | NameError      | 6          |
+  | 2.0          | no_method_error   | NoMethodError  | 6          |
+  | 2.0          | system_call_error | Errno::ENOENT  | 6          |
+  | 2.0          | custom_error      | CustomError    | 9          |
+  | 2.1          | runtime_error     | RuntimeError   | 6          |
+  | 2.1          | load_error        | LoadError      | 6          |
+  | 2.1          | syntax_error      | SyntaxError    | 6          |
+  | 2.1          | local_jump_error  | LocalJumpError | 7          |
+  | 2.1          | name_error        | NameError      | 6          |
+  | 2.1          | no_method_error   | NoMethodError  | 6          |
+  | 2.1          | system_call_error | Errno::ENOENT  | 6          |
+  | 2.1          | custom_error      | CustomError    | 9          |
+  | 2.2          | runtime_error     | RuntimeError   | 6          |
+  | 2.2          | load_error        | LoadError      | 6          |
+  | 2.2          | syntax_error      | SyntaxError    | 6          |
+  | 2.2          | local_jump_error  | LocalJumpError | 7          |
+  | 2.2          | name_error        | NameError      | 6          |
+  | 2.2          | no_method_error   | NoMethodError  | 6          |
+  | 2.2          | system_call_error | Errno::ENOENT  | 6          |
+  | 2.2          | custom_error      | CustomError    | 9          |
+  | 2.3          | runtime_error     | RuntimeError   | 6          |
+  | 2.3          | load_error        | LoadError      | 6          |
+  | 2.3          | syntax_error      | SyntaxError    | 6          |
+  | 2.3          | local_jump_error  | LocalJumpError | 7          |
+  | 2.3          | name_error        | NameError      | 6          |
+  | 2.3          | no_method_error   | NoMethodError  | 6          |
+  | 2.3          | system_call_error | Errno::ENOENT  | 6          |
+  | 2.3          | custom_error      | CustomError    | 9          |
+  | 2.4          | runtime_error     | RuntimeError   | 6          |
+  | 2.4          | load_error        | LoadError      | 6          |
+  | 2.4          | syntax_error      | SyntaxError    | 6          |
+  | 2.4          | local_jump_error  | LocalJumpError | 7          |
+  | 2.4          | name_error        | NameError      | 6          |
+  | 2.4          | no_method_error   | NoMethodError  | 6          |
+  | 2.4          | system_call_error | Errno::ENOENT  | 6          |
+  | 2.4          | custom_error      | CustomError    | 9          |
+  | 2.5          | runtime_error     | RuntimeError   | 6          |
+  | 2.5          | load_error        | LoadError      | 6          |
+  | 2.5          | syntax_error      | SyntaxError    | 6          |
+  | 2.5          | local_jump_error  | LocalJumpError | 7          |
+  | 2.5          | name_error        | NameError      | 6          |
+  | 2.5          | no_method_error   | NoMethodError  | 6          |
+  | 2.5          | system_call_error | Errno::ENOENT  | 6          |
+  | 2.5          | custom_error      | CustomError    | 9          |
 
 Scenario Outline: An unhandled error doesn't send a report
   And I set environment variable "ruby_version" to "<ruby version>"
@@ -89,18 +89,18 @@ Scenario Outline: An unhandled error doesn't send a report
   Then I should receive 0 requests
 
   Examples:
-  | ruby version | file         |
-  | 1.9.3        | Interrupt    |
-  | 1.9.3        | SystemExit   |
-  | 2.0          | Interrupt    |
-  | 2.0          | SystemExit   |
-  | 2.1          | Interrupt    |
-  | 2.1          | SystemExit   |
-  | 2.2          | Interrupt    |
-  | 2.2          | SystemExit   |
-  | 2.3          | Interrupt    |
-  | 2.3          | SystemExit   |
-  | 2.4          | Interrupt    |
-  | 2.4          | SystemExit   |
-  | 2.5          | Interrupt    |
-  | 2.5          | SystemExit   |
+  | ruby version | file          |
+  | 1.9.3        | interrupt     |
+  | 1.9.3        | system_exit   |
+  | 2.0          | interrupt     |
+  | 2.0          | system_exit   |
+  | 2.1          | interrupt     |
+  | 2.1          | system_exit   |
+  | 2.2          | interrupt     |
+  | 2.2          | system_exit   |
+  | 2.3          | interrupt     |
+  | 2.3          | system_exit   |
+  | 2.4          | interrupt     |
+  | 2.4          | system_exit   |
+  | 2.5          | interrupt     |
+  | 2.5          | system_exit   |
