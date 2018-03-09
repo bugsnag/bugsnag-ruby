@@ -589,7 +589,7 @@ describe Bugsnag::Report do
         }
       })
       report.meta_data.merge!({
-        :wardenUser => {
+        :session => {
           :"warden.user.user.key" => "1234",
           :"warden.user.foobar.key" => "1234",
           :"warden.user.test" => "1234"
@@ -610,10 +610,10 @@ describe Bugsnag::Report do
       expect(event["metaData"]["request"]["user_authorization"]).to eq("[FILTERED]")
       expect(event["metaData"]["request"]["secret_key"]).to eq("[FILTERED]")
       expect(event["metaData"]["request"]["user_secret"]).to eq("[FILTERED]")
-      expect(event["metaData"]["wardenUser"]).not_to be_nil
-      expect(event["metaData"]["wardenUser"]["warden.user.user.key"]).to eq("[FILTERED]")
-      expect(event["metaData"]["wardenUser"]["warden.user.foobar.key"]).to eq("[FILTERED]")
-      expect(event["metaData"]["wardenUser"]["warden.user.test"]).to eq("1234")
+      expect(event["metaData"]["session"]).not_to be_nil
+      expect(event["metaData"]["session"]["warden.user.user.key"]).to eq("[FILTERED]")
+      expect(event["metaData"]["session"]["warden.user.foobar.key"]).to eq("[FILTERED]")
+      expect(event["metaData"]["session"]["warden.user.test"]).to eq("1234")
     }
   end
 
