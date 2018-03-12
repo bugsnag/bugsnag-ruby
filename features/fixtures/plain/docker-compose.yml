@@ -29,4 +29,5 @@ services:
       - MAZE_SEND_ENVIRONMENT
       - MAZE_SESSION_ENDPOINT
       - MAZE_TIMEOUT
+      - CALLBACK_INITIATOR
     restart: "no"
