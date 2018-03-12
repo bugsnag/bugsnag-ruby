@@ -8,8 +8,8 @@ Background:
 
 Scenario Outline: An unhandled error sends a report
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/plain/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby unhandled/<file>.rb" on the service "features/fixtures/plain/docker-compose.yml"
+  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
+  And I run the command "plain-ruby bundle exec ruby unhandled/<file>.rb" on the service "features/fixtures/docker-compose.yml"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
@@ -83,8 +83,8 @@ Scenario Outline: An unhandled error sends a report
 
 Scenario Outline: An unhandled error doesn't send a report
   And I set environment variable "ruby_version" to "<ruby version>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/plain/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby unhandled/<file>.rb" on the service "features/fixtures/plain/docker-compose.yml"
+  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
+  And I run the command "plain-ruby bundle exec ruby unhandled/<file>.rb" on the service "features/fixtures/docker-compose.yml"
   And I wait for 1 second
   Then I should receive 0 requests
 

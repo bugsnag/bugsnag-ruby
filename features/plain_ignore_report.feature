@@ -9,8 +9,8 @@ Background:
 Scenario Outline: A reports severity can be modified
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/plain/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby report_modification/ignore_report.rb" on the service "features/fixtures/plain/docker-compose.yml"
+  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
+  And I run the command "plain-ruby bundle exec ruby report_modification/ignore_report.rb" on the service "features/fixtures/docker-compose.yml"
   And I wait for 1 second
   Then I should receive 0 requests
 

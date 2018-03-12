@@ -9,8 +9,8 @@ Background:
 Scenario Outline: Stack frames can be removed
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/plain/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby stack_frame_modification/remove_stack_frame.rb" on the service "features/fixtures/plain/docker-compose.yml"
+  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
+  And I run the command "plain-ruby bundle exec ruby stack_frame_modification/remove_stack_frame.rb" on the service "features/fixtures/docker-compose.yml"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
@@ -46,8 +46,8 @@ Scenario Outline: Stack frames can be removed
 Scenario Outline: Stack frames can be marked as in project
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/plain/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby stack_frame_modification/mark_frames_in_project.rb" on the service "features/fixtures/plain/docker-compose.yml"
+  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
+  And I run the command "plain-ruby bundle exec ruby stack_frame_modification/mark_frames_in_project.rb" on the service "features/fixtures/docker-compose.yml"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
