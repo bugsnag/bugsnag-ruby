@@ -12,10 +12,7 @@ callback = Proc.new do |report|
     ]
   })
   report.add_tab(:additional_metadata, {
-    :foobar => {
-      :first => 'foo',
-      :then => 'bar'
-    }
+    :bar => 'bar'
   })
 end
 
