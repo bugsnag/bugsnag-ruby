@@ -47,6 +47,7 @@ module Bugsnag
       /cookie/i,
       /password/i,
       /secret/i,
+      /warden\.user\.([^.]+)\.key/,
       "rack.request.form_vars"
     ].freeze
 
