@@ -1045,6 +1045,15 @@ describe Bugsnag::Report do
     expect(Bugsnag).not_to have_sent_notification
   end
 
+  it 'uses an appropriate message if nil is notified' do
+    Bugsnag.notify(nil)
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = payload["events"][0]
+      exception = event["exceptions"][0]
+      expect(exception["errorClass"]).to eq("RuntimeError")
+      expect(exception["message"]).to eq(Bugsnag::Report::NIL_EXCEPTION_DESCRIPTION)
+    }
+  end
 
   if defined?(JRUBY_VERSION)
 

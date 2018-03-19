@@ -19,6 +19,8 @@ module Bugsnag
 
     CURRENT_PAYLOAD_VERSION = "4.0"
 
+    NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
+
     attr_reader   :unhandled
     attr_accessor :api_key
     attr_accessor :app_type
@@ -45,6 +47,7 @@ module Bugsnag
 
       self.configuration = passed_configuration
 
+      exception = NIL_EXCEPTION_DESCRIPTION if exception.nil?
       self.raw_exceptions = generate_raw_exceptions(exception)
       self.exceptions = generate_exception_list
 
