@@ -15,6 +15,8 @@ module Bugsnag
     USER_SPECIFIED_SEVERITY = "userSpecifiedSeverity"
     USER_CALLBACK_SET_SEVERITY = "userCallbackSetSeverity"
 
+    MAX_EXCEPTIONS_TO_UNWRAP = 5
+
     CURRENT_PAYLOAD_VERSION = "4.0"
 
     attr_reader   :unhandled
@@ -43,7 +45,7 @@ module Bugsnag
 
       self.configuration = passed_configuration
 
-      self.raw_exceptions = Bugsnag::Helpers.generate_raw_exceptions(exception)
+      self.raw_exceptions = Bugsnag::Helpers.generate_raw_exceptions(exception, MAX_EXCEPTIONS_TO_UNWRAP)
       self.exceptions = generate_exception_list
 
       self.api_key = configuration.api_key

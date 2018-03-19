@@ -1,15 +1,13 @@
 module Bugsnag
   module Helpers
-    MAX_EXCEPTIONS_TO_UNWRAP = 5
-
     class << self
       ##
       # Generates a list of exceptions
-      def generate_raw_exceptions(exception)
+      def generate_raw_exceptions(exception, max_exceptions = 5)
         exceptions = []
 
         ex = exception
-        while !ex.nil? && !exceptions.include?(ex) && exceptions.length < MAX_EXCEPTIONS_TO_UNWRAP
+        while !ex.nil? && !exceptions.include?(ex) && exceptions.length < max_exceptions
 
           unless ex.is_a? Exception
             if ex.respond_to?(:to_exception)
