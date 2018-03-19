@@ -15,8 +15,6 @@ module Bugsnag
     USER_SPECIFIED_SEVERITY = "userSpecifiedSeverity"
     USER_CALLBACK_SET_SEVERITY = "userCallbackSetSeverity"
 
-    MAX_EXCEPTIONS_TO_UNWRAP = 5
-
     CURRENT_PAYLOAD_VERSION = "4.0"
 
     attr_reader   :unhandled
@@ -45,7 +43,7 @@ module Bugsnag
 
       self.configuration = passed_configuration
 
-      self.raw_exceptions = generate_raw_exceptions(exception)
+      self.raw_exceptions = Bugsnag::Helpers.generate_raw_exceptions(exception)
       self.exceptions = generate_exception_list
 
       self.api_key = configuration.api_key
@@ -169,42 +167,6 @@ module Bugsnag
       # The "Class" check is for some strange exceptions like Timeout::Error
       # which throw the error class instead of an instance
       (exception.is_a? Class) ? exception.name : exception.class.name
-    end
-
-    def generate_raw_exceptions(exception)
-      exceptions = []
-
-      ex = exception
-      while ex != nil && !exceptions.include?(ex) && exceptions.length < MAX_EXCEPTIONS_TO_UNWRAP
-
-        unless ex.is_a? Exception
-          if ex.respond_to?(:to_exception)
-            ex = ex.to_exception
-          elsif ex.respond_to?(:exception)
-            ex = ex.exception
-          end
-        end
-
-        unless ex.is_a?(Exception) || (defined?(Java::JavaLang::Throwable) && ex.is_a?(Java::JavaLang::Throwable))
-          configuration.warn("Converting non-Exception to RuntimeError: #{ex.inspect}")
-          ex = RuntimeError.new(ex.to_s)
-          ex.set_backtrace caller
-        end
-
-        exceptions << ex
-
-        if ex.respond_to?(:cause) && ex.cause
-          ex = ex.cause
-        elsif ex.respond_to?(:continued_exception) && ex.continued_exception
-          ex = ex.continued_exception
-        elsif ex.respond_to?(:original_exception) && ex.original_exception
-          ex = ex.original_exception
-        else
-          ex = nil
-        end
-      end
-
-      exceptions
     end
   end
 end
