@@ -1052,6 +1052,13 @@ describe Bugsnag::Report do
       exception = event["exceptions"][0]
       expect(exception["errorClass"]).to eq("RuntimeError")
       expect(exception["message"]).to eq(Bugsnag::Report::NIL_EXCEPTION_DESCRIPTION)
+
+      stacktrace = exception["stacktrace"][0]
+      pp stacktrace
+      expect(stacktrace["lineNumber"]).to eq(1049)
+      expect(stacktrace["file"]).to end_with("spec/report_spec.rb")
+      expect(stacktrace["code"]["1048"]).to eq("  it 'uses an appropriate message if nil is notified' do")
+      expect(stacktrace["code"]["1049"]).to eq("    Bugsnag.notify(nil)")
     }
   end
 
