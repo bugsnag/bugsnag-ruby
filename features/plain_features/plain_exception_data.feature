@@ -8,8 +8,8 @@ Background:
 
 Scenario Outline: An error has built in meta-data
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby exception_data/<state>_meta_data.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby exception_data/<state>_meta_data.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
@@ -37,8 +37,8 @@ Scenario Outline: An error has built in meta-data
 
 Scenario Outline: An error has built in context
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby exception_data/<state>_context.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby exception_data/<state>_context.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
@@ -66,8 +66,8 @@ Scenario Outline: An error has built in context
 
 Scenario Outline: An error has built in grouping hash
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby exception_data/<state>_hash.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby exception_data/<state>_hash.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
@@ -94,8 +94,8 @@ Scenario Outline: An error has built in grouping hash
 
 Scenario Outline: An error has built in user id
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby exception_data/<state>_user_id.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby exception_data/<state>_user_id.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier

@@ -8,8 +8,8 @@ Background:
 
 Scenario Outline: A handled error sends a report
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby handled/<file>.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby handled/<file>.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
@@ -41,8 +41,8 @@ Scenario Outline: A handled error sends a report
 
 Scenario Outline: A handled error doesn't send a report when the :skip_bugsnag flag is set
   And I set environment variable "ruby_version" to "<ruby version>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby unhandled/ignore_exception.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby handled/ignore_exception.rb"
   And I wait for 1 second
   Then I should receive 0 requests
 
@@ -58,8 +58,8 @@ Scenario Outline: A handled error doesn't send a report when the :skip_bugsnag f
 
 Scenario Outline: A handled error can attach metadata in a block
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby handled/block_metadata.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby handled/block_metadata.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier

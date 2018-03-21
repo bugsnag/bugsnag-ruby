@@ -9,8 +9,8 @@ Background:
 Scenario Outline: Metadata can be added to a report using add_tab
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby report_modification/add_tab.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby report_modification/add_tab.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
@@ -48,8 +48,8 @@ Scenario Outline: Metadata can be added to a report using add_tab
 Scenario Outline: Metadata can be added to an existing tab using add_tab
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby report_modification/add_tab_existing.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby report_modification/add_tab_existing.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
@@ -89,8 +89,8 @@ Scenario Outline: Metadata can be added to an existing tab using add_tab
 Scenario Outline: Metadata can be overwritten using add_tab
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
-  And I build the service "plain-ruby" from the compose file "features/fixtures/docker-compose.yml"
-  And I run the command "plain-ruby bundle exec ruby report_modification/add_tab_override.rb" on the service "features/fixtures/docker-compose.yml"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby report_modification/add_tab_override.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier
