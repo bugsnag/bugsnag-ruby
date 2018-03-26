@@ -88,9 +88,6 @@ module Bugsnag
       # Set up logging
       self.logger = Logger.new(STDOUT)
       self.logger.level = Logger::INFO
-      self.logger.formatter = proc do |severity, datetime, progname, msg|
-        "** [Bugsnag] #{datetime}: #{msg}\n"
-      end
 
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new
@@ -169,19 +166,26 @@ module Bugsnag
     ##
     # Logs an info level message
     def info(message)
-      logger.info(message)
+      logger.info(format_message(message))
     end
 
     ##
     # Logs a warning level message
     def warn(message)
-      logger.warn(message)
+      logger.warn(format_message(message))
     end
 
     ##
     # Logs a debug level message
     def debug(message)
-      logger.debug(message)
+      logger.debug(format_message(message))
+    end
+
+    ##
+    # Formats a message being logged by Bugsnag
+    def format_message(message)
+      datetime = Time.new.to_s
+      "** [Bugsnag] #{datetime}: #{message.to_s}\n"
     end
 
     private
