@@ -185,7 +185,7 @@ module Bugsnag
     # Formats a message being logged by Bugsnag
     def format_message(message)
       datetime = Time.new.to_s
-      "** [Bugsnag] #{datetime}: #{message.to_s}\n"
+      "** [Bugsnag] #{datetime}: #{message}\n"
     end
 
     private
