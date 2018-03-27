@@ -89,11 +89,14 @@ module Bugsnag
       return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
       payload[:events].map do |event|
         event[:exceptions].map do |exception|
+          total = exception[:stacktrace].length
+          count = 0
           saved = 0
-          exception[:stacktrace].reverse.each do |trace|
-            break unless saved < threshold
+          while (count < total) && (saved < threshold)
+            trace = exception[:stacktrace][count]
             saved += get_payload_length(trace[:code])
             trace.delete(:code)
+            count += 1
           end
         end
       end
@@ -107,8 +110,7 @@ module Bugsnag
       payload[:events].map do |event|
         event[:exceptions].map do |exception|
           saved = 0
-          exception[:stacktrace].each do
-            break unless saved < threshold
+          while (exception[:stacktrace].size > 1) && (saved < threshold)
             saved += get_payload_length(exception[:stacktrace].last)
             exception[:stacktrace].pop
           end
