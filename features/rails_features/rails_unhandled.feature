@@ -13,7 +13,7 @@ Scenario Outline: Unhandled RuntimeError
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
   And I wait for the app to respond on port "6128<rails_version>"
-  When I navigate to the route "/unhandled" on port "6128<rails_version>"
+  When I navigate to the route "/unhandled/error" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
   And the request used the Ruby notifier
@@ -22,9 +22,9 @@ Scenario Outline: Unhandled RuntimeError
   And the payload field "events" is an array with 1 element
   And the event "unhandled" is true
   And the exception "errorClass" equals "NameError"
-  And the exception "message" starts with "undefined local variable or method `generate_unhandled_error' for #<ApplicationController"
+  And the exception "message" starts with "undefined local variable or method `generate_unhandled_error' for #<UnhandledController"
   And the event "app.type" equals "rails"
-  And the event "metaData.request.url" ends with "/unhandled"
+  And the event "metaData.request.url" ends with "/unhandled/error"
   And the event "severity" equals "error"
   And the event "severityReason.type" is "unhandledExceptionMiddleware"
   And the event "severityReason.attributes.framework" is "Rack"

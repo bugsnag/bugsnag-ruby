@@ -1,3 +1,4 @@
 App::Application.routes.draw do
-  get "/(:action)", controller: 'application'
+  get "/unhandled/(:action)", controller: 'unhandled'
+  get "/handled/(:action)", controller: 'handled'
 end

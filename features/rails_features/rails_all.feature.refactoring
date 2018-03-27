@@ -1,21 +1,6 @@
 Feature: Rails 4 support
 
-Scenario Outline: Manual string notify
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I start the compose stack "features/fixtures/rails4/docker-compose.yml"
-  And I wait for the app to respond on port "<port>"
-  When I navigate to the route "/string_notify" on port "<port>"
-  Then I should receive a request
-  And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
-  And the "Bugsnag-API-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the payload field "apiKey" equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the payload field "events" is an array with 1 element
-  And the exception "errorClass" equals "RuntimeError"
-  And the exception "message" starts with "handled string"
-  And the event "unhandled" is false
-  And the event "metaData.request.url" ends with "/string_notify"
-  And the event "app.type" equals "rails"
+
 
   Examples:
     | port |

@@ -1,25 +1,26 @@
-class ApplicationController < ActionController::Base
+class HandledController < ActionController::Base
   protect_from_forgery with: :exception
 
   def index
     render json: {}
   end
 
-  def unhandled
-    generate_unhandled_error
-  end
-
-  def handled_unthrown
+  def unthrown
     Bugsnag.notify(RuntimeError.new("handled unthrown error"))
     render json: {}
   end
 
-  def handled_thrown
+  def thrown
     begin
-      unhandled
+      generate_unhandled_error
     rescue Exception => e
       Bugsnag.notify(e)
     end
+    render json: {}
+  end
+
+  def string_notify
+    Bugsnag.notify("handled string")
     render json: {}
   end
 end
