@@ -13,4 +13,13 @@ class ApplicationController < ActionController::Base
     Bugsnag.notify(RuntimeError.new("handled unthrown error"))
     render json: {}
   end
+
+  def handled_thrown
+    begin
+      unhandled
+    rescue Exception => e
+      Bugsnag.notify(e)
+    end
+    render json: {}
+  end
 end
