@@ -1,12 +1,14 @@
-ARG ruby_version
-FROM ruby:$ruby_version
+ARG RUBY_VERSION
+FROM ruby:$RUBY_VERSION
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+ARG APP_PATH
 
-COPY Gemfile /usr/src/app/
+RUN mkdir -p $APP_PATH
+WORKDIR $APP_PATH
+
+COPY app/Gemfile $APP_PATH
 RUN bundle install
 
-COPY . /usr/src/app
+COPY app $APP_PATH
 
 CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]

@@ -72,28 +72,113 @@ services:
     build:
       context: rails3
       args:
-        - ruby_version
+        - RUBY_VERSION
+        - APP_PATH
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - http_proxy
+      - MAZE_API_KEY
+      - MAZE_APP_TYPE
+      - MAZE_APP_VERSION
+      - MAZE_AUTO_CAPTURE_SESSIONS
+      - MAZE_AUTO_NOTIFY
+      - MAZE_ENDPOINT
+      - MAZE_IGNORE_CLASS
+      - MAZE_IGNORE_MESSAGE
+      - MAZE_META_DATA_FILTERS
+      - MAZE_NOTIFY_RELEASE_STAGE
+      - MAZE_PROJECT_ROOT
+      - MAZE_PROXY_HOST
+      - MAZE_PROXY_PASSWORD
+      - MAZE_PROXY_PORT
+      - MAZE_PROXY_USER
+      - MAZE_RELEASE_STAGE
+      - MAZE_SEND_CODE
+      - MAZE_SEND_ENVIRONMENT
+      - MAZE_SESSION_ENDPOINT
+      - MAZE_TIMEOUT
+      - CALLBACK_INITIATOR
     ports:
-      - "3003:3000"
+      - target: 3000
+        published: ${RAILS_3_PORT}
     restart: "no"
+
+  rails4:
+    build:
+      context: rails4
+      args:
+        - RUBY_VERSION
+        - APP_PATH
+    environment:
+      - BUGSNAG_API_KEY
+      - http_proxy
+      - MAZE_API_KEY
+      - MAZE_APP_TYPE
+      - MAZE_APP_VERSION
+      - MAZE_AUTO_CAPTURE_SESSIONS
+      - MAZE_AUTO_NOTIFY
+      - MAZE_ENDPOINT
+      - MAZE_IGNORE_CLASS
+      - MAZE_IGNORE_MESSAGE
+      - MAZE_META_DATA_FILTERS
+      - MAZE_NOTIFY_RELEASE_STAGE
+      - MAZE_PROJECT_ROOT
+      - MAZE_PROXY_HOST
+      - MAZE_PROXY_PASSWORD
+      - MAZE_PROXY_PORT
+      - MAZE_PROXY_USER
+      - MAZE_RELEASE_STAGE
+      - MAZE_SEND_CODE
+      - MAZE_SEND_ENVIRONMENT
+      - MAZE_SESSION_ENDPOINT
+      - MAZE_TIMEOUT
+      - CALLBACK_INITIATOR
+    ports:
+      - target: 3000
+        published: ${RAILS_4_PORT}
+    restart: "no"
+
   rails5:
     build:
       context: rails5
       args:
-        - ruby_version
+        - RUBY_VERSION
+        - APP_PATH
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - http_proxy
+      - MAZE_API_KEY
+      - MAZE_APP_TYPE
+      - MAZE_APP_VERSION
+      - MAZE_AUTO_CAPTURE_SESSIONS
+      - MAZE_AUTO_NOTIFY
+      - MAZE_ENDPOINT
+      - MAZE_IGNORE_CLASS
+      - MAZE_IGNORE_MESSAGE
+      - MAZE_META_DATA_FILTERS
+      - MAZE_NOTIFY_RELEASE_STAGE
+      - MAZE_PROJECT_ROOT
+      - MAZE_PROXY_HOST
+      - MAZE_PROXY_PASSWORD
+      - MAZE_PROXY_PORT
+      - MAZE_PROXY_USER
+      - MAZE_RELEASE_STAGE
+      - MAZE_SEND_CODE
+      - MAZE_SEND_ENVIRONMENT
+      - MAZE_SESSION_ENDPOINT
+      - MAZE_TIMEOUT
+      - CALLBACK_INITIATOR
     ports:
-      - "3005:3000"
+      - target: 3000
+        published: ${RAILS_5_PORT}
     restart: "no"
 
   resque:
     build:
       context: resque
       args:
-        - ruby_version
+        - RUBY_VERSION
+        - APP_PATH
     depends_on:
       - redis
     environment:
