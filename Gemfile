@@ -29,7 +29,7 @@ group :doc, optional: true do
 end
 
 group :maze, optional: true do
-    gem 'bugsnag-maze-runner', git: 'git@github.com:bugsnag/maze-runner.git'
+    gem 'bugsnag-maze-runner', git: 'https://github.com/bugsnag/maze-runner'
 end
 
 gemspec
