@@ -41,7 +41,6 @@ module Bugsnag
     THREAD_LOCAL_NAME = "bugsnag_req_data"
     DEFAULT_ENDPOINT = "https://notify.bugsnag.com"
     DEFAULT_SESSION_ENDPOINT = "https://sessions.bugsnag.com"
-    PROG_NAME = "[BUGSNAG]"
 
     DEFAULT_META_DATA_FILTERS = [
       /authorization/i,
@@ -186,6 +185,8 @@ module Bugsnag
     end
 
     private
+
+    PROG_NAME = "[Bugsnag]"
 
     def default_hostname
       # Send the heroku dyno name instead of hostname if available

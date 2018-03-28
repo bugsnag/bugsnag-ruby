@@ -73,7 +73,7 @@ describe Bugsnag::Configuration do
       log = @logger.logs.first
       expect(log).to eq({
         :level => "info",
-        :name => "[BUGSNAG]",
+        :name => "[Bugsnag]",
         :message => "Info message"
       })
     end
@@ -85,7 +85,7 @@ describe Bugsnag::Configuration do
       log = @logger.logs.first
       expect(log).to eq({
         :level => "warning",
-        :name => "[BUGSNAG]",
+        :name => "[Bugsnag]",
         :message => "Warning message"
       })
     end
@@ -97,7 +97,7 @@ describe Bugsnag::Configuration do
       log = @logger.logs.first
       expect(log).to eq({
         :level => "debug",
-        :name => "[BUGSNAG]",
+        :name => "[Bugsnag]",
         :message => "Debug message"
       })
     end
