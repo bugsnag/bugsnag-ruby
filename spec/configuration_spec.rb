@@ -37,37 +37,33 @@ describe Bugsnag::Configuration do
         @logs = []
       end
 
-      def log(level, message)
+      def log(level, name, &block)
+        message = block.call
         @logs << {
           :level => level,
+          :name => name,
           :message => message
         }
       end
 
-      def info(msg)
-        log('info', msg)
+      def info(name, &block)
+        log('info', name, &block)
       end
 
-      def warn(msg)
-        log('warning', msg)
+      def warn(name, &block)
+        log('warning', name, &block)
       end
 
-      def debug(msg)
-        log('debug', msg)
+      def debug(name, &block)
+        log('debug', name, &block)
       end
     end
 
     before do
       @logger = TestLogger.new
-      @string_regex = /\*\* \[Bugsnag\] (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (\+\d{4})?): (Info|Warning|Debug) message\n$/
       Bugsnag.configure do |bugsnag|
         bugsnag.logger = @logger
       end
-    end
-
-    it "should format a message correctly" do
-      formatted_msg = /\*\* \[Bugsnag\] (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (\+\d{4})?): message\n$/
-      expect(Bugsnag.configuration.format_message("message")).to match(formatted_msg)
     end
 
     it "should log info messages to the set logger" do
@@ -75,8 +71,11 @@ describe Bugsnag::Configuration do
       Bugsnag.configuration.info("Info message")
       expect(@logger.logs.size).to eq(1)
       log = @logger.logs.first
-      expect(log[:level]).to eq('info')
-      expect(log[:message]).to match(@string_regex)
+      expect(log).to eq({
+        :level => "info",
+        :name => "[BUGSNAG]",
+        :message => "Info message"
+      })
     end
 
     it "should log warning messages to the set logger" do
@@ -84,8 +83,11 @@ describe Bugsnag::Configuration do
       Bugsnag.configuration.warn("Warning message")
       expect(@logger.logs.size).to eq(1)
       log = @logger.logs.first
-      expect(log[:level]).to eq('warning')
-      expect(log[:message]).to match(@string_regex)
+      expect(log).to eq({
+        :level => "warning",
+        :name => "[BUGSNAG]",
+        :message => "Warning message"
+      })
     end
 
     it "should log debug messages to the set logger" do
@@ -93,8 +95,11 @@ describe Bugsnag::Configuration do
       Bugsnag.configuration.debug("Debug message")
       expect(@logger.logs.size).to eq(1)
       log = @logger.logs.first
-      expect(log[:level]).to eq('debug')
-      expect(log[:message]).to match(@string_regex)
+      expect(log).to eq({
+        :level => "debug",
+        :name => "[BUGSNAG]",
+        :message => "Debug message"
+      })
     end
 
     after do

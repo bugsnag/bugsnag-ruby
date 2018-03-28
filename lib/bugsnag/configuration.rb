@@ -41,6 +41,7 @@ module Bugsnag
     THREAD_LOCAL_NAME = "bugsnag_req_data"
     DEFAULT_ENDPOINT = "https://notify.bugsnag.com"
     DEFAULT_SESSION_ENDPOINT = "https://sessions.bugsnag.com"
+    PROG_NAME = "[BUGSNAG]"
 
     DEFAULT_META_DATA_FILTERS = [
       /authorization/i,
@@ -88,6 +89,9 @@ module Bugsnag
       # Set up logging
       self.logger = Logger.new(STDOUT)
       self.logger.level = Logger::INFO
+      self.logger.formatter = proc do |severity, datetime, progname, msg|
+        "** #{progname} #{datetime}: #{msg}\n"
+      end
 
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new
@@ -166,26 +170,19 @@ module Bugsnag
     ##
     # Logs an info level message
     def info(message)
-      logger.info(format_message(message))
+      logger.info(PROG_NAME) { message }
     end
 
     ##
     # Logs a warning level message
     def warn(message)
-      logger.warn(format_message(message))
+      logger.warn(PROG_NAME) { message }
     end
 
     ##
     # Logs a debug level message
     def debug(message)
-      logger.debug(format_message(message))
-    end
-
-    ##
-    # Formats a message being logged by Bugsnag
-    def format_message(message)
-      datetime = Time.new.to_s
-      "** [Bugsnag] #{datetime}: #{message}\n"
+      logger.debug(PROG_NAME) { message }
     end
 
     private
