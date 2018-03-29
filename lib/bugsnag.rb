@@ -32,6 +32,8 @@ module Bugsnag
   LOCK = Mutex.new
   INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que]
 
+  NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
+
   class << self
     ##
     # Configure the Bugsnag notifier application-wide settings.
@@ -76,6 +78,8 @@ module Bugsnag
         configuration.debug("Not notifying due to skip_bugsnag flag")
         return
       end
+
+      exception = NIL_EXCEPTION_DESCRIPTION if exception.nil?
 
       report = Report.new(exception, configuration, auto_notify)
 

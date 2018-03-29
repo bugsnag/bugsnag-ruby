@@ -1051,7 +1051,7 @@ describe Bugsnag::Report do
       event = payload["events"][0]
       exception = event["exceptions"][0]
       expect(exception["errorClass"]).to eq("RuntimeError")
-      expect(exception["message"]).to eq(Bugsnag::Report::NIL_EXCEPTION_DESCRIPTION)
+      expect(exception["message"]).to eq("'nil' was notified as an exception")
 
       stacktrace = exception["stacktrace"][0]
       expect(stacktrace["lineNumber"]).to eq(1049)
