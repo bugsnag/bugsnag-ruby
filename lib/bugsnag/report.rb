@@ -115,11 +115,10 @@ module Bugsnag
       # filter out sensitive values in (and cleanup encodings) metaData
       payload_event[:metaData] = cleaner.clean_object(meta_data)
       payload_event.reject! {|k,v| v.nil? }
-      
+
       # appends the breadcrumbs
-      filtered_breadcrumbs = []
-      breadcrumbs.each do |breadcrumb|
-        filtered_breadcrumbs.push cleaner.clean_object(breadcrumb.as_json)
+      filtered_breadcrumbs = breadcrumbs.map do |breadcrumb|
+        cleaner.clean_object(breadcrumb.as_json)
       end
 
       # return the payload hash
