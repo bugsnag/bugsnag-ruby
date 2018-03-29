@@ -2,7 +2,6 @@ require "logger"
 require "bugsnag"
 
 module Bugsnag::Logging
-
   SEVERITIES = [
     "debug",
     "info",
@@ -13,14 +12,14 @@ module Bugsnag::Logging
   ]
 
   def self.get_severity_name(severity)
-    if (0..5).include? severity
+    if (0..5).cover? severity
       SEVERITIES[severity]
     else
       severity
     end
   end
 
-  def self.log_breadcrumb(name, data=nil, severity = "unknown")
+  def self.log_breadcrumb(name, data = nil, severity = "unknown")
     metadata = {
       :severity => severity
     }
@@ -34,25 +33,23 @@ module Bugsnag::Logging
   end
 
   class Logger < Logger
-
-    def initialize(level=Logger::INFO)
+    def initialize(level = Logger::INFO)
       @open = true
       super nil, level
     end
 
     def add(severity, message = nil, progname = nil)
       return unless @open
+
       if block_given?
         message = yield message
       elsif message.nil?
         message = progname
       end
-      if severity >= level
-        severity_name =  Bugsnag::Logging.get_severity_name(severity)
-        Bugsnag::Logging.log_breadcrumb(message, {:progname => progname}, severity_name)
-      end
+
+      Bugsnag::Logging.log_breadcrumb(message, { :progname => progname }, Bugsnag::Logging.get_severity_name(severity)) if severity >= level
     end
-    alias :log :add
+    alias log add
 
     def <<(message)
       return unless @open

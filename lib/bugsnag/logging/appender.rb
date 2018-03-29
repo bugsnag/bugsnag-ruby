@@ -3,8 +3,8 @@ require "logging"
 
 module Bugsnag::Logging
   class Appender < Logging::Appender
-    def initialize(level=Logger::INFO)
-      super "Bugsnag", {:level => level}
+    def initialize(level = Logger::INFO)
+      super "Bugsnag", { :level => level }
     end
 
     def <<(message)
@@ -13,19 +13,21 @@ module Bugsnag::Logging
     end
 
     def append(event)
-      return if (closed?)||(!allow(event))
-      if (event.method.size > 0) && (event.file.size > 0) && (event.line.size > 0)
-        metadata = {
-          :trace => {
-            :method => event.method,
-            :file => event.file,
-            :line => event.line
-          },
-          :data => event.data
-        }
-      else
-        metadata = event.data
-      end      
+      return if closed? || !allow(event)
+
+      metadata = if !event.method.empty? && !event.file.empty? && !event.line.empty?
+                   {
+                     :trace => {
+                       :method => event.method,
+                       :file => event.file,
+                       :line => event.line
+                     },
+                     :data => event.data
+                   }
+                 else
+                   event.data
+                 end
+
       severity = Bugsnag::Logging.get_severity_name(event.level)
       Bugsnag::Logging.log_breadcrumb(event.logger, metadata, severity)
     end
