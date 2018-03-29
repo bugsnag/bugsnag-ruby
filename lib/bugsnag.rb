@@ -169,20 +169,20 @@ module Bugsnag
     private
 
     def deliver_notification?(exception, auto_notify)
+      reason = abort_reason(exception, auto_notify)
+      configuration.debug(reason) unless reason.nil?
+      reason.nil?
+    end
+
+    def abort_reason(exception, auto_notify)
       if !configuration.auto_notify && auto_notify
-        configuration.debug("Not notifying because auto_notify is disabled")
-        false
+        "Not notifying because auto_notify is disabled"
       elsif !configuration.valid_api_key?
-        configuration.debug("Not notifying due to an invalid api_key")
-        false
+        "Not notifying due to an invalid api_key"
       elsif !configuration.should_notify_release_stage?
-        configuration.debug("Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
-        false
+        "Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}"
       elsif exception.respond_to?(:skip_bugsnag) && exception.skip_bugsnag
-        configuration.debug("Not notifying due to skip_bugsnag flag")
-        false
-      else
-        true
+        "Not notifying due to skip_bugsnag flag"
       end
     end
   end
