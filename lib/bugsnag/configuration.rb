@@ -47,6 +47,7 @@ module Bugsnag
       /cookie/i,
       /password/i,
       /secret/i,
+      /warden\.user\.([^.]+)\.key/,
       "rack.request.form_vars"
     ].freeze
 
@@ -84,7 +85,7 @@ module Bugsnag
       self.logger = Logger.new(STDOUT)
       self.logger.level = Logger::INFO
       self.logger.formatter = proc do |severity, datetime, progname, msg|
-        "** [Bugsnag] #{datetime}: #{msg}\n"
+        "** #{progname} #{datetime}: #{msg}\n"
       end
 
       # Configure the bugsnag middleware stack
@@ -164,19 +165,19 @@ module Bugsnag
     ##
     # Logs an info level message
     def info(message)
-      logger.info(message)
+      logger.info(PROG_NAME) { message }
     end
 
     ##
     # Logs a warning level message
     def warn(message)
-      logger.warn(message)
+      logger.warn(PROG_NAME) { message }
     end
 
     ##
     # Logs a debug level message
     def debug(message)
-      logger.debug(message)
+      logger.debug(PROG_NAME) { message }
     end
 
     ##
@@ -190,6 +191,8 @@ module Bugsnag
     end
 
     private
+
+    PROG_NAME = "[Bugsnag]"
 
     def default_hostname
       # Send the heroku dyno name instead of hostname if available

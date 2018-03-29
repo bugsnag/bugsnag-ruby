@@ -78,6 +78,86 @@ describe Bugsnag::Configuration do
     end
   end
 
+  describe "logger" do
+    class TestLogger
+      attr_accessor :logs
+
+      def initialize
+        @logs = []
+      end
+
+      def log(level, name, &block)
+        message = block.call
+        @logs << {
+          :level => level,
+          :name => name,
+          :message => message
+        }
+      end
+
+      def info(name, &block)
+        log('info', name, &block)
+      end
+
+      def warn(name, &block)
+        log('warning', name, &block)
+      end
+
+      def debug(name, &block)
+        log('debug', name, &block)
+      end
+    end
+
+    before do
+      @logger = TestLogger.new
+      Bugsnag.configure do |bugsnag|
+        bugsnag.logger = @logger
+      end
+    end
+
+    it "should log info messages to the set logger" do
+      expect(@logger.logs.size).to eq(0)
+      Bugsnag.configuration.info("Info message")
+      expect(@logger.logs.size).to eq(1)
+      log = @logger.logs.first
+      expect(log).to eq({
+        :level => "info",
+        :name => "[Bugsnag]",
+        :message => "Info message"
+      })
+    end
+
+    it "should log warning messages to the set logger" do
+      expect(@logger.logs.size).to eq(0)
+      Bugsnag.configuration.warn("Warning message")
+      expect(@logger.logs.size).to eq(1)
+      log = @logger.logs.first
+      expect(log).to eq({
+        :level => "warning",
+        :name => "[Bugsnag]",
+        :message => "Warning message"
+      })
+    end
+
+    it "should log debug messages to the set logger" do
+      expect(@logger.logs.size).to eq(0)
+      Bugsnag.configuration.debug("Debug message")
+      expect(@logger.logs.size).to eq(1)
+      log = @logger.logs.first
+      expect(log).to eq({
+        :level => "debug",
+        :name => "[Bugsnag]",
+        :message => "Debug message"
+      })
+    end
+
+    after do
+      Bugsnag.configure do |bugsnag|
+        bugsnag.logger = Logger.new(StringIO.new)
+      end
+    end
+  end
+
   it "should have exit exception classes ignored by default" do
     expect(subject.ignore_classes).to eq(Set.new([SystemExit, Interrupt]))
   end
