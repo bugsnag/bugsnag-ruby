@@ -59,25 +59,7 @@ module Bugsnag
         auto_notify = false
       end
 
-      if !configuration.auto_notify && auto_notify
-        configuration.debug("Not notifying because auto_notify is disabled")
-        return
-      end
-
-      if !configuration.valid_api_key?
-        configuration.debug("Not notifying due to an invalid api_key")
-        return
-      end
-
-      if !configuration.should_notify_release_stage?
-        configuration.debug("Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
-        return
-      end
-
-      if exception.respond_to?(:skip_bugsnag) && exception.skip_bugsnag
-        configuration.debug("Not notifying due to skip_bugsnag flag")
-        return
-      end
+      return unless deliver_notification?(exception, auto_notify)
 
       exception = NIL_EXCEPTION_DESCRIPTION if exception.nil?
 
@@ -181,6 +163,26 @@ module Bugsnag
         require "bugsnag/integrations/#{integration}"
       else
         configuration.debug("Integration #{integration} is not currently supported")
+      end
+    end
+
+    private
+
+    def deliver_notification?(exception, auto_notify)
+      if !configuration.auto_notify && auto_notify
+        configuration.debug("Not notifying because auto_notify is disabled")
+        false
+      elsif !configuration.valid_api_key?
+        configuration.debug("Not notifying due to an invalid api_key")
+        false
+      elsif !configuration.should_notify_release_stage?
+        configuration.debug("Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
+        false
+      elsif exception.respond_to?(:skip_bugsnag) && exception.skip_bugsnag
+        configuration.debug("Not notifying due to skip_bugsnag flag")
+        false
+      else
+        true
       end
     end
   end
