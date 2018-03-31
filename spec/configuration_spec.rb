@@ -115,6 +115,32 @@ describe Bugsnag::Configuration do
       end
     end
 
+    it "logs a warning when configuring without an API key" do
+      Bugsnag.configuration.api_key = nil
+      Bugsnag.instance_variable_set("@key_warning", nil)
+      ENV['BUGSNAG_API_KEY'] = nil
+      expect(@logger.logs.size).to eq(0)
+      Bugsnag.configure
+      expect(@logger.logs.size).to eq(1)
+      log = @logger.logs.first
+      expect(log).to eq({
+        :level => "warning",
+        :name => "[Bugsnag]",
+        :message => "No valid API key has been set, notifications will not be sent"
+      })
+    end
+
+    it "skips logging a warning when configuring with an API key" do
+      Bugsnag.configuration.api_key = nil
+      Bugsnag.instance_variable_set("@key_warning", nil)
+      ENV['BUGSNAG_API_KEY'] = nil
+      expect(@logger.logs.size).to eq(0)
+      Bugsnag.configure do |config|
+        config.api_key = 'd57a2472bd130ac0ab0f52715bbdc600'
+      end
+      expect(@logger.logs.size).to eq(0)
+    end
+
     it "should log info messages to the set logger" do
       expect(@logger.logs.size).to eq(0)
       Bugsnag.configuration.info("Info message")
