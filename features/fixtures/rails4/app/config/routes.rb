@@ -3,4 +3,5 @@ App::Application.routes.draw do
   get "/handled/(:action)", controller: 'handled'
   get "/before_notify/(:action)", controller: 'before_notify'
   get "/api_key/(:action)", controller: 'api_key'
+  get "/app_type/(:action)", controller: 'app_type'
 end
