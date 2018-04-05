@@ -6,4 +6,5 @@ App::Application.routes.draw do
   get "/app_type/(:action)", controller: 'app_type'
   get "/app_version/(:action)", controller: 'app_version'
   get "/auto_notify/(:action)", controller: 'auto_notify'
+  get "/project_root/(:action)", controller: 'project_root'
 end
