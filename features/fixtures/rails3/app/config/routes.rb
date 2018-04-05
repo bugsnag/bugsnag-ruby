@@ -5,4 +5,5 @@ App::Application.routes.draw do
   get "/api_key/(:action)", controller: 'api_key'
   get "/app_type/(:action)", controller: 'app_type'
   get "/app_version/(:action)", controller: 'app_version'
+  get "/auto_notify/(:action)", controller: 'auto_notify'
 end
