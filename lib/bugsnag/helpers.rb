@@ -1,7 +1,9 @@
+
 require 'uri'
 require 'set'
 require 'json'
 
+require 'bugsnag/helpers/exceptions'
 
 module Bugsnag
   module Helpers
