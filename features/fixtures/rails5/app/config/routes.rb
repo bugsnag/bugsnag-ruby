@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   get "/project_root/(:action)", controller: 'project_root'
   get "/ignore_classes/(:action)", controller: 'ignore_classes'
   get "/metadata_filters/(:action)", controller: 'metadata_filters'
+  get "/session_tracking/(:action)", controller: 'session_tracking'
 end
