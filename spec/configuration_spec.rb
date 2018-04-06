@@ -115,6 +115,66 @@ describe Bugsnag::Configuration do
       end
     end
 
+    context "using configure" do
+      before do
+        Bugsnag.configuration.api_key = nil
+        Bugsnag.instance_variable_set("@key_warning", nil)
+        ENV['BUGSNAG_API_KEY'] = nil
+        expect(@logger.logs.size).to eq(0)
+      end
+
+      context "API key is not specified" do
+        it "skips logging a warning if validate_api_key is false" do
+          Bugsnag.configure(false)
+          expect(@logger.logs.size).to eq(0)
+        end
+
+        it "logs a warning by default" do
+          Bugsnag.configure
+          expect(@logger.logs.size).to eq(1)
+          log = @logger.logs.first
+          expect(log).to eq({
+            :level => "warning",
+            :name => "[Bugsnag]",
+            :message => "No valid API key has been set, notifications will not be sent"
+          })
+        end
+
+        it "logs a warning if validate_api_key is true" do
+          Bugsnag.configure(true)
+          expect(@logger.logs.size).to eq(1)
+          log = @logger.logs.first
+          expect(log).to eq({
+            :level => "warning",
+            :name => "[Bugsnag]",
+            :message => "No valid API key has been set, notifications will not be sent"
+          })
+        end
+      end
+
+      context "API key is set" do
+        it "skips logging a warning when configuring with an API key" do
+          Bugsnag.configure do |config|
+            config.api_key = 'd57a2472bd130ac0ab0f52715bbdc600'
+          end
+          expect(@logger.logs.size).to eq(0)
+        end
+
+        it "logs a warning if the configured API key is invalid" do
+          Bugsnag.configure do |config|
+            config.api_key = 'WARNING: not a real key'
+          end
+          expect(@logger.logs.size).to eq(1)
+          log = @logger.logs.first
+          expect(log).to eq({
+            :level => "warning",
+            :name => "[Bugsnag]",
+            :message => "No valid API key has been set, notifications will not be sent"
+          })
+        end
+      end
+    end
+
     it "should log info messages to the set logger" do
       expect(@logger.logs.size).to eq(0)
       Bugsnag.configuration.info("Info message")

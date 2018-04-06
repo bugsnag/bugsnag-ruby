@@ -37,14 +37,10 @@ module Bugsnag
     # Configure the Bugsnag notifier application-wide settings.
     #
     # Yields a configuration object to use to set application settings.
-    def configure
+    def configure(validate_api_key=true)
       yield(configuration) if block_given?
 
-      @key_warning = false unless defined?(@key_warning)
-      if !configuration.valid_api_key? && !@key_warning
-        configuration.warn("No valid API key has been set, notifications will not be sent")
-        @key_warning = true
-      end
+      check_key_valid if validate_api_key
     end
 
     ##
@@ -177,6 +173,15 @@ module Bugsnag
         require "bugsnag/integrations/#{integration}"
       else
         configuration.debug("Integration #{integration} is not currently supported")
+      end
+    end
+
+    # Check if the API key is valid and warn (once) if it is not
+    def check_key_valid
+      @key_warning = false unless defined?(@key_warning)
+      if !configuration.valid_api_key? && !@key_warning
+        configuration.warn("No valid API key has been set, notifications will not be sent")
+        @key_warning = true
       end
     end
   end
