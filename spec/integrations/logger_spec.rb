@@ -60,6 +60,23 @@ describe 'Configuration.logger' do
         expect(output).to include(key_warning)
       end
     end
+
+    context 'sets an invalid API key using the BUGSNAG_API_KEY env var' do
+      it 'logs a warning' do
+        skip "Incompatible with Ruby <2.0 and JRuby" if incompatible
+        output = run_app('rails-invalid-initializer-config')
+        expect(output).to include(key_warning)
+      end
+    end
+
+    context 'sets an invalid API key using the BUGSNAG_API_KEY env var' do
+      it 'logs a warning' do
+        skip "Incompatible with Ruby <2.0 and JRuby" if incompatible
+        @env['BUGSNAG_API_KEY'] = 'not a real key'
+        output = run_app('rails-no-config')
+        expect(output).to include(key_warning)
+      end
+    end
   end
 
   context 'in a script' do
@@ -93,6 +110,21 @@ describe 'Configuration.logger' do
       it 'does not log a warning' do
         output = run_app('configure_key')
         expect(output).not_to match(key_warning)
+      end
+    end
+
+    context 'sets an invalid API key using Bugsnag.configure' do
+      it 'logs a warning' do
+        output = run_app('configure_invalid_key')
+        expect(output).to match(key_warning)
+      end
+    end
+
+    context 'sets an invalid API key using the BUGSNAG_API_KEY env var' do
+      it 'logs a warning' do
+        @env['BUGSNAG_API_KEY'] = 'bad key bad key whatcha gonna do'
+        output = run_app('no_config')
+        expect(output).to match(key_warning)
       end
     end
 
