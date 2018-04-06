@@ -8,4 +8,5 @@ App::Application.routes.draw do
   get "/auto_notify/(:action)", controller: 'auto_notify'
   get "/project_root/(:action)", controller: 'project_root'
   get "/ignore_classes/(:action)", controller: 'ignore_classes'
+  get "/metadata_filters/(:action)", controller: 'metadata_filters'
 end
