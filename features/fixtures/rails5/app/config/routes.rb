@@ -7,4 +7,5 @@ Rails.application.routes.draw do
   get "/app_version/(:action)", controller: 'app_version'
   get "/auto_notify/(:action)", controller: 'auto_notify'
   get "/project_root/(:action)", controller: 'project_root'
+  get "/ignore_classes/(:action)", controller: 'ignore_classes'
 end

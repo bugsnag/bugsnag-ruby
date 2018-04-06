@@ -5,4 +5,5 @@ Bugsnag.configure do |config|
   config.app_version = ENV["MAZE_APP_VERSION"] if ENV.include? "MAZE_APP_VERSION"
   config.auto_notify = ENV["MAZE_AUTO_NOTIFY"] != "false"
   config.project_root = ENV["MAZE_PROJECT_ROOT"] if ENV.include? "MAZE_PROJECT_ROOT"
+  config.ignore_classes << lambda { |ex| ex.class.to_s == ENV["MAZE_IGNORE_CLASS"] } if ENV.include? "MAZE_IGNORE_CLASS"
 end
