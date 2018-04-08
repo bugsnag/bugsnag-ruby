@@ -7,9 +7,6 @@ module Bugsnag
     # e.g. "org.jruby.Ruby.runScript(Ruby.java:807)"
     JAVA_BACKTRACE_REGEX = /^(.*)\((.*)(?::([0-9]+))?\)$/
 
-    # Path to vendored code. Used to mark file paths as out of project.
-    VENDOR_PATH = /^(vendor\/|\.bundle\/)/
-
     ##
     # Process a backtrace and the configuration into a parsed stacktrace.
     def initialize(backtrace, configuration)
@@ -46,7 +43,7 @@ module Bugsnag
         if defined?(@configuration.project_root) && @configuration.project_root.to_s != ''
           trace_hash[:inProject] = true if file.start_with?(@configuration.project_root.to_s)
           file.sub!(/#{@configuration.project_root}\//, "")
-          trace_hash.delete(:inProject) if file.match(VENDOR_PATH)
+          trace_hash.delete(:inProject) if @configuration.stacktrace_filters.any? { |filter| file.match(filter) }
         end
 
 

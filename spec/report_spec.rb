@@ -525,14 +525,16 @@ describe Bugsnag::Report do
     }
   end
 
-  it 'marks vendored stack frames as out-of-project' do
+  it 'marks vendored and ignored stack frames as out-of-project' do
     project_root = File.expand_path File.dirname(__FILE__)
     Bugsnag.configuration.project_root = project_root
+    Bugsnag.configuration.stacktrace_filters << %r{^app/service/my_bugsnag_logger.rb}
 
     ex = Exception.new('Division by zero')
     allow(ex).to receive (:backtrace) {[
       File.join(project_root, "vendor/strutils/lib/string.rb:508:in `splice'"),
       File.join(project_root, "vendors/strutils/lib/string.rb:508:in `splice'"),
+      File.join(project_root, "app/service/my_bugsnag_logger.rb:345:in `log'"),
       File.join(project_root, "lib/helpers/string.rb:32:in `splice'"),
       File.join(project_root, "lib/vendor/lib/article.rb:158:in `initialize'"),
       File.join(project_root, "lib/prog.rb:158:in `read_articles'"),
@@ -547,17 +549,18 @@ describe Bugsnag::Report do
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
 
-      expect(exception["stacktrace"][0]["inProject"]).to be_nil
+      expect(exception["stacktrace"][0]["inProject"]).to be_nil  # vendor folder
       expect(exception["stacktrace"][1]["inProject"]).to be true
-      expect(exception["stacktrace"][2]["inProject"]).to be true
+      expect(exception["stacktrace"][2]["inProject"]).to be_nil
       expect(exception["stacktrace"][3]["inProject"]).to be true
       expect(exception["stacktrace"][4]["inProject"]).to be true
-      expect(exception["stacktrace"][5]["inProject"]).to be_nil
-      expect(exception["stacktrace"][6]["inProject"]).to be true
+      expect(exception["stacktrace"][5]["inProject"]).to be true
+      expect(exception["stacktrace"][6]["inProject"]).to be_nil  # .bundle folder
       expect(exception["stacktrace"][7]["inProject"]).to be true
       expect(exception["stacktrace"][8]["inProject"]).to be true
-      expect(exception["stacktrace"][9]["inProject"]).to be_nil
+      expect(exception["stacktrace"][9]["inProject"]).to be true
       expect(exception["stacktrace"][10]["inProject"]).to be_nil
+      expect(exception["stacktrace"][11]["inProject"]).to be_nil
     }
   end
 
