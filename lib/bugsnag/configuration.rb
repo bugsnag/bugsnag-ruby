@@ -22,6 +22,7 @@ module Bugsnag
     attr_accessor :app_version
     attr_accessor :app_type
     attr_accessor :meta_data_filters
+    attr_accessor :stacktrace_filters
     attr_accessor :endpoint
     attr_accessor :logger
     attr_accessor :middleware
@@ -51,6 +52,12 @@ module Bugsnag
       "rack.request.form_vars"
     ].freeze
 
+    DEFAULT_STACKTRACE_FILTERS = [
+      # Path to vendored code. Used to mark file paths as out of project.
+      /^vendor\//,
+      /^\.bundle\//
+    ]
+
     alias :track_sessions :auto_capture_sessions
     alias :track_sessions= :auto_capture_sessions=
 
@@ -62,6 +69,7 @@ module Bugsnag
       self.send_environment = false
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
+      self.stacktrace_filters = Set.new(DEFAULT_STACKTRACE_FILTERS)
       self.endpoint = DEFAULT_ENDPOINT
       self.hostname = default_hostname
       self.timeout = 15
