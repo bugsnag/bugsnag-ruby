@@ -41,6 +41,7 @@ Scenario Outline: Setting app_version in initializer works
   When I navigate to the route "/app_version/initializer" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "app.version" equals "1.0.0"
 
@@ -66,6 +67,7 @@ Scenario Outline: Setting app_version after initializer works
   When I navigate to the route "/app_version/after?version=1.1.0" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "app.version" equals "1.1.0"
 

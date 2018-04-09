@@ -17,8 +17,7 @@ Scenario Outline: Setting app_type in initializer works
   Then I should receive a request
   And the request is a valid for the error reporting API
   And the request used the Ruby notifier
-  And the "Bugsnag-API-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the payload field "apiKey" equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled string"
@@ -48,8 +47,7 @@ Scenario Outline: Changing app_type after initializer works
   Then I should receive a request
   And the request is a valid for the error reporting API
   And the request used the Ruby notifier
-  And the "Bugsnag-API-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the payload field "apiKey" equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled string"

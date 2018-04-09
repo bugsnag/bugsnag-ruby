@@ -16,6 +16,7 @@ Scenario Outline: Release_stage should default to RAILS_ENV
   When I navigate to the route "/release_stage/default" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "app.releaseStage" equals "rails_env"
 
@@ -42,6 +43,7 @@ Scenario Outline: Release_stage can be set in an initializer
   When I navigate to the route "/release_stage/default" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "app.releaseStage" equals "maze_release_stage_env"
 
@@ -67,6 +69,7 @@ Scenario Outline: Release_stage can be set after an initializer
   When I navigate to the route "/release_stage/after?stage=set_after_env" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "app.releaseStage" equals "set_after_env"
 

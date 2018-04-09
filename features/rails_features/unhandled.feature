@@ -16,8 +16,7 @@ Scenario Outline: Unhandled RuntimeError
   Then I should receive a request
   And the request is a valid for the error reporting API
   And the request used the Ruby notifier
-  And the "Bugsnag-API-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the payload field "apiKey" equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "unhandled" is true
   And the exception "errorClass" equals "NameError"

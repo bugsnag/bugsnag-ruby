@@ -16,8 +16,7 @@ Scenario Outline: Unhandled RuntimeError
   Then I should receive a request
   And the request is a valid for the error reporting API
   And the request used the Ruby notifier
-  And the "Bugsnag-API-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the payload field "apiKey" equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "unhandled" is false
   And the exception "errorClass" equals "RuntimeError"
@@ -50,8 +49,7 @@ Scenario Outline: Thrown handled NameError
   Then I should receive a request
   And the request is a valid for the error reporting API
   And the request used the Ruby notifier
-  And the "Bugsnag-API-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the payload field "apiKey" equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "NameError"
   And the exception "message" starts with "undefined local variable or method `generate_unhandled_error' for #<HandledController"
@@ -84,8 +82,7 @@ Scenario Outline: Manual string notify
   Then I should receive a request
   And the request is a valid for the error reporting API
   And the request used the Ruby notifier
-  And the "Bugsnag-API-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the payload field "apiKey" equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled string"
