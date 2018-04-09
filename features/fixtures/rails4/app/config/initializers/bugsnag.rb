@@ -8,4 +8,5 @@ Bugsnag.configure do |config|
   config.project_root = ENV["MAZE_PROJECT_ROOT"] if ENV.include? "MAZE_PROJECT_ROOT"
   config.ignore_classes << lambda { |ex| ex.class.to_s == ENV["MAZE_IGNORE_CLASS"] } if ENV.include? "MAZE_IGNORE_CLASS"
   config.auto_capture_sessions = ENV["MAZE_AUTO_CAPTURE_SESSIONS"] == "true"
+  config.release_stage = ENV["MAZE_RELEASE_STAGE"] if ENV.include? "MAZE_RELEASE_STAGE"
 end

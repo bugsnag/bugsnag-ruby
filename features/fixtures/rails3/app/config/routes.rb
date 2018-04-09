@@ -1,4 +1,5 @@
 App::Application.routes.draw do
+  get "/(:action)", controller: 'application'
   get "/unhandled/(:action)", controller: 'unhandled'
   get "/handled/(:action)", controller: 'handled'
   get "/before_notify/(:action)", controller: 'before_notify'
@@ -10,4 +11,5 @@ App::Application.routes.draw do
   get "/ignore_classes/(:action)", controller: 'ignore_classes'
   get "/metadata_filters/(:action)", controller: 'metadata_filters'
   get "/session_tracking/(:action)", controller: 'session_tracking'
+  get "/release_stage/(:action)", controller: 'release_stage'
 end
