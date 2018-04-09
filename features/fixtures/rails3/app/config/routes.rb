@@ -12,4 +12,5 @@ App::Application.routes.draw do
   get "/metadata_filters/(:action)", controller: 'metadata_filters'
   get "/session_tracking/(:action)", controller: 'session_tracking'
   get "/release_stage/(:action)", controller: 'release_stage'
+  get "/send_code/(:action)", controller: 'send_code'
 end
