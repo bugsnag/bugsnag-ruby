@@ -13,4 +13,5 @@ Rails.application.routes.draw do
   get "/session_tracking/(:action)", controller: 'session_tracking'
   get "/release_stage/(:action)", controller: 'release_stage'
   get "/send_code/(:action)", controller: 'send_code'
+  get "/send_environment/(:action)", controller: 'send_environment'
 end

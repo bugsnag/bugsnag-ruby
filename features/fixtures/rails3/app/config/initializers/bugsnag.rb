@@ -10,4 +10,5 @@ Bugsnag.configure do |config|
   config.auto_capture_sessions = ENV["MAZE_AUTO_CAPTURE_SESSIONS"] == "true"
   config.release_stage = ENV["MAZE_RELEASE_STAGE"] if ENV.include? "MAZE_RELEASE_STAGE"
   config.send_code = ENV["MAZE_SEND_CODE"] != "false"
+  config.send_environment = ENV["MAZE_SEND_ENVIRONMENT"] == "true"
 end
