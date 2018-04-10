@@ -10,7 +10,7 @@ Scenario Outline: The App type configuration option can be set
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I set environment variable "MAZE_APP_TYPE" to "test_app"
   And I have built the service "plain-ruby"
-  And I run the service "plain-ruby" with the command "bundle exec ruby configuration/app_type.rb"
+  And I run the service "plain-ruby" with the command "bundle exec ruby configuration/send_handled.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier

@@ -4,4 +4,6 @@ configure_basics
 
 configure_using_environment
 
-Bugsnag.notify(RuntimeError.new("Oh no"))
+add_at_exit
+
+raise RuntimeError.new("Oh no")
