@@ -8,7 +8,7 @@ Scenario Outline: The API key configuration option can be set
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I set environment variable "MAZE_API_KEY" to "b35a2a72bd230ac0aa0f52715bbdc6aa"
   And I have built the service "plain-ruby"
-  And I run the service "plain-ruby" with the command "bundle exec ruby api_key/set_key.rb"
+  And I run the service "plain-ruby" with the command "bundle exec ruby configuration/api_key.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the Ruby notifier

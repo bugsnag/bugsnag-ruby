@@ -2,9 +2,7 @@ require './app'
 
 configure_basics
 
-Bugsnag.configure do |conf|
-  conf.meta_data_filters << :filter_me
-end
+configure_using_environment
 
 Bugsnag.notify(RuntimeError.new("Oh no")) do |report|
   report.add_tab(:filter, {

@@ -29,6 +29,7 @@ Scenario Outline: Metadata is filtered through the default filters
 
 Scenario Outline: Additional filters can be added to the filter list
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
+  And I set environment variable "MAZE_META_DATA_FILTERS" to "filter_me"
   And I have built the service "plain-ruby"
   And I run the service "plain-ruby" with the command "bundle exec ruby filters/additional_filters.rb"
   And I wait for 1 second
