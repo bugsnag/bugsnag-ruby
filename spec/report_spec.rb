@@ -574,7 +574,27 @@ describe Bugsnag::Report do
   it "filters params from all payload hashes if they are set in default meta_data_filters" do
 
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
-      report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "12345", :other_data => "123456"}}})
+      report.meta_data.merge!({
+        :request => {
+          :params => {
+            :password => "1234",
+            :other_password => "12345",
+            :other_data => "123456"
+          },
+          :cookie => "1234567890",
+          :authorization => "token",
+          :user_authorization => "token",
+          :secret_key => "key",
+          :user_secret => "key"
+        }
+      })
+      report.meta_data.merge!({
+        :session => {
+          :"warden.user.user.key" => "1234",
+          :"warden.user.foobar.key" => "1234",
+          :"warden.user.test" => "1234"
+        }
+      })
     end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
@@ -585,6 +605,15 @@ describe Bugsnag::Report do
       expect(event["metaData"]["request"]["params"]["password"]).to eq("[FILTERED]")
       expect(event["metaData"]["request"]["params"]["other_password"]).to eq("[FILTERED]")
       expect(event["metaData"]["request"]["params"]["other_data"]).to eq("123456")
+      expect(event["metaData"]["request"]["cookie"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["authorization"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["user_authorization"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["secret_key"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["user_secret"]).to eq("[FILTERED]")
+      expect(event["metaData"]["session"]).not_to be_nil
+      expect(event["metaData"]["session"]["warden.user.user.key"]).to eq("[FILTERED]")
+      expect(event["metaData"]["session"]["warden.user.foobar.key"]).to eq("[FILTERED]")
+      expect(event["metaData"]["session"]["warden.user.test"]).to eq("1234")
     }
   end
 
