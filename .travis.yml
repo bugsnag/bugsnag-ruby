@@ -63,11 +63,10 @@ jobs:
     rvm: 2.4.1
     script: bundle exec rake rdoc
     if: tag =~ ^v[1-9]
-
-deploy:
-  provider: pages
-  local_dir: rdoc # only include the contents of the generated docs dir
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN # set in travis-ci dashboard
-  on:
-    tags: true # only deploy when tag is applied to commit
+    deploy:
+      provider: pages
+      local_dir: rdoc # only include the contents of the generated docs dir
+      skip_cleanup: true
+      github_token: $GITHUB_TOKEN # set in travis-ci dashboard
+      on:
+        tags: true # only deploy when tag is applied to commit
