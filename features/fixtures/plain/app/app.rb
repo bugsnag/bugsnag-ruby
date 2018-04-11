@@ -10,6 +10,7 @@ def configure_basics
 end
 
 def configure_using_environment
+  pp ENV
   Bugsnag.configure do |conf|
     conf.app_type = ENV["MAZE_APP_TYPE"] if ENV.include? "MAZE_APP_TYPE"
     conf.app_version = ENV["MAZE_APP_VERSION"] if ENV.include? "MAZE_APP_VERSION"
@@ -20,9 +21,9 @@ def configure_using_environment
     conf.notify_release_stages = [ENV["MAZE_NOTIFY_RELEASE_STAGE"]] if ENV.include? "MAZE_NOTIFY_RELEASE_STAGE"
     conf.project_root = ENV["MAZE_PROJECT_ROOT"] if ENV.include? "MAZE_PROJECT_ROOT"
     conf.proxy_host = ENV["MAZE_PROXY_HOST"] if ENV.include? "MAZE_PROXY_HOST"
-    conf.proxy_host = ENV["MAZE_PROXY_PASSWORD"] if ENV.include? "MAZE_PROXY_PASSWORD"
-    conf.proxy_host = ENV["MAZE_PROXY_PORT"] if ENV.include? "MAZE_PROXY_PORT"
-    conf.proxy_host = ENV["MAZE_PROXY_USER"] if ENV.include? "MAZE_PROXY_USER"
+    conf.proxy_password = ENV["MAZE_PROXY_PASSWORD"] if ENV.include? "MAZE_PROXY_PASSWORD"
+    conf.proxy_port = ENV["MAZE_PROXY_PORT"] if ENV.include? "MAZE_PROXY_PORT"
+    conf.proxy_user = ENV["MAZE_PROXY_USER"] if ENV.include? "MAZE_PROXY_USER"
     conf.release_stage = ENV["MAZE_RELEASE_STAGE"] if ENV.include? "MAZE_RELEASE_STAGE"
     conf.send_environment = ENV["MAZE_SEND_ENVIRONMENT"] != "false"
     conf.send_code = ENV["MAZE_SEND_CODE"] != "false"
