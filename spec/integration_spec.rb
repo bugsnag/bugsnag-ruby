@@ -6,66 +6,6 @@ describe 'Bugsnag' do
   server = nil
   queue = Queue.new
 
-  before do
-    server = WEBrick::HTTPServer.new :Port => 0, :Logger => WEBrick::Log.new("/dev/null"), :AccessLog => []
-    server.mount_proc '/' do |req, res|
-      queue.push req.body
-      res.status = 200
-      res.body = "OK\n"
-    end
-    Thread.new{ server.start }
-  end
-
-  after do
-    server.stop
-    queue.clear
-  end
-
-  let(:request) { JSON.parse(queue.pop) }
-
-  it 'should send notifications over the wire' do
-    Bugsnag.configure do |config|
-      config.endpoint = "http://localhost:#{server.config[:Port]}"
-    end
-    WebMock.allow_net_connect!
-
-    Bugsnag.notify 'yo'
-
-    expect(request['events'][0]['exceptions'][0]['message']).to eq('yo')
-  end
-
-  it 'should work with threadpool delivery' do
-    Bugsnag.configure do |config|
-      config.endpoint = "http://localhost:#{server.config[:Port]}"
-      config.delivery_method = :thread_queue
-    end
-    WebMock.allow_net_connect!
-
-    Bugsnag.notify 'yo'
-
-    expect(request['events'][0]['exceptions'][0]['message']).to eq('yo')
-  end
-
-  it 'should work with threadpool delivery after fork' do
-    is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
-    unless is_jruby #jruby doesn't support fork, so this test doesn't apply
-      Bugsnag.configure do |config|
-        config.endpoint = "http://localhost:#{server.config[:Port]}"
-        config.delivery_method = :thread_queue
-      end
-      WebMock.allow_net_connect!
-
-      Bugsnag.notify 'yo'
-
-      Process.fork do
-        Bugsnag.notify 'yo too'
-      end
-      Process.wait
-
-      expect(queue.length).to eq(2)
-    end
-  end
-
   describe 'with a proxy' do
     proxy = nil
     pqueue = Queue.new
