@@ -1,7 +1,7 @@
 require_relative "logger"
 require "logging"
 
-module Bugsnag::Logging
+module Bugsnag::Breadcrumbs
   class Appender < Logging::Appender
     def initialize(level = Logger::INFO)
       super "Bugsnag", { :level => level }
@@ -9,7 +9,7 @@ module Bugsnag::Logging
 
     def <<(message)
       return if closed?
-      Bugsnag::Logging.log_breadcrumb(message)
+      Bugsnag::Breadcrumbs.log_breadcrumb(message)
     end
 
     def append(event)
@@ -28,8 +28,8 @@ module Bugsnag::Logging
                    event.data
                  end
 
-      severity = Bugsnag::Logging.get_severity_name(event.level)
-      Bugsnag::Logging.log_breadcrumb(event.logger, metadata, severity)
+      severity = Bugsnag::Breadcrumbs.get_severity_name(event.level)
+      Bugsnag::Breadcrumbs.log_breadcrumb(event.logger, metadata, severity)
     end
   end
 end

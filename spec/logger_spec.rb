@@ -2,12 +2,12 @@
 
 require 'spec_helper'
 require 'logger'
-require 'bugsnag/logging/logger'
+require 'bugsnag/breadcrumbs/logger'
 
-describe Bugsnag::Logging::Logger do
-  
+describe Bugsnag::Breadcrumbs::Logger do
+
   before do
-    @logger = Bugsnag::Logging::Logger.new
+    @logger = Bugsnag::Breadcrumbs::Logger.new
   end
 
   it "writes by default" do
@@ -53,8 +53,7 @@ describe Bugsnag::Logging::Logger do
   end
 
   it "is a logger and a bugsnag logger" do
-    expect(@logger.class.ancestors).to include(Bugsnag::Logging::Logger, Logger)
+    expect(@logger.class.ancestors).to include(Bugsnag::Breadcrumbs::Logger, Logger)
   end
 end
 
-    
