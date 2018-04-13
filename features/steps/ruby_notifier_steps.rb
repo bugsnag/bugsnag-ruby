@@ -1,13 +1,9 @@
 require 'net/http'
 require 'open3'
-require 'pp'
 
 When("I configure the bugsnag endpoint") do
-  pp current_ip
-  pp MOCK_API_PORT
-  pp "http://#{current_ip}:#{MOCK_API_PORT}"
   steps %Q{
-    When I set environment variable "MAZE_ENDPOINT" to "http://#{current_ip}:#{MOCK_API_PORT}"
+    When I set environment variable "MAZE_ENDPOINT" to "http://host.docker.internal:#{MOCK_API_PORT}"
   }
 end
 
