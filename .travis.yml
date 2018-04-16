@@ -58,8 +58,10 @@ jobs:
     script: bundle exec ./bin/rubocop lib/
   - stage: test
     before_install:
+    - docker --version
     - sudo apt-get update
     - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+    - docker --version
     install:
     - bundle install --with "$GEMSETS" --binstubs
     sudo: required
