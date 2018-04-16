@@ -57,6 +57,11 @@ jobs:
     rvm: 2.4.1
     script: bundle exec ./bin/rubocop lib/
   - stage: test
+    before_install:
+    - sudo apt-get update
+    - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+    install:
+    - bundle _${BUNDLE_VERSION}_ install --with "$GEMSETS" --binstubs
     sudo: required
     sevices:
     - docker
