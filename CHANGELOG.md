@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 6.7.1 (11 Apr 2018)
+
+### Fixes
+
+* (Rails) Log missing key warning after initialization completes, avoiding
+  incorrectly logging a warning that the API key is missing
+  | [#444](https://github.com/bugsnag/bugsnag-ruby/pull/444)
+
 ## 6.7.0 (05 Apr 2018)
 
 ### Enhancements
