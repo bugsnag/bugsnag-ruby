@@ -15,55 +15,52 @@ script:
 
 jobs:
   include:
-  # - stage: test
-  #   env:
-  #   - BUNDLE_VERSION=1.16.1
-  #   - GEMSETS=test
-  #   rvm: jruby-19mode
-  # - stage: test
-  #   rvm: 1.9.3
-  #   env:
-  #   - BUNDLE_VERSION=1.12.0
-  #   - GEMSETS=test
-  # - stage: test
-  #   rvm: 2.0.0
-  #   env:
-  #   - BUNDLE_VERSION=1.12.0
-  #   - GEMSETS=test
-  # - stage: test
-  #   rvm: 2.1.
-  #   env:
-  #   - BUNDLE_VERSION=1.12.0
-  #   - GEMSETS=test
-  # - stage: test
-  #   env:
-  #   - BUNDLE_VERSION=1.12.0
-  #   - GEMSETS="test sidekiq"
-  #   rvm: 2.2.4
-  # - stage: test
-  #   env:
-  #   - BUNDLE_VERSION=1.12.0
-  #   - GEMSETS="test sidekiq coverage"
-  #   rvm: 2.3.0
-  # - stage: test
-  #   env:
-  #   - BUNDLE_VERSION=1.12.0
-  #   - GEMSETS="test sidekiq"
-  #   rvm: 2.4.1
-  # - stage: test
-  #   env:
-  #   - BUNDLE_VERSION=1.12.0
-  #   - GEMSETS="test rubocop"
-  #   rvm: 2.4.1
-  #   script: bundle exec ./bin/rubocop lib/
   - stage: test
-    before_install:
-    - docker --version
-    - sudo apt-get update
-    - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-    - docker --version
-    install:
-    - bundle install --with "$GEMSETS" --binstubs
+    env:
+    - BUNDLE_VERSION=1.16.1
+    - GEMSETS=test
+    rvm: jruby-19mode
+  - stage: test
+    rvm: 1.9.3
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS=test
+  - stage: test
+    rvm: 2.0.0
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS=test
+  - stage: test
+    rvm: 2.1.
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS=test
+  - stage: test
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test sidekiq"
+    rvm: 2.2.4
+  - stage: test
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test sidekiq coverage"
+    rvm: 2.3.0
+  - stage: test
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test sidekiq"
+    rvm: 2.4.1
+  - stage: test
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test rubocop"
+    rvm: 2.4.1
+    script: bundle exec ./bin/rubocop lib/
+  - stage: test
+    addons:
+      apt:
+        packages:
+        - docker-ce
     sudo: required
     sevices:
     - docker
@@ -71,19 +68,19 @@ jobs:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS="test maze"
     rmv: 2.4.1
-    script: bundle exec bugsnag-maze-runner --verbose
-  # - stage: deploy
-  #   env:
-  #   - BUNDLE_VERSION=1.12.0
-  #   - GEMSETS="test doc"
-  #   rvm: 2.4.1
-  #   script: bundle exec rake rdoc
-  #   if: tag =~ ^v[1-9]
-  #   deploy:
-  #     provider: pages
-  #     local_dir: rdoc # only include the contents of the generated docs dir
-  #     skip_cleanup: true
-  #     github_token: $GITHUB_TOKEN # set in travis-ci dashboard
-  #     on:
-  #       tags: true # only deploy when tag is applied to commit
+    script: bundle exec bugsnag-maze-runner
+  - stage: deploy
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test doc"
+    rvm: 2.4.1
+    script: bundle exec rake rdoc
+    if: tag =~ ^v[1-9]
+    deploy:
+      provider: pages
+      local_dir: rdoc # only include the contents of the generated docs dir
+      skip_cleanup: true
+      github_token: $GITHUB_TOKEN # set in travis-ci dashboard
+      on:
+        tags: true # only deploy when tag is applied to commit
 
