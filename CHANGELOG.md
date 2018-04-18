@@ -1,6 +1,34 @@
 Changelog
 =========
 
+## 6.7.1 (11 Apr 2018)
+
+### Fixes
+
+* (Rails) Log missing key warning after initialization completes, avoiding
+  incorrectly logging a warning that the API key is missing
+  | [#444](https://github.com/bugsnag/bugsnag-ruby/pull/444)
+
+## 6.7.0 (05 Apr 2018)
+
+### Enhancements
+
+* Support HTTP proxy from `http_proxy` and `https_proxy` environment variables
+  | [#424](https://github.com/bugsnag/bugsnag-ruby/pull/424)
+  | [#437](https://github.com/bugsnag/bugsnag-ruby/pull/437)
+  | [Bill Kirtley](https://github.com/cluesque)
+
+* Add option to disable auto-configuration
+  | [#419](https://github.com/bugsnag/bugsnag-ruby/pull/419)
+
+* Add `warden.user.rack` data to default filters
+  | [#436](https://github.com/bugsnag/bugsnag-ruby/pull/436)
+
+### Fixes
+
+* Ensure logged messages include Bugsnag progname
+  | [#443](https://github.com/bugsnag/bugsnag-ruby/pull/443)
+
 ## 6.6.4 (14 Feb 2018)
 
 ### Fixes

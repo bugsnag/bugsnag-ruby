@@ -13,6 +13,7 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
+      - https_proxy
       - MAZE_API_KEY
       - MAZE_APP_TYPE
       - MAZE_APP_VERSION
