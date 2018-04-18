@@ -68,7 +68,7 @@ jobs:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS="test maze"
     rmv: 2.4.1
-    script: bundle exec bugsnag-maze-runner features/plain_features
+    script: bundle exec bugsnag-maze-runner -c features/plain_features
   - stage: deploy
     env:
     - BUNDLE_VERSION=1.12.0
