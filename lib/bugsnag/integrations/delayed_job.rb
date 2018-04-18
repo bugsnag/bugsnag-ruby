@@ -30,7 +30,8 @@ unless defined? Delayed::Plugins::Bugsnag
               overrides[:job][:queue] = queue
             end
             if job.respond_to?(:attempts)
-              overrides[:job][:attempts] = "#{job.attempts + 1} / #{Delayed::Worker.max_attempts}"
+              max_attempts = job.max_attempts || Delayed::Worker.max_attempts
+              overrides[:job][:attempts] = "#{job.attempts + 1} / #{max_attempts}"
               # +1 as "attempts" is really previous attempts AFAICT, certainly it starts at 0.
             end
             if payload = job.payload_object
