@@ -1045,6 +1045,21 @@ describe Bugsnag::Report do
     expect(Bugsnag).not_to have_sent_notification
   end
 
+  it 'uses an appropriate message if nil is notified' do
+    Bugsnag.notify(nil)
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = payload["events"][0]
+      exception = event["exceptions"][0]
+      expect(exception["errorClass"]).to eq("RuntimeError")
+      expect(exception["message"]).to eq("'nil' was notified as an exception")
+
+      stacktrace = exception["stacktrace"][0]
+      expect(stacktrace["lineNumber"]).to eq(1049)
+      expect(stacktrace["file"]).to end_with("spec/report_spec.rb")
+      expect(stacktrace["code"]["1048"]).to eq("  it 'uses an appropriate message if nil is notified' do")
+      expect(stacktrace["code"]["1049"]).to eq("    Bugsnag.notify(nil)")
+    }
+  end
 
   if defined?(JRUBY_VERSION)
 
