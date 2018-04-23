@@ -102,7 +102,7 @@ services:
       - CALLBACK_INITIATOR
     ports:
       - target: 3000
-        published: ${RAILS_3_PORT}
+        published: 61283
     restart: "no"
 
   rails4:
@@ -138,7 +138,7 @@ services:
       - CALLBACK_INITIATOR
     ports:
       - target: 3000
-        published: ${RAILS_4_PORT}
+        published: 61284
     restart: "no"
 
   rails5:
@@ -174,7 +174,7 @@ services:
       - CALLBACK_INITIATOR
     ports:
       - target: 3000
-        published: ${RAILS_5_PORT}
+        published: 61285
     restart: "no"
 
   resque:
