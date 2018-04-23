@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users
   get "/(:action)", controller: 'application'
   get "/unhandled/(:action)", controller: 'unhandled'
   get "/handled/(:action)", controller: 'handled'
@@ -14,4 +15,5 @@ Rails.application.routes.draw do
   get "/release_stage/(:action)", controller: 'release_stage'
   get "/send_code/(:action)", controller: 'send_code'
   get "/send_environment/(:action)", controller: 'send_environment'
+  get "/devise/(:action)", controller: 'devise'
 end

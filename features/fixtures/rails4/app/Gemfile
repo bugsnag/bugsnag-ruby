@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.0.0'
+gem 'rails', '~>4'
 
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
@@ -38,3 +38,5 @@ end
 
 # Added at 2018-03-26 15:02:53 +0100 by amoinet:
 gem "bugsnag", "~> 6.6"
+
+gem 'devise'

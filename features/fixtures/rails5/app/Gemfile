@@ -42,3 +42,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Added at 2018-03-26 15:20:23 +0100 by amoinet:
 gem "bugsnag", "~> 6.6"
+
+gem 'devise'
