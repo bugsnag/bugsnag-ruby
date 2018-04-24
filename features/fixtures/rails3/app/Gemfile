@@ -6,4 +6,6 @@ gem 'sqlite3'
 
 gem 'jquery-rails'
 
-gem "bugsnag", "~> 6.6"
+gem "bugsnag"
+
+gem "warden"
