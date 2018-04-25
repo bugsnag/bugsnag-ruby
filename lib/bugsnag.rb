@@ -34,19 +34,17 @@ module Bugsnag
   LOCK = Mutex.new
   INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que]
 
+  NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
+
   class << self
     ##
     # Configure the Bugsnag notifier application-wide settings.
     #
     # Yields a configuration object to use to set application settings.
-    def configure
+    def configure(validate_api_key=true)
       yield(configuration) if block_given?
 
-      @key_warning = false unless defined?(@key_warning)
-      if !configuration.valid_api_key? && !@key_warning
-        configuration.warn("No valid API key has been set, notifications will not be sent")
-        @key_warning = true
-      end
+      check_key_valid if validate_api_key
     end
 
     ##
@@ -59,25 +57,9 @@ module Bugsnag
         auto_notify = false
       end
 
-      if !configuration.auto_notify && auto_notify
-        configuration.debug("Not notifying because auto_notify is disabled")
-        return
-      end
+      return unless deliver_notification?(exception, auto_notify)
 
-      if !configuration.valid_api_key?
-        configuration.debug("Not notifying due to an invalid api_key")
-        return
-      end
-
-      if !configuration.should_notify_release_stage?
-        configuration.debug("Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}")
-        return
-      end
-
-      if exception.respond_to?(:skip_bugsnag) && exception.skip_bugsnag
-        configuration.debug("Not notifying due to skip_bugsnag flag")
-        return
-      end
+      exception = NIL_EXCEPTION_DESCRIPTION if exception.nil?
 
       report = Report.new(exception, configuration, auto_notify)
 
@@ -192,6 +174,35 @@ module Bugsnag
         require "bugsnag/integrations/#{integration}"
       else
         configuration.debug("Integration #{integration} is not currently supported")
+      end
+    end
+
+    private
+
+    def deliver_notification?(exception, auto_notify)
+      reason = abort_reason(exception, auto_notify)
+      configuration.debug(reason) unless reason.nil?
+      reason.nil?
+    end
+
+    def abort_reason(exception, auto_notify)
+      if !configuration.auto_notify && auto_notify
+        "Not notifying because auto_notify is disabled"
+      elsif !configuration.valid_api_key?
+        "Not notifying due to an invalid api_key"
+      elsif !configuration.should_notify_release_stage?
+        "Not notifying due to notify_release_stages :#{configuration.notify_release_stages.inspect}"
+      elsif exception.respond_to?(:skip_bugsnag) && exception.skip_bugsnag
+        "Not notifying due to skip_bugsnag flag"
+      end
+    end
+
+    # Check if the API key is valid and warn (once) if it is not
+    def check_key_valid
+      @key_warning = false unless defined?(@key_warning)
+      if !configuration.valid_api_key? && !@key_warning
+        configuration.warn("No valid API key has been set, notifications will not be sent")
+        @key_warning = true
       end
     end
   end
