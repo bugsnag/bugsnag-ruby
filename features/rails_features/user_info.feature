@@ -1,5 +1,8 @@
 Feature: Capture user information
 
+# Scenario Outline: Warden user information is sent on handled errors
+# Scenario Outline: Warden user information is sent on unhandled errors
+
 Background:
   Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
@@ -17,24 +20,18 @@ Scenario Outline: Devise user information is sent
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "user.email" equals "test+test@test.test"
+  And the event "user.name" equals "Devise User"
+  And the event "user.first_name" equals "Devise"
+  And the event "user.last_name" equals "User"
 
   Examples:
     | ruby_version | rails_version | route     |
     | 2.2          | 4             | handled   |
     | 2.2          | 4             | unhandled |
-    | 2.2          | 5             | handled   |
-    | 2.2          | 5             | unhandled |
     | 2.3          | 4             | handled   |
     | 2.3          | 4             | unhandled |
-    | 2.3          | 5             | handled   |
-    | 2.3          | 5             | unhandled |
-    | 2.4          | 5             | handled   |
-    | 2.4          | 5             | unhandled |
-    | 2.5          | 5             | handled   |
-    | 2.5          | 5             | unhandled |
 
 
-# Scenario Outline: Warden user information is sent on handled errors
-# Scenario Outline: Warden user information is sent on unhandled errors
+
 # Scenario Outline: Clearance user information is sent on handled errors
 # Scenario Outline: Clearance user information is sent on unhandled errors

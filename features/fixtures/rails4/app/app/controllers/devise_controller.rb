@@ -7,7 +7,14 @@ class DeviseController < ActionController::Base
   end
 
   def create
-    new_user = User.new({:email => "test+test@test.test", :password => "password", :password_confirmation => "password"}).save
+    User.new({
+      :email => "test+test@test.test",
+      :password => "password",
+      :password_confirmation => "password",
+      :name => "Devise User",
+      :first_name => "Devise",
+      :last_name => "User"
+    }).save
     render json: {}
   end
 
