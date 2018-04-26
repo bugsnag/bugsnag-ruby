@@ -37,6 +37,6 @@ end
 # gem 'debugger', group: [:development, :test]
 
 # Added at 2018-03-26 15:02:53 +0100 by amoinet:
-gem "bugsnag", "~> 6.6"
+gem "bugsnag"
 
 gem 'devise'
