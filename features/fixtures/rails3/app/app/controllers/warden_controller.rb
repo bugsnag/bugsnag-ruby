@@ -6,7 +6,12 @@ class WardenController < ActionController::Base
   end
 
   def create
-    User.new({:email => "testtest@test.test", :name => "John Doe", :first_name => "John", :last_name => "Doe"}).save unless User.where(:email => "testtest@test.test").size > 0
+    User.new({
+      :email => "testtest@test.test",
+      :name => "Warden User",
+      :first_name => "Warden",
+      :last_name => "User"
+    }).save unless User.where(:email => "testtest@test.test").size > 0
     render json: {}
   end
 
