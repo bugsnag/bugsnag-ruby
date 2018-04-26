@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get "/(:action)", controller: 'application'
   get "/unhandled/(:action)", controller: 'unhandled'
   get "/handled/(:action)", controller: 'handled'
   get "/before_notify/(:action)", controller: 'before_notify'
@@ -14,4 +13,5 @@ Rails.application.routes.draw do
   get "/release_stage/(:action)", controller: 'release_stage'
   get "/send_code/(:action)", controller: 'send_code'
   get "/send_environment/(:action)", controller: 'send_environment'
+  get "/clearance/(:action)", controller: 'clearance'
 end

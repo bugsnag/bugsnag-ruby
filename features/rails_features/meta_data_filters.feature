@@ -4,9 +4,6 @@ Background:
   Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
-  And I set environment variable "RAILS_3_PORT" to "61283"
-  And I set environment variable "RAILS_4_PORT" to "61284"
-  And I set environment variable "RAILS_5_PORT" to "61285"
 
 Scenario Outline: Meta_data_filters should include Rails.configuration.filter_parameters
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"

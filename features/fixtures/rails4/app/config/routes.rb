@@ -1,5 +1,5 @@
 App::Application.routes.draw do
-  get "/(:action)", controller: 'application'
+  devise_for :users
   get "/unhandled/(:action)", controller: 'unhandled'
   get "/handled/(:action)", controller: 'handled'
   get "/before_notify/(:action)", controller: 'before_notify'
@@ -14,4 +14,5 @@ App::Application.routes.draw do
   get "/release_stage/(:action)", controller: 'release_stage'
   get "/send_code/(:action)", controller: 'send_code'
   get "/send_environment/(:action)", controller: 'send_environment'
+  get "/devise/(:action)", controller: 'devise'
 end

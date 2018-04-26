@@ -59,5 +59,9 @@ module App
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    config.middleware.insert_after ActionDispatch::ParamsParser, Warden::Manager do |manager|
+      manager.default_strategies :token
+    end
   end
 end

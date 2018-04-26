@@ -11,4 +11,6 @@ RUN bundle install
 
 COPY app $APP_PATH
 
+RUN bundle exec rake db:migrate
+
 CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]

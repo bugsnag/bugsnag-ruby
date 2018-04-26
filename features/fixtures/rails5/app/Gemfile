@@ -41,4 +41,7 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 # Added at 2018-03-26 15:20:23 +0100 by amoinet:
-gem "bugsnag", "~> 6.6"
+gem "bugsnag"
+
+# Added at 2018-04-26 10:20:10 +0100 by amoinet:
+gem "clearance", "~> 1.16"

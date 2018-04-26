@@ -62,9 +62,10 @@ Then("the request contained the api key {string}") do |api_key|
 end
 
 Then("the request used the Ruby notifier") do
+  bugsnag_regex = /^http(s?):\/\/www.bugsnag.com/
   steps %Q{
     Then the payload field "notifier.name" equals "Ruby Bugsnag Notifier"
-    And the payload field "notifier.url" equals "http://www.bugsnag.com"
+    And the payload field "notifier.url" matches the regex "#{bugsnag_regex}"
   }
 end
 
