@@ -1,10 +1,6 @@
 class HandledController < ActionController::Base
   protect_from_forgery with: :exception
 
-  def index
-    render json: {}
-  end
-
   def unthrown
     Bugsnag.notify(RuntimeError.new("handled unthrown error"))
     render json: {}

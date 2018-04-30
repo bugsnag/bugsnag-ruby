@@ -2,10 +2,6 @@ class BeforeNotifyController < ActionController::Base
   protect_from_forgery
   before_bugsnag_notify :add_diagnostics_to_bugsnag
 
-  def index
-    render json: {}
-  end
-
   def handled
     Bugsnag.before_notify_callbacks << Proc.new do |report|
       report.add_tab(:before_notify, {
