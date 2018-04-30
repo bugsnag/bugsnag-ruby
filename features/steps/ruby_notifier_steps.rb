@@ -21,7 +21,8 @@ When("I wait for the app to respond on port {string}") do |port|
       response = Net::HTTP.get_response(uri)
       pp response
       up = (response.code == "200")
-    rescue EOFError
+    rescue Exception => e
+      pp e
     end
     sleep 1
   end
