@@ -80,6 +80,7 @@ jobs:
     env:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS="test maze"
+    - MAX_MAZE_CONNECT_ATTEMPTS=20
     rmv: 2.4.1
     script: bundle exec bugsnag-maze-runner -c features/rails_features
   - stage: deploy

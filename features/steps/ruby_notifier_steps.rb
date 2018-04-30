@@ -8,9 +8,10 @@ When("I configure the bugsnag endpoint") do
 end
 
 When("I wait for the app to respond on port {string}") do |port|
+  max_attempts = ENV.include?('MAX_MAZE_CONNECT_ATTEMPTS')? ENV['MAX_MAZE_CONNECT_ATTEMPTS'].to_i : 10
   attempts = 0
   up = false
-  until attempts >= 10 || up
+  until (attempts >= max_attempts) || up
     attempts += 1
     begin
       uri = URI("http://localhost:#{port}/")
