@@ -1,5 +1,6 @@
 require 'net/http'
 require 'open3'
+require 'pp'
 
 When("I configure the bugsnag endpoint") do
   steps %Q{
@@ -9,13 +10,16 @@ end
 
 When("I wait for the app to respond on port {string}") do |port|
   max_attempts = ENV.include?('MAX_MAZE_CONNECT_ATTEMPTS')? ENV['MAX_MAZE_CONNECT_ATTEMPTS'].to_i : 10
+  pp "Max attempts: #{max_attempts}"
   attempts = 0
   up = false
   until (attempts >= max_attempts) || up
+    pp "Attempt: #{attempts}, Time: #{Time.now}"
     attempts += 1
     begin
       uri = URI("http://localhost:#{port}/")
       response = Net::HTTP.get_response(uri)
+      pp response
       up = (response.code == "200")
     rescue EOFError
     end
