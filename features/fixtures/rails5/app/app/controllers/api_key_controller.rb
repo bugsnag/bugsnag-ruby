@@ -1,10 +1,6 @@
 class ApiKeyController < ActionController::Base
   protect_from_forgery
 
-  def index
-    render json: {}
-  end
-
   def environment
     Bugsnag.notify("handled string")
     render json: {}

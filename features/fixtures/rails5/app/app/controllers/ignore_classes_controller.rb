@@ -4,10 +4,6 @@ end
 class IgnoreClassesController < ActionController::Base
   protect_from_forgery
 
-  def index
-    render json: {}
-  end
-
   def initializer
     Bugsnag.notify(IgnoredError.new)
     render json: {}

@@ -1,10 +1,5 @@
 class ClearanceController < Clearance::BaseController
   protect_from_forgery
-
-  def index
-    render json: {}
-  end
-
   def create
     user = User.find_by(:email => "testtest@test.test")
     User.new({
