@@ -23,3 +23,7 @@ rails_env:
 production:
   <<: *default
   database: db/production.sqlite3
+
+test:
+  <<: *default
+  database: db/production.sqlite3
