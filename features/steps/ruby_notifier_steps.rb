@@ -20,6 +20,7 @@ When("I wait for the app to respond on port {string}") do |port|
       uri = URI("http://localhost:#{port}/")
       response = Net::HTTP.get_response(uri)
       pp response
+      pp response.body
       up = (response.code == "200")
     rescue Exception => e
       pp e
