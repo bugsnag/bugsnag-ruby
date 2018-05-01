@@ -7,8 +7,7 @@ module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 3072
     MAX_PAYLOAD_LENGTH = 512000
-    MAX_METADATA_LENGTH = 80
-    MAX_ARRAY_LENGTH = 160
+    MAX_ARRAY_LENGTH = 80
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
     ##
@@ -21,20 +20,8 @@ module Bugsnag
       sanitized_value = Bugsnag::Cleaner.clean_object_encoding(value)
       return sanitized_value unless payload_too_long?(sanitized_value)
 
-      # Limit string lengths
-      reduced_value = trim_strings_in_value(sanitized_value)
-      return reduced_value unless payload_too_long?(reduced_value)
-
-      # Reduce metadata arrays to lower max length
+      # Trim metadata
       reduced_value = trim_metadata(reduced_value)
-      return reduced_value unless payload_too_long?(reduced_value)
-
-      # Reduce all other arrays else to regular limit
-      reduced_value = truncate_arrays_in_value(reduced_value)
-      return reduced_value unless payload_too_long?(reduced_value)
-
-      # Remove metadata
-      reduced_value = remove_metadata_from_events(reduced_value)
       return reduced_value unless payload_too_long?(reduced_value)
 
       # Recursively trim code from stacktrace, oldest function first
@@ -124,7 +111,8 @@ module Bugsnag
     def self.trim_metadata(payload)
       return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
       payload[:events].map do |event|
-        event[:metaData] = truncate_arrays_in_value(event[:metaData], MAX_METADATA_LENGTH)
+        event[:metaData] = truncate_arrays_in_value(event[:metaData])
+        event[:metaData] = trim_strings_in_value(event[:metaData])
       end
       payload
     end
