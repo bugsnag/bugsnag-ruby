@@ -73,18 +73,15 @@ module Bugsnag
     ##
     # Trim stacktrace code out if they're too large, oldest functions first
     def self.trim_stacktrace_code(payload, threshold)
-      return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
-      payload[:events].map do |event|
-        event[:exceptions].map do |exception|
-          total = exception[:stacktrace].length
-          count = 0
-          saved = 0
-          while (count < total) && (saved < threshold)
-            trace = exception[:stacktrace][total - count - 1]
-            saved += get_payload_length(trace[:code])
-            trace.delete(:code)
-            count += 1
-          end
+      extract_exception(payload) do |exception|
+        total = exception[:stacktrace].length
+        count = 0
+        saved = 0
+        while (count < total) && (saved < threshold)
+          trace = exception[:stacktrace][total - count - 1]
+          saved += get_payload_length(trace[:code])
+          trace.delete(:code)
+          count += 1
         end
       end
       payload
@@ -93,17 +90,24 @@ module Bugsnag
     ##
     # Trim stacktrace entries out oldest functions first
     def self.trim_stacktrace_functions(payload, threshold)
-      return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
-      payload[:events].map do |event|
-        event[:exceptions].map do |exception|
-          saved = 0
-          while (exception[:stacktrace].size > 1) && (saved < threshold)
-            saved += get_payload_length(exception[:stacktrace].last)
-            exception[:stacktrace].pop
-          end
+      extract_exception(payload) do |exception|
+        saved = 0
+        while (exception[:stacktrace].size > 1) && (saved < threshold)
+          saved += get_payload_length(exception[:stacktrace].last)
+          exception[:stacktrace].pop
         end
       end
       payload
+    end
+
+    ##
+    # Wrapper for trimming stacktraces
+    def self.extract_exception(payload)
+      valid_payload = payload.is_a?(Hash) && payload[:events].respond_to?(:map)
+      return unless valid_payload && block_given?
+      payload[:events].each do |event|
+        event[:exceptions].each { |exception| yield exception }
+      end
     end
 
     ##
