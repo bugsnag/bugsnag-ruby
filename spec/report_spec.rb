@@ -381,7 +381,7 @@ describe Bugsnag::Report do
   end
 
   it "truncates large messages before sending" do
-    Bugsnag.notify(BugsnagTestException.new(SecureRandom.hex(500_000))) do |report|
+    Bugsnag.notify(BugsnagTestException.new(SecureRandom.hex(250_000))) do |report|
       report.meta_data.merge!({
         some_tab: {
           giant: SecureRandom.hex(500_000/2),
@@ -391,23 +391,21 @@ describe Bugsnag::Report do
     end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
-      # Truncated body should be no bigger than
-      # 2 truncated hashes (4096*2) + rest of payload (20000)
-      expect(::JSON.dump(payload).length).to be < 4096*2 + 20000
+      expect(::JSON.dump(payload).length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
     }
   end
 
   it "truncate large stacktraces before sending" do
     ex = BugsnagTestException.new("It crashed")
     stacktrace = []
-    10000.times {|i| stacktrace.push("/Some/path/rspec/example.rb:113:in `instance_eval'")}
+    20000.times {|i| stacktrace.push("/Some/path/rspec/example.rb:113:in `instance_eval'")}
     ex.set_backtrace(stacktrace)
     Bugsnag.notify(ex)
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       # Truncated body should be no bigger than
       # 400 stacktrace lines * approx 60 chars per line + rest of payload (20000)
-      expect(::JSON.dump(payload).length).to be < 800*60 + 20000
+      expect(::JSON.dump(payload).length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
     }
   end
 
@@ -1054,10 +1052,10 @@ describe Bugsnag::Report do
       expect(exception["message"]).to eq("'nil' was notified as an exception")
 
       stacktrace = exception["stacktrace"][0]
-      expect(stacktrace["lineNumber"]).to eq(1049)
+      expect(stacktrace["lineNumber"]).to eq(1047)
       expect(stacktrace["file"]).to end_with("spec/report_spec.rb")
-      expect(stacktrace["code"]["1048"]).to eq("  it 'uses an appropriate message if nil is notified' do")
-      expect(stacktrace["code"]["1049"]).to eq("    Bugsnag.notify(nil)")
+      expect(stacktrace["code"]["1046"]).to eq("  it 'uses an appropriate message if nil is notified' do")
+      expect(stacktrace["code"]["1047"]).to eq("    Bugsnag.notify(nil)")
     }
   end
 

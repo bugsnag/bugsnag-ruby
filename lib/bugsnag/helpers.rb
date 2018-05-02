@@ -21,7 +21,7 @@ module Bugsnag
       return sanitized_value unless payload_too_long?(sanitized_value)
 
       # Trim metadata
-      reduced_value = trim_metadata(reduced_value)
+      reduced_value = trim_metadata(sanitized_value)
       return reduced_value unless payload_too_long?(reduced_value)
 
       # Recursively trim code from stacktrace, oldest function first
@@ -80,7 +80,7 @@ module Bugsnag
           count = 0
           saved = 0
           while (count < total) && (saved < threshold)
-            trace = exception[:stacktrace][count]
+            trace = exception[:stacktrace][total - count - 1]
             saved += get_payload_length(trace[:code])
             trace.delete(:code)
             count += 1
