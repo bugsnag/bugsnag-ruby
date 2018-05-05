@@ -14,7 +14,7 @@ describe Bugsnag::Rack do
   context "when an exception is raised in rack middleware" do
     # Build a fake crashing rack app
     exception = BugsnagTestException.new("It crashed")
-    rack_env = {"key" => "value",}
+    rack_env = {"key" => "value"}
     app = lambda { |env| raise exception }
     rack_stack = Bugsnag::Rack.new(app)
 
