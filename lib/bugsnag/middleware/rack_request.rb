@@ -32,13 +32,14 @@ module Bugsnag::Middleware
 
         # If app is passed a bad URL, this code will crash attempting to clean it
         begin
-          url << cleaner.clean_url(url)
+          url << cleaner.clean_url(request.fullpath)
         rescue StandardError => stde
           Bugsnag.configuration.warn "RackRequest - Rescued error while cleaning request.fullpath: #{stde}"
         end
 
+        referer = nil
         begin
-          clean_referer << cleaner.clean_url(request.referer)
+          referer = cleaner.clean_url(request.referer) if request.referer
         rescue StandardError => stde
           Bugsnag.configuration.warn "RackRequest - Rescued error while cleaning request.referer: #{stde}"
         end
@@ -56,8 +57,8 @@ module Bugsnag::Middleware
 
           headers[header_key.split("_").map {|s| s.capitalize}.join("-")] = value
         end
-        
-        headers.referer = clean_referer
+
+        headers["Referer"] = referer if headers["Referer"]
 
 
         # Add a request tab
@@ -65,7 +66,7 @@ module Bugsnag::Middleware
           :url => url,
           :httpMethod => request.request_method,
           :params => params.to_hash,
-          :referer => clean_referer,
+          :referer => referer,
           :clientIp => client_ip,
           :headers => headers
         })
@@ -73,6 +74,8 @@ module Bugsnag::Middleware
         # Add an environment tab
         if report.configuration.send_environment
           report.add_tab(:environment, env)
+          # below also redacts referer from environemt tab -- need to write tests
+          # report.meta_data[:environment]['HTTP_REFERER'] = referer if report.meta_data[:environment]['HTTP_REFERER']
         end
 
         # Add a session tab
