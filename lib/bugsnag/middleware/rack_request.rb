@@ -74,8 +74,6 @@ module Bugsnag::Middleware
         # Add an environment tab
         if report.configuration.send_environment
           report.add_tab(:environment, env)
-          # below also redacts referer from environemt tab -- need to write tests
-          # report.meta_data[:environment]['HTTP_REFERER'] = referer if report.meta_data[:environment]['HTTP_REFERER']
         end
 
         # Add a session tab

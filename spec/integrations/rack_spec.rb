@@ -14,7 +14,7 @@ describe Bugsnag::Rack do
   context "when an exception is raised in rack middleware" do
     # Build a fake crashing rack app
     exception = BugsnagTestException.new("It crashed")
-    rack_env = {"key" => "value"}
+    rack_env = {"key" => "value",}
     app = lambda { |env| raise exception }
     rack_stack = Bugsnag::Rack.new(app)
 
@@ -69,16 +69,11 @@ describe Bugsnag::Rack do
       end
     end
 
-
-# *********************
-# *********************
-# *********************
-
-    it "correctly redacts from referer any value indicated by meta_data_filters" do
+    it "correctly redacts from url and referer any value indicated by meta_data_filters" do
       callback = double
       rack_env = {
         :env => true,
-        :HTTP_REFERER => "test_key",
+        :HTTP_REFERER => "https://bugsnag.com/about?email=hello@world.com&another_param=thing",
         "rack.session" => {
           :session => true
         }
@@ -97,12 +92,11 @@ describe Bugsnag::Rack do
         :host => "test_host",
         :port => 80,
         :referer => "https://bugsnag.com/about?email=hello@world.com&another_param=thing",
-        :fullpath => "/TEST_PATH"
+        :fullpath => "/TEST_PATH?email=hello@world.com&another_param=thing"
       )
       expect(::Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
 
       # modify rack_env to include redacted referer
-      # rack_env["HTTP_REFERER"] = "https://bugsnag.com/about?email=[FILTERED]&another_param=thing"
       report = double("Bugsnag::Report")
       allow(report).to receive(:request_data).and_return({
         :rack_env => rack_env
@@ -115,7 +109,7 @@ describe Bugsnag::Rack do
       allow(config).to receive(:meta_data_filters).and_return(['email'])
       allow(report).to receive(:configuration).and_return(config)
       expect(report).to receive(:add_tab).once.with(:request, {
-        :url => "http://test_host/TEST_PATH",
+        :url => "http://test_host/TEST_PATH?email=[FILTERED]&another_param=thing",
         :httpMethod => "TEST",
         :params => rack_params,
         :referer => "https://bugsnag.com/about?email=[FILTERED]&another_param=thing",
@@ -125,22 +119,17 @@ describe Bugsnag::Rack do
        +     "https://bugsnag.com/about?email=[FILTERED]&another_param=thing"
         }
       })
+      # rack_env["HTTP_REFERER"] = "https://bugsnag.com/about?email=[FILTERED]&another_param=thing"
+      expect(report).to receive(:add_tab).once.with(:environment, rack_env)
       expect(report).to receive(:add_tab).once.with(:session, {
         :session => true
       })
-      expect(report).to receive(:add_tab).once.with(:environment, rack_env)
 
       expect(callback).to receive(:call).with(report)
 
       middleware = Bugsnag::Middleware::RackRequest.new(callback)
       middleware.call(report)
     end
-
-# *********************
-# *********************
-# *********************
-# *********************
-
 
     it "correctly extracts data from rack middleware" do
       callback = double
