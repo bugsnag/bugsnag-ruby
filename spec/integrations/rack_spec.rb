@@ -62,8 +62,8 @@ describe Bugsnag::Rack do
     before do
       unless defined?(::Rack)
         @mocked_rack = true
-        class ::Rack
-          class ::Request
+        class Rack
+          class Request
           end
         end
       end
@@ -94,8 +94,9 @@ describe Bugsnag::Rack do
         :referer => "referer",
         :fullpath => "/TEST_PATH"
       )
-      expect(::Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
-      expect(::Rack).to receive(:version).and_return("test")
+
+      expect(Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
+      expect(Rack).to receive(:version).and_return("test")
 
       report = double("Bugsnag::Report")
       allow(report).to receive(:request_data).and_return({

@@ -6,7 +6,7 @@ module Bugsnag
   class Report
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
-    NOTIFIER_URL = "http://www.bugsnag.com"
+    NOTIFIER_URL = "https://www.bugsnag.com"
 
     UNHANDLED_EXCEPTION = "unhandledException"
     UNHANDLED_EXCEPTION_MIDDLEWARE = "unhandledExceptionMiddleware"
