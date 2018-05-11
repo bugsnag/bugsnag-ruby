@@ -60,7 +60,7 @@ describe 'Bugsnag' do
       Process.fork do
         Bugsnag.notify 'yo too'
       end
-      Process.wait
+      Process.waitall
 
       expect(queue.length).to eq(2)
     end
