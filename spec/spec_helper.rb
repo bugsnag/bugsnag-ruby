@@ -41,16 +41,6 @@ def ruby_version_greater_equal?(version)
     (Integer(current_version[2]) >= Integer(target_version[2]))
 end
 
-# Note, this prevents bugsnag from registering at_exit functions when it shouldn't
-module Kernel
-  alias_method :original_at_exit, :at_exit
-  def at_exit(&block)
-    unless caller[0].include?("bugsnag.rb") || caller[0].include?("session_tracker.rb")
-      original_at_exit(&block)
-    end
-  end
-end
-
 RSpec.configure do |config|
   config.order = "random"
 
@@ -91,15 +81,6 @@ def have_sent_notification(&matcher)
       true
     else
       raise "no matcher provided to have_sent_notification (did you use { })"
-    end
-  end
-end
-
-# Add reset_exit_handler method for testing purposes
-module Bugsnag
-  class << self
-    def reset_exit_handler_added
-      @exit_handler_added = false
     end
   end
 end

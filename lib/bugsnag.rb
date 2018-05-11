@@ -136,15 +136,6 @@ module Bugsnag
       @exit_handler_added ||= false
     end
 
-    ##
-    # Warns once if the API key isn't valid
-    def warn_invalid_api_key
-      @key_warning ||= false
-      return if @key_warning
-      @key_warning = true
-      configuration.warn("No valid API key has been set, notifications will not be sent")
-    end
-
     # Configuration getters
     ##
     # Returns the client's Configuration object, or creates one if not yet created.
