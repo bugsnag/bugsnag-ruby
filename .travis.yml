@@ -56,46 +56,46 @@ jobs:
     - GEMSETS="test rubocop"
     rvm: 2.4.1
     script: bundle exec ./bin/rubocop lib/
-  - stage: test
-    addons:
-      apt:
-        packages:
-        - docker-ce
-    sudo: required
-    sevices:
-    - docker
-    env:
-    - BUNDLE_VERSION=1.12.0
-    - GEMSETS="test maze"
-    rmv: 2.4.1
-    script: bundle exec bugsnag-maze-runner -c features/plain_features
-  - stage: test
-    addons:
-      apt:
-        packages:
-        - docker-ce
-    sudo: required
-    sevices:
-    - docker
-    env:
-    - BUNDLE_VERSION=1.12.0
-    - GEMSETS="test maze"
-    rmv: 2.4.1
-    script: bundle exec bugsnag-maze-runner -c features/sidekiq.feature
-  - stage: test
-    addons:
-      apt:
-        packages:
-        - docker-ce
-    sudo: required
-    sevices:
-    - docker
-    env:
-    - BUNDLE_VERSION=1.12.0
-    - GEMSETS="test maze"
-    - MAX_MAZE_CONNECT_ATTEMPTS=20
-    rmv: 2.4.1
-    script: bundle exec bugsnag-maze-runner -c features/rails_features
+  # - stage: test
+  #   addons:
+  #     apt:
+  #       packages:
+  #       - docker-ce
+  #   sudo: required
+  #   sevices:
+  #   - docker
+  #   env:
+  #   - BUNDLE_VERSION=1.12.0
+  #   - GEMSETS="test maze"
+  #   rmv: 2.4.1
+  #   script: bundle exec bugsnag-maze-runner -c features/plain_features
+  # - stage: test
+  #   addons:
+  #     apt:
+  #       packages:
+  #       - docker-ce
+  #   sudo: required
+  #   sevices:
+  #   - docker
+  #   env:
+  #   - BUNDLE_VERSION=1.12.0
+  #   - GEMSETS="test maze"
+  #   rmv: 2.4.1
+  #   script: bundle exec bugsnag-maze-runner -c features/sidekiq.feature
+  # - stage: test
+  #   addons:
+  #     apt:
+  #       packages:
+  #       - docker-ce
+  #   sudo: required
+  #   sevices:
+  #   - docker
+  #   env:
+  #   - BUNDLE_VERSION=1.12.0
+  #   - GEMSETS="test maze"
+  #   - MAX_MAZE_CONNECT_ATTEMPTS=20
+  #   rmv: 2.4.1
+  #   script: bundle exec bugsnag-maze-runner -c features/rails_features
   - stage: deploy
     env:
     - BUNDLE_VERSION=1.12.0
@@ -110,4 +110,3 @@ jobs:
       github_token: $GITHUB_TOKEN # set in travis-ci dashboard
       on:
         tags: true # only deploy when tag is applied to commit
-

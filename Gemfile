@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 group :test, optional: true do
-    gem 'rake', '~> 10.1.1'
+    gem 'rake', '~> 12.3.0'
     gem 'rspec'
     gem 'rspec-mocks'
     gem 'rdoc', '~> 5.1.0'
