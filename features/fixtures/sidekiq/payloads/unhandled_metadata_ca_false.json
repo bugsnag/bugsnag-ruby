@@ -1,0 +1,11 @@
+{
+    "msg": {
+        "class": "UnhandledError",
+        "args": [],
+        "retry": false,
+        "queue": "default",
+        "jid": "IGNORE",
+        "enqueued_at": "IGNORE"
+    },
+    "queue": "default"
+}
