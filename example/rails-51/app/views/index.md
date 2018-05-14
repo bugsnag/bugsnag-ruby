@@ -2,6 +2,12 @@
 
 This application demonstrates the use of Bugsnag with the Rails web framework.
 
+For other examples within this application see the following pages:
+
+- [Sidekiq](/sidekiq)
+- [Resque](/resque)
+- [Que](/que)
+
 While testing the examples open [your dashboard](https://app.bugsnag.com) in order to see the example errors and exceptions being received.
 
 1. [Crash](/crash)
