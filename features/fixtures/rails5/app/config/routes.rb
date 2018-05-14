@@ -35,7 +35,7 @@ Rails.application.routes.draw do
 
   get 'metadata_filters/filter', to: 'metadata_filters#filter'
 
-  get 'session_tracking/initializer', to: 'session_tracking#initiaizer'
+  get 'session_tracking/initializer', to: 'session_tracking#initializer'
   get 'session_tracking/after', to: 'session_tracking#after'
 
   get 'release_stage/default', to: 'release_stage#default'
