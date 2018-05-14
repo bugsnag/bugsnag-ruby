@@ -1,5 +1,6 @@
 App::Application.routes.draw do
   devise_for :users
+  get "/", to: 'application#index'
   get "/unhandled/(:action)", controller: 'unhandled'
   get "/handled/(:action)", controller: 'handled'
   get "/before_notify/(:action)", controller: 'before_notify'

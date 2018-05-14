@@ -18,7 +18,7 @@ development:
 # Do not set this db to the same as development or production.
 rails_env:
   <<: *default
-  database: db/test.sqlite3
+  database: db/development.sqlite3
 
 production:
   <<: *default

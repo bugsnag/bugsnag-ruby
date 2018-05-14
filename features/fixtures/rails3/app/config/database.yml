@@ -23,3 +23,9 @@ production:
   database: db/production.sqlite3
   pool: 5
   timeout: 5000
+
+rails_env:
+  adapter: sqlite3
+  database: db/development.sqlite3
+  pool: 5
+  timeout: 5000
