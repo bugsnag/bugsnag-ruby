@@ -29,27 +29,27 @@ Scenario Outline: An unhandled RuntimeError sends a report
 
   Examples:
   | ruby version | sidekiq_version | created_at_present |
-  | 1.9.3        | '~> 2'          | false              |
-  | 2.0          | '~> 2'          | false              |
-  | 2.0          | '~> 3'          | true               |
-  | 2.1          | '~> 2'          | false              |
-  | 2.1          | '~> 3'          | true               |
-  | 2.2          | '~> 2'          | false              |
-  | 2.2          | '~> 3'          | true               |
-  | 2.2          | '~> 4'          | true               |
-  | 2.2          | '~> 5'          | true               |
-  | 2.3          | '~> 2'          | false              |
-  | 2.3          | '~> 3'          | true               |
-  | 2.3          | '~> 4'          | true               |
-  | 2.3          | '~> 5'          | true               |
-  | 2.4          | '~> 2'          | false              |
-  | 2.4          | '~> 3'          | true               |
-  | 2.4          | '~> 4'          | true               |
-  | 2.4          | '~> 5'          | true               |
-  | 2.5          | '~> 2'          | false              |
-  | 2.5          | '~> 3'          | true               |
-  | 2.5          | '~> 4'          | true               |
-  | 2.5          | '~> 5'          | true               |
+  | 1.9.3        | ~> 2            | false              |
+  | 2.0          | ~> 2            | false              |
+  | 2.0          | ~> 3            | true               |
+  | 2.1          | ~> 2            | false              |
+  | 2.1          | ~> 3            | true               |
+  | 2.2          | ~> 2            | false              |
+  | 2.2          | ~> 3            | true               |
+  | 2.2          | ~> 4            | true               |
+  | 2.2          | ~> 5            | true               |
+  | 2.3          | ~> 2            | false              |
+  | 2.3          | ~> 3            | true               |
+  | 2.3          | ~> 4            | true               |
+  | 2.3          | ~> 5            | true               |
+  | 2.4          | ~> 2            | false              |
+  | 2.4          | ~> 3            | true               |
+  | 2.4          | ~> 4            | true               |
+  | 2.4          | ~> 5            | true               |
+  | 2.5          | ~> 2            | false              |
+  | 2.5          | ~> 3            | true               |
+  | 2.5          | ~> 4            | true               |
+  | 2.5          | ~> 5            | true               |
 
 Scenario Outline: A handled RuntimeError can be notified
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
@@ -73,24 +73,24 @@ Scenario Outline: A handled RuntimeError can be notified
 
   Examples:
   | ruby version | sidekiq_version | created_at_present |
-  | 1.9.3        | '~> 2'          | false              |
-  | 2.0          | '~> 2'          | false              |
-  | 2.0          | '~> 3'          | true               |
-  | 2.1          | '~> 2'          | false              |
-  | 2.1          | '~> 3'          | true               |
-  | 2.2          | '~> 2'          | false              |
-  | 2.2          | '~> 3'          | true               |
-  | 2.2          | '~> 4'          | true               |
-  | 2.2          | '~> 5'          | true               |
-  | 2.3          | '~> 2'          | false              |
-  | 2.3          | '~> 3'          | true               |
-  | 2.3          | '~> 4'          | true               |
-  | 2.3          | '~> 5'          | true               |
-  | 2.4          | '~> 2'          | false              |
-  | 2.4          | '~> 3'          | true               |
-  | 2.4          | '~> 4'          | true               |
-  | 2.4          | '~> 5'          | true               |
-  | 2.5          | '~> 2'          | false              |
-  | 2.5          | '~> 3'          | true               |
-  | 2.5          | '~> 4'          | true               |
-  | 2.5          | '~> 5'          | true               |
+  | 1.9.3        | ~> 2            | false              |
+  | 2.0          | ~> 2            | false              |
+  | 2.0          | ~> 3            | true               |
+  | 2.1          | ~> 2            | false              |
+  | 2.1          | ~> 3            | true               |
+  | 2.2          | ~> 2            | false              |
+  | 2.2          | ~> 3            | true               |
+  | 2.2          | ~> 4            | true               |
+  | 2.2          | ~> 5            | true               |
+  | 2.3          | ~> 2            | false              |
+  | 2.3          | ~> 3            | true               |
+  | 2.3          | ~> 4            | true               |
+  | 2.3          | ~> 5            | true               |
+  | 2.4          | ~> 2            | false              |
+  | 2.4          | ~> 3            | true               |
+  | 2.4          | ~> 4            | true               |
+  | 2.4          | ~> 5            | true               |
+  | 2.5          | ~> 2            | false              |
+  | 2.5          | ~> 3            | true               |
+  | 2.5          | ~> 4            | true               |
+  | 2.5          | ~> 5            | true               |
