@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## {version} ({date})
+## 6.8.0 (17 May 2018)
 
 ### Fixes
 
