@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 6.8.0 (17 May 2018)
+
+### Fixes
+
+* (Rake) Ensure newer rake versions are used when possible
+  | [#466](https://github.com/bugsnag/bugsnag-ruby/pull/466)
+
 ## 6.7.2 (24 Apr 2018)
 
 ### Fixes
