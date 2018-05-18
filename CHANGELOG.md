@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 6.7.3 (18 May 2018)
 
 ### Fixes
 
