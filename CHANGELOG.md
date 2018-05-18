@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* Apply metadata filters to HTTP referer fields
+  | [#460](https://github.com/bugsnag/bugsnag-ruby/pull/460)
+  | [Renee Balmert](https://github.com/tremlab)
+
 ## 6.7.2 (24 Apr 2018)
 
 ### Fixes
