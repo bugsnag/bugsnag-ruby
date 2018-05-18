@@ -1,14 +1,14 @@
 source "https://rubygems.org"
 
 group :test, optional: true do
-  gem 'rake', RUBY_VERSION <= '1.9.3' ? '~> 10.1.1' : '~> 12.3.0'
-  gem 'rspec'
-  gem 'rspec-mocks'
-  gem 'rdoc', '~> 5.1.0'
-  gem 'pry'
-  gem 'addressable', '~> 2.3.8'
-  gem 'delayed_job' if RUBY_VERSION >= '2.2.2'
-  gem 'webmock', RUBY_VERSION <= '1.9.3' ? '2.3.2': '>2.3.2'
+    gem 'rake', RUBY_VERSION <= '1.9.3' ? '~> 11.3.0' : '~> 12.3.0'
+    gem 'rspec'
+    gem 'rspec-mocks'
+    gem 'rdoc', '~> 5.1.0'
+    gem 'pry'
+    gem 'addressable', '~> 2.3.8'
+    gem 'delayed_job' if RUBY_VERSION >= '2.2.2'
+    gem 'webmock', RUBY_VERSION <= '1.9.3' ? '2.3.2': '>2.3.2'
 end
 
 group :coverage, optional: true do
