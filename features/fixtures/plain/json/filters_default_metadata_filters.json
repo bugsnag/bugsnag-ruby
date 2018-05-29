@@ -1,0 +1,9 @@
+{
+    "authorization": "[FILTERED]",
+    "cookie": "[FILTERED]",
+    "password": "[FILTERED]",
+    "secret": "[FILTERED]",
+    "warden.user.user.key": "[FILTERED]",
+    "rack.request.form_vars": "[FILTERED]",
+    "filter_me": "NO FILTER"
+}

@@ -1,0 +1,12 @@
+{
+    "msg": {
+        "class": "HandledError",
+        "args": [],
+        "retry": false,
+        "queue": "default",
+        "jid": "IGNORE",
+        "created_at": "IGNORE",
+        "enqueued_at": "IGNORE"
+    },
+    "queue": "default"
+}
