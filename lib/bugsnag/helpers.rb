@@ -25,14 +25,12 @@ module Bugsnag
       reduced_value = trim_metadata(sanitized_value)
       return reduced_value unless payload_too_long?(reduced_value)
 
-      # Recursively trim code from stacktrace, oldest function first
-      threshold = get_payload_length(reduced_value) - MAX_PAYLOAD_LENGTH
-      reduced_value = trim_stacktrace_code(reduced_value, threshold)
+      # Trim code from stacktrace
+      reduced_value = trim_stacktrace_code(reduced_value)
       return reduced_value unless payload_too_long?(reduced_value)
 
-      # Recursively remove oldest functions in stacktrace
-      threshold = get_payload_length(reduced_value) - MAX_PAYLOAD_LENGTH
-      trim_stacktrace_functions(reduced_value, threshold)
+      # Remove oldest functions in stacktrace
+      trim_stacktrace_functions(reduced_value)
     end
 
     ##
@@ -73,7 +71,7 @@ module Bugsnag
 
     ##
     # Remove all code from stacktraces
-    def self.trim_stacktrace_code(payload, threshold)
+    def self.trim_stacktrace_code(payload)
       extract_exception(payload) do |exception|
         exception[:stacktrace].each do |frame|
           frame.delete(:code)
@@ -84,7 +82,7 @@ module Bugsnag
 
     ##
     # Truncate stacktraces
-    def self.trim_stacktrace_functions(payload, threshold)
+    def self.trim_stacktrace_functions(payload)
       extract_exception(payload) do |exception|
         stack = exception[:stacktrace]
         exception[:stacktrace] = stack.take(MAX_TRIM_STACK_FRAMES)
