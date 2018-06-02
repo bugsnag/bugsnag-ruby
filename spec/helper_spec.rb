@@ -100,7 +100,7 @@ describe Bugsnag::Helpers do
         expect(trimmed[:events][0][:preserved]).to eq("Foo")
       end
 
-      it "trims stacktrace code, oldest first" do
+      it "trims stacktrace code" do
         payload = {
           :events => [{
             :exceptions => [{
@@ -126,28 +126,23 @@ describe Bugsnag::Helpers do
         expect(trace.length).to eq(2)
         expect(trace[0][:lineNumber]).to eq(1)
         expect(trace[0][:file]).to eq('/trace1')
-        expect(trace[0][:code]).to_not be_nil
+        expect(trace[0][:code]).to be_nil
         expect(trace[1][:lineNumber]).to eq(2)
         expect(trace[1][:file]).to eq('/trace2')
         expect(trace[1][:code]).to be_nil
       end
 
-      it "trims stacktrace entries, oldest first" do
+      it "trims stacktrace entries" do
         payload = {
           :events => [{
             :exceptions => [{
-              :stacktrace => [
+              :stacktrace => 18000.times.map do |index|
                 {
-                  :lineNumber => 1,
-                  :file => '/trace1',
-                  :something => 150.times.map {|i| 2.times.map { |k| SecureRandom.hex(700) } }
-                },
-                {
-                  :lineNumber => 2,
-                  :file => '/trace2',
-                  :something => 200.times.map {|i| 2.times.map { |k| SecureRandom.hex(1500) } }
+                  :lineNumber => index,
+                  :file => "/path/to/item_#{index}.rb",
+                  :code => { "#{index}" => "puts 'code'" }
                 }
-              ]
+              end
             }]
           }]
         }
@@ -155,10 +150,12 @@ describe Bugsnag::Helpers do
         trimmed = Bugsnag::Helpers.trim_if_needed(payload)
         expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
         trace = trimmed[:events][0][:exceptions][0][:stacktrace]
-        expect(trace.length).to eq(1)
-        expect(trace[0][:lineNumber]).to eq(1)
-        expect(trace[0][:file]).to eq('/trace1')
-        expect(trace[0][:something]).to_not be_nil
+        expect(trace.length).to eq(30)
+        30.times.map do |index|
+          expect(trace[index][:lineNumber]).to eq(index)
+          expect(trace[index][:file]).to eq("/path/to/item_#{index}.rb")
+          expect(trace[index][:code]).to be_nil
+        end
       end
     end
   end

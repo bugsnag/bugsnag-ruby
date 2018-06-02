@@ -8,6 +8,7 @@ module Bugsnag
     MAX_STRING_LENGTH = 3072
     MAX_PAYLOAD_LENGTH = 512000
     MAX_ARRAY_LENGTH = 80
+    MAX_TRIM_STACK_FRAMES = 30
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
     ##
@@ -71,31 +72,22 @@ module Bugsnag
     TRUNCATION_INFO = '[TRUNCATED]'
 
     ##
-    # Trim stacktrace code out if they're too large, oldest functions first
+    # Remove all code from stacktraces
     def self.trim_stacktrace_code(payload, threshold)
       extract_exception(payload) do |exception|
-        total = exception[:stacktrace].length
-        count = 0
-        saved = 0
-        while (count < total) && (saved < threshold)
-          trace = exception[:stacktrace][total - count - 1]
-          saved += get_payload_length(trace[:code])
-          trace.delete(:code)
-          count += 1
+        exception[:stacktrace].each do |frame|
+          frame.delete(:code)
         end
       end
       payload
     end
 
     ##
-    # Trim stacktrace entries out oldest functions first
+    # Truncate stacktraces
     def self.trim_stacktrace_functions(payload, threshold)
       extract_exception(payload) do |exception|
-        saved = 0
-        while (exception[:stacktrace].size > 1) && (saved < threshold)
-          saved += get_payload_length(exception[:stacktrace].last)
-          exception[:stacktrace].pop
-        end
+        stack = exception[:stacktrace]
+        exception[:stacktrace] = stack.take(MAX_TRIM_STACK_FRAMES)
       end
       payload
     end
@@ -130,10 +122,10 @@ module Bugsnag
 
     ##
     # Shorten array until it fits within the payload size limit when serialized
-    def self.truncate_array(array, limit = MAX_ARRAY_LENGTH)
+    def self.truncate_array(array)
       return [] unless array.respond_to?(:slice)
-      array.slice(0, limit).map do |item|
-        truncate_arrays_in_value(item, limit)
+      array.slice(0, MAX_ARRAY_LENGTH).map do |item|
+        truncate_arrays_in_value(item)
       end
     end
 
@@ -192,12 +184,12 @@ module Bugsnag
       collection.map {|value| trim_strings_in_value(value)}
     end
 
-    def self.truncate_arrays_in_value(value, limit = MAX_ARRAY_LENGTH)
+    def self.truncate_arrays_in_value(value)
       case value
       when Hash
-        truncate_arrays_in_hash(value, limit)
+        truncate_arrays_in_hash(value)
       when Array, Set
-        truncate_array(value, limit)
+        truncate_array(value)
       else
         value
       end
@@ -212,10 +204,10 @@ module Bugsnag
       object
     end
 
-    def self.truncate_arrays_in_hash(hash, limit = MAX_ARRAY_LENGTH)
+    def self.truncate_arrays_in_hash(hash)
       return {} unless hash.is_a?(Hash)
       hash.each_with_object({}) do |(key, value), reduced_hash|
-        if reduced_value = truncate_arrays_in_value(value, limit)
+        if reduced_value = truncate_arrays_in_value(value)
           reduced_hash[key] = reduced_value
         end
       end
