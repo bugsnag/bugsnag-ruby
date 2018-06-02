@@ -29,6 +29,10 @@ module Bugsnag
       reduced_value = trim_stacktrace_code(reduced_value)
       return reduced_value unless payload_too_long?(reduced_value)
 
+      # Remove metadata
+      reduced_value = remove_metadata_from_events(reduced_value)
+      return reduced_value unless payload_too_long?(reduced_value)
+
       # Remove oldest functions in stacktrace
       trim_stacktrace_functions(reduced_value)
     end
