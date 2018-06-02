@@ -72,103 +72,89 @@ describe Bugsnag::Helpers do
 
     context "payload length is greater than allowed" do
 
-      context "value is a String" do
-        it "trims length" do
-          value = Bugsnag::Helpers.trim_if_needed(SecureRandom.hex(500_000/2))
-          expect(value.length).to be <= Bugsnag::Helpers::MAX_STRING_LENGTH
-        end
+      it "trims metadata strings" do
+        payload = {
+          :events => [{
+            :metaData => 50000.times.map {|i| "should truncate" }.join(""),
+            :preserved => "Foo"
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        expect(trimmed[:events][0][:metaData].length).to be <= Bugsnag::Helpers::MAX_STRING_LENGTH
+        expect(trimmed[:events][0][:preserved]).to eq("Foo")
       end
 
-      context "value is an Array" do
-        it "trims nested string contents" do
-          value = [[30.times.map {|i| SecureRandom.hex(8192) }]]
-          json = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(value))
-          expect(json.length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-        end
-
-        it "trims string contents" do
-          value = 30.times.map {|i| SecureRandom.hex(8192) }
-          json = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(value))
-          expect(json.length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-        end
+      it "truncates metadata arrays" do
+        payload = {
+          :events => [{
+            :metaData => 50000.times.map {|i| "should truncate" },
+            :preserved => "Foo"
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        expect(trimmed[:events][0][:metaData].length).to be <= Bugsnag::Helpers::MAX_ARRAY_LENGTH
+        expect(trimmed[:events][0][:preserved]).to eq("Foo")
       end
 
-      context "value is a Set" do
-        it "trims string contents" do
-          value = Set.new(30.times.map {|i| SecureRandom.hex(8192) })
-          json = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(value))
-          expect(json.length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-        end
+      it "trims stacktrace code" do
+        payload = {
+          :events => [{
+            :exceptions => [{
+              :stacktrace => [
+                {
+                  :lineNumber => 1,
+                  :file => '/trace1',
+                  :code => 50.times.map {|i| SecureRandom.hex(3072) }
+                },
+                {
+                  :lineNumber => 2,
+                  :file => '/trace2',
+                  :code => 50.times.map {|i| SecureRandom.hex(3072) }
+                }
+              ]
+            }]
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trace = trimmed[:events][0][:exceptions][0][:stacktrace]
+        expect(trace.length).to eq(2)
+        expect(trace[0][:lineNumber]).to eq(1)
+        expect(trace[0][:file]).to eq('/trace1')
+        expect(trace[0][:code]).to be_nil
+        expect(trace[1][:lineNumber]).to eq(2)
+        expect(trace[1][:file]).to eq('/trace2')
+        expect(trace[1][:code]).to be_nil
       end
 
-      context "value can be converted to a String" do
-        it "converts to a string and trims" do
-          value = Set.new(30_000.times.map {|i| Bugsnag::Helpers })
-          json = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(value))
-          expect(json.length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-        end
-      end
-
-      context "value is a Hash" do
-
-        before(:each) do
-          @metadata = {
-            :short_string => "this should not be truncated",
-            :long_string => 10000.times.map {|i| "should truncate" }.join(""),
-            :long_string_ary => 30.times.map {|i| SecureRandom.hex(8192) }
-          }
-
-          @trimmed_metadata = Bugsnag::Helpers.trim_if_needed @metadata
-        end
-
-        it "does not trim short values" do
-          expect(@trimmed_metadata[:short_string]).to eq @metadata[:short_string]
-        end
-
-        it "trims long string values" do
-          expect(@trimmed_metadata[:long_string].length).to eq(Bugsnag::Helpers::MAX_STRING_LENGTH)
-          expect(@trimmed_metadata[:long_string].match(/\[TRUNCATED\]$/)).to_not be_nil
-        end
-
-        it "trims nested long string values" do
-          @trimmed_metadata[:long_string_ary].each do |str|
-            expect(str.match(/\[TRUNCATED\]$/)).to_not be_nil
-            expect(str.length).to eq(Bugsnag::Helpers::MAX_STRING_LENGTH)
-          end
-        end
-
-        it "does not change the argument value" do
-          expect(@metadata[:long_string].length).to be > Bugsnag::Helpers::MAX_STRING_LENGTH
-          expect(@metadata[:long_string].match(/\[TRUNCATED\]$/)).to be_nil
-          expect(@metadata[:short_string].length).to eq(28)
-          expect(@metadata[:short_string]).to eq("this should not be truncated")
-          expect(@trimmed_metadata[:long_string_ary].length).to eq(30)
-        end
-      end
-
-      context "and trimmed strings are not enough" do
-        it "truncates long arrays" do
-          value = [100.times.map {|i| SecureRandom.hex(8192) }, "a"]
-          trimmed_value = Bugsnag::Helpers.trim_if_needed(value)
-          expect(trimmed_value.length).to eq 2
-          expect(trimmed_value.first.length).to eq Bugsnag::Helpers::MAX_ARRAY_LENGTH
-          trimmed_value.first.each do |str|
-            expect(str.match(/\[TRUNCATED\]$/)).to_not be_nil
-            expect(str.length).to eq(Bugsnag::Helpers::MAX_STRING_LENGTH)
-          end
-
-          expect(::JSON.dump(trimmed_value).length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-        end
-
-        it "removes metadata from events" do
-          metadata = Hash[*20000.times.map {|i| [i,i+1]}.flatten]
-          frames = 100.times.map {|i| SecureRandom.hex(4096) }
-          value = {key:"abc", events:[{metaData: metadata, frames: frames, cake: "carrot"}]}
-          trimmed_value = Bugsnag::Helpers.trim_if_needed(value)
-          expect(::JSON.dump(trimmed_value).length).to be < Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-          expect(trimmed_value[:key]).to eq value[:key]
-          expect(trimmed_value[:events].first.keys.to_set).to eq [:frames, :cake].to_set
-          expect(trimmed_value[:events].first[:metaData]).to be_nil
+      it "trims stacktrace entries" do
+        payload = {
+          :events => [{
+            :exceptions => [{
+              :stacktrace => 18000.times.map do |index|
+                {
+                  :lineNumber => index,
+                  :file => "/path/to/item_#{index}.rb",
+                  :code => { "#{index}" => "puts 'code'" }
+                }
+              end
+            }]
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trace = trimmed[:events][0][:exceptions][0][:stacktrace]
+        expect(trace.length).to eq(30)
+        30.times.map do |index|
+          expect(trace[index][:lineNumber]).to eq(index)
+          expect(trace[index][:file]).to eq("/path/to/item_#{index}.rb")
+          expect(trace[index][:code]).to be_nil
         end
       end
     end
