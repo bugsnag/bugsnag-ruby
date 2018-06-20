@@ -12,20 +12,24 @@ group :test, optional: true do
 end
 
 group :coverage, optional: true do
-    gem 'simplecov'
-    gem 'coveralls'
+  gem 'simplecov'
+  gem 'coveralls'
 end
 
 group :rubocop, optional: true do
-    gem 'rubocop', '~> 0.52.1'
+  gem 'rubocop', '~> 0.52.1'
 end
 
 group :sidekiq, optional: true do
-    gem 'sidekiq', '~> 5.0.4'
+  gem 'sidekiq', '~> 5.0.4'
 end
 
 group :doc, optional: true do
   gem 'hanna-nouveau'
+end
+
+group :maze, optional: true do
+  gem 'bugsnag-maze-runner', git: 'https://github.com/bugsnag/maze-runner' if RUBY_VERSION >= '2.0.0'
 end
 
 gemspec
