@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+gem 'bugsnag'
+gem 'resque'
+gem 'rake'
+gem 'redis'

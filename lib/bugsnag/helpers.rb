@@ -6,8 +6,9 @@ require 'json'
 module Bugsnag
   module Helpers
     MAX_STRING_LENGTH = 3072
-    MAX_PAYLOAD_LENGTH = 256000
-    MAX_ARRAY_LENGTH = 40
+    MAX_PAYLOAD_LENGTH = 512000
+    MAX_ARRAY_LENGTH = 80
+    MAX_TRIM_STACK_FRAMES = 30
     RAW_DATA_TYPES = [Numeric, TrueClass, FalseClass]
 
     ##
@@ -15,13 +16,25 @@ module Bugsnag
     # accepted by Bugsnag
     def self.trim_if_needed(value)
       value = "" if value.nil?
+
+      # Sanitize object
       sanitized_value = Bugsnag::Cleaner.clean_object_encoding(value)
       return sanitized_value unless payload_too_long?(sanitized_value)
-      reduced_value = trim_strings_in_value(sanitized_value)
+
+      # Trim metadata
+      reduced_value = trim_metadata(sanitized_value)
       return reduced_value unless payload_too_long?(reduced_value)
-      reduced_value = truncate_arrays_in_value(reduced_value)
+
+      # Trim code from stacktrace
+      reduced_value = trim_stacktrace_code(reduced_value)
       return reduced_value unless payload_too_long?(reduced_value)
-      remove_metadata_from_events(reduced_value)
+
+      # Remove metadata
+      reduced_value = remove_metadata_from_events(reduced_value)
+      return reduced_value unless payload_too_long?(reduced_value)
+
+      # Remove oldest functions in stacktrace
+      trim_stacktrace_functions(reduced_value)
     end
 
     ##
@@ -61,12 +74,55 @@ module Bugsnag
     TRUNCATION_INFO = '[TRUNCATED]'
 
     ##
+    # Remove all code from stacktraces
+    def self.trim_stacktrace_code(payload)
+      extract_exception(payload) do |exception|
+        exception[:stacktrace].each do |frame|
+          frame.delete(:code)
+        end
+      end
+      payload
+    end
+
+    ##
+    # Truncate stacktraces
+    def self.trim_stacktrace_functions(payload)
+      extract_exception(payload) do |exception|
+        stack = exception[:stacktrace]
+        exception[:stacktrace] = stack.take(MAX_TRIM_STACK_FRAMES)
+      end
+      payload
+    end
+
+    ##
+    # Wrapper for trimming stacktraces
+    def self.extract_exception(payload)
+      valid_payload = payload.is_a?(Hash) && payload[:events].respond_to?(:map)
+      return unless valid_payload && block_given?
+      payload[:events].each do |event|
+        event[:exceptions].each { |exception| yield exception }
+      end
+    end
+
+    ##
+    # Take the metadata from the events and trim it down
+    def self.trim_metadata(payload)
+      return payload unless payload.is_a?(Hash) and payload[:events].respond_to?(:map)
+      payload[:events].map do |event|
+        event[:metaData] = truncate_arrays_in_value(event[:metaData])
+        event[:metaData] = trim_strings_in_value(event[:metaData])
+      end
+      payload
+    end
+
+    ##
     # Check if a value is a raw type which should not be trimmed, truncated
     # or converted to a string
     def self.is_json_raw_type?(value)
       RAW_DATA_TYPES.detect {|klass| value.is_a?(klass)} != nil
     end
 
+    ##
     # Shorten array until it fits within the payload size limit when serialized
     def self.truncate_array(array)
       return [] unless array.respond_to?(:slice)
@@ -75,6 +131,7 @@ module Bugsnag
       end
     end
 
+    ##
     # Trim all strings to be less than the maximum allowed string length
     def self.trim_strings_in_value(value)
       return value if is_json_raw_type?(value)
@@ -88,13 +145,18 @@ module Bugsnag
       end
     end
 
+    ##
     # Validate that the serialized JSON string value is below maximum payload
     # length
     def self.payload_too_long?(value)
+      get_payload_length(value) >= MAX_PAYLOAD_LENGTH
+    end
+
+    def self.get_payload_length(value)
       if value.is_a?(String)
-        value.length >= MAX_PAYLOAD_LENGTH
+        value.length
       else
-        ::JSON.dump(value).length >= MAX_PAYLOAD_LENGTH
+        ::JSON.dump(value).length
       end
     end
 
