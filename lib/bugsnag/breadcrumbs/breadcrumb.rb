@@ -1,6 +1,5 @@
 module Bugsnag
   module Breadcrumbs
-    MAX_SIZE = 4096
     NAME_SIZE_LIMIT = 30
     NAVIGATION_TYPE = "navigation"
     REQUEST_TYPE = "request"
@@ -40,13 +39,12 @@ module Bugsnag
       end
 
       def as_json
-        hash = {
+        {
           :timestamp => timestamp,
           :name => name,
-          :type => type
+          :type => type,
+          :metaData => metadata
         }
-        hash[:metaData] = metadata unless JSON.dump(metadata).length > Bugsnag::Breadcrumbs::MAX_SIZE
-        hash
       end
     end
   end

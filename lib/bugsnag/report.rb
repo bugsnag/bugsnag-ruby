@@ -117,7 +117,7 @@ module Bugsnag
       payload_event.reject! {|k,v| v.nil? }
 
       # appends the breadcrumbs
-      filtered_breadcrumbs = breadcrumbs.map do |breadcrumb|
+      payload_event[:breadcrumbs] = breadcrumbs.map do |breadcrumb|
         cleaner.clean_object(breadcrumb.as_json)
       end
 
@@ -130,7 +130,6 @@ module Bugsnag
           :url => NOTIFIER_URL
         },
         :events => [payload_event],
-        :breadcrumbs => filtered_breadcrumbs
       }
     end
 

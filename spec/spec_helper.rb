@@ -30,8 +30,9 @@ def get_exception_from_payload(payload)
 end
 
 def get_breadcrumb_from_payload(payload)
-  expect(payload["breadcrumbs"].size).to be > 0
-  payload["breadcrumbs"].last
+  event = get_event_from_payload(payload)
+  expect(event["breadcrumbs"].size).to be > 0
+  event["breadcrumbs"].last
 end
 
 def notify_test_exception(*args)

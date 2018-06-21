@@ -27,7 +27,6 @@ require "bugsnag/middleware/mailman"
 require "bugsnag/middleware/rake"
 require "bugsnag/middleware/callbacks"
 require "bugsnag/middleware/classify_error"
-
 require "bugsnag/breadcrumbs/breadcrumb"
 
 module Bugsnag
@@ -114,11 +113,12 @@ module Bugsnag
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload, configuration, options)
 
         summary = {
-          :message => exception.message,
+          :errorClass => exception.class.to_s,
+          :errorMessage => exception.message,
           :severity => report.severity,
           :unhandled => auto_notify
         }
-        leave_breadcrumb(exception, Bugsnag::Breadcrumbs::ERROR_TYPE, summary)
+        leave_breadcrumb(exception.class.to_s, Bugsnag::Breadcrumbs::ERROR_TYPE, summary)
       end
     end
 
