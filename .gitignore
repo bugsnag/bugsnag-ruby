@@ -50,3 +50,6 @@ vendor
 # For rubinius:
 #*.rbc
 bin
+
+# For Bugsnag-Maze-Runner:
+maze_output

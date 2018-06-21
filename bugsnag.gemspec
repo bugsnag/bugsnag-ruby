@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
 
   s.description = "Ruby notifier for bugsnag.com"
   s.summary = "Ruby notifier for bugsnag.com"
-  s.homepage = "http://github.com/bugsnag/bugsnag-ruby"
+  s.homepage = "https://github.com/bugsnag/bugsnag-ruby"
   s.licenses = ["MIT"]
 
   s.files = `git ls-files`.split("\n").reject {|file| file.start_with? "example/"}

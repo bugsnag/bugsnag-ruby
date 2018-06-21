@@ -1,3 +1,0 @@
-load "app.rb"
-require "resque/tasks"
-require "bugsnag/integrations/rake"

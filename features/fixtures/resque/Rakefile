@@ -1,0 +1,4 @@
+load 'app.rb'
+require 'resque/tasks'
+
+Resque.redis = Redis.new(:url => 'redis://redis:6379')
