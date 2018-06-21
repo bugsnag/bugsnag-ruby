@@ -95,6 +95,7 @@ describe Bugsnag::Rack do
         :fullpath => "/TEST_PATH?email=hello@world.com&another_param=thing"
       )
       expect(::Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
+      expect(::Rack).to receive(:version).and_return("test")
 
       # modify rack_env to include redacted referer
       report = double("Bugsnag::Report")
@@ -122,6 +123,9 @@ describe Bugsnag::Rack do
       expect(report).to receive(:add_tab).once.with(:environment, rack_env)
       expect(report).to receive(:add_tab).once.with(:session, {
         :session => true
+      })
+      expect(report).to receive(:add_tab).once.with(:app, {
+        :rackVersion => "test"
       })
 
       expect(callback).to receive(:call).with(report)
