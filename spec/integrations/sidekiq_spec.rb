@@ -15,7 +15,9 @@ describe Bugsnag::Sidekiq do
     before do
       Sidekiq::Testing.inline!
       stub_const('Sidekiq::VERSION', '2.0.0')
-      Bugsnag::Sidekiq.configure_server(Sidekiq::Testing)
+      Sidekiq::Testing.server_middleware do |chain|
+        chain.add ::Bugsnag::Sidekiq
+      end
     end
 
     it "works" do

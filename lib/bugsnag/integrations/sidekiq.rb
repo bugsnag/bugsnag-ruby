@@ -31,7 +31,7 @@ module Bugsnag
     end
 
     def self.notify(exception)
-      return unless [Interrupt, SystemExit, SignalException].include? exception.class
+      return if [Interrupt, SystemExit, SignalException].include? exception.class
       Bugsnag.notify(exception, true) do |report|
         report.severity = "error"
         report.severity_reason = {
