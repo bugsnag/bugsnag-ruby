@@ -7,7 +7,7 @@ module Bugsnag
 
     FRAMEWORK_ATTRIBUTES = {
       :framework => "Sidekiq"
-    }
+    } unless const_defined?(:FRAMEWORK_ATTRIBUTES)
 
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
@@ -21,36 +21,43 @@ module Bugsnag
         Bugsnag.configuration.set_request_data :sidekiq, { :msg => msg, :queue => queue }
         yield
       rescue Exception => ex
-        raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
-        notify(ex)
+        self.class.notify(ex) unless self.class.sidekiq_supports_error_handlers
         raise
       ensure
         Bugsnag.configuration.clear_request_data
       end
     end
 
-    def notify(exception)
-      Bugsnag.notify(exception, true) do |report|
-        report.severity = "error"
-        report.severity_reason = {
-          :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
-          :attributes => FRAMEWORK_ATTRIBUTES
-        }
+    def self.notify(exception)
+      unless [Interrupt, SystemExit, SignalException].include? exception.class
+        Bugsnag.notify(exception, true) do |report|
+          report.severity = "error"
+          report.severity_reason = {
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+            :attributes => FRAMEWORK_ATTRIBUTES
+          }
+        end
+      end
+    end
+
+    def self.sidekiq_supports_error_handlers
+      Gem::Version.new(::Sidekiq::VERSION) >= Gem::Version.new('3.0.0')
+    end
+
+    def self.configure_server(server)
+      if Bugsnag::Sidekiq.sidekiq_supports_error_handlers
+        server.error_handlers << proc do |ex, context|
+          Bugsnag::Sidekiq.notify(ex)
+        end
+      end
+
+      server.server_middleware do |chain|
+        chain.add ::Bugsnag::Sidekiq
       end
     end
   end
 end
 
 ::Sidekiq.configure_server do |config|
-  if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('3.0.0')
-    config.error_handlers << proc do |ex, context|
-      Bugsnag.configuration.set_request_data :sidekiq, { :msg => context, :queue => context['queue'] }
-      bugsnag_handler = ::Bugsnag::Sidekiq.new
-      bugsnag_handler.notify(ex)
-    end
-  else
-    config.server_middleware do |chain|
-      chain.add ::Bugsnag::Sidekiq
-    end
-  end
+  Bugsnag::Sidekiq.configure_server(config)
 end

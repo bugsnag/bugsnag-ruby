@@ -9,12 +9,13 @@ class FailingWorker
 end
 
 describe Bugsnag::Sidekiq do
-  context "integration tests" do
+  # Integration testing v3 is handled by maze as sidekiq doesnt
+  # support error_handlers in testing mode
+  context "integration tests in v2" do
     before do
       Sidekiq::Testing.inline!
-      Sidekiq::Testing.server_middleware do |chain|
-        chain.add Bugsnag::Sidekiq
-      end
+      stub_const('Sidekiq::VERSION', '2.0.0')
+      Bugsnag::Sidekiq.configure_server(Sidekiq::Testing)
     end
 
     it "works" do
@@ -54,6 +55,10 @@ describe Bugsnag::Sidekiq do
 
       error_handlers = []
       expect(config).to receive(:error_handlers).and_return(error_handlers)
+
+      chain = double
+      expect(config).to receive(:server_middleware).and_yield(chain)
+      expect(chain).to receive(:add).with(::Bugsnag::Sidekiq)
 
       load './lib/bugsnag/integrations/sidekiq.rb'
       expect(error_handlers.size).to eq(1)
