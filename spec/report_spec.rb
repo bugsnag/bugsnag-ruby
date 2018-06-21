@@ -1064,10 +1064,10 @@ describe Bugsnag::Report do
       expect(exception["message"]).to eq("'nil' was notified as an exception")
 
       stacktrace = exception["stacktrace"][0]
-      expect(stacktrace["lineNumber"]).to eq(1047)
+      expect(stacktrace["lineNumber"]).to eq(1059)
       expect(stacktrace["file"]).to end_with("spec/report_spec.rb")
-      expect(stacktrace["code"]["1046"]).to eq("  it 'uses an appropriate message if nil is notified' do")
-      expect(stacktrace["code"]["1047"]).to eq("    Bugsnag.notify(nil)")
+      expect(stacktrace["code"]["1058"]).to eq("  it 'uses an appropriate message if nil is notified' do")
+      expect(stacktrace["code"]["1059"]).to eq("    Bugsnag.notify(nil)")
     }
   end
 
