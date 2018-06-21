@@ -31,11 +31,20 @@ module Bugsnag::Middleware
         url = "#{request.scheme}://#{request.host}"
         url << ":#{request.port}" unless [80, 443].include?(request.port)
 
+        cleaner = Bugsnag::Cleaner.new(report.configuration.meta_data_filters)
+
         # If app is passed a bad URL, this code will crash attempting to clean it
         begin
-          url << Bugsnag::Cleaner.new(report.configuration.meta_data_filters).clean_url(request.fullpath)
+          url << cleaner.clean_url(request.fullpath)
         rescue StandardError => stde
           Bugsnag.configuration.warn "RackRequest - Rescued error while cleaning request.fullpath: #{stde}"
+        end
+
+        referer = nil
+        begin
+          referer = cleaner.clean_url(request.referer) if request.referer
+        rescue StandardError => stde
+          Bugsnag.configuration.warn "RackRequest - Rescued error while cleaning request.referer: #{stde}"
         end
 
         headers = {}
@@ -52,12 +61,14 @@ module Bugsnag::Middleware
           headers[header_key.split("_").map {|s| s.capitalize}.join("-")] = value
         end
 
+        headers["Referer"] = referer if headers["Referer"]
+
         # Add a request tab
         report.add_tab(:request, {
           :url => url,
           :httpMethod => request.request_method,
           :params => params.to_hash,
-          :referer => request.referer,
+          :referer => referer,
           :clientIp => client_ip,
           :headers => headers
         })
