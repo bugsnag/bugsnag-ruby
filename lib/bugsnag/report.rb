@@ -129,7 +129,7 @@ module Bugsnag
           :version => NOTIFIER_VERSION,
           :url => NOTIFIER_URL
         },
-        :events => [payload_event],
+        :events => [payload_event]
       }
     end
 
