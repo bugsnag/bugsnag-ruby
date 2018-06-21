@@ -5,9 +5,11 @@ module Bugsnag
   # Extracts and attaches Sidekiq job and queue information to an error report
   class Sidekiq
 
-    FRAMEWORK_ATTRIBUTES = {
-      :framework => "Sidekiq"
-    } unless const_defined?(:FRAMEWORK_ATTRIBUTES)
+    unless const_defined?(:FRAMEWORK_ATTRIBUTES)
+      FRAMEWORK_ATTRIBUTES = {
+        :framework => "Sidekiq"
+      }
+    end
 
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
@@ -29,14 +31,13 @@ module Bugsnag
     end
 
     def self.notify(exception)
-      unless [Interrupt, SystemExit, SignalException].include? exception.class
-        Bugsnag.notify(exception, true) do |report|
-          report.severity = "error"
-          report.severity_reason = {
-            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
-            :attributes => FRAMEWORK_ATTRIBUTES
-          }
-        end
+      return unless [Interrupt, SystemExit, SignalException].include? exception.class
+      Bugsnag.notify(exception, true) do |report|
+        report.severity = "error"
+        report.severity_reason = {
+          :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+          :attributes => FRAMEWORK_ATTRIBUTES
+        }
       end
     end
 
@@ -46,7 +47,7 @@ module Bugsnag
 
     def self.configure_server(server)
       if Bugsnag::Sidekiq.sidekiq_supports_error_handlers
-        server.error_handlers << proc do |ex, context|
+        server.error_handlers << proc do |ex, _context|
           Bugsnag::Sidekiq.notify(ex)
         end
       end
