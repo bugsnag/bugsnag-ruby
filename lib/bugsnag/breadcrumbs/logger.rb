@@ -20,17 +20,18 @@ module Bugsnag::Breadcrumbs
       end
     end
 
-    def self.log_breadcrumb(name, data = nil, severity = "unknown")
+    def self.log_breadcrumb(message, data = nil, severity = "unknown")
       metadata = {
-        :severity => severity
+        :severity => severity,
+        :message => message
       }
       if data.is_a? Hash
         metadata.merge!(data)
       elsif !data.nil?
-        metadata[:data] = data
+        metadata[:data] = data.to_s
       end
 
-      Bugsnag.leave_breadcrumb(name, Bugsnag::Breadcrumbs::LOG_TYPE, metadata)
+      Bugsnag.leave_breadcrumb("Log output", metadata, Bugsnag::Breadcrumbs::LOG_TYPE)
     end
 
     def initialize(level = Logger::INFO)

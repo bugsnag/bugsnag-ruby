@@ -9,27 +9,21 @@ module Bugsnag::Breadcrumbs
 
     def <<(message)
       return if closed?
-      Bugsnag::Breadcrumbs.log_breadcrumb(message)
+      Bugsnag::Breadcrumbs::Logger.log_breadcrumb(message)
     end
 
     def append(event)
       return if closed? || !allow(event)
 
-      metadata = if !event.method.empty? && !event.file.empty? && !event.line.empty?
-                   {
-                     :trace => {
-                       :method => event.method,
-                       :file => event.file,
-                       :line => event.line
-                     },
-                     :data => event.data
-                   }
-                 else
-                   event.data
-                 end
+      message = event.data.to_s
+      metadata = {
+        :method => event.method.to_s,
+        :file => event.file.to_s,
+        :line => event.line.to_s
+      }.delete_if {|k,v| v == ""}
 
-      severity = Bugsnag::Breadcrumbs.get_severity_name(event.level)
-      Bugsnag::Breadcrumbs.log_breadcrumb(event.logger, metadata, severity)
+      severity = Bugsnag::Breadcrumbs::Logger.get_severity_name(event.level)
+      Bugsnag::Breadcrumbs::Logger.log_breadcrumb(message, metadata, severity)
     end
   end
 end

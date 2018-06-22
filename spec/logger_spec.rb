@@ -12,11 +12,12 @@ describe Bugsnag::Breadcrumbs::Logger do
 
   it "writes by default" do
     expect(Bugsnag).to receive(:leave_breadcrumb).with(
-      "message",
-      "log",
+      "Log output",
       {
-        :severity => "unknown"
-      }
+        :severity => "unknown",
+        :message => "message"
+      },
+      "log"
     )
     @logger << "message"
   end
@@ -29,11 +30,12 @@ describe Bugsnag::Breadcrumbs::Logger do
 
   it "writes after being re-opened" do
     expect(Bugsnag).to receive(:leave_breadcrumb).with(
-      "message",
-      "log",
+      "Log output",
       {
-        :severity => "unknown"
-      }
+        :severity => "unknown",
+        :message => "message"
+      },
+      "log"
     )
     @logger.close
     @logger.reopen
@@ -42,18 +44,18 @@ describe Bugsnag::Breadcrumbs::Logger do
 
   it "allows a progname and severity" do
     expect(Bugsnag).to receive(:leave_breadcrumb).with(
-      "message",
-      "log",
+      "Log output",
       {
         :progname => "logTests",
-        :severity => "info"
-      }
+        :severity => "info",
+        :message => "message"
+      },
+      "log"
     )
-    @logger.add Logger::INFO, "message", "logTests"
+    @logger.info("logTests") { "message" }
   end
 
   it "is a logger and a bugsnag logger" do
     expect(@logger.class.ancestors).to include(Bugsnag::Breadcrumbs::Logger, Logger)
   end
 end
-

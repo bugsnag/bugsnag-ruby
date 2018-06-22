@@ -6,48 +6,46 @@ ENV["LOGGING_INHERIT_CONTEXT"] = "false"
 require 'spec_helper'
 require 'logger'
 require 'logging'
-require 'bugsnag/logging/appender'
+require 'bugsnag/breadcrumbs/appender'
 
-describe Bugsnag::Logging::Appender do
-  
+describe Bugsnag::Breadcrumbs::Appender do
+
   before do
-    @appender = Bugsnag::Logging::Appender.new
+    @appender = Bugsnag::Breadcrumbs::Appender.new
   end
 
   it "writes breadcrumbs" do
     expect(Bugsnag).to receive(:leave_breadcrumb).with(
-      "message",
-      "log",
+      "Log output",
       {
-        :severity => "unknown"
-      }
+        :severity => "unknown",
+        :message => "message"
+      },
+      "log"
     )
     @appender << "message"
   end
 
   it "write breadcrumbs from a logevent" do
     expect(Bugsnag).to receive(:leave_breadcrumb).with(
-      "testLogger",
-      "log",
+      "Log output",
       {
-        :data => ["message1", "message2"],
-        :severity => "info"
-      }
+        :message => ["message1", "message2"].to_s,
+        :severity => "info",
+      },
+      "log"
     )
     logevent = Logging::LogEvent.new("testLogger", Logger::INFO, ["message1", "message2"], false)
     @appender.append logevent
   end
 
   it "adds trace metadata if available" do
-    expect(Bugsnag).to receive(:leave_breadcrumb).with(
-      "testLogger",
-      "log",
-      {
-        :trace => hash_including(:method, :file, :line),
-        :data => ["message1", "message2"],
-        :severity => "info"
-      }
-    )
+    expect(Bugsnag).to receive(:leave_breadcrumb) do |name, metadata, severity|
+      expect(name).to eq("Log output")
+      expect(metadata).to include(:message, :severity, :method, :file, :line)
+      expect(metadata).to include(:message => ["message1", "message2"].to_s, :severity => "info")
+      expect(severity).to eq("log")
+    end
     logevent = Logging::LogEvent.new("testLogger", Logger::INFO, ["message1", "message2"], true)
     @appender.append logevent
   end
@@ -61,8 +59,6 @@ describe Bugsnag::Logging::Appender do
   end
 
   it "is an appender and a bugsnag appender" do
-    expect(@appender.class.ancestors).to include(Bugsnag::Logging::Appender, Logging::Appender)
+    expect(@appender.class.ancestors).to include(Bugsnag::Breadcrumbs::Appender, Logging::Appender)
   end
 end
-
-    

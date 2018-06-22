@@ -124,7 +124,7 @@ module Bugsnag
 
     ##
     # Records a breadcrumb to give context to notifications
-    def leave_breadcrumb(name, type=nil, metadata={})
+    def leave_breadcrumb(name, metadata={}, type=Bugsnag::Breadcrumbs::MANUAL_TYPE)
       configuration.recorder.add_breadcrumb(Bugsnag::Breadcrumbs::Breadcrumb.new(name, type, metadata))
     end
 
