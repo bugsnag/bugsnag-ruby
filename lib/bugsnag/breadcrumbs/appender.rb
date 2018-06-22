@@ -20,7 +20,7 @@ module Bugsnag::Breadcrumbs
         :method => event.method.to_s,
         :file => event.file.to_s,
         :line => event.line.to_s
-      }.delete_if {|k,v| v == ""}
+      }.delete_if { |_k, v| v == "" }
 
       severity = Bugsnag::Breadcrumbs::Logger.get_severity_name(event.level)
       Bugsnag::Breadcrumbs::Logger.log_breadcrumb(message, metadata, severity)
