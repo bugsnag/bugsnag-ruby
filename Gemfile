@@ -4,7 +4,7 @@ group :test, optional: true do
     gem 'rake', RUBY_VERSION <= '1.9.3' ? '~> 11.3.0' : '~> 12.3.0'
     gem 'rspec'
     gem 'logging'
-    gem 'rdoc'
+    gem 'rdoc', '~> 5.1.0'
     gem 'rspec-mocks'
     gem 'pry'
     gem 'addressable', '~> 2.3.8'
