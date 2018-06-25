@@ -5,10 +5,7 @@ require 'logger'
 require 'bugsnag/breadcrumbs/logger'
 
 describe Bugsnag::Breadcrumbs::Logger do
-
-  before do
-    @logger = Bugsnag::Breadcrumbs::Logger.new
-  end
+  let(:logger) { Bugsnag::Breadcrumbs::Logger.new }
 
   it "writes by default" do
     expect(Bugsnag).to receive(:leave_breadcrumb).with(
@@ -19,13 +16,13 @@ describe Bugsnag::Breadcrumbs::Logger do
       },
       "log"
     )
-    @logger << "message"
+    logger << "message"
   end
 
   it "doesn't write when closed" do
     expect(Bugsnag).to_not receive(:leave_breadcrumb)
-    @logger.close
-    @logger << "message"
+    logger.close
+    logger << "message"
   end
 
   it "writes after being re-opened" do
@@ -37,9 +34,9 @@ describe Bugsnag::Breadcrumbs::Logger do
       },
       "log"
     )
-    @logger.close
-    @logger.reopen
-    @logger << "message"
+    logger.close
+    logger.reopen
+    logger << "message"
   end
 
   it "allows a progname and severity" do
@@ -52,10 +49,10 @@ describe Bugsnag::Breadcrumbs::Logger do
       },
       "log"
     )
-    @logger.info("logTests") { "message" }
+    logger.info("logTests") { "message" }
   end
 
   it "is a logger and a bugsnag logger" do
-    expect(@logger.class.ancestors).to include(Bugsnag::Breadcrumbs::Logger, Logger)
+    expect(logger.class.ancestors).to include(Bugsnag::Breadcrumbs::Logger, Logger)
   end
 end

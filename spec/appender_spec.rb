@@ -9,10 +9,7 @@ require 'logging'
 require 'bugsnag/breadcrumbs/appender'
 
 describe Bugsnag::Breadcrumbs::Appender do
-
-  before do
-    @appender = Bugsnag::Breadcrumbs::Appender.new
-  end
+  let(:appender) { Bugsnag::Breadcrumbs::Appender.new }
 
   it "writes breadcrumbs" do
     expect(Bugsnag).to receive(:leave_breadcrumb).with(
@@ -23,7 +20,7 @@ describe Bugsnag::Breadcrumbs::Appender do
       },
       "log"
     )
-    @appender << "message"
+    appender << "message"
   end
 
   it "write breadcrumbs from a logevent" do
@@ -36,7 +33,7 @@ describe Bugsnag::Breadcrumbs::Appender do
       "log"
     )
     logevent = Logging::LogEvent.new("testLogger", Logger::INFO, ["message1", "message2"], false)
-    @appender.append logevent
+    appender.append logevent
   end
 
   it "adds trace metadata if available" do
@@ -47,18 +44,18 @@ describe Bugsnag::Breadcrumbs::Appender do
       expect(severity).to eq("log")
     end
     logevent = Logging::LogEvent.new("testLogger", Logger::INFO, ["message1", "message2"], true)
-    @appender.append logevent
+    appender.append logevent
   end
 
   it "doesn't write if closed" do
     expect(Bugsnag).to_not receive(:leave_breadcrumb)
-    @appender.close
-    @appender << "message"
+    appender.close
+    appender << "message"
     logevent = Logging::LogEvent.new("testLogger", Logger::INFO, ["message1", "message2"], false)
-    @appender.append logevent
+    appender.append logevent
   end
 
   it "is an appender and a bugsnag appender" do
-    expect(@appender.class.ancestors).to include(Bugsnag::Breadcrumbs::Appender, Logging::Appender)
+    expect(appender.class.ancestors).to include(Bugsnag::Breadcrumbs::Appender, Logging::Appender)
   end
 end
