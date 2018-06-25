@@ -52,7 +52,8 @@ module Bugsnag::Breadcrumbs
         Bugsnag::Breadcrumbs::Logger.log_breadcrumb(
           message,
           { :progname => progname },
-          Bugsnag::Breadcrumbs::Logger.get_severity_name(severity))
+          Bugsnag::Breadcrumbs::Logger.get_severity_name(severity)
+        )
       end
     end
     alias log add
