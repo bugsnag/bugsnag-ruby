@@ -48,7 +48,7 @@ module Bugsnag::Breadcrumbs
         message = progname
       end
 
-      if severity >= level
+      if severity >= level # rubocop:disable Style/GuardClause
         Bugsnag::Breadcrumbs::Logger.log_breadcrumb(
           message,
           { :progname => progname },
