@@ -9,10 +9,10 @@ describe 'Configuration.logger' do
   context 'in a Rails app' do
     key_warning = '[Bugsnag]: No valid API key has been set, notifications will not be sent'
     is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
-    incompatible = (RUBY_VERSION < '2.0.0') || is_jruby
+    incompatible = (RUBY_VERSION < '2.1.0') || is_jruby
 
     before do
-      skip "Incompatible with Ruby <2.0 and JRuby" if incompatible
+      skip "Incompatible with Ruby <2.1 and JRuby" if incompatible
       @env['RACK_ENV'] = 'production'
     end
 
@@ -38,7 +38,7 @@ describe 'Configuration.logger' do
     end
     context 'sets an API key using the BUGSNAG_API_KEY env var' do
       it 'does not log a warning' do
-        skip "Incompatible with Ruby <2.0 and JRuby" if incompatible
+        skip "Incompatible with Ruby <2.1 and JRuby" if incompatible
         @env['BUGSNAG_API_KEY'] = 'c34a2472bd240ac0ab0f52715bbdc05d'
         output = run_app('rails-no-config')
         expect(output).not_to include(key_warning)
@@ -47,7 +47,7 @@ describe 'Configuration.logger' do
 
     context 'sets an API key using the bugsnag initializer' do
       it 'does not log a warning' do
-        skip "Incompatible with Ruby <2.0 and JRuby" if incompatible
+        skip "Incompatible with Ruby <2.1 and JRuby" if incompatible
         output = run_app('rails-initializer-config')
         expect(output).not_to include(key_warning)
       end
@@ -55,7 +55,7 @@ describe 'Configuration.logger' do
 
     context 'skips setting an API key' do
       it 'logs a warning' do
-        skip "Incompatible with Ruby <2.0 and JRuby" if incompatible
+        skip "Incompatible with Ruby <2.1 and JRuby" if incompatible
         output = run_app('rails-no-config')
         expect(output).to include(key_warning)
       end
@@ -63,7 +63,7 @@ describe 'Configuration.logger' do
 
     context 'sets an invalid API key using the BUGSNAG_API_KEY env var' do
       it 'logs a warning' do
-        skip "Incompatible with Ruby <2.0 and JRuby" if incompatible
+        skip "Incompatible with Ruby <2.1 and JRuby" if incompatible
         output = run_app('rails-invalid-initializer-config')
         expect(output).to include(key_warning)
       end
@@ -71,7 +71,7 @@ describe 'Configuration.logger' do
 
     context 'sets an invalid API key using the BUGSNAG_API_KEY env var' do
       it 'logs a warning' do
-        skip "Incompatible with Ruby <2.0 and JRuby" if incompatible
+        skip "Incompatible with Ruby <2.1 and JRuby" if incompatible
         @env['BUGSNAG_API_KEY'] = 'not a real key'
         output = run_app('rails-no-config')
         expect(output).to include(key_warning)
