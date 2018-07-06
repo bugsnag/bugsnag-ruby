@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
 
 gem 'railties', '4.2.10', require: %w(action_controller rails)
+gem 'nokogiri', '1.6.8'
 gem 'bugsnag', path: '../../../..'
