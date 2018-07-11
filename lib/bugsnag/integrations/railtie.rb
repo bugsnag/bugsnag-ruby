@@ -17,23 +17,6 @@ module Bugsnag
       load "bugsnag/tasks/bugsnag.rake"
     end
 
-    # send notifications if a command fails in a 'rails runner' call
-    if self.respond_to? :runner
-      runner do
-        at_exit do
-          if $!
-            Bugsnag.notify($!, true) do |report|
-              report.severity = "error"
-              report.severity_reason = {
-                :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
-                :attributes => FRAMEWORK_ATTRIBUTES
-              }
-            end
-          end
-        end
-      end
-    end
-
     config.before_initialize do
       # Configure bugsnag rails defaults
       # Skipping API key validation as the key may be set later in an

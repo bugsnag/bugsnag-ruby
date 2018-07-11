@@ -43,6 +43,8 @@ module Bugsnag
       yield(configuration) if block_given?
 
       check_key_valid if validate_api_key
+
+      register_at_exit
     end
 
     ##
@@ -111,6 +113,30 @@ module Bugsnag
       end
     end
 
+    ##
+    # Registers an at_exit function to automatically catch errors on exit
+    def register_at_exit
+      return if at_exit_handler_installed?
+      @exit_handler_added = true
+      at_exit do
+        if $!
+          Bugsnag.notify($!, true) do |report|
+            report.severity = 'error'
+            report.severity_reason = {
+              :type => Bugsnag::Report::UNHANDLED_EXCEPTION
+            }
+          end
+        end
+      end
+    end
+
+    ##
+    # Checks if an at_exit handler has been added
+    def at_exit_handler_installed?
+      @exit_handler_added ||= false
+    end
+
+    # Configuration getters
     ##
     # Returns the client's Configuration object, or creates one if not yet created.
     def configuration

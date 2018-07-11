@@ -1,6 +1,28 @@
 Changelog
 =========
 
+## 6.8.0 (11 Jul 2018)
+
+This release includes general performance improvements to payload trimming and
+filtering.
+
+### Enhancements
+
+* Capture unexpected app terminations automatically with `at_exit`
+  | [#397](https://github.com/bugsnag/bugsnag-ruby/pull/397)
+  | [Alex Moinet](https://github.com/Cawllec)
+
+* (DelayedJob) Improve max attempts handling - If the max attempts method
+  returns nil it should fallback to `Delayed::Worker.max_attempts`
+  | [#471](https://github.com/bugsnag/bugsnag-ruby/pull/471)
+  | [Johnny Shields](https://github.com/johnnyshields)
+
+* Increase payload size limit to 512kb (from 256kb)
+  | [#431](https://github.com/bugsnag/bugsnag-ruby/pull/431)
+  | [Alex Moinet](https://github.com/Cawllec)
+
+### Fixes
+
 ## 6.7.3 (18 May 2018)
 
 ### Fixes
