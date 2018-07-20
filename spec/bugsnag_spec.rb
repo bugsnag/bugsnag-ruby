@@ -41,33 +41,58 @@ describe Bugsnag do
       Bugsnag.register_at_exit
     end
 
-    context 'with aliased at_exit' do
-      before do
-        module Kernel
-          alias_method :old_at_exit, :at_exit
-          def at_exit
-            begin
-              raise BugsnagTestException.new("Oh no")
-            rescue
-              yield
-            end
-          end
+    describe 'at_exit_handler' do
+      context 'with a non-signal exception' do
+        it 'reports the exception' do
+          exception = BugsnagTestException.new('Oh no')
+
+          report_mock = double('report')
+          expect(report_mock).to receive(:severity=).with('error')
+          expect(report_mock).to receive(:severity_reason=).with({
+            :type => Bugsnag::Report::UNHANDLED_EXCEPTION
+          })
+
+          expect(Bugsnag).to receive(:notify).with(exception, true).and_yield(report_mock)
+
+          Bugsnag.at_exit_handler(exception)
         end
       end
 
-      it "sends an exception when at_exit is called" do
-        report_mock = double('report')
-        expect(report_mock).to receive(:severity=).with('error')
-        expect(report_mock).to receive(:severity_reason=).with({
-          :type => Bugsnag::Report::UNHANDLED_EXCEPTION
-        })
-        expect(Bugsnag).to receive(:notify).with(kind_of(BugsnagTestException), true).and_yield(report_mock)
-        Bugsnag.register_at_exit
-      end
+      context 'with a signal exception' do
+        it 'does not report the exception' do
+          exception = SignalException.new('SIGTERM')
 
-      after do
-        module Kernel
-          alias_method :at_exit, :old_at_exit
+          expect(Bugsnag).to_not receive(:notify).with(exception, true)
+
+          Bugsnag.at_exit_handler(exception)
+        end
+      end
+    end
+
+    context 'with aliased at_exit' do
+      context 'and a non-signal exception' do
+        before do
+          module Kernel
+            alias_method :old_at_exit, :at_exit
+            def at_exit
+              begin
+                raise BugsnagTestException.new("Oh no")
+              rescue
+                yield
+              end
+            end
+          end
+        end
+
+        it "calls the at_exit_handler" do
+          expect(Bugsnag).to receive(:at_exit_handler)
+          Bugsnag.register_at_exit
+        end
+
+        after do
+          module Kernel
+            alias_method :at_exit, :old_at_exit
+          end
         end
       end
     end
