@@ -118,15 +118,17 @@ module Bugsnag
     def register_at_exit
       return if at_exit_handler_installed?
       @exit_handler_added = true
-      at_exit do
-        if $!
-          Bugsnag.notify($!, true) do |report|
-            report.severity = 'error'
-            report.severity_reason = {
-              :type => Bugsnag::Report::UNHANDLED_EXCEPTION
-            }
-          end
-        end
+      at_exit { $! && at_exit_handler($!) }
+    end
+
+    def at_exit_handler(exception)
+      return if exception.is_a?(SignalException)
+
+      Bugsnag.notify(exception, true) do |report|
+        report.severity = 'error'
+        report.severity_reason = {
+          :type => Bugsnag::Report::UNHANDLED_EXCEPTION
+        }
       end
     end
 
