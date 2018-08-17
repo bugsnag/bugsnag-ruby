@@ -10,7 +10,7 @@ RSpec.describe ::Delayed::Plugins::Bugsnag do
       job = double
       custom_class = double
       allow(custom_class).to receive_messages(
-        :instance_values => { 'argument': 'value' }
+        :instance_values => { 'argument' => 'value' }
       )
       allow(job).to receive_messages(
         :id => "TEST",
@@ -40,7 +40,7 @@ RSpec.describe ::Delayed::Plugins::Bugsnag do
           "attempts" => "1 / 3",
           "payload" => {
             "class" => custom_class.class.name,
-            "args" => { :argument => 'value' }
+            "args" => { 'argument' => 'value' }
           }
         })
       }
