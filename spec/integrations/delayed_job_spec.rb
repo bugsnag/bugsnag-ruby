@@ -4,6 +4,53 @@ require 'spec_helper'
 
 RSpec.describe ::Delayed::Plugins::Bugsnag do
   describe '#error' do
+    it 'should set the args data correctly when the payload_object is a custom class' do
+      class MyKlass
+        def initialize(my_argument)
+          @my_argument = my_argument
+        end
+
+        def perform
+        end
+      end
+
+      payload = Object.new
+      payload.extend(described_class::Notify)
+      job = double
+      allow(job).to receive_messages(
+        :id => "TEST",
+        :queue => "TEST_QUEUE",
+        :attempts => 0,
+        :max_attempts => 3,
+        :payload_object => MyKlass.new(123)
+      )
+
+      expect do
+        payload.error(job, '')
+      end.not_to raise_error
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["severity"]).to eq("error")
+        expect(event["severityReason"]).to eq({
+          "type" => "unhandledExceptionMiddleware",
+          "attributes" => {
+            "framework" => "DelayedJob"
+          }
+        })
+        expect(event["metaData"]["job"]).to eq({
+          "class" => job.class.name,
+          "id" => "TEST",
+          "queue" => "TEST_QUEUE",
+          "attempts" => "1 / 3",
+          "payload" => {
+            "class" => MyKlass.class.name,
+            "args" => { 'my_argument' => 123 }
+          }
+        })
+      }
+    end
+
     it 'should set metadata correctly with max_attempts' do
       payload = Object.new
       payload.extend(described_class::Notify)

@@ -46,6 +46,8 @@ unless defined? Delayed::Plugins::Bugsnag
                 p[:args] = payload.args
               elsif payload.respond_to?(:to_h)
                 p[:args] = payload.to_h
+              elsif payload.respond_to?(:instance_values)
+                p[:args] = payload.instance_values
               end
 
               if payload.is_a?(::Delayed::PerformableMethod) && (object = payload.object)
