@@ -40,7 +40,7 @@ RSpec.describe ::Delayed::Plugins::Bugsnag do
           "attempts" => "1 / 3",
           "payload" => {
             "class" => custom_class.class.name,
-            "args" => { 'argument': 'value' }
+            "args" => { :argument => 'value' }
           }
         })
       }
