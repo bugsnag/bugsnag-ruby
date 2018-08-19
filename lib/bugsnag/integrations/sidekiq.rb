@@ -22,7 +22,6 @@ module Bugsnag
 
         yield
       rescue Exception => ex
-        raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
         Bugsnag.notify(ex, true) do |report|
           report.severity = "error"
           report.severity_reason = {

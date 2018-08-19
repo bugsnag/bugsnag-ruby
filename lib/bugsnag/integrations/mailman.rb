@@ -21,7 +21,6 @@ module Bugsnag
         Bugsnag.configuration.set_request_data :mailman_msg, mail.to_s
         yield
       rescue Exception => ex
-        raise ex if [Interrupt, SystemExit, SignalException].include? ex.class
         Bugsnag.notify(ex, true) do |report|
           report.severity = "error"
           report.severity_reason = {
