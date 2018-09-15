@@ -56,6 +56,11 @@ jobs:
     - GEMSETS="test rubocop"
     rvm: 2.4.1
     script: bundle exec ./bin/rubocop lib/
+  - stage: test
+    env:
+    - BUNDLE_VERSION=1.12.0
+    - GEMSETS="test sidekiq"
+    rvm: 2.5.1
   # - stage: test
   #   addons:
   #     apt:
