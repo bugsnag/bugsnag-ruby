@@ -43,7 +43,7 @@ jobs:
   - stage: test
     env:
     - BUNDLE_VERSION=1.12.0
-    - GEMSETS="test sidekiq coverage"
+    - GEMSETS="test sidekiq"
     rvm: 2.3.0
   - stage: test
     env:
@@ -53,14 +53,14 @@ jobs:
   - stage: test
     env:
     - BUNDLE_VERSION=1.12.0
-    - GEMSETS="test rubocop"
-    rvm: 2.4.1
-    script: bundle exec ./bin/rubocop lib/
+    - GEMSETS="test sidekiq coverage"
+    rvm: 2.5.1
   - stage: test
     env:
     - BUNDLE_VERSION=1.12.0
-    - GEMSETS="test sidekiq"
+    - GEMSETS="test rubocop"
     rvm: 2.5.1
+    script: bundle exec ./bin/rubocop lib/
   # - stage: test
   #   addons:
   #     apt:
