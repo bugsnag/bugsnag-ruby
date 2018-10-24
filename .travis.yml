@@ -26,12 +26,12 @@ jobs:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS=test
   - stage: test
-    rvm: 2.0.0
+    rvm: 2.0
     env:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS=test
   - stage: test
-    rvm: 2.1.
+    rvm: 2.1
     env:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS=test
@@ -39,27 +39,27 @@ jobs:
     env:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS="test sidekiq"
-    rvm: 2.2.4
+    rvm: 2.2
   - stage: test
     env:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS="test sidekiq"
-    rvm: 2.3.0
+    rvm: 2.3
   - stage: test
     env:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS="test sidekiq"
-    rvm: 2.4.1
+    rvm: 2.4
   - stage: test
     env:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS="test sidekiq coverage"
-    rvm: 2.5.1
+    rvm: 2.5
   - stage: test
     env:
     - BUNDLE_VERSION=1.12.0
     - GEMSETS="test rubocop"
-    rvm: 2.5.1
+    rvm: 2.5
     script: bundle exec ./bin/rubocop lib/
   # - stage: test
   #   addons:
