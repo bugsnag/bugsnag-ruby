@@ -7,6 +7,15 @@ When("I configure the bugsnag endpoint") do
   }
 end
 
+When("I generate the gem and put it in {string}") do |fixture|
+  gem_dir = File.expand_path('../../../', __FILE__)
+  Dir.chdir(gem_dir) do
+    `rm bugsnag-*.gem`
+    `gem build bugsnag.gemspec`
+    `mv bugsnag-*.gem features/fixtures/#{fixture}`
+  end
+end
+
 When("I wait for the app to respond on port {string}") do |port|
   max_attempts = ENV.include?('MAX_MAZE_CONNECT_ATTEMPTS')? ENV['MAX_MAZE_CONNECT_ATTEMPTS'].to_i : 10
   attempts = 0
