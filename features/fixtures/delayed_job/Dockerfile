@@ -12,4 +12,4 @@ COPY app/ /usr/src/app
 RUN bundle exec rails generate delayed_job:active_record
 RUN bundle exec rake db:migrate
 
-CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "rake", "jobs:work"]

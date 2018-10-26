@@ -11,6 +11,7 @@ module Delayed
       callbacks do |lifecycle|
         lifecycle.around(:invoke_job) do |job, *args, &block|
           begin
+            Bugsnag.configuration.app_type = 'delayed_job'
             block.call(job, *args)
           rescue Exception => exception
             overrides = {

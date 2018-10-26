@@ -5,9 +5,10 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'bugsnag', path: '../../../../'
+gem 'bugsnag'#, path: '../../../../'
 gem 'delayed_job'
 gem 'delayed_job_active_record'
+gem 'therubyracer'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.7'

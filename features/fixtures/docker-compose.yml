@@ -41,9 +41,7 @@ services:
     build:
       context: delayed_job
       args:
-        ruby_version: 2.0
-    depends_on:
-      - redis
+        ruby_version: 2.5
     environment:
       - endpoint
     restart: "no"
