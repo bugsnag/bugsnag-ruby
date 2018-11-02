@@ -7,7 +7,7 @@ end
 
 module Delayed
   module Plugins
-    class Bugsnag <  ::Delayed::Plugin
+    class Bugsnag < ::Delayed::Plugin
       callbacks do |lifecycle|
         lifecycle.around(:invoke_job) do |job, *args, &block|
           begin

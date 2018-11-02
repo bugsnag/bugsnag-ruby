@@ -20,8 +20,9 @@ module Bugsnag::Middleware
         job_data[:created_at] = job.created_at if job.respond_to?(:created_at)
         job_data[:queue] = job.queue if job.respond_to?(:queue)
 
-        if job.respond_to?('payload_object') && job.payload_object.respond_to?('job_data')
-          job_data[:active_job] = job.payload_object.job_data
+        if job.respond_to?('payload_object')
+          job_data[:active_job] = job.payload_object.job_data if job.payload_object.respond_to?('job_data')
+          job_data[:payload] = construct_job_payload(job.payload_object)
         end
 
         if job.respond_to?(:attempts)
@@ -30,38 +31,39 @@ module Bugsnag::Middleware
           # +1 as "attempts" is zero-based and does not include the current failed attempt
         end
 
-        if payload = job.payload_object
-          p = {
-            :class => payload.class.name,
-          }
-          p[:id]           = payload.id           if payload.respond_to?(:id)
-          p[:display_name] = payload.display_name if payload.respond_to?(:display_name)
-          p[:method_name]  = payload.method_name  if payload.respond_to?(:method_name)
-
-          if payload.respond_to?(:args)
-            p[:args] = payload.args
-          elsif payload.respond_to?(:to_h)
-            p[:args] = payload.to_h
-          end
-
-          if payload.is_a?(::Delayed::PerformableMethod) && (object = payload.object)
-            p[:object] = {
-              :class => object.class.name,
-            }
-            p[:object][:id] = object.id if object.respond_to?(:id)
-          end
-          if payload.respond_to?(:job_data) && payload.job_data.respond_to?(:[])
-            [:job_class, :arguments, :queue_name, :job_id].each do |key|
-              if (value = payload.job_data[key.to_s])
-                p[key] = value
-              end
-            end
-          end
-          job_data[:payload] = p
-        end
         report.add_tab(:job, job_data)
       end
       @bugsnag.call(report)
+    end
+
+    def construct_job_payload(payload)
+      data = {
+        :class => payload.class.name
+      }
+      data[:id]           = payload.id           if payload.respond_to?(:id)
+      data[:display_name] = payload.display_name if payload.respond_to?(:display_name)
+      data[:method_name]  = payload.method_name  if payload.respond_to?(:method_name)
+
+      if payload.respond_to?(:args)
+        data[:args] = payload.args
+      elsif payload.respond_to?(:to_h)
+        data[:args] = payload.to_h
+      end
+
+      if payload.is_a?(::Delayed::PerformableMethod) && (object = payload.object)
+        data[:object] = {
+          :class => object.class.name
+        }
+        data[:object][:id] = object.id if object.respond_to?(:id)
+      end
+      if payload.respond_to?(:job_data) && payload.job_data.respond_to?(:[])
+        [:job_class, :arguments, :queue_name, :job_id].each do |key|
+          if (value = payload.job_data[key.to_s])
+            data[key] = value
+          end
+        end
+      end
+      data
     end
   end
 end
