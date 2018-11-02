@@ -25,7 +25,7 @@ module Delayed
                 }
               }
             end
-            raise
+            raise exception
           ensure
             ::Bugsnag.configuration.clear_request_data
           end
