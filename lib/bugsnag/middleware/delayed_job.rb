@@ -9,7 +9,10 @@ module Bugsnag::Middleware
     def call(report)
       job = report.request_data[:delayed_job]
       if job
-        job_data = {}
+        job_data = {
+          :class => job.class.name,
+          :id => job.id
+        }
         job_data[:priority] = job.priority if job.respond_to?(:priority)
         job_data[:run_at] = job.run_at if job.respond_to?(:run_at)
         job_data[:locked_at] = job.locked_at if job.respond_to?(:locked_at)
@@ -56,7 +59,7 @@ module Bugsnag::Middleware
           end
           job_data[:payload] = p
         end
-        report.add_tab(:delayed_job, job_data)
+        report.add_tab(:job, job_data)
       end
       @bugsnag.call(report)
     end

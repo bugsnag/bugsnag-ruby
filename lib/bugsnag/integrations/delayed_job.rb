@@ -11,8 +11,9 @@ module Delayed
       callbacks do |lifecycle|
         lifecycle.around(:invoke_job) do |job, *args, &block|
           begin
-            Bugsnag.configuration.app_type = 'delayed_job'
-            Bugsnag.configuration.set_request_data(:delayed_job, job)
+            ::Bugsnag.configuration.app_type = 'delayed_job'
+            ::Bugsnag.configuration.set_request_data(:delayed_job, job)
+            ::Bugsnag.configuration.internal_middleware.use(::Bugsnag::Middleware::DelayedJob)
             block.call(job, *args)
           rescue Exception => exception
             ::Bugsnag.notify(exception, true) do |report|
@@ -34,5 +35,4 @@ module Delayed
   end
 end
 
-Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::DelayedJob)
 Delayed::Worker.plugins << Delayed::Plugins::Bugsnag
