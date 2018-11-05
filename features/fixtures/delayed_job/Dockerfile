@@ -2,8 +2,7 @@ ARG ruby_version
 FROM ruby:$ruby_version
 
 WORKDIR /bugsnag
-COPY *.gem ./
-RUN gem unpack bugsnag*.gem /bugsnag
+COPY temp-bugsnag-lib ./
 
 WORKDIR /usr/src/app
 COPY app/Gemfile /usr/src/app/

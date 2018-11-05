@@ -9,10 +9,12 @@ end
 
 When("I generate the gem and put it in {string}") do |fixture|
   gem_dir = File.expand_path('../../../', __FILE__)
+  target_dir = "features/fixtures/#{fixture}"
   Dir.chdir(gem_dir) do
     `rm bugsnag-*.gem`
     `gem build bugsnag.gemspec`
-    `mv bugsnag-*.gem features/fixtures/#{fixture}`
+    `mv bugsnag-*.gem #{target_dir}`
+    `gem unpack #{target_dir}/bugsnag-*.gem --target #{target_dir}/temp-bugsnag-lib`
   end
 end
 
