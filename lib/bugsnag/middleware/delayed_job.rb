@@ -48,6 +48,8 @@ module Bugsnag::Middleware
         data[:args] = payload.args
       elsif payload.respond_to?(:to_h)
         data[:args] = payload.to_h
+      elsif payload.respond_to?(:instance_values)
+        data[:args] = payload.instance_values
       end
 
       if payload.is_a?(::Delayed::PerformableMethod) && (object = payload.object)
