@@ -5,6 +5,8 @@ unless defined?(Delayed::Plugin)
   raise LoadError, "bugsnag requires delayed_job > 3.x"
 end
 
+::Bugsnag.configuration.internal_middleware.use(::Bugsnag::Middleware::DelayedJob)
+
 module Delayed
   module Plugins
     class Bugsnag < ::Delayed::Plugin
@@ -13,7 +15,6 @@ module Delayed
           begin
             ::Bugsnag.configuration.app_type = 'delayed_job'
             ::Bugsnag.configuration.set_request_data(:delayed_job, job)
-            ::Bugsnag.configuration.internal_middleware.use(::Bugsnag::Middleware::DelayedJob)
             block.call(job, *args)
           rescue Exception => exception
             ::Bugsnag.notify(exception, true) do |report|
