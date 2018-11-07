@@ -1,15 +1,17 @@
 ARG ruby_version
 FROM ruby:$ruby_version
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /bugsnag
+COPY temp-bugsnag-lib ./
 
+WORKDIR /usr/src/app
 COPY app/Gemfile /usr/src/app/
 RUN bundle install
 
 COPY app/ /usr/src/app
 
-RUN bundle exec rails generate delayed_job:active_record
+RUN bundle exec rake rails:update:bin
+RUN bundle exec bin/rails generate delayed_job:active_record
 RUN bundle exec rake db:migrate
 
 CMD ["bundle", "exec", "rake", "jobs:work"]

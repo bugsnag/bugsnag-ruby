@@ -18,6 +18,22 @@ def output_logs
   end
 end
 
+def install_fixture_gems
+  gem_dir = File.expand_path('../../../', __FILE__)
+  Dir.chdir(gem_dir) do
+    `rm bugsnag-*.gem`
+    `gem build bugsnag.gemspec`
+    Dir.foreach('features/fixtures') do |entry|
+      target_dir = "features/fixtures/#{entry}"
+      if File.directory? (target_dir)
+        `cp bugsnag-*.gem #{target_dir}`
+        `gem unpack #{target_dir}/bugsnag-*.gem --target #{target_dir}/temp-bugsnag-lib`
+      end
+    end
+    `rm bugsnag-*.gem`
+  end
+end
+
 def current_ip
   if OS.mac?
     'host.docker.internal'
@@ -27,3 +43,5 @@ def current_ip
     ip_list.captures.first
   end
 end
+
+install_fixture_gems

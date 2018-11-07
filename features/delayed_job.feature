@@ -2,26 +2,43 @@ Feature: Bugsnag detects errors in Delayed job workers
 
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I configure the bugsnag endpoint
 
-Scenario: An unhandled RuntimeError sends a report
-  And I set environment variable "RUBY_VERSION" to "2.5"
+Scenario: An unhandled RuntimeError sends a report with arguments
+  Given I set environment variable "RUBY_VERSION" to "2.5"
   And I start the service "delayed_job"
-  And I run the command "bundle exec rails runner 'TestModel.delay.fail'" on the service "delayed_job"
-  And I wait for 1 seconds
+  And I run the command "bundle exec rails runner 'TestModel.delay.fail_with_args(\"Test\")'" on the service "delayed_job"
+  And I wait for 5 seconds
   Then I should receive a request
   And the request used the Ruby notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event "unhandled" is true
   And the event "severity" is "error"
-  And the event "context" is null
+  And the event "context" is "jobs:work"
   And the event "severityReason.type" is "unhandledExceptionMiddleware"
-  And the event "severityReason.attributes.framework" is "delayed_job"
+  And the event "severityReason.attributes.framework" is "DelayedJob"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of stack frame 0 equals "/usr/src/app.rb"
-  And the "lineNumber" of stack frame 0 equals 33
-  And the payload field "events.0.metaData.sidekiq" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_<created_at_present>.json"
-  And the event "metaData.sidekiq.msg.created_at" is a parsable timestamp in seconds
-  And the event "metaData.sidekiq.msg.enqueued_at" is a parsable timestamp in seconds
+  And the event "metaData.job.class" equals "Delayed::Backend::ActiveRecord::Job"
+  And the event "metaData.job.id" is not null
+  And the event "metaData.job.attempts" equals "1 / 1"
+  And the event "metaData.job.payload.display_name" equals "TestModel.fail_with_args"
+  And the event "metaData.job.payload.method_name" equals "fail_with_args"
+  And the payload field "events.0.metaData.job.payload.args" is an array with 1 element
+  And the payload field "events.0.metaData.job.payload.args.0" equals "Test"
+
+Scenario: A handled exception sends a report
+  Given I set environment variable "RUBY_VERSION" to "2.5"
+  And I start the service "delayed_job"
+  And I run the command "bundle exec rails runner 'TestModel.delay.notify'" on the service "delayed_job"
+  And I wait for 5 seconds
+  Then I should receive a request
+  And the request used the Ruby notifier
+  And the request used payload v4 headers
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the event "unhandled" is false
+  And the event "severity" is "warning"
+  And the event "context" is "jobs:work"
+  And the event "severityReason.type" is "handledException"
+  And the exception "errorClass" equals "RuntimeError"
