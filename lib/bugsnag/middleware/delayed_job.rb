@@ -22,7 +22,9 @@ module Bugsnag::Middleware
 
         if job.respond_to?(:payload_object)
           job_data[:active_job] = job.payload_object.job_data if job.payload_object.respond_to?(:job_data)
-          job_data[:payload] = construct_job_payload(job.payload_object)
+          payload_data = construct_job_payload(job.payload_object)
+          report.context = payload_data[:method_name] if payload_data.include?(:method_name)
+          job_data[:payload] = payload_data
         end
 
         if job.respond_to?(:attempts)
