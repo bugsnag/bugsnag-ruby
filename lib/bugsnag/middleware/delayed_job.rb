@@ -20,8 +20,8 @@ module Bugsnag::Middleware
         job_data[:created_at] = job.created_at if job.respond_to?(:created_at)
         job_data[:queue] = job.queue if job.respond_to?(:queue)
 
-        if job.respond_to?('payload_object')
-          job_data[:active_job] = job.payload_object.job_data if job.payload_object.respond_to?('job_data')
+        if job.respond_to?(:payload_object)
+          job_data[:active_job] = job.payload_object.job_data if job.payload_object.respond_to?(:job_data)
           job_data[:payload] = construct_job_payload(job.payload_object)
         end
 
