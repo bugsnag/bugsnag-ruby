@@ -2,7 +2,7 @@ Feature: Plain report modify stack frames
 
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
@@ -13,7 +13,7 @@ Scenario Outline: Stack frames can be removed
   And I run the service "plain-ruby" with the command "bundle exec ruby stack_frame_modification/remove_stack_frame.rb"
   And I wait for 1 second
   Then I should receive a request
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the "file" of stack frame 0 equals "/usr/src/stack_frame_modification/initiators/<initiator>.rb"
@@ -50,7 +50,7 @@ Scenario Outline: Stack frames can be marked as in project
   And I run the service "plain-ruby" with the command "bundle exec ruby stack_frame_modification/mark_frames_in_project.rb"
   And I wait for 1 second
   Then I should receive a request
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the "file" of stack frame 0 equals "/usr/src/stack_frame_modification/initiators/<initiator>.rb"

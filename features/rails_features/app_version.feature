@@ -1,7 +1,7 @@
 Feature: App version configuration
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
@@ -32,7 +32,7 @@ Scenario Outline: App_version is nil by default
 
 Scenario Outline: Setting app_version in initializer works
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
-  And I set environment variable "MAZE_APP_VERSION" to "1.0.0"
+  And I set environment variable "BUGSNAG_APP_VERSION" to "1.0.0"
   And I start the service "rails<rails_version>"
   And I wait for the app to respond on port "6128<rails_version>"
   When I navigate to the route "/app_version/initializer" on port "6128<rails_version>"

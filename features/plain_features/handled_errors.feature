@@ -2,7 +2,7 @@ Feature: Plain handled errors
 
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
@@ -12,12 +12,12 @@ Scenario Outline: A handled error sends a report
   And I run the service "plain-ruby" with the command "bundle exec ruby handled/<file>.rb"
   And I wait for 1 second
   Then I should receive a request
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event "unhandled" is false
-  And the event "severity" is "warning"
-  And the event "severityReason.type" is "handledException"
+  And the event "severity" equals "warning"
+  And the event "severityReason.type" equals "handledException"
   And the exception "errorClass" equals "RuntimeError"
   And the "file" of stack frame 0 equals "/usr/src/handled/<file>.rb"
   And the "lineNumber" of stack frame 0 equals <lineNumber>
@@ -62,17 +62,17 @@ Scenario Outline: A handled error can attach metadata in a block
   And I run the service "plain-ruby" with the command "bundle exec ruby handled/block_metadata.rb"
   And I wait for 1 second
   Then I should receive a request
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event "unhandled" is false
-  And the event "severity" is "warning"
-  And the event "severityReason.type" is "handledException"
+  And the event "severity" equals "warning"
+  And the event "severityReason.type" equals "handledException"
   And the exception "errorClass" equals "RuntimeError"
   And the "file" of stack frame 0 equals "/usr/src/handled/block_metadata.rb"
   And the "lineNumber" of stack frame 0 equals 6
-  And the event "metaData.account.id" is "1234abcd"
-  And the event "metaData.account.name" is "Acme Co"
+  And the event "metaData.account.id" equals "1234abcd"
+  And the event "metaData.account.name" equals "Acme Co"
   And the event "metaData.account.support" is true
 
   Examples:

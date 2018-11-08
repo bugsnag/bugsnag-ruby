@@ -1,17 +1,17 @@
 ARG RUBY_VERSION
 FROM ruby:$RUBY_VERSION
 
-ARG APP_PATH
+WORKDIR /bugsnag
+COPY temp-bugsnag-lib ./
 
-RUN mkdir -p $APP_PATH
-WORKDIR $APP_PATH
+WORKDIR /usr/src/app
 
 ARG SIDEKIQ_VERSION
 ENV SIDEKIQ_VERSION $SIDEKIQ_VERSION
 
-COPY app/Gemfile $APP_PATH
+COPY app/Gemfile /usr/src/app/
 RUN bundle install
 
-COPY app $APP_PATH
+COPY app/ /usr/src/app
 
 CMD ["bundle", "exec", "sidekiq", "-r", "./app.rb"]

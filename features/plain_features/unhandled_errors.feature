@@ -2,7 +2,7 @@ Feature: Plain unhandled errors
 
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
@@ -12,12 +12,12 @@ Scenario Outline: An unhandled error sends a report
   And I run the service "plain-ruby" with the command "bundle exec ruby unhandled/<file>.rb"
   And I wait for 1 second
   Then I should receive a request
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event "unhandled" is true
-  And the event "severity" is "error"
-  And the event "severityReason.type" is "unhandledException"
+  And the event "severity" equals "error"
+  And the event "severityReason.type" equals "unhandledException"
   And the exception "errorClass" equals "<error>"
   And the "file" of stack frame 0 equals "/usr/src/unhandled/<file>.rb"
   And the "lineNumber" of stack frame 0 equals <lineNumber>
