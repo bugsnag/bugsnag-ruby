@@ -28,9 +28,9 @@ module Bugsnag::Middleware
         end
 
         if job.respond_to?(:attempts)
-          max_attempts = (job.respond_to?(:max_attempts) && job.max_attempts) || Delayed::Worker.max_attempts
-          job_data[:attempts] = "#{job.attempts + 1} / #{max_attempts}"
           # +1 as "attempts" is zero-based and does not include the current failed attempt
+          job_data[:attempt] = job.attempts + 1
+          job_data[:max_attempts] = (job.respond_to?(:max_attempts) && job.max_attempts) || Delayed::Worker.max_attempts
         end
 
         report.add_tab(:job, job_data)

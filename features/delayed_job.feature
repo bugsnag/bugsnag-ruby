@@ -22,7 +22,8 @@ Scenario: An unhandled RuntimeError sends a report with arguments
   And the exception "errorClass" equals "RuntimeError"
   And the event "metaData.job.class" equals "Delayed::Backend::ActiveRecord::Job"
   And the event "metaData.job.id" is not null
-  And the event "metaData.job.attempts" equals "1 / 1"
+  And the event "metaData.job.attempt" equals 1
+  And the event "metaData.job.max_attempts" equals 1
   And the event "metaData.job.payload.display_name" equals "TestModel.fail_with_args"
   And the event "metaData.job.payload.method_name" equals "fail_with_args"
   And the payload field "events.0.metaData.job.payload.args" is an array with 1 element
@@ -44,7 +45,8 @@ Scenario: A handled exception sends a report
   And the exception "errorClass" equals "RuntimeError"
   And the event "metaData.job.class" equals "Delayed::Backend::ActiveRecord::Job"
   And the event "metaData.job.id" is not null
-  And the event "metaData.job.attempts" equals "1 / 1"
+  And the event "metaData.job.attempt" equals 1
+  And the event "metaData.job.max_attempts" equals 1
   And the event "metaData.job.payload.display_name" equals "TestModel.notify_with_args"
   And the event "metaData.job.payload.method_name" equals "notify_with_args"
   And the payload field "events.0.metaData.job.payload.args" is an array with 1 element
