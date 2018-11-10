@@ -1,8 +1,5 @@
 # Bugsnag exception reporter for Ruby
 [![build status](https://travis-ci.org/bugsnag/bugsnag-ruby.svg?branch=master)](https://travis-ci.org/bugsnag/bugsnag-ruby)
-![Gem Version](https://badge.fury.io/rb/bugsnag.svg)
-[![SemVer](https://api.dependabot.com/badges/compatibility_score?dependency-name=bugsnag&package-manager=bundler&version-scheme=semver)](https://dependabot.com/compatibility-score.html?dependency-name=bugsnag&package-manager=bundler&version-scheme=semver)
-
 
 
 The Bugsnag exception reporter for Ruby gives you instant notification of exceptions thrown from your **[Rails](https://www.bugsnag.com/platforms/rails)**, **Sinatra**, **Rack** or **plain Ruby** app. Any uncaught exceptions will trigger a notification to be sent to your Bugsnag project.
