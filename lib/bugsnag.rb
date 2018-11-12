@@ -27,6 +27,7 @@ require "bugsnag/middleware/mailman"
 require "bugsnag/middleware/rake"
 require "bugsnag/middleware/callbacks"
 require "bugsnag/middleware/classify_error"
+require "bugsnag/middleware/delayed_job"
 
 module Bugsnag
   LOCK = Mutex.new

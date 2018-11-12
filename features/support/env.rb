@@ -21,11 +21,11 @@ end
 def install_fixture_gems
   gem_dir = File.expand_path('../../../', __FILE__)
   Dir.chdir(gem_dir) do
-    `rm bugsnag-*.gem`
+    `rm bugsnag-*.gem` unless Dir.glob('bugsnag-*.gem').empty?
     `gem build bugsnag.gemspec`
-    Dir.foreach('features/fixtures') do |entry|
+    Dir.entries('features/fixtures').reject { |entry| ['.', '..'].include?(entry) }.each do |entry|
       target_dir = "features/fixtures/#{entry}"
-      if File.directory? (target_dir)
+      if File.directory?(target_dir)
         `cp bugsnag-*.gem #{target_dir}`
         `gem unpack #{target_dir}/bugsnag-*.gem --target #{target_dir}/temp-bugsnag-lib`
       end
