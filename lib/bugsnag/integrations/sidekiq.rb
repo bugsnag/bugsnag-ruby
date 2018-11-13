@@ -24,9 +24,10 @@ module Bugsnag
         yield
       rescue Exception => ex
         self.class.notify(ex) unless self.class.sidekiq_supports_error_handlers
+        keep_request_data = self.class.sidekiq_supports_error_handlers
         raise
       ensure
-        Bugsnag.configuration.clear_request_data unless self.class.sidekiq_supports_error_handlers
+        Bugsnag.configuration.clear_request_data unless keep_request_data
       end
     end
 
