@@ -26,7 +26,7 @@ module Bugsnag
         self.class.notify(ex) unless self.class.sidekiq_supports_error_handlers
         raise
       ensure
-        Bugsnag.configuration.clear_request_data
+        Bugsnag.configuration.clear_request_data unless self.class.sidekiq_supports_error_handlers
       end
     end
 
@@ -49,6 +49,7 @@ module Bugsnag
       if Bugsnag::Sidekiq.sidekiq_supports_error_handlers
         server.error_handlers << proc do |ex, _context|
           Bugsnag::Sidekiq.notify(ex)
+          Bugsnag.configuration.clear_request_data
         end
       end
 
