@@ -32,7 +32,6 @@ Scenario Outline: An unhandled RuntimeError sends a report
   | ruby version | sidekiq_version | created_at_present |
   | 1.9.3        | ~> 2            | false              |
   | 2.0          | ~> 2            | false              |
-  | 2.0          | ~> 3            | true               |
   | 2.1          | ~> 2            | false              |
   | 2.1          | ~> 3            | true               |
   | 2.2          | ~> 2            | false              |
@@ -77,7 +76,6 @@ Scenario Outline: A handled RuntimeError can be notified
   | ruby version | sidekiq_version | created_at_present |
   | 1.9.3        | ~> 2            | false              |
   | 2.0          | ~> 2            | false              |
-  | 2.0          | ~> 3            | true               |
   | 2.1          | ~> 2            | false              |
   | 2.1          | ~> 3            | true               |
   | 2.2          | ~> 2            | false              |

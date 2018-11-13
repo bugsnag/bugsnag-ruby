@@ -1,12 +1,6 @@
 require 'net/http'
 require 'open3'
 
-When("I configure the bugsnag endpoint") do
-  steps %Q{
-    When I set environment variable "MAZE_ENDPOINT" to "http://#{current_ip}:#{MOCK_API_PORT}"
-  }
-end
-
 When("I navigate to the route {string} on port {string}") do |route, port|
   steps %Q{
     When I open the URL "http://localhost:#{port}#{route}"
