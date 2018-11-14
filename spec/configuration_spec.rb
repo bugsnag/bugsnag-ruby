@@ -219,7 +219,7 @@ describe Bugsnag::Configuration do
   end
 
   it "should have exit exception classes ignored by default" do
-    expect(subject.ignore_classes).to eq(Set.new([SystemExit, Interrupt]))
+    expect(subject.ignore_classes).to eq(Set.new([SystemExit, SignalException]))
   end
 
 end

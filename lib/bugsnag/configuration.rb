@@ -69,9 +69,9 @@ module Bugsnag
       self.auto_capture_sessions = false
       self.session_endpoint = DEFAULT_SESSION_ENDPOINT
 
-      # SystemExit and Interrupt are common Exception types seen with successful
-      # exits and are not automatically reported to Bugsnag
-      self.ignore_classes = Set.new([SystemExit, Interrupt])
+      # SystemExit and SignalException are common Exception types seen with
+      # successful exits and are not automatically reported to Bugsnag
+      self.ignore_classes = Set.new([SystemExit, SignalException])
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
