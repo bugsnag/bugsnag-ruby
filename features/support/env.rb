@@ -1,3 +1,5 @@
+require 'fileutils'
+
 Before do
   find_default_docker_compose
 end
@@ -29,6 +31,24 @@ def install_fixture_gems
     end
     `rm bugsnag-*.gem`
   end
+end
+
+def remove_installed_gems
+  removal_targets = ['temp-bugsnag-lib', 'bugsnag-*.gem']
+  Dir.entries('features/fixtures').reject { |entry| ['.', '..'].include?(entry) }.each do |entry|
+    target_dir = "features/fixtures/#{entry}"
+    target_entries = []
+    removal_targets.each do |r_target|
+      target_entries += Dir.glob("#{target_dir}/#{r_target}")
+    end
+    target_entries.each do |d_target|
+      FileUtils.rm_rf(d_target)
+    end
+  end
+end
+
+at_exit do
+  remove_installed_gems
 end
 
 install_fixture_gems
