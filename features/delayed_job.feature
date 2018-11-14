@@ -15,10 +15,10 @@ Scenario: An unhandled RuntimeError sends a report with arguments
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event "unhandled" is true
-  And the event "severity" is "error"
-  And the event "context" is "TestModel.fail_with_args"
-  And the event "severityReason.type" is "unhandledExceptionMiddleware"
-  And the event "severityReason.attributes.framework" is "DelayedJob"
+  And the event "severity" equals "error"
+  And the event "context" equals "TestModel.fail_with_args"
+  And the event "severityReason.type" equals "unhandledExceptionMiddleware"
+  And the event "severityReason.attributes.framework" equals "DelayedJob"
   And the exception "errorClass" equals "RuntimeError"
   And the event "metaData.job.class" equals "Delayed::Backend::ActiveRecord::Job"
   And the event "metaData.job.id" is not null
@@ -39,9 +39,9 @@ Scenario: A handled exception sends a report
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event "unhandled" is false
-  And the event "severity" is "warning"
-  And the event "context" is "TestModel.notify_with_args"
-  And the event "severityReason.type" is "handledException"
+  And the event "severity" equals "warning"
+  And the event "context" equals "TestModel.notify_with_args"
+  And the event "severityReason.type" equals "handledException"
   And the exception "errorClass" equals "RuntimeError"
   And the event "metaData.job.class" equals "Delayed::Backend::ActiveRecord::Job"
   And the event "metaData.job.id" is not null
