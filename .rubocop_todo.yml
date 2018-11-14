@@ -244,6 +244,7 @@ Lint/RescueException:
     - 'lib/bugsnag/integrations/rake.rb'
     - 'lib/bugsnag/integrations/shoryuken.rb'
     - 'lib/bugsnag/integrations/sidekiq.rb'
+    - 'lib/bugsnag/integrations/delayed_job.rb'
 
 # Offense count: 6
 # Cop supports --auto-correct.

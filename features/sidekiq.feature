@@ -17,9 +17,10 @@ Scenario Outline: An unhandled RuntimeError sends a report
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event "unhandled" is true
-  And the event "severity" equals "error"
-  And the event "severityReason.type" equals "unhandledExceptionMiddleware"
-  And the event "severityReason.attributes.framework" equals "Sidekiq"
+  And the event "severity" is "error"
+  And the event "context" is "UnhandledError@default"
+  And the event "severityReason.type" is "unhandledExceptionMiddleware"
+  And the event "severityReason.attributes.framework" is "Sidekiq"
   And the exception "errorClass" equals "RuntimeError"
   And the "file" of stack frame 0 equals "/usr/src/app.rb"
   And the "lineNumber" of stack frame 0 equals 33
@@ -62,8 +63,9 @@ Scenario Outline: A handled RuntimeError can be notified
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event "unhandled" is false
-  And the event "severity" equals "warning"
-  And the event "severityReason.type" equals "handledException"
+  And the event "context" is "HandledError@default"
+  And the event "severity" is "warning"
+  And the event "severityReason.type" is "handledException"
   And the exception "errorClass" equals "RuntimeError"
   And the "file" of stack frame 0 equals "/usr/src/app.rb"
   And the "lineNumber" of stack frame 0 equals 24

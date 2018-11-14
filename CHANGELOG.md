@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## 6.9.0 (12 Nov 2018)
+
+### Enhancements
+
+* Ensure the correct error handler is used in newer versions of Sidekiq
+  | [#434](https://github.com/bugsnag/bugsnag-ruby/pull/434)
+
+* Rewrite Delayed::Job integration to fix potential issues and add more
+  collected data
+  | [#492](https://github.com/bugsnag/bugsnag-ruby/pull/492)
+  | [Simon Maynard](https://github.com/snmaynard)
+
 ## 6.8.0 (11 Jul 2018)
 
 This release includes general performance improvements to payload trimming and
