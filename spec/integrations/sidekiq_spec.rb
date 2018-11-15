@@ -21,11 +21,7 @@ describe Bugsnag::Sidekiq do
     end
 
     it "works" do
-      begin
-        Worker.perform_async(-0)
-        fail("shouldn't be here")
-      rescue
-      end
+      expect{ Worker.perform_async(-0) }.to raise_error(ZeroDivisionError)
 
       expect(Bugsnag).to have_sent_notification {|payload, headers|
         event = get_event_from_payload(payload)
@@ -80,21 +76,13 @@ describe Bugsnag::Sidekiq do
       it "resets with an exception" do
         expect(Bugsnag.configuration).to receive(:set_request_data).with(:sidekiq, hash_including(:queue => "default"))
         expect(Bugsnag.configuration).to receive(:clear_request_data).at_least(:once)
-        begin
-          Worker.perform_async(-0)
-          fail("shouldn't be here")
-        rescue
-        end
+        expect{ Worker.perform_async(-0) }.to raise_error(ZeroDivisionError)
       end
 
       it "resets without an exception" do
         expect(Bugsnag.configuration).to receive(:set_request_data).with(:sidekiq, hash_including(:queue => "default"))
         expect(Bugsnag.configuration).to receive(:clear_request_data).at_least(:once)
-        begin
-          Worker.perform_async(1)
-        rescue
-          fail("Shouldn't error")
-        end
+        expect{ Worker.perform_async(1) }.to_not raise_error
       end
     end
 
@@ -112,21 +100,13 @@ describe Bugsnag::Sidekiq do
         expect(Bugsnag.configuration).to receive(:set_request_data).with(:sidekiq, hash_including(:queue => "default"))
         # Always received once due to the spec_helper setup
         expect(Bugsnag.configuration).to receive(:clear_request_data).once
-        begin
-          Worker.perform_async(-0)
-          fail("shouldn't be here")
-        rescue
-        end
+        expect{ Worker.perform_async(-0) }.to raise_error(ZeroDivisionError)
       end
 
       it "resets without an exception" do
         expect(Bugsnag.configuration).to receive(:set_request_data).with(:sidekiq, hash_including(:queue => "default"))
         expect(Bugsnag.configuration).to receive(:clear_request_data).twice
-        begin
-          Worker.perform_async(1)
-        rescue
-          fail("shouldn't be here")
-        end
+        expect{ Worker.perform_async(1) }.to_not raise_error
       end
 
       it "always resets in the error handler" do

@@ -21,13 +21,16 @@ module Bugsnag
       begin
         # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq
         Bugsnag.configuration.set_request_data :sidekiq, { :msg => msg, :queue => queue }
+        error_raised = false
         yield
       rescue Exception => ex
+        error_raised = true
         self.class.notify(ex) unless self.class.sidekiq_supports_error_handlers
-        keep_request_data = self.class.sidekiq_supports_error_handlers
         raise
       ensure
-        Bugsnag.configuration.clear_request_data unless keep_request_data
+        # if an error was raised and error handlers are installed, the data will be cleared after
+        # the notification is sent. Otherwise, the data must be cleared.
+        Bugsnag.configuration.clear_request_data unless error_raised && self.class.sidekiq_supports_error_handlers
       end
     end
 
