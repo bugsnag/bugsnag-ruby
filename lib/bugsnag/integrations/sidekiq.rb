@@ -18,20 +18,19 @@ module Bugsnag
     end
 
     def call(worker, msg, queue)
-      begin
-        # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq
-        Bugsnag.configuration.set_request_data :sidekiq, { :msg => msg, :queue => queue }
-        error_raised = false
-        yield
-      rescue Exception => ex
-        error_raised = true
-        self.class.notify(ex) unless self.class.sidekiq_supports_error_handlers
-        raise
-      ensure
-        # if an error was raised and error handlers are installed, the data will be cleared after
-        # the notification is sent. Otherwise, the data must be cleared.
-        Bugsnag.configuration.clear_request_data unless error_raised && self.class.sidekiq_supports_error_handlers
-      end
+      # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq
+      Bugsnag.configuration.set_request_data :sidekiq, { :msg => msg, :queue => queue }
+      error_raised = false
+      yield
+    rescue Exception => ex
+      error_raised = true
+      self.class.notify(ex) unless self.class.sidekiq_supports_error_handlers
+      raise
+    ensure
+      # if an error was raised and error handlers are installed, the data will be cleared after
+      # the notification is sent. Otherwise, the data must be cleared.
+      keep_data = error_raised && self.class.sidekiq_supports_error_handlers
+      Bugsnag.configuration.clear_request_data unless keep_data
     end
 
     def self.notify(exception)
