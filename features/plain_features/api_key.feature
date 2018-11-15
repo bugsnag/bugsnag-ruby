@@ -1,7 +1,6 @@
 Feature: API Key configuration options
 
 Background:
-  And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: The API key configuration option can be set

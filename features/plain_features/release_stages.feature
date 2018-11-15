@@ -3,7 +3,6 @@ Feature: Release stage configuration options
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: Doesn't notify in the wrong release stage
@@ -40,7 +39,7 @@ Scenario Outline: Doesn't notify in the wrong release stage
   And the event "severity" equals "error"
   And the event "severityReason.type" equals "unhandledException"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of stack frame 0 equals "/usr/src/configuration/send_unhandled.rb"
+  And the "file" of stack frame 0 equals "/usr/src/app/configuration/send_unhandled.rb"
 
   Examples:
   | ruby version |

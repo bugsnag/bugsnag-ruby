@@ -3,7 +3,6 @@ Feature: Plain report modify user
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: A report can have a user name, email, and id set

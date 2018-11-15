@@ -3,7 +3,6 @@ Feature: Plain exception data
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: An error has built in meta-data

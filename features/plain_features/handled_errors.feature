@@ -3,7 +3,6 @@ Feature: Plain handled errors
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: A handled error sends a report
@@ -19,7 +18,7 @@ Scenario Outline: A handled error sends a report
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of stack frame 0 equals "/usr/src/handled/<file>.rb"
+  And the "file" of stack frame 0 equals "/usr/src/app/handled/<file>.rb"
   And the "lineNumber" of stack frame 0 equals <lineNumber>
 
   Examples:
@@ -69,7 +68,7 @@ Scenario Outline: A handled error can attach metadata in a block
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of stack frame 0 equals "/usr/src/handled/block_metadata.rb"
+  And the "file" of stack frame 0 equals "/usr/src/app/handled/block_metadata.rb"
   And the "lineNumber" of stack frame 0 equals 6
   And the event "metaData.account.id" equals "1234abcd"
   And the event "metaData.account.name" equals "Acme Co"

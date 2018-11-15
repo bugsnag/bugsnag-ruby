@@ -3,7 +3,6 @@ Feature: Plain report modify stack frames
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: Stack frames can be removed
@@ -16,7 +15,7 @@ Scenario Outline: Stack frames can be removed
   And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the "file" of stack frame 0 equals "/usr/src/stack_frame_modification/initiators/<initiator>.rb"
+  And the "file" of stack frame 0 equals "/usr/src/app/stack_frame_modification/initiators/<initiator>.rb"
   And the "lineNumber" of stack frame 0 equals <lineNumber>
 
   Examples:
@@ -53,7 +52,7 @@ Scenario Outline: Stack frames can be marked as in project
   And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the "file" of stack frame 0 equals "/usr/src/stack_frame_modification/initiators/<initiator>.rb"
+  And the "file" of stack frame 0 equals "/usr/src/app/stack_frame_modification/initiators/<initiator>.rb"
   And the event "exceptions.0.stacktrace.0.inProject" is null
   And the event "exceptions.0.stacktrace.1.inProject" is true
   And the event "exceptions.0.stacktrace.2.inProject" is true

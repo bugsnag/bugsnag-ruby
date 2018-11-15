@@ -3,7 +3,6 @@ Feature: Plain unhandled errors
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: An unhandled error sends a report
@@ -19,7 +18,7 @@ Scenario Outline: An unhandled error sends a report
   And the event "severity" equals "error"
   And the event "severityReason.type" equals "unhandledException"
   And the exception "errorClass" equals "<error>"
-  And the "file" of stack frame 0 equals "/usr/src/unhandled/<file>.rb"
+  And the "file" of stack frame 0 equals "/usr/src/app/unhandled/<file>.rb"
   And the "lineNumber" of stack frame 0 equals <lineNumber>
 
   Examples:
