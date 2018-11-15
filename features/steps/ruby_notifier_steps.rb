@@ -1,9 +1,3 @@
-When("I navigate to the route {string} on port {string}") do |route, port|
-  steps %Q{
-    When I open the URL "http://localhost:#{port}#{route}"
-    And I wait for 1 second
-  }
-end
 When("I set environment variable {string} to the current IP") do |env_var|
   steps %Q{
     When I set environment variable "#{env_var}" to "#{current_ip}"
