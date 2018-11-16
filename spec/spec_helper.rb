@@ -84,3 +84,9 @@ def have_sent_notification(&matcher)
     end
   end
 end
+
+def get_top_project_frame(stacktrace)
+  stacktrace.find do |frame|
+    frame !=~ %r{lib/bugsnag(/|\.rb)}
+  end
+end
