@@ -19,7 +19,7 @@ module Bugsnag
 
     def call(worker, msg, queue)
       # store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq
-      Bugsnag.configuration.set_request_data :sidekiq, { :msg => msg, :queue => queue }
+      Bugsnag.configuration.set_request_data(:sidekiq, { :msg => msg, :queue => queue })
       error_raised = false
       yield
     rescue Exception => ex
