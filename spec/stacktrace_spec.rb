@@ -26,6 +26,21 @@ describe Bugsnag::Stacktrace do
     }
   end
 
+  it "includes bugsnag lines marked out of project" do
+    notify_test_exception
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      exception = get_exception_from_payload(payload)
+      bugsnag_count = 0
+      exception["stacktrace"].each do |frame|
+        if /.*lib\/bugsnag.*\.rb/.match(frame["file"])
+          bugsnag_count += 1
+          expect(frame["inProject"]).to be_nil
+        end
+      end
+      expect(bugsnag_count).to be > 0
+    }
+  end
+
   it "allows you to disable sending code" do
     Bugsnag.configuration.send_code = false
 
