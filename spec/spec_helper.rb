@@ -85,8 +85,17 @@ def have_sent_notification(&matcher)
   end
 end
 
-def get_top_project_frame(stacktrace)
+def get_project_frame(stacktrace, count=0)
+  index = 0
   stacktrace.find do |frame|
-    /.*lib\/bugsnag.*\.rb/.match(frame["file"]).nil?
+    found = false
+    if /.*lib\/bugsnag.*\.rb/.match(frame["file"]).nil?
+      if index == count
+        found = true
+      else
+        index += 1
+        found = false
+      end
+    end
   end
 end

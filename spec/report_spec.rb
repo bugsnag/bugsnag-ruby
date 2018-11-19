@@ -519,7 +519,7 @@ describe Bugsnag::Report do
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["stacktrace"].size).to be >= 1
-      top_frame = get_top_project_frame(exception["stacktrace"])
+      top_frame = get_project_frame(exception["stacktrace"])
       expect(top_frame["inProject"]).to eq(true)
     }
   end
@@ -1052,7 +1052,7 @@ describe Bugsnag::Report do
       expect(exception["errorClass"]).to eq("RuntimeError")
       expect(exception["message"]).to eq("'nil' was notified as an exception")
 
-      stacktrace = get_top_project_frame(exception["stacktrace"])
+      stacktrace = get_project_frame(exception["stacktrace"])
       expect(stacktrace["lineNumber"]).to eq(1048)
       expect(stacktrace["file"]).to end_with("spec/report_spec.rb")
       expect(stacktrace["code"]["1047"]).to eq("  it 'uses an appropriate message if nil is notified' do")

@@ -12,8 +12,9 @@ describe Bugsnag::Stacktrace do
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
-      starting_line = __LINE__ - 10
-      expect(exception["stacktrace"][1]["code"]).to eq({
+      starting_frame = get_project_frame(exception["stacktrace"], 1)
+      starting_line = __LINE__ - 11
+      expect(starting_frame["code"]).to eq({
         (starting_line + 0).to_s => "    _a = 1",
         (starting_line + 1).to_s => "    _b = 2",
         (starting_line + 2).to_s => "    _c = 3",
