@@ -33,6 +33,8 @@ def install_fixture_gems
   end
 end
 
+# Added to ensure that multiple versions of Gems do not exist within the fixture folders,
+# which can be difficult to track down and clear up
 def remove_installed_gems
   removal_targets = ['temp-bugsnag-lib', 'bugsnag-*.gem']
   Dir.entries('features/fixtures').reject { |entry| ['.', '..'].include?(entry) }.each do |entry|
