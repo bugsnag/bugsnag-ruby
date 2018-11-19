@@ -87,6 +87,6 @@ end
 
 def get_top_project_frame(stacktrace)
   stacktrace.find do |frame|
-    frame !=~ %r{lib/bugsnag(/|\.rb)}
+    /.*lib\/bugsnag.*\.rb/.match(frame["file"]).nil?
   end
 end
