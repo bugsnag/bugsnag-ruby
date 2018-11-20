@@ -26,7 +26,6 @@ module Bugsnag
 
         # Parse the stacktrace line
 
-        # Skip stacktrace lines inside lib/bugsnag
         next(nil) if file.nil?
 
         # Expand relative paths

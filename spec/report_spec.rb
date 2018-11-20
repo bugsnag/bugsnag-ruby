@@ -501,9 +501,14 @@ describe Bugsnag::Report do
     expect(WebMock).to have_requested(:post, "https://notify.bugsnag.com")
   end
 
-  it "does not mark the top-most non-bugsnag stacktrace line as inProject if out of project" do
+  it "does not mark the top-most stacktrace line as inProject if out of project" do
     Bugsnag.configuration.project_root = "/Random/location/here"
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    begin
+      "Test".prepnd "T"
+    rescue Exception => e
+      Bugsnag.notify(e)
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
@@ -512,15 +517,19 @@ describe Bugsnag::Report do
     }
   end
 
-  it "marks the top-most non-bugsnag stacktrace line as inProject if necessary" do
+  it "marks the top-most stacktrace line as inProject if necessary" do
     Bugsnag.configuration.project_root = File.expand_path File.dirname(__FILE__)
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    begin
+      "Test".prepnd "T"
+    rescue Exception => e
+      Bugsnag.notify(e)
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["stacktrace"].size).to be >= 1
-      top_frame = get_project_frame(exception["stacktrace"])
-      expect(top_frame["inProject"]).to eq(true)
+      expect(exception["stacktrace"][0]["inProject"]).to eq(true)
     }
   end
 
@@ -1051,12 +1060,21 @@ describe Bugsnag::Report do
       exception = event["exceptions"][0]
       expect(exception["errorClass"]).to eq("RuntimeError")
       expect(exception["message"]).to eq("'nil' was notified as an exception")
+    }
+  end
 
-      stacktrace = get_project_frame(exception["stacktrace"])
-      expect(stacktrace["lineNumber"]).to eq(1048)
-      expect(stacktrace["file"]).to end_with("spec/report_spec.rb")
-      expect(stacktrace["code"]["1047"]).to eq("  it 'uses an appropriate message if nil is notified' do")
-      expect(stacktrace["code"]["1048"]).to eq("    Bugsnag.notify(nil)")
+  it "includes bugsnag lines marked out of project" do
+    notify_test_exception
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      exception = get_exception_from_payload(payload)
+      bugsnag_count = 0
+      exception["stacktrace"].each do |frame|
+        if /.*lib\/bugsnag.*\.rb/.match(frame["file"])
+          bugsnag_count += 1
+          expect(frame["inProject"]).to be_nil
+        end
+      end
+      expect(bugsnag_count).to be > 0
     }
   end
 
