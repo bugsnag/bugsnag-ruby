@@ -6,7 +6,6 @@ COPY temp-bugsnag-lib ./
 
 ARG APP_PATH
 
-RUN mkdir -p $APP_PATH
 WORKDIR $APP_PATH
 
 ARG SIDEKIQ_VERSION
@@ -15,6 +14,6 @@ ENV SIDEKIQ_VERSION $SIDEKIQ_VERSION
 COPY app/Gemfile $APP_PATH
 RUN bundle install
 
-COPY app $APP_PATH
+COPY app/ $APP_PATH
 
 CMD ["bundle", "exec", "sidekiq", "-r", "./app.rb"]

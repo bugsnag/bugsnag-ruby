@@ -1,7 +1,7 @@
 Feature: Release stage
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
@@ -34,7 +34,7 @@ Scenario Outline: Release_stage should default to RAILS_ENV
 
 Scenario Outline: Release_stage can be set in an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
-  And I set environment variable "MAZE_RELEASE_STAGE" to "maze_release_stage_env"
+  And I set environment variable "BUGSNAG_RELEASE_STAGE" to "maze_release_stage_env"
   And I start the service "rails<rails_version>"
   And I wait for the app to respond on port "6128<rails_version>"
   When I navigate to the route "/release_stage/default" on port "6128<rails_version>"

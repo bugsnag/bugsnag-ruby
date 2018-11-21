@@ -1,10 +1,11 @@
-ARG ruby_version
-FROM ruby:$ruby_version
+ARG RUBY_VERSION
+FROM ruby:$RUBY_VERSION
 
-RUN mkdir -p /usr/src/app
+WORKDIR /bugsnag
+COPY temp-bugsnag-lib ./
+
 WORKDIR /usr/src/app
-
-COPY Gemfile /usr/src/app/
+COPY app/Gemfile /usr/src/app/
 RUN bundle install
 
 COPY . /usr/src/app

@@ -1,19 +1,19 @@
 Feature: App type configuration
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: Setting app_type in initializer works
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
-  And I set environment variable "MAZE_APP_TYPE" to "custom_app_type"
+  And I set environment variable "BUGSNAG_APP_TYPE" to "custom_app_type"
   And I start the service "rails<rails_version>"
   And I wait for the app to respond on port "6128<rails_version>"
   When I navigate to the route "/app_type/initializer" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"
@@ -43,7 +43,7 @@ Scenario Outline: Changing app_type after initializer works
   When I navigate to the route "/app_type/after?type=maze_after_initializer" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"

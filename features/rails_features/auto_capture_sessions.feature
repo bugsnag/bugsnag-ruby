@@ -1,19 +1,19 @@
 Feature: Auto capture sessions
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: Auto_capture_sessions can be set to true in the initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
-  And I set environment variable "MAZE_AUTO_CAPTURE_SESSIONS" to "true"
+  And I set environment variable "BUGSNAG_AUTO_CAPTURE_SESSIONS" to "true"
   And I start the service "rails<rails_version>"
   And I wait for the app to respond on port "6128<rails_version>"
   When I navigate to the route "/session_tracking/initializer" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the session tracking API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the "Bugsnag-API-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the sessionCount "startedAt" is a timestamp
 
@@ -41,7 +41,7 @@ Scenario Outline: Auto_capture_sessions can be set to true after the initializer
   When I navigate to the route "/session_tracking/initializer" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the session tracking API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the "Bugsnag-API-Key" header equals "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the sessionCount "startedAt" is a timestamp
 
