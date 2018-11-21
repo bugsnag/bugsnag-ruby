@@ -1,5 +1,5 @@
-ARG ruby_version
-FROM ruby:$ruby_version
+ARG RUBY_VERSION
+FROM ruby:$RUBY_VERSION
 
 WORKDIR /bugsnag
 COPY temp-bugsnag-lib ./

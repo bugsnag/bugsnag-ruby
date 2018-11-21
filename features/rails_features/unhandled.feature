@@ -1,7 +1,7 @@
 Feature: Unhandled exceptions support
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
@@ -12,7 +12,7 @@ Scenario Outline: Unhandled RuntimeError
   When I navigate to the route "/unhandled/error" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "unhandled" is true
@@ -21,8 +21,8 @@ Scenario Outline: Unhandled RuntimeError
   And the event "app.type" equals "rails"
   And the event "metaData.request.url" ends with "/unhandled/error"
   And the event "severity" equals "error"
-  And the event "severityReason.type" is "unhandledExceptionMiddleware"
-  And the event "severityReason.attributes.framework" is "Rack"
+  And the event "severityReason.type" equals "unhandledExceptionMiddleware"
+  And the event "severityReason.attributes.framework" equals "Rack"
 
   Examples:
     | ruby_version | rails_version |

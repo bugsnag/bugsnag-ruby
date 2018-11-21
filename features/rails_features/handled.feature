@@ -1,7 +1,7 @@
 Feature: Rails handled errors
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
@@ -12,7 +12,7 @@ Scenario Outline: Unhandled RuntimeError
   When I navigate to the route "/handled/unthrown" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "unhandled" is false
@@ -21,7 +21,7 @@ Scenario Outline: Unhandled RuntimeError
   And the event "app.type" equals "rails"
   And the event "metaData.request.url" ends with "/handled/unthrown"
   And the event "severity" equals "warning"
-  And the event "severityReason.type" is "handledException"
+  And the event "severityReason.type" equals "handledException"
 
   Examples:
     | ruby_version | rails_version |
@@ -45,7 +45,7 @@ Scenario Outline: Thrown handled NameError
   When I navigate to the route "/handled/thrown" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "NameError"
@@ -54,7 +54,7 @@ Scenario Outline: Thrown handled NameError
   And the event "metaData.request.url" ends with "/handled/thrown"
   And the event "app.type" equals "rails"
   And the event "severity" equals "warning"
-  And the event "severityReason.type" is "handledException"
+  And the event "severityReason.type" equals "handledException"
 
   Examples:
     | ruby_version | rails_version |
@@ -78,7 +78,7 @@ Scenario Outline: Manual string notify
   When I navigate to the route "/handled/string_notify" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"
