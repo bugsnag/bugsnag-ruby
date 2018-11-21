@@ -1,7 +1,7 @@
 Feature: Project root configuration
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
@@ -12,7 +12,7 @@ Scenario Outline: Project_root should default to Rails.root
   When I navigate to the route "/project_root/default" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"
@@ -37,13 +37,13 @@ Scenario Outline: Project_root should default to Rails.root
 
 Scenario Outline: Project_root can be set in an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
-  And I set environment variable "MAZE_PROJECT_ROOT" to "/foo/bar"
+  And I set environment variable "BUGSNAG_PROJECT_ROOT" to "/foo/bar"
   And I start the service "rails<rails_version>"
   And I wait for the app to respond on port "6128<rails_version>"
   When I navigate to the route "/project_root/initializer" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"
@@ -73,7 +73,7 @@ Scenario Outline: Project_root can be set after an initializer
   When I navigate to the route "/project_root/after" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"

@@ -1,13 +1,13 @@
 Feature: Auto notify
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: Auto_notify set to false in the initializer prevents unhandled error sending
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
-  And I set environment variable "MAZE_AUTO_NOTIFY" to "false"
+  And I set environment variable "BUGSNAG_AUTO_NOTIFY" to "false"
   And I start the service "rails<rails_version>"
   And I wait for the app to respond on port "6128<rails_version>"
   When I navigate to the route "/auto_notify/unhandled" on port "6128<rails_version>"
@@ -30,13 +30,13 @@ Scenario Outline: Auto_notify set to false in the initializer prevents unhandled
 
 Scenario Outline: Auto_notify set to false in the initializer still sends handled errors
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
-  And I set environment variable "MAZE_AUTO_NOTIFY" to "false"
+  And I set environment variable "BUGSNAG_AUTO_NOTIFY" to "false"
   And I start the service "rails<rails_version>"
   And I wait for the app to respond on port "6128<rails_version>"
   When I navigate to the route "/auto_notify/handled" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "unhandled" is false
@@ -89,7 +89,7 @@ Scenario Outline: Auto_notify set to false after the initializer still sends han
   When I navigate to the route "/auto_notify/handled_after" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the exception "errorClass" equals "RuntimeError"

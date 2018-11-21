@@ -2,16 +2,14 @@ Feature: proxy configuration options
 
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: Proxy settings are provided as configuration options
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I set environment variable "MAZE_PROXY_HOST" to the current IP
-  And I set environment variable "MAZE_PROXY_PORT" to the mock API port
-  And I set environment variable "MAZE_PROXY_USER" to "tester"
-  And I set environment variable "MAZE_PROXY_PASSWORD" to "testpass"
+  And I set environment variable "BUGSNAG_PROXY_HOST" to the current IP
+  And I set environment variable "BUGSNAG_PROXY_PORT" to the mock API port
+  And I set environment variable "BUGSNAG_PROXY_USER" to "tester"
+  And I set environment variable "BUGSNAG_PROXY_PASSWORD" to "testpass"
   And I have built the service "plain-ruby"
   And I run the service "plain-ruby" with the command "bundle exec ruby configuration/proxy.rb"
   And I wait for 1 second

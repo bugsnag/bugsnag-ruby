@@ -1,7 +1,7 @@
 Feature: Metadata filters
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
@@ -12,7 +12,7 @@ Scenario Outline: Meta_data_filters should include Rails.configuration.filter_pa
   When I navigate to the route "/metadata_filters/filter" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the payload field "events" is an array with 1 element
   And the event "unhandled" is false
