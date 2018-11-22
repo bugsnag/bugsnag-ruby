@@ -1,13 +1,13 @@
 Feature: Ignore classes
 
 Background:
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: Ignore_classes can be set to a different value in initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
-  And I set environment variable "MAZE_IGNORE_CLASS" to "IgnoredError"
+  And I set environment variable "BUGSNAG_IGNORE_CLASS" to "IgnoredError"
   And I start the service "rails<rails_version>"
   And I wait for the app to respond on port "6128<rails_version>"
   When I navigate to the route "/ignore_classes/initializer" on port "6128<rails_version>"

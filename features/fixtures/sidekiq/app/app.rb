@@ -2,10 +2,10 @@ require 'bundler'
 Bundler.require
 
 Bugsnag.configure do |conf|
-  puts "Configuring `api_key` to #{ENV['MAZE_API_KEY']}"
-  conf.api_key = ENV['MAZE_API_KEY']
-  puts "Configuring `endpoint` to #{ENV['MAZE_ENDPOINT']}"
-  conf.endpoint = ENV['MAZE_ENDPOINT']
+  puts "Configuring `api_key` to #{ENV['BUGSNAG_API_KEY']}"
+  conf.api_key = ENV['BUGSNAG_API_KEY']
+  puts "Configuring `endpoint` to #{ENV['BUGSNAG_ENDPOINT']}"
+  conf.endpoint = ENV['BUGSNAG_ENDPOINT']
 end
 
 Sidekiq.configure_client do |config|

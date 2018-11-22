@@ -1,5 +1,4 @@
-require 'open3'
-require 'os'
+require 'fileutils'
 
 Before do
   find_default_docker_compose
@@ -34,14 +33,24 @@ def install_fixture_gems
   end
 end
 
-def current_ip
-  if OS.mac?
-    'host.docker.internal'
-  else
-    ip_addr = `ifconfig | grep -Eo 'inet (addr:)?([0-9]*\\\.){3}[0-9]*' | grep -v '127.0.0.1'`
-    ip_list = /((?:[0-9]*\.){3}[0-9]*)/.match(ip_addr)
-    ip_list.captures.first
+# Added to ensure that multiple versions of Gems do not exist within the fixture folders,
+# which can be difficult to track down and clear up
+def remove_installed_gems
+  removal_targets = ['temp-bugsnag-lib', 'bugsnag-*.gem']
+  Dir.entries('features/fixtures').reject { |entry| ['.', '..'].include?(entry) }.each do |entry|
+    target_dir = "features/fixtures/#{entry}"
+    target_entries = []
+    removal_targets.each do |r_target|
+      target_entries += Dir.glob("#{target_dir}/#{r_target}")
+    end
+    target_entries.each do |d_target|
+      FileUtils.rm_rf(d_target)
+    end
   end
+end
+
+at_exit do
+  remove_installed_gems
 end
 
 install_fixture_gems

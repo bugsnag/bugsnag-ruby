@@ -2,8 +2,6 @@ Feature: Plain report modify user
 
 Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  Given I set environment variable "MAZE_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
 Scenario Outline: A report can have a user name, email, and id set
@@ -13,12 +11,12 @@ Scenario Outline: A report can have a user name, email, and id set
   And I run the service "plain-ruby" with the command "bundle exec ruby report_modification/set_user_details.rb"
   And I wait for 1 second
   Then I should receive a request
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the event "user.name" is "leo testman"
-  And the event "user.email" is "test@test.com"
-  And the event "user.id" is "0001"
+  And the event "user.name" equals "leo testman"
+  And the event "user.email" equals "test@test.com"
+  And the event "user.id" equals "0001"
 
   Examples:
   | ruby version | initiator               |
@@ -51,13 +49,13 @@ Scenario Outline: A report can have custom info set
   And I run the service "plain-ruby" with the command "bundle exec ruby report_modification/set_custom_user_details.rb"
   And I wait for 1 second
   Then I should receive a request
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the event "user.type" is "amateur"
-  And the event "user.location" is "testville"
-  And the event "user.details.a" is "foo"
-  And the event "user.details.b" is "bar"
+  And the event "user.type" equals "amateur"
+  And the event "user.location" equals "testville"
+  And the event "user.details.a" equals "foo"
+  And the event "user.details.b" equals "bar"
 
   Examples:
   | ruby version | initiator               |
@@ -90,7 +88,7 @@ Scenario Outline: A report can have its user info removed
   And I run the service "plain-ruby" with the command "bundle exec ruby report_modification/remove_user_details.rb"
   And I wait for 1 second
   Then I should receive a request
-  And the request used the Ruby notifier
+  And the request used the "Ruby Bugsnag Notifier" notifier
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event "user" is null

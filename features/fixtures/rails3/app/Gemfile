@@ -8,6 +8,6 @@ gem 'sqlite3'
 
 gem 'jquery-rails'
 
-gem "bugsnag"
+gem 'bugsnag', path: '/bugsnag'
 
 gem "warden"
