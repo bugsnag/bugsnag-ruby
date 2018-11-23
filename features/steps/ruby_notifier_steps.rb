@@ -13,3 +13,29 @@ When("I set environment variable {string} to the proxy settings with credentials
     When I set environment variable "#{env_var}" to "#{credentials}@#{current_ip}:#{MOCK_API_PORT}"
   }
 end
+Then(/^the "(.+)" of the top project stackframe equals "(.+)"(?: for request (\d+))?$/) do |element, value, request_index|
+  stacktrace = read_key_path(find_request(request_index)[:body], 'events.0.exceptions.0.stacktrace')
+  frame_index = 0
+  stacktrace.each do |frame, index|
+    unless /.*lib\/bugsnag.*\.rb/.match(frame["file"])
+      frame_index = index
+      break
+    end
+  end
+  steps %Q{
+    the "#{element}" of stack frame #{frame_index} equals "#{value}"
+  }
+end
+Then(/^the "(.+)" of the top project stackframe equals (\d+)(?: for request (\d+))?$/) do |element, value, request_index|
+  stacktrace = read_key_path(find_request(request_index)[:body], 'events.0.exceptions.0.stacktrace')
+  frame_index = 0
+  stacktrace.each do |frame, index|
+    unless /.*lib\/bugsnag.*\.rb/.match(frame["file"])
+      frame_index = index
+      break
+    end
+  end
+  steps %Q{
+    the "#{element}" of stack frame #{frame_index} equals #{value}
+  }
+end
