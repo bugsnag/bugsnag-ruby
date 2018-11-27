@@ -1,6 +1,10 @@
 Changelog
 =========
 
+* Set default Delayed Job error context to job class
+  | [#499](https://github.com/bugsnag/bugsnag-ruby/pull/499)
+  | [Mike Stewart](https://github.com/mike-stewart)
+
 ## 6.9.0 (12 Nov 2018)
 
 ### Enhancements
