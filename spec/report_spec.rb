@@ -1074,7 +1074,7 @@ describe Bugsnag::Report do
           expect(frame["inProject"]).to be_nil
         end
       end
-      # Seven is used here as the called frames for a `notify` call should be:
+      # 7 is used here as the called bugsnag frames for a `notify` call should be:
       # - Bugsnag.notify
       # - Report.new
       # - Report.initialize
@@ -1082,7 +1082,13 @@ describe Bugsnag::Report do
       # - Report.generate_exceptions_list | raw_exceptions.map
       # - Report.generate_exceptions_list | raw_exceptions.map | block
       # - Report.generate_exceptions_list | raw_exceptions.map | block | Stacktrace.new
-      expect(bugsnag_count).to equal 7
+      # However, JRUBY does not include the two `new` frames, resulting in 5 bugsnag frames
+      if defined?(JRUBY_VERSION)
+        frame_count = 5
+      else
+        frame_count = 7
+      end
+      expect(bugsnag_count).to equal frame_count
     }
   end
 
