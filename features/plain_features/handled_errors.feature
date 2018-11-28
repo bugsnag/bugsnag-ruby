@@ -17,8 +17,8 @@ Scenario Outline: A handled error sends a report
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of the top project stackframe equals "/usr/src/app/handled/<file>.rb"
-  And the "lineNumber" of the top project stackframe equals <lineNumber>
+  And the "file" of the top non-bugsnag stackframe equals "/usr/src/app/handled/<file>.rb"
+  And the "lineNumber" of the top non-bugsnag stackframe equals <lineNumber>
 
   Examples:
   | ruby version | file                | lineNumber |
@@ -67,8 +67,8 @@ Scenario Outline: A handled error can attach metadata in a block
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of the top project stackframe equals "/usr/src/app/handled/block_metadata.rb"
-  And the "lineNumber" of the top project stackframe equals 6
+  And the "file" of the top non-bugsnag stackframe equals "/usr/src/app/handled/block_metadata.rb"
+  And the "lineNumber" of the top non-bugsnag stackframe equals 6
   And the event "metaData.account.id" equals "1234abcd"
   And the event "metaData.account.name" equals "Acme Co"
   And the event "metaData.account.support" is true

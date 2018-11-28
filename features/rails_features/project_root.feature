@@ -18,7 +18,7 @@ Scenario Outline: Project_root should default to Rails.root
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled string"
   And the event "metaData.request.url" ends with "/project_root/default"
-  And the "file" of the top project stackframe equals "app/controllers/project_root_controller.rb"
+  And the "file" of the top non-bugsnag stackframe equals "app/controllers/project_root_controller.rb"
 
   Examples:
     | ruby_version | rails_version |
@@ -49,7 +49,7 @@ Scenario Outline: Project_root can be set in an initializer
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled string"
   And the event "metaData.request.url" ends with "/project_root/initializer"
-  And the "file" of the top project stackframe equals "/usr/src/app/controllers/project_root_controller.rb"
+  And the "file" of the top non-bugsnag stackframe equals "/usr/src/app/controllers/project_root_controller.rb"
 
   Examples:
     | ruby_version | rails_version |
@@ -79,7 +79,7 @@ Scenario Outline: Project_root can be set after an initializer
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled string"
   And the event "metaData.request.url" ends with "/project_root/after"
-  And the "file" of the top project stackframe equals "/usr/src/app/controllers/project_root_controller.rb"
+  And the "file" of the top non-bugsnag stackframe equals "/usr/src/app/controllers/project_root_controller.rb"
 
   Examples:
     | ruby_version | rails_version |

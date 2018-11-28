@@ -1074,7 +1074,15 @@ describe Bugsnag::Report do
           expect(frame["inProject"]).to be_nil
         end
       end
-      expect(bugsnag_count).to be > 0
+      # Seven is used here as the called frames for a `notify` call should be:
+      # - Bugsnag.notify
+      # - Report.new
+      # - Report.initialize
+      # - Report.generate_exceptions_list
+      # - Report.generate_exceptions_list | raw_exceptions.map
+      # - Report.generate_exceptions_list | raw_exceptions.map | block
+      # - Report.generate_exceptions_list | raw_exceptions.map | block | Stacktrace.new
+      expect(bugsnag_count).to equal 7
     }
   end
 
