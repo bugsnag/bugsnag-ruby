@@ -34,7 +34,7 @@ Scenario Outline: Stack frames can be removed
   | 2.5          | handled_before_notify   | 20         |
   | 2.5          | unhandled_before_notify | 21         |
 
-Scenario Outline: Stack frames can be removed
+Scenario Outline: Stack frames can be removed from a notified string
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I set environment variable "CALLBACK_INITIATOR" to "handled_block"
   And I have built the service "plain-ruby"
