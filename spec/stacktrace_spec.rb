@@ -18,13 +18,13 @@ describe Bugsnag::Stacktrace do
       exception = get_exception_from_payload(payload)
       starting_line = __LINE__ - 13
       expect(exception["stacktrace"][0]["code"]).to eq({
-        (starting_line + 0).to_s => "      _a = 1",
-        (starting_line + 1).to_s => "      _b = 2",
-        (starting_line + 2).to_s => "      _c = 3",
-        (starting_line + 3).to_s => "      \"Test\".prepnd \"T\"",
-        (starting_line + 4).to_s => "      _d = 4",
-        (starting_line + 5).to_s => "      _e = 5",
-        (starting_line + 6).to_s => "      _f = 6"
+        (starting_line + 0).to_s => '      _a = 1',
+        (starting_line + 1).to_s => '      _b = 2',
+        (starting_line + 2).to_s => '      _c = 3',
+        (starting_line + 3).to_s => '      "Test".prepnd "T"',
+        (starting_line + 4).to_s => '      _d = 4',
+        (starting_line + 5).to_s => '      _e = 5',
+        (starting_line + 6).to_s => '      _f = 6'
         })
     }
   end

@@ -45,17 +45,17 @@ Scenario Outline: Stack frames can be removed
   And the request used payload v4 headers
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the "file" of the top non-bugsnag stackframe equals "/usr/src/app/stack_frame_modification/initiators/handled_block.rb"
-  And the "lineNumber" of the top non-bugsnag stackframe equals <lineNumber>
+  And the "lineNumber" of the top non-bugsnag stackframe equals 19
 
   Examples:
-  | ruby version | lineNumber |
-  | 1.9.3        | 19         |
-  | 2.0          | 19         |
-  | 2.1          | 19         |
-  | 2.2          | 19         |
-  | 2.3          | 19         |
-  | 2.4          | 19         |
-  | 2.5          | 19         |
+  | ruby version |
+  | 1.9.3        |
+  | 2.0          |
+  | 2.1          |
+  | 2.2          |
+  | 2.3          |
+  | 2.4          |
+  | 2.5          |
 
 Scenario Outline: Stack frames can be marked as in project
   Given I set environment variable "RUBY_VERSION" to "<ruby version>"
