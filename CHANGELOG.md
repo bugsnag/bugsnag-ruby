@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## 6.10.0 (TBA)
+## 6.10.0 (04 Dec 2018)
 
 ### Enhancements
 
