@@ -4,10 +4,10 @@ Background:
   Given I set environment variable "BUGSNAG_API_KEY" to "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And I configure the bugsnag endpoint
 
-Scenario Outline: A handled error sends a report
+Scenario Outline: A rescued exception sends a report
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
   And I have built the service "plain-ruby"
-  And I run the service "plain-ruby" with the command "bundle exec ruby handled/<file>.rb"
+  And I run the service "plain-ruby" with the command "bundle exec ruby handled/notify_exception.rb"
   And I wait for 1 second
   Then I should receive a request
   And the request used the "Ruby Bugsnag Notifier" notifier
@@ -17,25 +17,45 @@ Scenario Outline: A handled error sends a report
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of stack frame 0 equals "/usr/src/app/handled/<file>.rb"
-  And the "lineNumber" of stack frame 0 equals <lineNumber>
+  And the "file" of stack frame 0 equals "/usr/src/app/handled/notify_exception.rb"
+  And the "lineNumber" of stack frame 0 equals 6
 
   Examples:
-  | ruby version | file                | lineNumber |
-  | 1.9.3        | notify_exception    | 6          |
-  | 1.9.3        | notify_string       | 8          |
-  | 2.0          | notify_exception    | 6          |
-  | 2.0          | notify_string       | 8          |
-  | 2.1          | notify_exception    | 6          |
-  | 2.1          | notify_string       | 8          |
-  | 2.2          | notify_exception    | 6          |
-  | 2.2          | notify_string       | 8          |
-  | 2.3          | notify_exception    | 6          |
-  | 2.3          | notify_string       | 8          |
-  | 2.4          | notify_exception    | 6          |
-  | 2.4          | notify_string       | 8          |
-  | 2.5          | notify_exception    | 6          |
-  | 2.5          | notify_string       | 8          |
+  | ruby version |
+  | 1.9.3        |
+  | 2.0          |
+  | 2.1          |
+  | 2.2          |
+  | 2.3          |
+  | 2.4          |
+  | 2.5          |
+
+Scenario Outline: A notified string sends a report
+  And I set environment variable "RUBY_VERSION" to "<ruby version>"
+  And I have built the service "plain-ruby"
+  And I run the service "plain-ruby" with the command "bundle exec ruby handled/notify_string.rb"
+  And I wait for 1 second
+  Then I should receive a request
+  And the request used the "Ruby Bugsnag Notifier" notifier
+  And the request used payload v4 headers
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the event "unhandled" is false
+  And the event "severity" equals "warning"
+  And the event "severityReason.type" equals "handledException"
+  And the exception "errorClass" equals "RuntimeError"
+  And the "file" of the top non-bugsnag stackframe equals "/usr/src/app/handled/notify_string.rb"
+  And the "lineNumber" of the top non-bugsnag stackframe equals 8
+
+  Examples:
+  | ruby version |
+  | 1.9.3        |
+  | 2.0          |
+  | 2.1          |
+  | 2.2          |
+  | 2.3          |
+  | 2.4          |
+  | 2.5          |
+
 
 Scenario Outline: A handled error doesn't send a report when the :skip_bugsnag flag is set
   And I set environment variable "RUBY_VERSION" to "<ruby version>"

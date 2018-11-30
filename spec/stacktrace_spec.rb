@@ -2,25 +2,29 @@ require 'spec_helper'
 
 describe Bugsnag::Stacktrace do
   it "includes code in the stack trace" do
-    _a = 1
-    _b = 2
-    _c = 3
-    notify_test_exception
-    _d = 4
-    _e = 5
-    _f = 6
+    begin
+      _a = 1
+      _b = 2
+      _c = 3
+      "Test".prepnd "T"
+      _d = 4
+      _e = 5
+      _f = 6
+    rescue Exception => e
+      Bugsnag.notify(e)
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
-      starting_line = __LINE__ - 10
-      expect(exception["stacktrace"][1]["code"]).to eq({
-        (starting_line + 0).to_s => "    _a = 1",
-        (starting_line + 1).to_s => "    _b = 2",
-        (starting_line + 2).to_s => "    _c = 3",
-        (starting_line + 3).to_s => "    notify_test_exception",
-        (starting_line + 4).to_s => "    _d = 4",
-        (starting_line + 5).to_s => "    _e = 5",
-        (starting_line + 6).to_s => "    _f = 6"
+      starting_line = __LINE__ - 13
+      expect(exception["stacktrace"][0]["code"]).to eq({
+        (starting_line + 0).to_s => '      _a = 1',
+        (starting_line + 1).to_s => '      _b = 2',
+        (starting_line + 2).to_s => '      _c = 3',
+        (starting_line + 3).to_s => '      "Test".prepnd "T"',
+        (starting_line + 4).to_s => '      _d = 4',
+        (starting_line + 5).to_s => '      _e = 5',
+        (starting_line + 6).to_s => '      _f = 6'
         })
     }
   end
