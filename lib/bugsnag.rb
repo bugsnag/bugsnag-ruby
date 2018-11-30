@@ -17,6 +17,8 @@ require "bugsnag/delivery/thread_queue"
 # as it doesn't auto-configure when loaded
 require "bugsnag/integrations/rack"
 
+require "bugsnag/utility/circular_buffer"
+
 require "bugsnag/middleware/rack_request"
 require "bugsnag/middleware/warden_user"
 require "bugsnag/middleware/clearance_user"
