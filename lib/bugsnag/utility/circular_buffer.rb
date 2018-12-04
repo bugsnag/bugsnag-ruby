@@ -4,7 +4,7 @@ module Bugsnag::Utility
 
     attr_reader :max_items
 
-    def initialize(max_items=25)
+    def initialize(max_items = 25)
       @max_items = max_items
       @buffer = []
     end
@@ -25,6 +25,7 @@ module Bugsnag::Utility
     end
 
     private
+
     def trim_buffer
       trim_size = @buffer.size - @max_items
       trim_size = 0 if trim_size < 0
