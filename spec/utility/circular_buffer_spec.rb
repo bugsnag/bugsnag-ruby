@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require 'spec_helper'
+require 'bugsnag/utility/circular_buffer'
 
 describe Bugsnag::Utility::CircularBuffer do
   describe "buffer size" do
@@ -25,7 +26,7 @@ describe Bugsnag::Utility::CircularBuffer do
   end
 
   describe "buffer items" do
-    it "initializes empty <<" do
+    it "initializes empty" do
       buffer = Bugsnag::Utility::CircularBuffer.new
 
       expect(buffer.to_a).to eq([])

@@ -26,9 +26,9 @@ module Bugsnag::Utility
 
     private
     def trim_buffer
-        trim_size = @buffer.size - @max_items
-        trim_size = 0 if trim_size < 0
-        @buffer.shift(trim_size)
+      trim_size = @buffer.size - @max_items
+      trim_size = 0 if trim_size < 0
+      @buffer.shift(trim_size)
     end
   end
 end
