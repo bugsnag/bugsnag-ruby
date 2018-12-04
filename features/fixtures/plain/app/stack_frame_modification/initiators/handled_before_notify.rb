@@ -21,5 +21,9 @@ def step_three
 end
 
 def crash
-  Bugsnag.notify(RuntimeError.new("oh no"))
+  begin
+    "Test".insrt(-1, "!")
+  rescue Exception => e
+    Bugsnag.notify(e)
+  end
 end

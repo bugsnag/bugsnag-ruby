@@ -512,7 +512,12 @@ describe Bugsnag::Report do
 
   it "does not mark the top-most stacktrace line as inProject if out of project" do
     Bugsnag.configuration.project_root = "/Random/location/here"
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    begin
+      "Test".prepnd "T"
+    rescue Exception => e
+      Bugsnag.notify(e)
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
@@ -523,12 +528,17 @@ describe Bugsnag::Report do
 
   it "marks the top-most stacktrace line as inProject if necessary" do
     Bugsnag.configuration.project_root = File.expand_path File.dirname(__FILE__)
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    begin
+      "Test".prepnd "T"
+    rescue Exception => e
+      Bugsnag.notify(e)
+    end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
       expect(exception["stacktrace"].size).to be >= 1
-      expect(exception["stacktrace"].first["inProject"]).to eq(true)
+      expect(exception["stacktrace"][0]["inProject"]).to eq(true)
     }
   end
 
@@ -1059,12 +1069,35 @@ describe Bugsnag::Report do
       exception = event["exceptions"][0]
       expect(exception["errorClass"]).to eq("RuntimeError")
       expect(exception["message"]).to eq("'nil' was notified as an exception")
-
-      stacktrace = exception["stacktrace"][0]
-      expect(stacktrace["lineNumber"]).to eq(1056)
-      expect(stacktrace["file"]).to end_with("spec/report_spec.rb")
-      expect(stacktrace["code"]["1055"]).to eq("  it 'uses an appropriate message if nil is notified' do")
-      expect(stacktrace["code"]["1056"]).to eq("    Bugsnag.notify(nil)")
+    }
+  end
+  
+  it "includes bugsnag lines marked out of project" do
+    notify_test_exception
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      exception = get_exception_from_payload(payload)
+      bugsnag_count = 0
+      exception["stacktrace"].each do |frame|
+        if /.*lib\/bugsnag.*\.rb/.match(frame["file"])
+          bugsnag_count += 1
+          expect(frame["inProject"]).to be_nil
+        end
+      end
+      # 7 is used here as the called bugsnag frames for a `notify` call should be:
+      # - Bugsnag.notify
+      # - Report.new
+      # - Report.initialize
+      # - Report.generate_exceptions_list
+      # - Report.generate_exceptions_list | raw_exceptions.map
+      # - Report.generate_exceptions_list | raw_exceptions.map | block
+      # - Report.generate_exceptions_list | raw_exceptions.map | block | Stacktrace.new
+      # However, JRUBY does not include the two `new` frames, resulting in 5 bugsnag frames
+      if defined?(JRUBY_VERSION)
+        frame_count = 5
+      else
+        frame_count = 7
+      end
+      expect(bugsnag_count).to equal frame_count
     }
   end
 
