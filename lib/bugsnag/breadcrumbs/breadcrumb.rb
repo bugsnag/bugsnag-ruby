@@ -1,5 +1,4 @@
 module Bugsnag::Breadcrumbs
-
   class Breadcrumb
     attr_accessor :message
     attr_accessor :type
@@ -13,7 +12,7 @@ module Bugsnag::Breadcrumbs
       self.type = type
       self.meta_data = meta_data
       @auto = auto
-      @timestamp = Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
+      @timestamp = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%S')
     end
 
     def ignore!
