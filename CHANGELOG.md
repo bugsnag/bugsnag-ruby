@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## 6.10.0 (04 Dec 2018)
+## 6.10.0 (05 Dec 2018)
 
 ### Enhancements
 
