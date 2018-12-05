@@ -4,7 +4,7 @@ require 'spec_helper'
 
 require 'bugsnag/breadcrumbs/breadcrumb'
 
-describe Bugsnag::Breadcrumbs::Breadcrumb do
+RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
   describe "#message" do
     it "is assigned in #initialize" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", nil, nil, nil)
