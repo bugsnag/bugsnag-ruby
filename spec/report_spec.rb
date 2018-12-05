@@ -146,18 +146,27 @@ describe Bugsnag::Report do
   end
 
   it "sets correct severity and reason for specific error classes" do
-    Bugsnag.notify(SignalException.new("TERM"))
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
-      event = get_event_from_payload(payload)
-      expect(event["unhandled"]).to be false
-      expect(event["severity"]).to eq("info")
-      expect(event["severityReason"]).to eq({
-        "type" => "errorClass",
-        "attributes" => {
-          "errorClass" => "SignalException"
-        }
-      })
-    }
+    original_ignore_classes = Bugsnag.configuration.ignore_classes
+
+    begin
+      # The default ignore_classes includes SignalException, so we need to
+      # temporarily set it to something else.
+      Bugsnag.configuration.ignore_classes = Set[SystemExit]
+      Bugsnag.notify(SignalException.new("TERM"))
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["unhandled"]).to be false
+        expect(event["severity"]).to eq("info")
+        expect(event["severityReason"]).to eq({
+          "type" => "errorClass",
+          "attributes" => {
+            "errorClass" => "SignalException"
+          }
+        })
+      }
+    ensure
+      Bugsnag.configuration.ignore_classes = original_ignore_classes
+    end
   end
 
   # TODO: nested context
@@ -1062,7 +1071,7 @@ describe Bugsnag::Report do
       expect(exception["message"]).to eq("'nil' was notified as an exception")
     }
   end
-
+  
   it "includes bugsnag lines marked out of project" do
     notify_test_exception
     expect(Bugsnag).to have_sent_notification{ |payload, headers|

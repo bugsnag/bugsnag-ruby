@@ -1,6 +1,22 @@
 Changelog
 =========
 
+## 6.10.0 (05 Dec 2018)
+
+### Enhancements
+
+* Add SignalException to our default ignored classes
+  | [#479](https://github.com/bugsnag/bugsnag-ruby/pull/479)
+  | [Toby Hsieh](https://github.com/tobyhs)
+
+* Include Bugsnag frames, marked out of project
+  | [#497](https://github.com/bugsnag/bugsnag-ruby/pull/497)
+
+### Fixes
+
+* Ensure Sidekiq request data is always attached to notifications
+  | [#495](https://github.com/bugsnag/bugsnag-ruby/pull/495)
+
 ## 6.9.0 (12 Nov 2018)
 
 ### Enhancements
