@@ -11,7 +11,7 @@ module Bugsnag::Breadcrumbs
       self.message = message
       self.type = type
       self.meta_data = meta_data
-      @auto = auto === :auto
+      @auto = auto == :auto
       @timestamp = Time.now
     end
 
