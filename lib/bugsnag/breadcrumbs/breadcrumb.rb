@@ -11,8 +11,8 @@ module Bugsnag::Breadcrumbs
       self.message = message
       self.type = type
       self.meta_data = meta_data
-      @auto = auto
-      @timestamp = Time.now.utc.strftime('%Y-%m-%dT%H:%M:%S')
+      @auto = auto === :auto
+      @timestamp = Time.now
     end
 
     def ignore!
@@ -25,10 +25,10 @@ module Bugsnag::Breadcrumbs
 
     def to_h
       {
-        :message => message,
-        :type => type,
-        :metaData => meta_data,
-        :timestamp => timestamp
+        :name => @message,
+        :type => @type,
+        :metaData => @meta_data,
+        :timestamp => @timestamp.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
       }
     end
   end

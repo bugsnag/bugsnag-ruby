@@ -5,27 +5,66 @@ require 'spec_helper'
 require 'bugsnag/breadcrumbs/breadcrumb'
 
 describe Bugsnag::Breadcrumbs::Breadcrumb do
-  describe "initialize" do
-    it "should assign arguments correctly" do
-      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", "test type", {:a => 1, :b => 2}, :manual)
+  describe "#message" do
+    it "is assigned in #initialize" do
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", nil, nil, nil)
 
       expect(breadcrumb.message).to eq("my message")
-      expect(breadcrumb.type).to eq("test type")
-      expect(breadcrumb.meta_data).to eq({:a => 1, :b => 2})
-      expect(breadcrumb.auto).to eq(:manual)
-
-      expect(breadcrumb.timestamp).to_not be_nil
     end
   end
 
-  describe "ignore" do
-    it "should not be ignored by default" do
+  describe "#type" do
+    it "is assigned in #initialize" do
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, "test type", nil, nil)
+
+      expect(breadcrumb.type).to eq("test type")
+    end
+  end
+
+  describe "#meta_data" do
+    it "is assigned in #initialize" do
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, {:a => 1, :b => 2}, nil)
+
+      expect(breadcrumb.meta_data).to eq({:a => 1, :b => 2})
+    end
+  end
+
+  describe "#auto" do
+    it "defaults to false" do
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, nil, nil)
+
+      expect(breadcrumb.auto).to eq(false)
+    end
+
+    it "is true if auto argument == :auto" do
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, nil, :auto)
+
+      expect(breadcrumb.auto).to eq(true)
+    end
+
+    it "if false if auto argument is anything else" do
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, nil, :manual)
+
+      expect(breadcrumb.auto).to eq(false)
+    end
+  end
+
+  describe "#timestamp" do
+    it "is stored as a timestamp" do
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, nil, nil)
+
+      expect(breadcrumb.timestamp).to be_within(0.5.second).of Time.now
+    end
+  end
+
+  describe "#ignore" do
+    it "is not ignored by default" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", "test type", {:a => 1, :b => 2}, :manual)
 
       expect(breadcrumb.ignore?).to eq(false)
     end
 
-    it "should be able to be ignored" do
+    it "is able to be ignored" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", "test type", {:a => 1, :b => 2}, :manual)
       breadcrumb.ignore!
 
@@ -33,15 +72,19 @@ describe Bugsnag::Breadcrumbs::Breadcrumb do
     end
   end
 
-  describe "to_h" do
-    it "should output a hash" do
+  describe "#to_h" do
+    it "outputs as a hash" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", "test type", {:a => 1, :b => 2}, :manual)
       output = breadcrumb.to_h
 
-      expect(output[:message]).to eq("my message")
+      expect(output[:name]).to eq("my message")
       expect(output[:type]).to eq("test type")
       expect(output[:metaData]).to eq({ :a => 1, :b => 2})
-      expect(output[:timestamp]).to_not be_nil
+
+      timestamp_regex = /^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:[\d\.]+Z$/
+
+      expect(output[:timestamp]).to be_a_kind_of(String)
+      expect(output[:timestamp]).to match(timestamp_regex)
     end
   end
 end
