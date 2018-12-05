@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'bugsnag/utility/circular_buffer'
 
-Rspec.describe Bugsnag::Utility::CircularBuffer do
+RSpec.describe Bugsnag::Utility::CircularBuffer do
   describe "#initialize" do
     it "contains no items" do
       buffer = Bugsnag::Utility::CircularBuffer.new
