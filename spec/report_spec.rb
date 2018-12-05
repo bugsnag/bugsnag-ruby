@@ -1071,7 +1071,7 @@ describe Bugsnag::Report do
       expect(exception["message"]).to eq("'nil' was notified as an exception")
     }
   end
-  
+
   it "includes bugsnag lines marked out of project" do
     notify_test_exception
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
