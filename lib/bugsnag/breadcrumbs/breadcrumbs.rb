@@ -1,5 +1,5 @@
 module Bugsnag::Breadcrumbs
-  MAX_MESSAGE_LENGTH = 30
+  MAX_NAME_LENGTH = 30
 
   VALID_BREADCRUMB_TYPES = [
     ERROR_BREADCRUMB_TYPE = "error",
@@ -10,5 +10,5 @@ module Bugsnag::Breadcrumbs
     LOG_BREADCRUMB_TYPE = "log",
     USER_BREADCRUMB_TYPE = "user",
     STATE_BREADCRUMB_TYPE = "state"
-  ]
+  ].freeze
 end
