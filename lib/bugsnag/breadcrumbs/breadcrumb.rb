@@ -1,19 +1,34 @@
 module Bugsnag::Breadcrumbs
   class Breadcrumb
-    attr_accessor :message
+    # @return [String] the breadcrumb name
+    attr_accessor :name
+
+    # @return [String] the breadcrumb type
     attr_accessor :type
+
+    # @return [Hash, nil] metadata hash containing strings, numbers, or booleans, or nil
     attr_accessor :meta_data
+
+    # @return [Symbol] set to `:auto` if the breadcrumb was automatically generated
     attr_reader :auto
+
+    # @return [Time] a Time object referring to breadcrumb creation time
     attr_reader :timestamp
 
     ##
-    # Creates a breadcrumb.
+    # Creates a breadcrumb
     #
-    # This will not have been validated, which must occur before this is
-    # attached to a report.
-    def initialize(message, type, meta_data, auto)
+    # This will not have been validated, which must occur before this is attached to a report
+    #
+    # @api private
+    #
+    # @param name [String] the breadcrumb name
+    # @param type [String] the breadcrumb type from Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
+    # @param meta_data [Hash, nil] a hash containing strings, numbers, or booleans, or nil
+    # @param auto [Symbol] set to `:auto` if the breadcrumb is automatically generated
+    def initialize(name, type, meta_data, auto)
       @should_ignore = false
-      self.message = message
+      self.name = name
       self.type = type
       self.meta_data = meta_data
 
@@ -25,32 +40,36 @@ module Bugsnag::Breadcrumbs
     end
 
     ##
-    # Flags the breadcrumb to be ignored.
+    # Flags the breadcrumb to be ignored
     #
-    # Ignored breadcrumbs will not be attached to a report.
+    # Ignored breadcrumbs will not be attached to a report
     def ignore!
       @should_ignore = true
     end
 
     ##
-    # Checks if the `ignore!` method has been called.
+    # Checks if the `ignore!` method has been called
     #
-    # Ignored breadcrumbs will not be attached to a report.
+    # Ignored breadcrumbs will not be attached to a report
+    #
+    # @return [True] if `ignore!` has been called
+    # @return [nil] if `ignore` has not been called
     def ignore?
       @should_ignore
     end
 
     ##
-    # Outputs the breadcrumb data in a formatted hash.
+    # Outputs the breadcrumb data in a formatted hash
     #
-    # These adhere to the breadcrumb format as defined in the Bugsnag error 
-    # reporting API
+    # These adhere to the breadcrumb format as defined in the Bugsnag error reporting API
+    #
+    # @return [Hash] Hash representation of the breadcrumb
     def to_h
       {
-        :name => @message,
+        :name => @name,
         :type => @type,
         :metaData => @meta_data,
-        :timestamp => @timestamp.utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+        :timestamp => @timestamp.utc.iso8601
       }
     end
   end

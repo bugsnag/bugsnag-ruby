@@ -5,11 +5,11 @@ require 'spec_helper'
 require 'bugsnag/breadcrumbs/breadcrumb'
 
 RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
-  describe "#message" do
+  describe "#name" do
     it "is assigned in #initialize" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", nil, nil, nil)
 
-      expect(breadcrumb.message).to eq("my message")
+      expect(breadcrumb.name).to eq("my message")
     end
   end
 
@@ -42,7 +42,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
       expect(breadcrumb.auto).to eq(true)
     end
 
-    it "if false if auto argument is anything else" do
+    it "is false if auto argument is anything else" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, nil, :manual)
 
       expect(breadcrumb.auto).to eq(false)
@@ -53,18 +53,18 @@ RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
     it "is stored as a timestamp" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, nil, nil)
 
-      expect(breadcrumb.timestamp).to be_within(0.5.second).of Time.now
+      expect(breadcrumb.timestamp).to be_within(0.5).of Time.now
     end
   end
 
-  describe "#ignore" do
-    it "is not ignored by default" do
+  describe "#ignore?" do
+    it "is not true by default" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", "test type", {:a => 1, :b => 2}, :manual)
 
       expect(breadcrumb.ignore?).to eq(false)
     end
 
-    it "is able to be ignored" do
+    it "is able to be set" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", "test type", {:a => 1, :b => 2}, :manual)
       breadcrumb.ignore!
 
