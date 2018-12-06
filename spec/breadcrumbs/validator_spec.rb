@@ -1,7 +1,7 @@
 # encoding: utf-8
 require 'spec_helper'
 
-require 'bugsnag/breadcrumbs/types'
+require 'bugsnag/breadcrumbs/breadcrumbs'
 require 'bugsnag/breadcrumbs/validator'
 
 RSpec.describe Bugsnag::Breadcrumbs::Validator do
@@ -23,7 +23,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
     @breadcrumb_meta_data = {}
   end
 
-  describe "#Validate" do
+  describe "#validate" do
     it "does not 'ignore!' a valid breadcrumb" do
       config = double
       allow(config).to receive(:automatic_breadcrumb_types).and_return(@automatic_breadcrumb_types)
@@ -117,7 +117,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
 
         expect(breadcrumb).to receive(:meta_data=).with({})
         expect(breadcrumb).to_not receive(:ignore!)
-        expected_string = "Breadcrumb #{@breadcrumb_message} meta data contains values other than strings, numbers, or booleans, dropping: #{meta_data}"
+        expected_string = "Breadcrumb #{@breadcrumb_message} meta_data has values other than strings, numbers, or booleans, dropping: #{meta_data}"
         expect(config).to receive(:warn).with(expected_string)
 
         validator.validate(breadcrumb)
@@ -146,7 +146,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
 
         expect(breadcrumb).to receive(:meta_data=).with({})
         expect(breadcrumb).to_not receive(:ignore!)
-        expected_string = "Breadcrumb #{@breadcrumb_message} meta data contains values other than strings, numbers, or booleans, dropping: #{meta_data}"
+        expected_string = "Breadcrumb #{@breadcrumb_message} meta_data has values other than strings, numbers, or booleans, dropping: #{meta_data}"
         expect(config).to receive(:warn).with(expected_string)
 
         validator.validate(breadcrumb)
@@ -175,7 +175,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
 
         expect(breadcrumb).to receive(:meta_data=).with({})
         expect(breadcrumb).to_not receive(:ignore!)
-        expected_string = "Breadcrumb #{@breadcrumb_message} meta data contains values other than strings, numbers, or booleans, dropping: #{meta_data}"
+        expected_string = "Breadcrumb #{@breadcrumb_message} meta_data has values other than strings, numbers, or booleans, dropping: #{meta_data}"
         expect(config).to receive(:warn).with(expected_string)
 
         validator.validate(breadcrumb)

@@ -28,10 +28,10 @@ module Bugsnag::Breadcrumbs
       end
 
       # If auto is true, check type is in automatic_breadcrumb_types
-      if breadcrumb.auto && !@configuration.automatic_breadcrumb_types.include?(breadcrumb.type)
-        @configuration.warn("Automatic breadcrumb of type #{breadcrumb.type} ignored: #{breadcrumb.message}")
-        breadcrumb.ignore!
-      end
+      return unless breadcrumb.auto && !@configuration.automatic_breadcrumb_types.include?(breadcrumb.type)
+
+      @configuration.warn("Automatic breadcrumb of type #{breadcrumb.type} ignored: #{breadcrumb.message}")
+      breadcrumb.ignore!
     end
 
     private
