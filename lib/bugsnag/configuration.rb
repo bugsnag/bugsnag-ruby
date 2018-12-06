@@ -8,6 +8,7 @@ require "bugsnag/middleware/ignore_error_class"
 require "bugsnag/middleware/suggestion_data"
 require "bugsnag/middleware/classify_error"
 require "bugsnag/middleware/session_data"
+require "bugsnag/utility/circular_buffer"
 
 module Bugsnag
   class Configuration
@@ -36,6 +37,9 @@ module Bugsnag
     attr_accessor :auto_capture_sessions
     attr_accessor :track_sessions
     attr_accessor :session_endpoint
+    attr_accessor :automatic_breadcrumb_types
+
+    attr_reader :max_breadcrumbs
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
@@ -50,6 +54,8 @@ module Bugsnag
       /warden\.user\.([^.]+)\.key/,
       "rack.request.form_vars"
     ].freeze
+
+    DEFAULT_MAX_BREADCRUMBS = 25
 
     alias :track_sessions :auto_capture_sessions
     alias :track_sessions= :auto_capture_sessions=
@@ -68,6 +74,12 @@ module Bugsnag
       self.notify_release_stages = nil
       self.auto_capture_sessions = false
       self.session_endpoint = DEFAULT_SESSION_ENDPOINT
+      # All valid breadcrumb types should be allowable initially
+      self.automatic_breadcrumb_types = Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.clone
+
+      # Store max_breadcrumbs here instead of outputting breadcrumbs.max_items
+      # to avoid infinite recursion when creating breadcrumb buffer
+      @max_breadcrumbs = DEFAULT_MAX_BREADCRUMBS.clone
 
       # SystemExit and Interrupt are common Exception types seen with successful
       # exits and are not automatically reported to Bugsnag
@@ -188,6 +200,25 @@ module Bugsnag
       self.proxy_port = proxy.port
       self.proxy_user = proxy.user
       self.proxy_password = proxy.password
+    end
+
+    ##
+    # Sets the maximum allowable amount of breadcrumbs
+    def max_breadcrumbs=(new_max_breadcrumbs)
+      @max_breadcrumbs = new_max_breadcrumbs
+      breadcrumbs.max_items = new_max_breadcrumbs
+    end
+
+    ##
+    # Returns the breadcrumb circular buffer
+    def breadcrumbs
+      request_data[:breadcrumbs] ||= Bugsnag::Utility::CircularBuffer.new(@max_breadcrumbs)
+    end
+
+    ##
+    # Stores callbacks that will be run before a breadcrumb is left
+    def before_breadcrumb_callbacks
+      @before_breadcrumb_callbacks ||= []
     end
 
     private
