@@ -53,7 +53,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
     it "is stored as a timestamp" do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, nil, nil)
 
-      expect(breadcrumb.timestamp).to be_within(0.5).of Time.now
+      expect(breadcrumb.timestamp).to be_within(0.5).of Time.now.utc
     end
   end
 
@@ -77,14 +77,17 @@ RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", "test type", {:a => 1, :b => 2}, :manual)
       output = breadcrumb.to_h
 
-      expect(output[:name]).to eq("my message")
-      expect(output[:type]).to eq("test type")
-      expect(output[:metaData]).to eq({ :a => 1, :b => 2})
-
       timestamp_regex = /^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:[\d\.]+Z$/
 
-      expect(output[:timestamp]).to be_a_kind_of(String)
-      expect(output[:timestamp]).to match(timestamp_regex)
+      expect(output).to match(
+        :name => "my message",
+        :type => "test type",
+        :metaData => {
+          :a => 1,
+          :b => 2
+        },
+        :timestamp => match(timestamp_regex)
+      )
     end
   end
 end

@@ -9,7 +9,7 @@ module Bugsnag::Breadcrumbs
     # @return [Hash, nil] metadata hash containing strings, numbers, or booleans, or nil
     attr_accessor :meta_data
 
-    # @return [Symbol] set to `:auto` if the breadcrumb was automatically generated
+    # @return [Boolean] set to `true` if the breadcrumb was automatically generated
     attr_reader :auto
 
     # @return [Time] a Time object referring to breadcrumb creation time
@@ -36,7 +36,7 @@ module Bugsnag::Breadcrumbs
       @auto = auto == :auto
 
       # Store it as a timestamp for now
-      @timestamp = Time.now
+      @timestamp = Time.now.utc
     end
 
     ##
@@ -69,7 +69,7 @@ module Bugsnag::Breadcrumbs
         :name => @name,
         :type => @type,
         :metaData => @meta_data,
-        :timestamp => @timestamp.utc.iso8601
+        :timestamp => @timestamp.iso8601
       }
     end
   end
