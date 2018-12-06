@@ -86,7 +86,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
           :a => 1,
           :b => 2
         },
-        :timestamp => match(timestamp_regex)
+        :timestamp => eq(breadcrumb.timestamp.iso8601)
       )
     end
   end
