@@ -23,13 +23,16 @@ module Bugsnag
     attr_accessor :api_key
     attr_accessor :app_type
     attr_accessor :app_version
+    attr_accessor :breadcrumbs
     attr_accessor :configuration
     attr_accessor :context
     attr_accessor :delivery_method
     attr_accessor :exceptions
     attr_accessor :hostname
     attr_accessor :grouping_hash
+    attr_accessor :message
     attr_accessor :meta_data
+    attr_accessor :name
     attr_accessor :raw_exceptions
     attr_accessor :release_stage
     attr_accessor :session
@@ -51,9 +54,12 @@ module Bugsnag
       self.api_key = configuration.api_key
       self.app_type = configuration.app_type
       self.app_version = configuration.app_version
+      self.breadcrumbs = {}
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
+      self.message = exception.message
       self.meta_data = {}
+      self.name = exceptions.class
       self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
@@ -110,7 +116,14 @@ module Bugsnag
       payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
 
       # filter out sensitive values in (and cleanup encodings) metaData
-      payload_event[:metaData] = Bugsnag::Cleaner.new(configuration.meta_data_filters).clean_object(meta_data)
+      filter_cleaner = Bugsnag::Cleaner.new(configuration.meta_data_filters)
+      payload_event[:metaData] = filter_cleaner.clean_object(meta_data)
+      payload_event[:breadcrumbs] = breadcrumbs.map do |raw_crumb|
+        breadcrumb = raw_crumb.to_h
+        filter_cleaner.clean_object(breadcrumb[:metaData])
+        breadcrumb
+      end
+
       payload_event.reject! {|k,v| v.nil? }
 
       # return the payload hash
@@ -151,6 +164,16 @@ module Bugsnag
     # Tells the client this report should not be sent.
     def ignore!
       @should_ignore = true
+    end
+
+    ##
+    # Generates a summary to be attached as a breadcrumb
+    def get_summary
+      {
+        :name => name,
+        :message => message,
+        :severity => severity
+      }
     end
 
     private
