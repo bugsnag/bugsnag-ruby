@@ -40,11 +40,11 @@ module Bugsnag
     attr_accessor :session_endpoint
 
     ##
-    # @return [Array] array of strings indicating allowable automatic breadcrumb types
+    # @return [Array<String>] strings indicating allowable automatic breadcrumb types
     attr_accessor :automatic_breadcrumb_types
 
     ##
-    # @return [Array] array of callbacks to be run before a breadcrumb is logged
+    # @return [Array<Proc>] callbacks to be run before a breadcrumb is logged
     attr_accessor :before_breadcrumb_callbacks
 
     ##
