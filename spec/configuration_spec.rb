@@ -247,7 +247,6 @@ describe Bugsnag::Configuration do
 
       expect(buffer.to_a).to eq([1])
       expect(second_buffer.to_a).to eq([2])
-      expect(buffer).to_not eq(second_buffer)
     end
 
     it "sets max_items to the current max_breadcrumbs size" do
@@ -282,6 +281,11 @@ describe Bugsnag::Configuration do
     it "defaults to Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES" do
       expect(subject.automatic_breadcrumb_types).to eq(Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES)
     end
+
+    it "is an editable array" do
+      subject.automatic_breadcrumb_types << "Some custom type"
+      expect(subject.automatic_breadcrumb_types).to include("Some custom type")
+    end
   end
 
   describe "#before_breadcrumb_callbacks" do
@@ -305,7 +309,6 @@ describe Bugsnag::Configuration do
       second_array = nil
       Thread.new { second_array = subject.before_breadcrumb_callbacks; second_array << 2}.join
 
-      expect(first_array).to eql(second_array)
       expect(first_array).to eq([1, 2])
       expect(second_array).to eq([1, 2])
     end
