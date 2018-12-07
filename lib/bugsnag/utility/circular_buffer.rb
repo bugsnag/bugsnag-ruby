@@ -1,15 +1,15 @@
 module Bugsnag::Utility
+  ##
+  # A container class with a maximum size, that removes oldest items as required.
+  #
+  # @api private
   class CircularBuffer
     include Enumerable
 
-    # @return [Numeric] the current maximum allowable number of items
+    # @return [Integer] the current maximum allowable number of items
     attr_reader :max_items
 
     ##
-    # Creates a circular buffer
-    #
-    # @api private
-    #
     # @param max_items [Integer] the initial maximum number of items
     def initialize(max_items = 25)
       @max_items = max_items
@@ -21,7 +21,7 @@ module Bugsnag::Utility
     #
     # If this causes the buffer to exceed its maximum items, the oldest item will be removed
     #
-    # @param item [Any] the item to add to the buffer
+    # @param item [Object] the item to add to the buffer
     # @return [self] returns itself to allow method chaining
     def <<(item)
       @buffer << item
@@ -32,7 +32,7 @@ module Bugsnag::Utility
     ##
     # Iterates over the buffer
     #
-    # @yield [item] sequentially gives stored items to the block
+    # @yield [Object] sequentially gives stored items to the block
     def each(&block)
       @buffer.each(&block)
     end
