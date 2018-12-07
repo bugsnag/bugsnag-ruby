@@ -9,6 +9,7 @@ require "bugsnag/middleware/suggestion_data"
 require "bugsnag/middleware/classify_error"
 require "bugsnag/middleware/session_data"
 require "bugsnag/utility/circular_buffer"
+require "bugsnag/breadcrumbs/breadcrumbs"
 
 module Bugsnag
   class Configuration
@@ -79,7 +80,7 @@ module Bugsnag
 
       # Store max_breadcrumbs here instead of outputting breadcrumbs.max_items
       # to avoid infinite recursion when creating breadcrumb buffer
-      @max_breadcrumbs = DEFAULT_MAX_BREADCRUMBS.clone
+      @max_breadcrumbs = DEFAULT_MAX_BREADCRUMBS
 
       # SystemExit and Interrupt are common Exception types seen with successful
       # exits and are not automatically reported to Bugsnag
