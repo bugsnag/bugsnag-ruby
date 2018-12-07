@@ -2,7 +2,6 @@
 require 'spec_helper'
 
 require 'bugsnag/breadcrumbs/breadcrumb'
-require 'bugsnag/breadcrumbs/breadcrumbs'
 require 'bugsnag/breadcrumbs/validator'
 
 RSpec.describe Bugsnag::Breadcrumbs::Validator do
@@ -14,7 +13,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
 
   describe "#validate" do
     it "does not 'ignore!' a valid breadcrumb" do
-      config = double
+      config = instance_double("Configuration")
       allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
       validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
@@ -35,7 +34,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
     end
 
     it "trims long messages to length and warns" do
-      config = double
+      config = instance_double("Configuration")
       allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
       validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
@@ -63,7 +62,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
 
     describe "tests meta_data types" do
       it "accepts Strings, Numerics, & Booleans" do
-        config = double
+        config = instance_double("Configuration")
         allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
         validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
@@ -92,7 +91,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
       end
 
       it "rejects Arrays, Hashes, and non-primative objects" do
-        config = double
+        config = instance_double("Configuration")
         allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
         validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
@@ -136,7 +135,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
     end
 
     it "tests type, defaulting to 'manual' if invalid" do
-      config = double
+      config = instance_double("Configuration")
       allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
       validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
@@ -162,7 +161,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
 
     describe "with automatic_breadcrumb_types set" do
       it "rejects automatic breadcrumbs with rejected types" do
-        config = double
+        config = instance_double("Configuration")
         allowed_breadcrumb_types = []
         allow(config).to receive(:automatic_breadcrumb_types).and_return(allowed_breadcrumb_types)
         validator = Bugsnag::Breadcrumbs::Validator.new(config)
@@ -188,7 +187,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
       end
 
       it "does not reject manual breadcrumbs with rejected types" do
-        config = double
+        config = instance_double("Configuration")
         allowed_breadcrumb_types = []
         allow(config).to receive(:automatic_breadcrumb_types).and_return(allowed_breadcrumb_types)
         validator = Bugsnag::Breadcrumbs::Validator.new(config)
