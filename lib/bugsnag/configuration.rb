@@ -40,9 +40,12 @@ module Bugsnag
     attr_accessor :session_endpoint
 
     ##
-    # @param [Array] array of strings indicating allowable automatic breadcrumb types
-    # @return [Array] indicates the allowable automatic breadcrumbs
+    # @return [Array] array of strings indicating allowable automatic breadcrumb types
     attr_accessor :automatic_breadcrumb_types
+
+    ##
+    # @return [Array] array of callbacks to be run before a breadcrumb is logged
+    attr_accessor :before_breadcrumb_callbacks
 
     ##
     # @return [Integer] the maximum allowable amount of breadcrumbs per thread
@@ -82,7 +85,8 @@ module Bugsnag
       self.auto_capture_sessions = false
       self.session_endpoint = DEFAULT_SESSION_ENDPOINT
       # All valid breadcrumb types should be allowable initially
-      self.automatic_breadcrumb_types = Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.clone
+      self.automatic_breadcrumb_types = Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.dup
+      self.before_breadcrumb_callbacks = []
 
       # Store max_breadcrumbs here instead of outputting breadcrumbs.max_items
       # to avoid infinite recursion when creating breadcrumb buffer
@@ -224,14 +228,6 @@ module Bugsnag
     # @return [Bugsnag::Utility::CircularBuffer] a thread based circular buffer containing breadcrumbs
     def breadcrumbs
       request_data[:breadcrumbs] ||= Bugsnag::Utility::CircularBuffer.new(@max_breadcrumbs)
-    end
-
-    ##
-    # Stores callbacks that will be run before a breadcrumb is left
-    #
-    # @return [Array] a thread independent array of callback functions
-    def before_breadcrumb_callbacks
-      @before_breadcrumb_callbacks ||= []
     end
 
     private
