@@ -22,7 +22,6 @@ module Bugsnag
       # Skipping API key validation as the key may be set later in an
       # initializer. If not, the key will be validated in after_initialize.
       Bugsnag.configure(false) do |config|
-        config.logger = ::Rails.logger
         config.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] || ::Rails.env.to_s
         config.project_root = ::Rails.root.to_s
         config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
@@ -41,9 +40,10 @@ module Bugsnag
       Bugsnag.configuration.app_type = "rails"
     end
 
-    # Configure meta_data_filters after initialization, so that rails initializers
-    # may set filter_parameters which will be picked up by Bugsnag.
     config.after_initialize do
+      config.logger = ::Rails.logger
+      # Configure meta_data_filters after initialization, so that rails initializers
+      # may set filter_parameters which will be picked up by Bugsnag.
       Bugsnag.configure do |config|
         config.meta_data_filters += ::Rails.configuration.filter_parameters.map do |filter|
           case filter
