@@ -17,14 +17,12 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
       allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
       validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
-      breadcrumb = instance_double("Breadcrumb")
-
-      allow(breadcrumb).to receive(:meta_data=)
-      allow(breadcrumb).to receive_messages({
+      breadcrumb = instance_double(Bugsnag::Breadcrumbs::Breadcrumb, {
         :auto => auto,
         :name => name,
         :type => type,
-        :meta_data => meta_data
+        :meta_data => meta_data,
+        :meta_data= => nil
       })
 
       expect(breadcrumb).to_not receive(:ignore!)
@@ -38,16 +36,14 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
       allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
       validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
-      breadcrumb = instance_double("Breadcrumb")
-
       name = "1234567890123456789012345678901234567890"
 
-      allow(breadcrumb).to receive(:meta_data=)
-      allow(breadcrumb).to receive_messages({
+      breadcrumb = instance_double(Bugsnag::Breadcrumbs::Breadcrumb, {
         :auto => auto,
         :name => name,
         :type => type,
-        :meta_data => meta_data
+        :meta_data => meta_data,
+        :meta_data= => nil
       })
 
       expect(breadcrumb).to_not receive(:ignore!)
@@ -66,8 +62,6 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
         validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
-        breadcrumb = instance_double("Breadcrumb")
-
         meta_data = {
           :string => "This is a string",
           :integer => 12345,
@@ -76,12 +70,12 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
           :true => true
         }
 
-        allow(breadcrumb).to receive(:meta_data=)
-        allow(breadcrumb).to receive_messages({
+        breadcrumb = instance_double(Bugsnag::Breadcrumbs::Breadcrumb, {
           :auto => auto,
           :name => name,
           :type => type,
-          :meta_data => meta_data
+          :meta_data => meta_data,
+          :meta_data= => nil
         })
 
         expect(breadcrumb).to_not receive(:ignore!)
@@ -90,17 +84,16 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         validator.validate(breadcrumb)
       end
 
-      it "rejects Arrays, Hashes, and non-primative objects" do
+      it "rejects Arrays, Hashes, and non-primitive objects" do
         config = instance_double("Configuration")
         allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
         validator = Bugsnag::Breadcrumbs::Validator.new(config)
-
-        breadcrumb = instance_double("Breadcrumb")
 
         class TestClass
         end
 
         meta_data = {
+          :fine => 1,
           :array => [1, 2, 3],
           :hash => {
             :a => 1
@@ -108,9 +101,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
           :object => TestClass.new
         }
 
-        meta_data_copy = Hash.new(meta_data)
-
-        allow(breadcrumb).to receive_messages({
+        breadcrumb = instance_double(Bugsnag::Breadcrumbs::Breadcrumb, {
           :auto => auto,
           :name => name,
           :type => type,
@@ -118,15 +109,17 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         })
 
         expect(breadcrumb).to_not receive(:ignore!)
-        expected_string_1 = "Breadcrumb #{breadcrumb.name} meta_data #{:array}:#{meta_data[:array]} has been dropped for having an invalid data type"
-        expected_string_2 = "Breadcrumb #{breadcrumb.name} meta_data #{:hash}:#{meta_data[:hash]} has been dropped for having an invalid data type"
-        expected_string_3 = "Breadcrumb #{breadcrumb.name} meta_data #{:object}:#{ meta_data[:object]} has been dropped for having an invalid data type"
+        expected_string_1 = "Breadcrumb #{breadcrumb.name} meta_data array:#{meta_data[:array]} has been dropped for having an invalid data type"
+        expected_string_2 = "Breadcrumb #{breadcrumb.name} meta_data hash:#{meta_data[:hash]} has been dropped for having an invalid data type"
+        expected_string_3 = "Breadcrumb #{breadcrumb.name} meta_data object:#{ meta_data[:object]} has been dropped for having an invalid data type"
         expect(config).to receive(:warn).with(expected_string_1)
         expect(config).to receive(:warn).with(expected_string_2)
         expect(config).to receive(:warn).with(expected_string_3)
 
         # Confirms that the meta_data is being filtered
-        expect(breadcrumb).to receive(:meta_data=).with({})
+        expect(breadcrumb).to receive(:meta_data=).with({
+          :fine => 1
+        })
 
         validator.validate(breadcrumb)
       end
@@ -137,16 +130,14 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
       allow(config).to receive(:automatic_breadcrumb_types).and_return(automatic_breadcrumb_types)
       validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
-      breadcrumb = instance_double("Breadcrumbs")
-
       type = "Not a valid type"
 
-      allow(breadcrumb).to receive(:meta_data=)
-      allow(breadcrumb).to receive_messages({
+      breadcrumb = instance_double(Bugsnag::Breadcrumbs::Breadcrumb, {
         :auto => auto,
         :name => name,
         :type => type,
-        :meta_data => meta_data
+        :meta_data => meta_data,
+        :meta_data= => nil
       })
 
       expect(breadcrumb).to receive(:type=).with(Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE)
@@ -164,17 +155,15 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         allow(config).to receive(:automatic_breadcrumb_types).and_return(allowed_breadcrumb_types)
         validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
-        breadcrumb = instance_double("Breadcrumbs")
-
         auto = true
         type = Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE
 
-        allow(breadcrumb).to receive(:meta_data=)
-        allow(breadcrumb).to receive_messages({
+        breadcrumb = instance_double(Bugsnag::Breadcrumbs::Breadcrumb, {
           :auto => auto,
           :name => name,
           :type => type,
-          :meta_data => meta_data
+          :meta_data => meta_data,
+          :meta_data= => nil
         })
 
         expect(breadcrumb).to receive(:ignore!)
@@ -190,16 +179,14 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         allow(config).to receive(:automatic_breadcrumb_types).and_return(allowed_breadcrumb_types)
         validator = Bugsnag::Breadcrumbs::Validator.new(config)
 
-        breadcrumb = instance_double("Breadcrumbs")
-
         type = Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE
 
-        allow(breadcrumb).to receive(:meta_data=)
-        allow(breadcrumb).to receive_messages({
+        breadcrumb = instance_double(Bugsnag::Breadcrumbs::Breadcrumb, {
           :auto => auto,
           :name => name,
           :type => type,
-          :meta_data => meta_data
+          :meta_data => meta_data,
+          :meta_data= => nil
         })
 
         expect(breadcrumb).to_not receive(:ignore!)
