@@ -125,12 +125,10 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         expect(config).to receive(:warn).with(expected_string_2)
         expect(config).to receive(:warn).with(expected_string_3)
 
-        # Confirms that the meta_data is being copied
-        expect(breadcrumb).to receive(:meta_data=).with(meta_data)
+        # Confirms that the meta_data is being filtered
+        expect(breadcrumb).to receive(:meta_data=).with({})
 
         validator.validate(breadcrumb)
-
-        expect(meta_data).to eq({})
       end
     end
 

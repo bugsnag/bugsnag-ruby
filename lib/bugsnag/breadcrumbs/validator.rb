@@ -22,14 +22,14 @@ module Bugsnag::Breadcrumbs
       end
 
       # Check meta_data hash doesn't contain complex values
-      breadcrumb.meta_data = breadcrumb.meta_data.dup
-      breadcrumb.meta_data.each do |k, v|
-        unless valid_meta_data_type?(v)
+      breadcrumb.meta_data = breadcrumb.meta_data.select do |k, v|
+        if valid_meta_data_type?(v)
+          true
+        else
           @configuration.warn("Breadcrumb #{breadcrumb.name} meta_data #{k}:#{v} has been dropped for having an invalid data type")
-          breadcrumb.meta_data[k] = nil
+          false
         end
       end
-      breadcrumb.meta_data.reject! { |_, v| v.nil? }
 
       # Check type is valid, set to manual otherwise
       unless Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.include?(breadcrumb.type)
