@@ -34,7 +34,6 @@ module Bugsnag
     attr_accessor :hostname
     attr_accessor :ignore_classes
     attr_accessor :auto_capture_sessions
-    attr_accessor :track_sessions
     attr_accessor :session_endpoint
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
