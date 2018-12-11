@@ -59,7 +59,7 @@ module Bugsnag
       self.hostname = configuration.hostname
       self.message = defined?(exception.message) ? exception.message : exception.to_s
       self.meta_data = {}
-      self.name = exceptions.class
+      self.name = exception.class.to_s
       self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
