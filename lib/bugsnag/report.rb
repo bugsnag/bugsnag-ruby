@@ -168,7 +168,7 @@ module Bugsnag
 
     ##
     # Generates a summary to be attached as a breadcrumb
-    def get_summary
+    def summary
       {
         :name => name,
         :message => message,
