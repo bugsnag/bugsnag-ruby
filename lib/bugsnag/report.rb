@@ -120,7 +120,7 @@ module Bugsnag
       payload_event[:metaData] = filter_cleaner.clean_object(meta_data)
       payload_event[:breadcrumbs] = breadcrumbs.map do |raw_crumb|
         breadcrumb = raw_crumb.to_h
-        filter_cleaner.clean_object(breadcrumb[:metaData])
+        breadcrumb[:metaData] = filter_cleaner.clean_object(breadcrumb[:metaData])
         breadcrumb
       end
 
