@@ -44,7 +44,7 @@ module Bugsnag
     attr_accessor :automatic_breadcrumb_types
 
     ##
-    # @return [Array<Proc>] callbacks to be run before a breadcrumb is logged
+    # @return [Array<#call>] callables to be run before a breadcrumb is logged
     attr_accessor :before_breadcrumb_callbacks
 
     ##

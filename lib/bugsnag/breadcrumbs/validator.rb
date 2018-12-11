@@ -13,7 +13,7 @@ module Bugsnag::Breadcrumbs
     ##
     # Validates a given breadcrumb.
     #
-    # @param breadcrumb [Bugsnag::Breadcrumbs::Breadcrumb] athe breadcrumb to be validated
+    # @param breadcrumb [Bugsnag::Breadcrumbs::Breadcrumb] the breadcrumb to be validated
     def validate(breadcrumb)
       # Check name length
       if breadcrumb.name.size > Bugsnag::Breadcrumbs::MAX_NAME_LENGTH
