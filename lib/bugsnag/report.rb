@@ -54,7 +54,7 @@ module Bugsnag
       self.api_key = configuration.api_key
       self.app_type = configuration.app_type
       self.app_version = configuration.app_version
-      self.breadcrumbs = {}
+      self.breadcrumbs = []
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
       self.message = defined?(exception.message) ? exception.message : exception.to_s
