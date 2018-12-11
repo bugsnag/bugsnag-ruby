@@ -1,0 +1,59 @@
+require 'bugsnag/breadcrumbs/breadcrumbs'
+
+module Bugsnag::Breadcrumbs
+  ##
+  # Validates a given breadcrumb before it is stored
+  class Validator
+    ##
+    # @param configuration [Bugsnag::Configuration] The current configuration
+    def initialize(configuration)
+      @configuration = configuration
+    end
+
+    ##
+    # Validates a given breadcrumb.
+    #
+    # @param breadcrumb [Bugsnag::Breadcrumbs::Breadcrumb] the breadcrumb to be validated
+    def validate(breadcrumb)
+      # Check name length
+      if breadcrumb.name.size > Bugsnag::Breadcrumbs::MAX_NAME_LENGTH
+        @configuration.warn("Breadcrumb name trimmed to length #{Bugsnag::Breadcrumbs::MAX_NAME_LENGTH}.  Original name: #{breadcrumb.name}")
+        breadcrumb.name = breadcrumb.name.slice(0...Bugsnag::Breadcrumbs::MAX_NAME_LENGTH)
+      end
+
+      # Check meta_data hash doesn't contain complex values
+      breadcrumb.meta_data = breadcrumb.meta_data.select do |k, v|
+        if valid_meta_data_type?(v)
+          true
+        else
+          @configuration.warn("Breadcrumb #{breadcrumb.name} meta_data #{k}:#{v} has been dropped for having an invalid data type")
+          false
+        end
+      end
+
+      # Check type is valid, set to manual otherwise
+      unless Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.include?(breadcrumb.type)
+        @configuration.warn("Invalid type: #{breadcrumb.type} for breadcrumb: #{breadcrumb.name}, defaulting to #{Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE}")
+        breadcrumb.type = Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE
+      end
+
+      # If auto is true, check type is in automatic_breadcrumb_types
+      return unless breadcrumb.auto && !@configuration.automatic_breadcrumb_types.include?(breadcrumb.type)
+
+      @configuration.warn("Automatic breadcrumb of type #{breadcrumb.type} ignored: #{breadcrumb.name}")
+      breadcrumb.ignore!
+    end
+
+    private
+
+    ##
+    # Tests whether the meta_data types are non-complex objects.
+    #
+    # Acceptable types are String, Numeric, TrueClass, and FalseClass.
+    #
+    # @param value [Object] the object to be type checked
+    def valid_meta_data_type?(value)
+      value.is_a?(String) || value.is_a?(Numeric) || value.is_a?(FalseClass) || value.is_a?(TrueClass)
+    end
+  end
+end
