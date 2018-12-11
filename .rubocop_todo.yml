@@ -302,7 +302,7 @@ Metrics/MethodLength:
 # Offense count: 1
 # Configuration parameters: CountComments.
 Metrics/ModuleLength:
-  Max: 125
+  Max: 140
   Exclude:
     - 'lib/bugsnag/helpers.rb'
 
