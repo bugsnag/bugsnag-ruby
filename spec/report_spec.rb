@@ -1092,6 +1092,104 @@ describe Bugsnag::Report do
     }
   end
 
+  describe "breadcrumbs" do
+    let(:timestamp_regex) { /^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:[\d\.]+Z$/ }
+
+    it "includes left breadcrumbs" do
+      Bugsnag.leave_breadcrumb("Test breadcrumb")
+      notify_test_exception
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["breadcrumbs"].size).to eq(1)
+        expect(event["breadcrumbs"].first).to match({
+          "name" => "Test breadcrumb",
+          "type" => "manual",
+          "metaData" => {},
+          "timestamp" => match(timestamp_regex)
+        })
+      }
+    end
+
+    it "filters left breadcrumbs" do
+      Bugsnag.leave_breadcrumb("Test breadcrumb", {
+        :forbidden_key => false,
+        :allowed_key => true
+      })
+      Bugsnag.configuration.meta_data_filters << "forbidden"
+      notify_test_exception
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["breadcrumbs"].size).to eq(1)
+        expect(event["breadcrumbs"].first).to match({
+          "name" => "Test breadcrumb",
+          "type" => "manual",
+          "metaData" => {
+            "forbidden_key" => "[FILTERED]",
+            "allowed_key" => true
+          },
+          "timestamp" => match(timestamp_regex)
+        })
+      }
+    end
+
+    it "defaults to an empty array" do
+      notify_test_exception
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["breadcrumbs"].size).to eq(0)
+      }
+    end
+
+    it "allows breadcrumbs to be editted in callbacks" do
+      Bugsnag.leave_breadcrumb("Test breadcrumb")
+      Bugsnag.before_notify_callbacks << Proc.new { |report|
+        breadcrumb = report.breadcrumbs.first
+        breadcrumb.meta_data = {:a => 1, :b => 2}
+      }
+      notify_test_exception
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["breadcrumbs"].size).to eq(1)
+        expect(event["breadcrumbs"].first).to match({
+          "name" => "Test breadcrumb",
+          "type" => "manual",
+          "metaData" => {"a" => 1, "b" => 2},
+          "timestamp" => match(timestamp_regex)
+        })
+      }
+    end
+  end
+
+  describe "#summary" do
+    it "provides a hash of the name, message, and severity" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report = Bugsnag::Report.new(e, Bugsnag.configuration)
+        expect(report.name).to eq("ZeroDivisionError")
+        expect(report.message).to eq("divided by 0")
+
+        expect(report.summary).to match({
+          :name => "ZeroDivisionError",
+          :message => "divided by 0",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles strings" do
+      report = Bugsnag::Report.new("test string", Bugsnag.configuration)
+      expect(report.name).to eq("String")
+      expect(report.message).to eq("test string")
+
+      expect(report.summary).to match({
+        :name => "String",
+        :message => "test string",
+        :severity => "warning"
+      })
+    end
+  end
+
   if defined?(JRUBY_VERSION)
 
     it "should work with java.lang.Throwables" do
