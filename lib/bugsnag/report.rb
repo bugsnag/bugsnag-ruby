@@ -57,7 +57,7 @@ module Bugsnag
       self.breadcrumbs = {}
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
-      self.message = exception.message
+      self.message = defined?(exception.message) ? exception.message : exception.to_s
       self.meta_data = {}
       self.name = exceptions.class
       self.release_stage = configuration.release_stage
