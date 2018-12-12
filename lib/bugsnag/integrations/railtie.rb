@@ -4,7 +4,7 @@ require "rails"
 require "bugsnag"
 require "bugsnag/middleware/rails3_request"
 require "bugsnag/middleware/rack_request"
-require "bugsnag/integrations/rails_breadcrumbs"
+require "bugsnag/integrations/rails/rails_breadcrumbs"
 
 module Bugsnag
   class Railtie < Rails::Railtie
@@ -39,7 +39,7 @@ module Bugsnag
         include Bugsnag::Rails::ActiveRecordRescue
       end
 
-      Bugsnag::Railtie::DEFAULT_RAILS_BREADCRUMBS.each { |event| event_subscription(event) }
+      Bugsnag::RailsBreadcrumbs::DEFAULT_RAILS_BREADCRUMBS.each { |event| event_subscription(event) }
 
       Bugsnag.configuration.app_type = "rails"
     end
@@ -78,8 +78,8 @@ module Bugsnag
         filtered_data[:event_id] = event[:id]
         Bugsnag.leave_breadcrumb(
           event[:message],
-          event[:type],
           filtered_data,
+          event[:type],
           :auto
         )
       end

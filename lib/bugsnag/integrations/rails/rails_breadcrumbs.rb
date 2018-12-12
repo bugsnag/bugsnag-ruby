@@ -1,6 +1,6 @@
-require "bugnsag/breadcrumbs/breadcrumbs"
+require "bugsnag/breadcrumbs/breadcrumbs"
 
-module Bugsnag::Railtie
+module Bugsnag::RailsBreadcrumbs
   DEFAULT_RAILS_BREADCRUMBS = [
     {
       :id => "perform_action.action_cable",
@@ -15,7 +15,7 @@ module Bugsnag::Railtie
     },
     {
       :id => "perform.active_job",
-      :message => "Perform ActiveJob"
+      :message => "Perform ActiveJob",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
         :event_id,
@@ -59,7 +59,7 @@ module Bugsnag::Railtie
     },
     {
       :id => "start_processing.action_controller",
-      :message => "Controller started processing"
+      :message => "Controller started processing",
       :type => Bugsnag::Breadcrumbs::REQUEST_BREADCRUMB_TYPE,
       :allowed_data => [
         :event_id,
@@ -102,7 +102,7 @@ module Bugsnag::Railtie
     },
     {
       :id => "render_template.action_view",
-      :message => "ActionView template rendered"
+      :message => "ActionView template rendered",
       :type => Bugsnag::Breadcrumbs::REQUEST_BREADCRUMB_TYPE,
       :allowed_data => [
         :event_id,
