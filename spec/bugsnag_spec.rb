@@ -21,7 +21,7 @@ describe Bugsnag do
       expect(Bugsnag.configuration.logger).to have_received(:warn)
     end
 
-    it 'leaves a breadcrumb after delivery' do
+    it 'leaves a breadcrumb after exception delivery' do
       begin
         1/0
       rescue ZeroDivisionError => e
@@ -30,13 +30,29 @@ describe Bugsnag do
       end
       expect(breadcrumbs.to_a.size).to eq(1)
       breadcrumb = breadcrumbs.to_a.first
-      expect(breadcrumb.name).to eq("ZeroDivisionError")
+      expect(breadcrumb.name).to eq('ZeroDivisionError')
       expect(breadcrumb.type).to eq(Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE)
       expect(breadcrumb.auto).to eq(true)
       expect(breadcrumb.meta_data).to eq({
-        :name => "ZeroDivisionError",
-        :message => "divided by 0",
-        :severity => "warning"
+        :name => 'ZeroDivisionError',
+        :message => 'divided by 0',
+        :severity => 'warning'
+      })
+      expect(breadcrumb.timestamp).to be_within(1).of(sent_time)
+    end
+
+    it 'leave a RuntimeError breadcrumb after string delivery' do
+      Bugsnag.notify('notified string')
+      sent_time = Time.now.utc
+      expect(breadcrumbs.to_a.size).to eq(1)
+      breadcrumb = breadcrumbs.to_a.first
+      expect(breadcrumb.name).to eq('RuntimeError')
+      expect(breadcrumb.type).to eq(Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE)
+      expect(breadcrumb.auto).to eq(true)
+      expect(breadcrumb.meta_data).to eq({
+        :name => 'RuntimeError',
+        :message => 'notified string',
+        :severity => 'warning'
       })
       expect(breadcrumb.timestamp).to be_within(1).of(sent_time)
     end
