@@ -8,6 +8,7 @@ require "bugsnag/middleware/ignore_error_class"
 require "bugsnag/middleware/suggestion_data"
 require "bugsnag/middleware/classify_error"
 require "bugsnag/middleware/session_data"
+require "bugsnag/middleware/breadcrumbs"
 require "bugsnag/utility/circular_buffer"
 require "bugsnag/breadcrumbs/breadcrumbs"
 
@@ -118,6 +119,7 @@ module Bugsnag
       self.internal_middleware.use Bugsnag::Middleware::SuggestionData
       self.internal_middleware.use Bugsnag::Middleware::ClassifyError
       self.internal_middleware.use Bugsnag::Middleware::SessionData
+      self.internal_middleware.use Bugsnag::Middleware::Breadcrumbs
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks

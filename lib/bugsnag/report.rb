@@ -23,13 +23,16 @@ module Bugsnag
     attr_accessor :api_key
     attr_accessor :app_type
     attr_accessor :app_version
+    attr_accessor :breadcrumbs
     attr_accessor :configuration
     attr_accessor :context
     attr_accessor :delivery_method
     attr_accessor :exceptions
     attr_accessor :hostname
     attr_accessor :grouping_hash
+    attr_accessor :message
     attr_accessor :meta_data
+    attr_accessor :name
     attr_accessor :raw_exceptions
     attr_accessor :release_stage
     attr_accessor :session
@@ -51,9 +54,14 @@ module Bugsnag
       self.api_key = configuration.api_key
       self.app_type = configuration.app_type
       self.app_version = configuration.app_version
+      self.breadcrumbs = []
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
+      self.message = defined?(exception.message) ? exception.message : exception.to_s
       self.meta_data = {}
+
+      # Notified strings display as RuntimeErrors in the dashboard
+      self.name = exception.is_a?(Exception) ? exception.class.to_s : RuntimeError.to_s
       self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
@@ -110,7 +118,14 @@ module Bugsnag
       payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
 
       # filter out sensitive values in (and cleanup encodings) metaData
-      payload_event[:metaData] = Bugsnag::Cleaner.new(configuration.meta_data_filters).clean_object(meta_data)
+      filter_cleaner = Bugsnag::Cleaner.new(configuration.meta_data_filters)
+      payload_event[:metaData] = filter_cleaner.clean_object(meta_data)
+      payload_event[:breadcrumbs] = breadcrumbs.map do |breadcrumb|
+        breadcrumb_hash = breadcrumb.to_h
+        breadcrumb_hash[:metaData] = filter_cleaner.clean_object(breadcrumb_hash[:metaData])
+        breadcrumb_hash
+      end
+
       payload_event.reject! {|k,v| v.nil? }
 
       # return the payload hash
@@ -151,6 +166,18 @@ module Bugsnag
     # Tells the client this report should not be sent.
     def ignore!
       @should_ignore = true
+    end
+
+    ##
+    # Generates a summary to be attached as a breadcrumb
+    #
+    # @return [Hash] a Hash containing the report's name, message, and severity
+    def summary
+      {
+        :name => name,
+        :message => message,
+        :severity => severity
+      }
     end
 
     private
