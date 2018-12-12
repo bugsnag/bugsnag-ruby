@@ -197,11 +197,11 @@ describe Bugsnag do
     end
 
     it "runs callbacks before leaving" do
-      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new { |breadcrumb|
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
         breadcrumb.meta_data = {
           :callback => true
         }
-      }
+      end
       Bugsnag.leave_breadcrumb("TestName")
       expect(breadcrumbs.to_a.size).to eq(1)
       expect(breadcrumbs.first.to_h).to match({
@@ -215,7 +215,7 @@ describe Bugsnag do
     end
 
     it "validates after callbacks" do
-      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new { |breadcrumb|
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
         breadcrumb.meta_data = {
           :int => 1,
           :array => [1, 2, 3],
@@ -226,7 +226,7 @@ describe Bugsnag do
         }
         breadcrumb.type = "Not a real type"
         breadcrumb.name = "123123123123123123123123123123456456456456456"
-      }
+      end
       Bugsnag.leave_breadcrumb("TestName")
       expect(breadcrumbs.to_a.size).to eq(1)
       expect(breadcrumbs.first.to_h).to match({
