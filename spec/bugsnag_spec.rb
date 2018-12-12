@@ -134,7 +134,7 @@ describe Bugsnag do
     end
   end
 
-  describe "#leave_breadcrumb" do
+  describe ".leave_breadcrumb" do
 
     let(:breadcrumbs) { Bugsnag.configuration.breadcrumbs }
     let(:timestamp_regex) { /^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:[\d\.]+Z$/ }
@@ -246,9 +246,9 @@ describe Bugsnag do
     end
 
     it "doesn't add if ignored in a callback" do
-      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new { |breadcrumb|
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
         breadcrumb.ignore!
-      }
+      end
       Bugsnag.leave_breadcrumb("TestName")
       expect(breadcrumbs.to_a.size).to eq(0)
     end
@@ -257,28 +257,28 @@ describe Bugsnag do
       Bugsnag.configuration.automatic_breadcrumb_types = [
         Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE
       ]
-      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new { |breadcrumb|
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
         breadcrumb.type = Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE
-      }
+      end
       Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE, :auto)
       expect(breadcrumbs.to_a.size).to eq(0)
     end
 
     it "doesn't call callbacks if ignored early" do
       Bugsnag.configuration.automatic_breadcrumb_types = []
-      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new { |breadcrumb|
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
         fail "This shouldn't be called"
-      }
+      end
       Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
     end
 
     it "doesn't continue to call callbacks if ignored in them" do
-      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new { |breadcrumb|
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
         breadcrumb.ignore!
-      }
-      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new { |breadcrumb|
+      end
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
         fail "This shouldn't be called"
-      }
+      end
       Bugsnag.leave_breadcrumb("TestName")
     end
   end
