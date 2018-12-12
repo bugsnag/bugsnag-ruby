@@ -211,11 +211,14 @@ module Bugsnag
       unless breadcrumb.ignore?
         # Run callbacks
         configuration.before_breadcrumb_callbacks.each do |c|
-          (c.arity > 0 ? c.call(breadcrumb) : c.call)
+          c.arity > 0 ? c.call(breadcrumb) : c.call
           break if breadcrumb.ignore?
         end
 
-        # Validate again incase of callback alteration
+        # Return early if ignored
+        return if breadcrumb.ignore?
+
+        # Validate again in case of callback alteration
         validator.validate(breadcrumb)
 
         # Add to breadcrumbs buffer if still valid
