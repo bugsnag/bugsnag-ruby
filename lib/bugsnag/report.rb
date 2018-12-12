@@ -59,7 +59,9 @@ module Bugsnag
       self.hostname = configuration.hostname
       self.message = defined?(exception.message) ? exception.message : exception.to_s
       self.meta_data = {}
-      self.name = exception.class.to_s
+
+      # Notified strings display as RuntimeErrors in the dashboard
+      self.name = exception.is_a?(Exception) ? exception.class.to_s : RuntimeError.to_s
       self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
@@ -118,10 +120,10 @@ module Bugsnag
       # filter out sensitive values in (and cleanup encodings) metaData
       filter_cleaner = Bugsnag::Cleaner.new(configuration.meta_data_filters)
       payload_event[:metaData] = filter_cleaner.clean_object(meta_data)
-      payload_event[:breadcrumbs] = breadcrumbs.map do |raw_crumb|
-        breadcrumb = raw_crumb.to_h
-        breadcrumb[:metaData] = filter_cleaner.clean_object(breadcrumb[:metaData])
-        breadcrumb
+      payload_event[:breadcrumbs] = breadcrumbs.map do |breadcrumb|
+        breadcrumb_hash = breadcrumb.to_h
+        breadcrumb_hash[:metaData] = filter_cleaner.clean_object(breadcrumb_hash[:metaData])
+        breadcrumb_hash
       end
 
       payload_event.reject! {|k,v| v.nil? }
@@ -168,6 +170,8 @@ module Bugsnag
 
     ##
     # Generates a summary to be attached as a breadcrumb
+    #
+    # @return [Hash] a Hash containing the report's name, message, and severity
     def summary
       {
         :name => name,

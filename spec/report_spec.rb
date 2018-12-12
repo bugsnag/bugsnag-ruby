@@ -1179,11 +1179,11 @@ describe Bugsnag::Report do
 
     it "handles strings" do
       report = Bugsnag::Report.new("test string", Bugsnag.configuration)
-      expect(report.name).to eq("String")
+      expect(report.name).to eq("RuntimeError")
       expect(report.message).to eq("test string")
 
       expect(report.summary).to match({
-        :name => "String",
+        :name => "RuntimeError",
         :message => "test string",
         :severity => "warning"
       })
