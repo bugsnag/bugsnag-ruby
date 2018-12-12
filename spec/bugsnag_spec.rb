@@ -133,4 +133,153 @@ describe Bugsnag do
       Kernel.send(:remove_const, :REQUIRED)
     end
   end
+
+  describe ".leave_breadcrumb" do
+
+    let(:breadcrumbs) { Bugsnag.configuration.breadcrumbs }
+    let(:timestamp_regex) { /^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:[\d\.]+Z$/ }
+
+    it "requires only a name argument" do
+      Bugsnag.leave_breadcrumb("TestName")
+      expect(breadcrumbs.to_a.size).to eq(1)
+      expect(breadcrumbs.first.to_h).to match({
+        :name => "TestName",
+        :type => Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE,
+        :metaData => {},
+        :timestamp => match(timestamp_regex)
+      })
+    end
+
+    it "accepts meta_data" do
+      Bugsnag.leave_breadcrumb("TestName", { :a => 1, :b => "2" })
+      expect(breadcrumbs.to_a.size).to eq(1)
+      expect(breadcrumbs.first.to_h).to match({
+        :name => "TestName",
+        :type => Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE,
+        :metaData => { :a => 1, :b => "2" },
+        :timestamp => match(timestamp_regex)
+      })
+    end
+
+    it "allows different message types" do
+      Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE)
+      expect(breadcrumbs.to_a.size).to eq(1)
+      expect(breadcrumbs.first.to_h).to match({
+        :name => "TestName",
+        :type => Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE,
+        :metaData => {},
+        :timestamp => match(timestamp_regex)
+      })
+    end
+
+    it "validates before leaving" do
+      Bugsnag.leave_breadcrumb(
+        "123123123123123123123123123123456456456456456456456456456456",
+        {
+          :a => 1,
+          :b => [1, 2, 3, 4],
+          :c => {
+            :test => true,
+            :test2 => false
+          }
+        },
+        "Not a real type"
+      )
+      expect(breadcrumbs.to_a.size).to eq(1)
+      expect(breadcrumbs.first.to_h).to match({
+        :name => "123123123123123123123123123123",
+        :type => Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE,
+        :metaData => {
+          :a => 1
+        },
+        :timestamp => match(timestamp_regex)
+      })
+    end
+
+    it "runs callbacks before leaving" do
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
+        breadcrumb.meta_data = {
+          :callback => true
+        }
+      end
+      Bugsnag.leave_breadcrumb("TestName")
+      expect(breadcrumbs.to_a.size).to eq(1)
+      expect(breadcrumbs.first.to_h).to match({
+        :name => "TestName",
+        :type => Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE,
+        :metaData => {
+          :callback => true
+        },
+        :timestamp => match(timestamp_regex)
+      })
+    end
+
+    it "validates after callbacks" do
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
+        breadcrumb.meta_data = {
+          :int => 1,
+          :array => [1, 2, 3],
+          :hash => {
+            :a => 1,
+            :b => 2
+          }
+        }
+        breadcrumb.type = "Not a real type"
+        breadcrumb.name = "123123123123123123123123123123456456456456456"
+      end
+      Bugsnag.leave_breadcrumb("TestName")
+      expect(breadcrumbs.to_a.size).to eq(1)
+      expect(breadcrumbs.first.to_h).to match({
+        :name => "123123123123123123123123123123",
+        :type => Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE,
+        :metaData => {
+          :int => 1
+        },
+        :timestamp => match(timestamp_regex)
+      })
+    end
+
+    it "doesn't add when ignored by the validator" do
+      Bugsnag.configuration.automatic_breadcrumb_types = []
+      Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
+      expect(breadcrumbs.to_a.size).to eq(0)
+    end
+
+    it "doesn't add if ignored in a callback" do
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
+        breadcrumb.ignore!
+      end
+      Bugsnag.leave_breadcrumb("TestName")
+      expect(breadcrumbs.to_a.size).to eq(0)
+    end
+
+    it "doesn't add when ignored after the callbacks" do
+      Bugsnag.configuration.automatic_breadcrumb_types = [
+        Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE
+      ]
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
+        breadcrumb.type = Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE
+      end
+      Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE, :auto)
+      expect(breadcrumbs.to_a.size).to eq(0)
+    end
+
+    it "doesn't call callbacks if ignored early" do
+      Bugsnag.configuration.automatic_breadcrumb_types = []
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
+        fail "This shouldn't be called"
+      end
+      Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
+    end
+
+    it "doesn't continue to call callbacks if ignored in them" do
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
+        breadcrumb.ignore!
+      end
+      Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
+        fail "This shouldn't be called"
+      end
+      Bugsnag.leave_breadcrumb("TestName")
+    end
+  end
 end
