@@ -30,9 +30,7 @@ module Bugsnag::RailsBreadcrumbs
       :allowed_data => [
         :event_id,
         :key,
-        :keys,
         :hit,
-        :hits,
         :super_operation
       ]
     },
@@ -43,7 +41,6 @@ module Bugsnag::RailsBreadcrumbs
       :allowed_data => [
         :event_id,
         :key,
-        :keys
       ]
     },
     {
@@ -130,8 +127,6 @@ module Bugsnag::RailsBreadcrumbs
         :subject,
         :to,
         :from,
-        :bcc,
-        :cc,
         :date
       ]
     }
