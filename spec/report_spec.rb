@@ -1098,7 +1098,7 @@ describe Bugsnag::Report do
     it "includes left breadcrumbs" do
       Bugsnag.leave_breadcrumb("Test breadcrumb")
       notify_test_exception
-      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
         event = get_event_from_payload(payload)
         expect(event["breadcrumbs"].size).to eq(1)
         expect(event["breadcrumbs"].first).to match({
@@ -1117,7 +1117,7 @@ describe Bugsnag::Report do
       })
       Bugsnag.configuration.meta_data_filters << "forbidden"
       notify_test_exception
-      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
         event = get_event_from_payload(payload)
         expect(event["breadcrumbs"].size).to eq(1)
         expect(event["breadcrumbs"].first).to match({
@@ -1134,7 +1134,7 @@ describe Bugsnag::Report do
 
     it "defaults to an empty array" do
       notify_test_exception
-      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
         event = get_event_from_payload(payload)
         expect(event["breadcrumbs"].size).to eq(0)
       }
@@ -1147,7 +1147,7 @@ describe Bugsnag::Report do
         breadcrumb.meta_data = {:a => 1, :b => 2}
       }
       notify_test_exception
-      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
         event = get_event_from_payload(payload)
         expect(event["breadcrumbs"].size).to eq(1)
         expect(event["breadcrumbs"].first).to match({
@@ -1169,7 +1169,7 @@ describe Bugsnag::Report do
         expect(report.name).to eq("ZeroDivisionError")
         expect(report.message).to eq("divided by 0")
 
-        expect(report.summary).to match({
+        expect(report.summary).to eq({
           :name => "ZeroDivisionError",
           :message => "divided by 0",
           :severity => "warning"
@@ -1182,7 +1182,7 @@ describe Bugsnag::Report do
       expect(report.name).to eq("RuntimeError")
       expect(report.message).to eq("test string")
 
-      expect(report.summary).to match({
+      expect(report.summary).to eq({
         :name => "RuntimeError",
         :message => "test string",
         :severity => "warning"
