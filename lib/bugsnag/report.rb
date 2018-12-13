@@ -60,8 +60,14 @@ module Bugsnag
       self.message = defined?(exception.message) ? exception.message : exception.to_s
       self.meta_data = {}
 
-      # Notified strings display as RuntimeErrors in the dashboard
-      self.name = exception.is_a?(Exception) ? exception.class.to_s : RuntimeError.to_s
+      # Ensure the Java cases from generate_raw_exceptions are covered here
+      if exception.is_a?(Exception) || (defined?(Java::JavaLang::Throwable) && exception.is_a?(Java::JavaLang::Throwable))
+        self.name = exception.class.to_s
+      else
+        # Notified strings display as RuntimeErrors in the dashboard
+        self.name = RuntimeError.to_s
+      end
+
       self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
@@ -174,7 +180,7 @@ module Bugsnag
     # @return [Hash] a Hash containing the report's name, message, and severity
     def summary
       {
-        :name => name,
+        :error_class => name,
         :message => message,
         :severity => severity
       }

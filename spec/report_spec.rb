@@ -1170,7 +1170,7 @@ describe Bugsnag::Report do
         expect(report.message).to eq("divided by 0")
 
         expect(report.summary).to eq({
-          :name => "ZeroDivisionError",
+          :error_class => "ZeroDivisionError",
           :message => "divided by 0",
           :severity => "warning"
         })
@@ -1183,7 +1183,7 @@ describe Bugsnag::Report do
       expect(report.message).to eq("test string")
 
       expect(report.summary).to eq({
-        :name => "RuntimeError",
+        :error_class => "RuntimeError",
         :message => "test string",
         :severity => "warning"
       })
