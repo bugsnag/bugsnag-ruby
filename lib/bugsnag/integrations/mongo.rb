@@ -40,12 +40,12 @@ module Bugsnag
     ##
     # Generates breadcrumb data from an event
     #
-    # @param event_id [String] the type of event
+    # @param event_name [String] the type of event
     # @param event [Object] the mongo_ruby_driver generated event
-    def leave_mongo_breadcrumb(event_id, event)
-      message = MONGO_MESSAGE_PREFIX + event_id
+    def leave_mongo_breadcrumb(event_name, event)
+      message = MONGO_MESSAGE_PREFIX + event_name
       meta_data = {
-        :event_id => MONGO_EVENT_PREFIX + event_id,
+        :event_name => MONGO_EVENT_PREFIX + event_name,
         :command_name => event.command_name,
         :database_name => event.database_name,
         :operation_id => event.operation_id,
