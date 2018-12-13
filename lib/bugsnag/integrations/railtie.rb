@@ -39,7 +39,7 @@ module Bugsnag
         include Bugsnag::Rails::ActiveRecordRescue
       end
 
-      Bugsnag::RailsBreadcrumbs::DEFAULT_RAILS_BREADCRUMBS.each { |event| event_subscription(event) }
+      Bugsnag::Rails::DEFAULT_RAILS_BREADCRUMBS.each { |event| event_subscription(event) }
 
       Bugsnag.configuration.app_type = "rails"
     end

@@ -1,6 +1,6 @@
 require "bugsnag/breadcrumbs/breadcrumbs"
 
-module Bugsnag::RailsBreadcrumbs
+module Bugsnag::Rails
   DEFAULT_RAILS_BREADCRUMBS = [
     {
       :id => "perform_action.action_cable",
