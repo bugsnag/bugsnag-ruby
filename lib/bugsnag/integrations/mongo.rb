@@ -54,7 +54,7 @@ module Bugsnag
       meta_data[:duration] = event.duration if defined?(event.duration)
       meta_data[:message] = event.message if defined?(event.message)
 
-      Bugsnag.leave_breadcrumb(message, meta_data, Bugsnag::Utility::PROCESS_BREADCRUMB_TYPE, :auto)
+      Bugsnag.leave_breadcrumb(message, meta_data, Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE, :auto)
     end
   end
 end
