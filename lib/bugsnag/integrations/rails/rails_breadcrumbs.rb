@@ -7,7 +7,6 @@ module Bugsnag::Rails
       :message => "Perform ActionCable",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :channel_class,
         :action,
         :data
@@ -18,7 +17,6 @@ module Bugsnag::Rails
       :message => "Perform ActiveJob",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :adapter,
         :job
       ]
@@ -28,7 +26,6 @@ module Bugsnag::Rails
       :message => "Read cache",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :key,
         :hit,
         :super_operation
@@ -39,7 +36,6 @@ module Bugsnag::Rails
       :message => "Fetch cache hit",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :key,
       ]
     },
@@ -48,7 +44,6 @@ module Bugsnag::Rails
       :message => "ActiveRecord SQL query",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :name,
         :connection_id,
         :cached
@@ -59,7 +54,6 @@ module Bugsnag::Rails
       :message => "Controller started processing",
       :type => Bugsnag::Breadcrumbs::REQUEST_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :controller,
         :action,
         :path
@@ -70,7 +64,6 @@ module Bugsnag::Rails
       :message => "Controller action processed",
       :type => Bugsnag::Breadcrumbs::REQUEST_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :controller,
         :action,
         :status,
@@ -83,7 +76,6 @@ module Bugsnag::Rails
       :message => "Controller redirect",
       :type => Bugsnag::Breadcrumbs::REQUEST_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :status,
         :location
       ]
@@ -93,7 +85,6 @@ module Bugsnag::Rails
       :message => "Controller halted via callback",
       :type => Bugsnag::Breadcrumbs::REQUEST_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :filter
       ]
     },
@@ -102,7 +93,6 @@ module Bugsnag::Rails
       :message => "ActionView template rendered",
       :type => Bugsnag::Breadcrumbs::REQUEST_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :identifier,
         :layout
       ]
@@ -112,7 +102,6 @@ module Bugsnag::Rails
       :message => "ActionView partial rendered",
       :type => Bugsnag::Breadcrumbs::REQUEST_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :identifier
       ]
     },
@@ -121,7 +110,6 @@ module Bugsnag::Rails
       :message => "ActionMail delivered",
       :type => Bugsnag::Breadcrumbs::REQUEST_BREADCRUMB_TYPE,
       :allowed_data => [
-        :event_id,
         :mailer,
         :message_id,
         :subject,

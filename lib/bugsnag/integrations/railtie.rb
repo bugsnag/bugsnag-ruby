@@ -74,8 +74,8 @@ module Bugsnag
     # @param event [Hash] details of the event to subscribe to
     def event_subscription(event)
       ActiveSupport::Notifications.subscribe(event[:id]) do |*, data|
-        filtered_data = data.select{ |k, v| event[:allowed_data].include?(k) }
-        filtered_data[:event_id] = event[:id]
+        filtered_data = data.slice(*event[:allowed_data])
+        filtered_data[:event_name] = event[:id]
         Bugsnag.leave_breadcrumb(
           event[:message],
           filtered_data,
