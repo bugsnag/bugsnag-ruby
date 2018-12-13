@@ -36,7 +36,7 @@ module Bugsnag::Rails
       :message => "Fetch cache hit",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
-        :key,
+        :key
       ]
     },
     {
