@@ -23,9 +23,4 @@ Rails.application.routes.draw do
   get '/resque', to: 'resque#index'
   get '/resque/crash', to: 'resque#crash'
   get '/resque/crash_with_callback', to: 'resque#callbacks'
-
-  get '/mongo', to: 'mongo#index'
-  get '/mongo/create', to: 'mongo#create'
-  get '/mongo/create_then_crash', to: 'mongo#create_then_crash'
-  get '/mongo/get', to: 'mongo#get'
 end

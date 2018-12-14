@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
-  include Bugsnag
 
   def index
     @text = File.read(File.expand_path('app/views/index.md'))
