@@ -1166,8 +1166,6 @@ describe Bugsnag::Report do
         1/0
       rescue ZeroDivisionError => e
         report = Bugsnag::Report.new(e, Bugsnag.configuration)
-        expect(report.name).to eq("ZeroDivisionError")
-        expect(report.message).to eq("divided by 0")
 
         expect(report.summary).to eq({
           :error_class => "ZeroDivisionError",
@@ -1179,14 +1177,67 @@ describe Bugsnag::Report do
 
     it "handles strings" do
       report = Bugsnag::Report.new("test string", Bugsnag.configuration)
-      expect(report.name).to eq("RuntimeError")
-      expect(report.message).to eq("test string")
 
       expect(report.summary).to eq({
         :error_class => "RuntimeError",
         :message => "test string",
         :severity => "warning"
       })
+    end
+
+    it "handles error edge cases" do
+      report = Bugsnag::Report.new(Timeout::Error, Bugsnag.configuration)
+
+      expect(report.summary).to eq({
+        :error_class => "Timeout::Error",
+        :message => "Timeout::Error",
+        :severity => "warning"
+      })
+    end
+
+    it "handles empty exceptions" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report = Bugsnag::Report.new(e, Bugsnag.configuration)
+
+        report.exceptions = []
+
+        expect(report.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles removed exceptions" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report = Bugsnag::Report.new(e, Bugsnag.configuration)
+
+        report.exceptions = nil
+
+        expect(report.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles exceptions being replaced" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report = Bugsnag::Report.new(e, Bugsnag.configuration)
+
+        report.exceptions = "no one should ever do this"
+
+        expect(report.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
     end
   end
 
