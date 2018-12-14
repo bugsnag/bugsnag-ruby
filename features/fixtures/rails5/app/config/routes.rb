@@ -49,4 +49,7 @@ Rails.application.routes.draw do
   get 'clearance/create', to: 'clearance#create'
   get 'clearance/unhandled', to: 'clearance#unhandled'
   get 'clearance/handled', to: 'clearance#handled'
+
+  get 'breadcrumbs/handled', to: 'breadcrumbs#handled'
+  get 'breadcrumbs/sql_breadcrumb', to: 'breadcrumbs#sql_breadcrumb'
 end
