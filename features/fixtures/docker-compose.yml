@@ -4,6 +4,9 @@ services:
   redis:
     image: redis
 
+  mongo:
+    image: mongo
+
   plain-ruby:
     build:
       context: plain
@@ -93,6 +96,8 @@ services:
       args:
         - RUBY_VERSION
         - APP_PATH
+    depends_on:
+      - mongo
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -128,6 +133,8 @@ services:
       args:
         - RUBY_VERSION
         - APP_PATH
+    depends_on:
+      - mongo
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -163,6 +170,8 @@ services:
       args:
         - RUBY_VERSION
         - APP_PATH
+    depends_on:
+      - mongo
     environment:
       - BUGSNAG_API_KEY
       - http_proxy

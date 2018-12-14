@@ -63,3 +63,6 @@ end
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'redcarpet'
+
+# Added at 2018-12-13 15:30:17 +0000 by amoinet:
+gem "mongoid", "~> 7.0"

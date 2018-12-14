@@ -40,3 +40,5 @@ end
 gem 'bugsnag', path: '/bugsnag'
 
 gem 'devise'
+
+gem "mongoid", '~> 5.4.0'
