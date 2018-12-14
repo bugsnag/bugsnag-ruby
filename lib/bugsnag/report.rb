@@ -30,9 +30,7 @@ module Bugsnag
     attr_accessor :exceptions
     attr_accessor :hostname
     attr_accessor :grouping_hash
-    attr_accessor :message
     attr_accessor :meta_data
-    attr_accessor :name
     attr_accessor :raw_exceptions
     attr_accessor :release_stage
     attr_accessor :session
@@ -57,17 +55,7 @@ module Bugsnag
       self.breadcrumbs = []
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
-      self.message = defined?(exception.message) ? exception.message : exception.to_s
       self.meta_data = {}
-
-      # Ensure the Java cases from generate_raw_exceptions are covered here
-      if exception.is_a?(Exception) || (defined?(Java::JavaLang::Throwable) && exception.is_a?(Java::JavaLang::Throwable))
-        self.name = exception.class.to_s
-      else
-        # Notified strings display as RuntimeErrors in the dashboard
-        self.name = RuntimeError.to_s
-      end
-
       self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
@@ -177,13 +165,21 @@ module Bugsnag
     ##
     # Generates a summary to be attached as a breadcrumb
     #
-    # @return [Hash] a Hash containing the report's name, message, and severity
+    # @return [Hash] a Hash containing the report's error class, error message, and severity
     def summary
-      {
-        :error_class => name,
-        :message => message,
-        :severity => severity
-      }
+      # Guard against the exceptions array being removed/changed or emptied here
+      if !exceptions.is_a?(Array) || exceptions.first.nil?
+        {
+          :error_class => "Unknown",
+          :severity => severity
+        }
+      else
+        {
+          :error_class => exceptions.first[:errorClass],
+          :message => exceptions.first[:message],
+          :severity => severity
+        }
+      end
     end
 
     private
