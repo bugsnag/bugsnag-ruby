@@ -42,7 +42,7 @@ module Bugsnag
 
     ##
     # @return [Array<String>] strings indicating allowable automatic breadcrumb types
-    attr_accessor :automatic_breadcrumb_types
+    attr_accessor :enabled_automatic_breadcrumb_types
 
     ##
     # @return [Array<#call>] callables to be run before a breadcrumb is logged
@@ -86,7 +86,7 @@ module Bugsnag
       self.auto_capture_sessions = false
       self.session_endpoint = DEFAULT_SESSION_ENDPOINT
       # All valid breadcrumb types should be allowable initially
-      self.automatic_breadcrumb_types = Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.dup
+      self.enabled_automatic_breadcrumb_types = Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.dup
       self.before_breadcrumb_callbacks = []
 
       # Store max_breadcrumbs here instead of outputting breadcrumbs.max_items
