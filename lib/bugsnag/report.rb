@@ -168,15 +168,15 @@ module Bugsnag
     # @return [Hash] a Hash containing the report's error class, error message, and severity
     def summary
       # Guard against the exceptions array being removed/changed or emptied here
-      if !exceptions.is_a?(Array) || exceptions.first.nil?
+      if exceptions.respond_to?(:first) && exceptions.first
         {
-          :error_class => "Unknown",
+          :error_class => exceptions.first[:errorClass],
+          :message => exceptions.first[:message],
           :severity => severity
         }
       else
         {
-          :error_class => exceptions.first[:errorClass],
-          :message => exceptions.first[:message],
+          :error_class => "Unknown",
           :severity => severity
         }
       end
