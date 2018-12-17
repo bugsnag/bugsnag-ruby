@@ -30,9 +30,7 @@ module Bugsnag
     attr_accessor :exceptions
     attr_accessor :hostname
     attr_accessor :grouping_hash
-    attr_accessor :message
     attr_accessor :meta_data
-    attr_accessor :name
     attr_accessor :raw_exceptions
     attr_accessor :release_stage
     attr_accessor :session
@@ -57,11 +55,7 @@ module Bugsnag
       self.breadcrumbs = []
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
-      self.message = defined?(exception.message) ? exception.message : exception.to_s
       self.meta_data = {}
-
-      # Notified strings display as RuntimeErrors in the dashboard
-      self.name = exception.is_a?(Exception) ? exception.class.to_s : RuntimeError.to_s
       self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
@@ -171,13 +165,21 @@ module Bugsnag
     ##
     # Generates a summary to be attached as a breadcrumb
     #
-    # @return [Hash] a Hash containing the report's name, message, and severity
+    # @return [Hash] a Hash containing the report's error class, error message, and severity
     def summary
-      {
-        :name => name,
-        :message => message,
-        :severity => severity
-      }
+      # Guard against the exceptions array being removed/changed or emptied here
+      if exceptions.respond_to?(:first) && exceptions.first
+        {
+          :error_class => exceptions.first[:errorClass],
+          :message => exceptions.first[:message],
+          :severity => severity
+        }
+      else
+        {
+          :error_class => "Unknown",
+          :severity => severity
+        }
+      end
     end
 
     private

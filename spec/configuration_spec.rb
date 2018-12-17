@@ -277,14 +277,14 @@ describe Bugsnag::Configuration do
     end
   end
 
-  describe "#automatic_breadcrumb_types" do
+  describe "#enabled_automatic_breadcrumb_types" do
     it "defaults to Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES" do
-      expect(subject.automatic_breadcrumb_types).to eq(Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES)
+      expect(subject.enabled_automatic_breadcrumb_types).to eq(Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES)
     end
 
     it "is an editable array" do
-      subject.automatic_breadcrumb_types << "Some custom type"
-      expect(subject.automatic_breadcrumb_types).to include("Some custom type")
+      subject.enabled_automatic_breadcrumb_types << "Some custom type"
+      expect(subject.enabled_automatic_breadcrumb_types).to include("Some custom type")
     end
   end
 

@@ -8,18 +8,14 @@ module Bugsnag::Rails
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
         :channel_class,
-        :action,
-        :data
+        :action
       ]
     },
     {
       :id => "perform.active_job",
       :message => "Perform ActiveJob",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
-      :allowed_data => [
-        :adapter,
-        :job
-      ]
+      :allowed_data => []
     },
     {
       :id => "cache_read.active_support",
@@ -56,6 +52,7 @@ module Bugsnag::Rails
       :allowed_data => [
         :controller,
         :action,
+        :method,
         :path
       ]
     },
@@ -66,6 +63,7 @@ module Bugsnag::Rails
       :allowed_data => [
         :controller,
         :action,
+        :method,
         :status,
         :view_runtime,
         :db_runtime
@@ -112,10 +110,9 @@ module Bugsnag::Rails
       :allowed_data => [
         :mailer,
         :message_id,
-        :subject,
-        :to,
         :from,
-        :date
+        :date,
+        :perform_deliveries
       ]
     }
   ]
