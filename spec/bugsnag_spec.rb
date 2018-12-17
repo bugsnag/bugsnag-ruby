@@ -34,7 +34,7 @@ describe Bugsnag do
       expect(breadcrumb.type).to eq(Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE)
       expect(breadcrumb.auto).to eq(true)
       expect(breadcrumb.meta_data).to eq({
-        :name => 'ZeroDivisionError',
+        :error_class => 'ZeroDivisionError',
         :message => 'divided by 0',
         :severity => 'warning'
       })
@@ -50,7 +50,7 @@ describe Bugsnag do
       expect(breadcrumb.type).to eq(Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE)
       expect(breadcrumb.auto).to eq(true)
       expect(breadcrumb.meta_data).to eq({
-        :name => 'RuntimeError',
+        :error_class => 'RuntimeError',
         :message => 'notified string',
         :severity => 'warning'
       })
@@ -277,7 +277,7 @@ describe Bugsnag do
     end
 
     it "doesn't add when ignored by the validator" do
-      Bugsnag.configuration.automatic_breadcrumb_types = []
+      Bugsnag.configuration.enabled_automatic_breadcrumb_types = []
       Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
       expect(breadcrumbs.to_a.size).to eq(0)
     end
@@ -291,7 +291,7 @@ describe Bugsnag do
     end
 
     it "doesn't add when ignored after the callbacks" do
-      Bugsnag.configuration.automatic_breadcrumb_types = [
+      Bugsnag.configuration.enabled_automatic_breadcrumb_types = [
         Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE
       ]
       Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
@@ -302,7 +302,7 @@ describe Bugsnag do
     end
 
     it "doesn't call callbacks if ignored early" do
-      Bugsnag.configuration.automatic_breadcrumb_types = []
+      Bugsnag.configuration.enabled_automatic_breadcrumb_types = []
       Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
         fail "This shouldn't be called"
       end

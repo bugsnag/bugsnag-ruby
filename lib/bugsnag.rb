@@ -115,7 +115,8 @@ module Bugsnag
         options = {:headers => report.headers}
         payload = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload, configuration, options)
-        leave_breadcrumb(report.name, report.summary, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
+        report_summary = report.summary
+        leave_breadcrumb(report_summary[:error_class], report_summary, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
       end
     end
 
