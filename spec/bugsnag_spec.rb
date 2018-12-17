@@ -2,6 +2,10 @@
 require 'spec_helper'
 
 describe Bugsnag do
+
+  let(:breadcrumbs) { Bugsnag.configuration.breadcrumbs }
+  let(:timestamp_regex) { /^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:[\d\.]+Z$/ }
+
   describe 'notify' do
     before do
       Bugsnag.configuration.logger = spy('logger')
@@ -11,9 +15,46 @@ describe Bugsnag do
       notify_test_exception(true)
       expect(Bugsnag.configuration.logger).to_not have_received(:warn)
     end
+
     it 'logs an error when sending invalid arguments as auto_notify' do
       notify_test_exception({severity: 'info'})
       expect(Bugsnag.configuration.logger).to have_received(:warn)
+    end
+
+    it 'leaves a breadcrumb after exception delivery' do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        Bugsnag.notify(e)
+        sent_time = Time.now.utc
+      end
+      expect(breadcrumbs.to_a.size).to eq(1)
+      breadcrumb = breadcrumbs.to_a.first
+      expect(breadcrumb.name).to eq('ZeroDivisionError')
+      expect(breadcrumb.type).to eq(Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE)
+      expect(breadcrumb.auto).to eq(true)
+      expect(breadcrumb.meta_data).to eq({
+        :error_class => 'ZeroDivisionError',
+        :message => 'divided by 0',
+        :severity => 'warning'
+      })
+      expect(breadcrumb.timestamp).to be_within(1).of(sent_time)
+    end
+
+    it 'leave a RuntimeError breadcrumb after string delivery' do
+      Bugsnag.notify('notified string')
+      sent_time = Time.now.utc
+      expect(breadcrumbs.to_a.size).to eq(1)
+      breadcrumb = breadcrumbs.to_a.first
+      expect(breadcrumb.name).to eq('RuntimeError')
+      expect(breadcrumb.type).to eq(Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE)
+      expect(breadcrumb.auto).to eq(true)
+      expect(breadcrumb.meta_data).to eq({
+        :error_class => 'RuntimeError',
+        :message => 'notified string',
+        :severity => 'warning'
+      })
+      expect(breadcrumb.timestamp).to be_within(1).of(sent_time)
     end
   end
 
@@ -135,10 +176,6 @@ describe Bugsnag do
   end
 
   describe ".leave_breadcrumb" do
-
-    let(:breadcrumbs) { Bugsnag.configuration.breadcrumbs }
-    let(:timestamp_regex) { /^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:[\d\.]+Z$/ }
-
     it "requires only a name argument" do
       Bugsnag.leave_breadcrumb("TestName")
       expect(breadcrumbs.to_a.size).to eq(1)
@@ -240,7 +277,7 @@ describe Bugsnag do
     end
 
     it "doesn't add when ignored by the validator" do
-      Bugsnag.configuration.automatic_breadcrumb_types = []
+      Bugsnag.configuration.enabled_automatic_breadcrumb_types = []
       Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
       expect(breadcrumbs.to_a.size).to eq(0)
     end
@@ -254,7 +291,7 @@ describe Bugsnag do
     end
 
     it "doesn't add when ignored after the callbacks" do
-      Bugsnag.configuration.automatic_breadcrumb_types = [
+      Bugsnag.configuration.enabled_automatic_breadcrumb_types = [
         Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE
       ]
       Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
@@ -265,7 +302,7 @@ describe Bugsnag do
     end
 
     it "doesn't call callbacks if ignored early" do
-      Bugsnag.configuration.automatic_breadcrumb_types = []
+      Bugsnag.configuration.enabled_automatic_breadcrumb_types = []
       Bugsnag.configuration.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
         fail "This shouldn't be called"
       end
