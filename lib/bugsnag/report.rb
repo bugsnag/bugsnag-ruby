@@ -23,6 +23,7 @@ module Bugsnag
     attr_accessor :api_key
     attr_accessor :app_type
     attr_accessor :app_version
+    attr_accessor :breadcrumbs
     attr_accessor :configuration
     attr_accessor :context
     attr_accessor :delivery_method
@@ -51,6 +52,7 @@ module Bugsnag
       self.api_key = configuration.api_key
       self.app_type = configuration.app_type
       self.app_version = configuration.app_version
+      self.breadcrumbs = []
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
       self.meta_data = {}
@@ -110,7 +112,14 @@ module Bugsnag
       payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
 
       # filter out sensitive values in (and cleanup encodings) metaData
-      payload_event[:metaData] = Bugsnag::Cleaner.new(configuration.meta_data_filters).clean_object(meta_data)
+      filter_cleaner = Bugsnag::Cleaner.new(configuration.meta_data_filters)
+      payload_event[:metaData] = filter_cleaner.clean_object(meta_data)
+      payload_event[:breadcrumbs] = breadcrumbs.map do |breadcrumb|
+        breadcrumb_hash = breadcrumb.to_h
+        breadcrumb_hash[:metaData] = filter_cleaner.clean_object(breadcrumb_hash[:metaData])
+        breadcrumb_hash
+      end
+
       payload_event.reject! {|k,v| v.nil? }
 
       # return the payload hash
@@ -151,6 +160,26 @@ module Bugsnag
     # Tells the client this report should not be sent.
     def ignore!
       @should_ignore = true
+    end
+
+    ##
+    # Generates a summary to be attached as a breadcrumb
+    #
+    # @return [Hash] a Hash containing the report's error class, error message, and severity
+    def summary
+      # Guard against the exceptions array being removed/changed or emptied here
+      if exceptions.respond_to?(:first) && exceptions.first
+        {
+          :error_class => exceptions.first[:errorClass],
+          :message => exceptions.first[:message],
+          :severity => severity
+        }
+      else
+        {
+          :error_class => "Unknown",
+          :severity => severity
+        }
+      end
     end
 
     private
