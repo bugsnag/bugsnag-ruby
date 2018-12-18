@@ -65,7 +65,6 @@ module Bugsnag::Rails
         :action,
         :method,
         :status,
-        :view_runtime,
         :db_runtime
       ]
     },
