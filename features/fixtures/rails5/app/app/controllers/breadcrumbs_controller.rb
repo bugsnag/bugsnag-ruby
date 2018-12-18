@@ -11,4 +11,9 @@ class BreadcrumbsController < ActionController::Base
     Bugsnag.notify("SQL breadcrumb")
     render json: {}
   end
+
+  def active_job
+    ApplicationJob.perform_later
+    render json: {}
+  end
 end
