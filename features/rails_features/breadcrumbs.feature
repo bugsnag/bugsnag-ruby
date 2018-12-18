@@ -15,6 +15,12 @@ Scenario Outline: Request breadcrumb
   And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event has a "request" breadcrumb named "Controller started processing"
+  And the event "breadcrumbs.0.timestamp" is a timestamp
+  And the event "breadcrumbs.0.metaData.controller" equals "BreadcrumbsController"
+  And the event "breadcrumbs.0.metaData.action" equals "handled"
+  And the event "breadcrumbs.0.metaData.method" equals "GET"
+  And the event "breadcrumbs.0.metaData.path" equals "/breadcrumbs/handled"
+  And the event "breadcrumbs.0.metaData.event_name" equals "start_processing.action_controller"
 
   Examples:
     | ruby_version | rails_version |
@@ -55,4 +61,46 @@ Scenario Outline: SQL Breadcrumb
     | 2.4          | 3             |
     | 2.4          | 5             |
     | 2.5          | 3             |
+    | 2.5          | 5             |
+
+Scenario Outline: Active job breadcrumb
+  Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
+  And I start the service "rails<rails_version>"
+  And I wait for the app to respond on port "6128<rails_version>"
+  When I navigate to the route "/breadcrumbs/active_job" on port "6128<rails_version>"
+  Then I should receive a request
+  And the request is a valid for the error reporting API
+  And the request used the "Ruby Bugsnag Notifier" notifier
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the event has a "process" breadcrumb named "Start perform ActiveJob"
+  And the event "breadcrumbs.0.timestamp" is a timestamp
+  And the event "breadcrumbs.0.metaData.event_name" equals "perform_start.active_job"
+
+  Examples:
+    | ruby_version | rails_version |
+    | 2.2          | 4             |
+    | 2.2          | 5             |
+    | 2.3          | 4             |
+    | 2.3          | 5             |
+    | 2.4          | 5             |
+    | 2.5          | 5             |
+
+Scenario Outline: Cache read
+  Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
+  And I start the service "rails<rails_version>"
+  And I wait for the app to respond on port "6128<rails_version>"
+  When I navigate to the route "/breadcrumbs/cache_read" on port "6128<rails_version>"
+  Then I should receive a request
+  And the request is a valid for the error reporting API
+  And the request used the "Ruby Bugsnag Notifier" notifier
+  And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
+  And the event has a "process" breadcrumb named "Read cache"
+
+  Examples:
+    | ruby_version | rails_version |
+    | 2.2          | 4             |
+    | 2.2          | 5             |
+    | 2.3          | 4             |
+    | 2.3          | 5             |
+    | 2.4          | 5             |
     | 2.5          | 5             |

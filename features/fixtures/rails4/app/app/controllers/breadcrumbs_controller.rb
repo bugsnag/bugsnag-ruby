@@ -1,8 +1,6 @@
 class BreadcrumbsController < ActionController::Base
-  protect_from_forgery with: :exception
-
-  def index
-    render json: {}
+  def initialize
+    @cache = ActiveSupport::Cache::MemoryStore.new
   end
 
   def handled
@@ -13,6 +11,18 @@ class BreadcrumbsController < ActionController::Base
   def sql_breadcrumb
     User.take
     Bugsnag.notify("SQL breadcrumb")
+    render json: {}
+  end
+
+  def active_job
+    ApplicationJob.perform_later
+    render json: {}
+  end
+
+  def cache_read
+    @cache.write('test', true)
+    @cache.read('test')
+    Bugsnag.notify("Cache breadcrumb")
     render json: {}
   end
 end
