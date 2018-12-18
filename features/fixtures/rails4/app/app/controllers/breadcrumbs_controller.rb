@@ -1,4 +1,8 @@
 class BreadcrumbsController < ActionController::Base
+  def initialize
+    @cache = ActiveSupport::Cache::MemoryStore.new
+  end
+
   def handled
     Bugsnag.notify("Request breadcrumb")
     render json: {}
@@ -12,6 +16,13 @@ class BreadcrumbsController < ActionController::Base
 
   def active_job
     ApplicationJob.perform_later
+    render json: {}
+  end
+
+  def cache_read
+    @cache.write('test', true)
+    @cache.read('test')
+    Bugsnag.notify("Cache breadcrumb")
     render json: {}
   end
 end
