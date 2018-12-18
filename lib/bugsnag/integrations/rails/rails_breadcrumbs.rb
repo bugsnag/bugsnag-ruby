@@ -12,8 +12,8 @@ module Bugsnag::Rails
       ]
     },
     {
-      :id => "perform.active_job",
-      :message => "Perform ActiveJob",
+      :id => "perform_start.active_job",
+      :message => "Start perform ActiveJob",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => []
     },
