@@ -7,7 +7,6 @@ module Bugsnag
   #
   # @api private
   class MongoBreadcrumbSubscriber
-
     MONGO_MESSAGE_PREFIX = "Mongo query "
     MONGO_EVENT_PREFIX = "mongo."
 
