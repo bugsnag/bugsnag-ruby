@@ -14,7 +14,7 @@ module Bugsnag
     ##
     # Listens to the 'started' event
     #
-    # @param event [Object] the mongo_ruby_driver generated event
+    # @param event [Mongo::Event::Base] the mongo_ruby_driver generated event
     def started(event)
       leave_mongo_breadcrumb("started", event)
     end
@@ -22,7 +22,7 @@ module Bugsnag
     ##
     # Listens to the 'succeeded' event
     #
-    # @param event [Object] the mongo_ruby_driver generated event
+    # @param event [Mongo::Event::Base] the mongo_ruby_driver generated event
     def succeeded(event)
       leave_mongo_breadcrumb("succeeded", event)
     end
@@ -30,7 +30,7 @@ module Bugsnag
     ##
     # Listens to the 'failed' event
     #
-    # @param event [Object] the mongo_ruby_driver generated event
+    # @param event [Mongo::Event::Base] the mongo_ruby_driver generated event
     def failed(event)
       leave_mongo_breadcrumb("failed", event)
     end
@@ -41,7 +41,7 @@ module Bugsnag
     # Generates breadcrumb data from an event
     #
     # @param event_name [String] the type of event
-    # @param event [Object] the mongo_ruby_driver generated event
+    # @param event [Mongo::Event::Base] the mongo_ruby_driver generated event
     def leave_mongo_breadcrumb(event_name, event)
       message = MONGO_MESSAGE_PREFIX + event_name
       meta_data = {
