@@ -15,6 +15,12 @@ Scenario Outline: Request breadcrumb
   And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event has a "request" breadcrumb named "Controller started processing"
+  And the event "breadcrumbs.0.timestamp" is a timestamp
+  And the event "breadcrumbs.0.metaData.controller" equals "BreadcrumbsController"
+  And the event "breadcrumbs.0.metaData.action" equals "handled"
+  And the event "breadcrumbs.0.metaData.method" equals "GET"
+  And the event "breadcrumbs.0.metaData.path" equals "/breadcrumbs/handled"
+  And the event "breadcrumbs.0.metaData.event_name" equals "start_processing.action_controller"
 
   Examples:
     | ruby_version | rails_version |
@@ -67,6 +73,8 @@ Scenario Outline: Active job breadcrumb
   And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
   And the event has a "process" breadcrumb named "Start perform ActiveJob"
+  And the event "breadcrumbs.0.timestamp" is a timestamp
+  And the event "breadcrumbs.0.metaData.event_name" equals "perform_start.active_job"
 
   Examples:
     | ruby_version | rails_version |
