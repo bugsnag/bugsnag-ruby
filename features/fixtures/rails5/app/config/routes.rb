@@ -53,5 +53,6 @@ Rails.application.routes.draw do
   get 'breadcrumbs/handled', to: 'breadcrumbs#handled'
   get 'breadcrumbs/sql_breadcrumb', to: 'breadcrumbs#sql_breadcrumb'
 
-  get 'mongo/crash', to: 'mongo#crash'
+  get 'mongo/success_crash', to: 'mongo#success_crash'
+  get 'mongo/failure_crash', to: 'mongo#failure_crash'
 end
