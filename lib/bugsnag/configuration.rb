@@ -93,9 +93,9 @@ module Bugsnag
       # to avoid infinite recursion when creating breadcrumb buffer
       @max_breadcrumbs = DEFAULT_MAX_BREADCRUMBS
 
-      # SystemExit and Interrupt are common Exception types seen with successful
-      # exits and are not automatically reported to Bugsnag
-      self.ignore_classes = Set.new([SystemExit, Interrupt])
+      # SystemExit and SignalException are common Exception types seen with
+      # successful exits and are not automatically reported to Bugsnag
+      self.ignore_classes = Set.new([SystemExit, SignalException])
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
