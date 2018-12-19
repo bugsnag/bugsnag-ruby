@@ -1,8 +1,4 @@
-class BreadcrumbsController < ActionController::Base
-  def initialize
-    @cache = ActiveSupport::Cache::MemoryStore.new
-  end
-
+class BreadcrumbsController < ApplicationController
   def handled
     Bugsnag.notify("Request breadcrumb")
     render json: {}
@@ -15,8 +11,8 @@ class BreadcrumbsController < ActionController::Base
   end
 
   def cache_read
-    @cache.write('test', true)
-    @cache.read('test')
+    Rails.cache.write('test', true)
+    Rails.cache.read('test')
     Bugsnag.notify("Cache breadcrumb")
     render json: {}
   end
