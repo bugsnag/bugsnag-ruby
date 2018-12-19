@@ -54,4 +54,7 @@ Rails.application.routes.draw do
   get 'breadcrumbs/sql_breadcrumb', to: 'breadcrumbs#sql_breadcrumb'
   get 'breadcrumbs/active_job', to: 'breadcrumbs#active_job'
   get 'breadcrumbs/cache_read', to: 'breadcrumbs#cache_read'
+
+  get 'mongo/success_crash', to: 'mongo#success_crash'
+  get 'mongo/failure_crash', to: 'mongo#failure_crash'
 end

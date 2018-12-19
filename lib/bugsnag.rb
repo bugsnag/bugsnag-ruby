@@ -35,7 +35,7 @@ require "bugsnag/breadcrumbs/breadcrumbs"
 
 module Bugsnag
   LOCK = Mutex.new
-  INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que]
+  INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que, :mongo]
 
   NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
 
