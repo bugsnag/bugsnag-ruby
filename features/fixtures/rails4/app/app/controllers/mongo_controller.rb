@@ -1,4 +1,4 @@
-class MongoController < ActionController
+class MongoController < ApplicationController
 
   def success_crash
     doc = MongoModel.create(string_field: "String")

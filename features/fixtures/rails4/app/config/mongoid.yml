@@ -15,7 +15,7 @@ test:
     default:
       database: rails4_test
       hosts:
-        - mongo:27018
+        - mongo:27017
       options:
         read:
           mode: :primary
