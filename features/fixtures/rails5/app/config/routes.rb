@@ -56,5 +56,6 @@ Rails.application.routes.draw do
   get 'breadcrumbs/cache_read', to: 'breadcrumbs#cache_read'
 
   get 'mongo/success_crash', to: 'mongo#success_crash'
+  get 'mongo/get_crash', to: 'mongo#get_crash'
   get 'mongo/failure_crash', to: 'mongo#failure_crash'
 end

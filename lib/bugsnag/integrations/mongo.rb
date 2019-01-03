@@ -52,8 +52,12 @@ module Bugsnag
         :request_id => event.request_id,
         :duration => event.duration
       }
-      command = pop_command(event.request_id)
-      meta_data[:collection] = command[event.command_name] if command
+      if command = pop_command(event.request_id)
+        meta_data[:collection] = command[event.command_name]
+        command["filter"].keys.each_with_index do |key, index|
+          meta_data[:"filter_#{index}"] = key
+        end
+      end
       meta_data[:message] = event.message if defined?(event.message)
 
       Bugsnag.leave_breadcrumb(message, meta_data, Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE, :auto)
