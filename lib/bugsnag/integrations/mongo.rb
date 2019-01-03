@@ -9,17 +9,18 @@ module Bugsnag
   class MongoBreadcrumbSubscriber
     MONGO_MESSAGE_PREFIX = "Mongo query "
     MONGO_EVENT_PREFIX = "mongo."
+    MONGO_COMMAND_KEY = :bugsnag_mongo_commands
 
     ##
-    # Listens to the 'started' event
+    # Listens to the 'started' event, storing the command for later usage
     #
     # @param event [Mongo::Event::Base] the mongo_ruby_driver generated event
     def started(event)
-      leave_mongo_breadcrumb("started", event)
+      leave_command(event)
     end
 
     ##
-    # Listens to the 'succeeded' event
+    # Listens to the 'succeeded' event, leaving a breadcrumb
     #
     # @param event [Mongo::Event::Base] the mongo_ruby_driver generated event
     def succeeded(event)
@@ -27,7 +28,7 @@ module Bugsnag
     end
 
     ##
-    # Listens to the 'failed' event
+    # Listens to the 'failed' event, leaving a breadcrumb
     #
     # @param event [Mongo::Event::Base] the mongo_ruby_driver generated event
     def failed(event)
@@ -48,12 +49,26 @@ module Bugsnag
         :command_name => event.command_name,
         :database_name => event.database_name,
         :operation_id => event.operation_id,
-        :request_id => event.request_id
+        :request_id => event.request_id,
+        :duration => event.duration
       }
-      meta_data[:duration] = event.duration if defined?(event.duration)
+      command = pop_command(event.request_id)
+      meta_data[:collection] = command[event.command_name] if command
       meta_data[:message] = event.message if defined?(event.message)
 
       Bugsnag.leave_breadcrumb(message, meta_data, Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE, :auto)
+    end
+
+    def leave_command(event)
+      events[event.request_id] = event.command
+    end
+
+    def pop_command(request_id)
+      events.delete(request_id) { nil }
+    end
+
+    def events
+      Bugsnag.configuration.request_data[MONGO_COMMAND_KEY] ||= {}
     end
   end
 end

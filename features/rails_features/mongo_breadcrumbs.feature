@@ -14,8 +14,15 @@ Scenario Outline: Successful breadcrumbs
   And the request is a valid for the error reporting API
   And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the event has a "process" breadcrumb named "Mongo query started"
   And the event has a "process" breadcrumb named "Mongo query succeeded"
+  And the event "breadcrumbs.1.timestamp" is a timestamp
+  And the event "breadcrumbs.1.metaData.event_name" equals "mongo.succeeded"
+  And the event "breadcrumbs.1.metaData.command_name" equals "insert"
+  And the event "breadcrumbs.1.metaData.database_name" equals "rails<rails_version>_development"
+  And the event "breadcrumbs.1.metaData.operation_id" is not null
+  And the event "breadcrumbs.1.metaData.request_id" is not null
+  And the event "breadcrumbs.1.metaData.duration" is not null
+  And the event "breadcrumbs.1.metaData.collection" equals "mongo_models"
 
   Examples:
     | ruby_version | rails_version |
@@ -35,8 +42,15 @@ Scenario Outline: Failure breadcrumbs
   And the request is a valid for the error reporting API
   And the request used the "Ruby Bugsnag Notifier" notifier
   And the request contained the api key "a35a2a72bd230ac0aa0f52715bbdc6aa"
-  And the event has a "process" breadcrumb named "Mongo query started"
   And the event has a "process" breadcrumb named "Mongo query failed"
+  And the event "breadcrumbs.1.timestamp" is a timestamp
+  And the event "breadcrumbs.1.metaData.event_name" equals "mongo.failed"
+  And the event "breadcrumbs.1.metaData.command_name" equals "bogus"
+  And the event "breadcrumbs.1.metaData.database_name" equals "rails<rails_version>_development"
+  And the event "breadcrumbs.1.metaData.operation_id" is not null
+  And the event "breadcrumbs.1.metaData.request_id" is not null
+  And the event "breadcrumbs.1.metaData.duration" is not null
+  And the event "breadcrumbs.1.metaData.collection" equals 1
 
   Examples:
     | ruby_version | rails_version |
