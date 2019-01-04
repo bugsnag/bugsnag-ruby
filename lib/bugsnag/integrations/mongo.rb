@@ -52,11 +52,11 @@ module Bugsnag
         :request_id => event.request_id,
         :duration => event.duration
       }
-      if command = pop_command(event.request_id)
+      if (command = pop_command(event.request_id))
         collection_key = event.command_name == "getMore" ? "collection" : event.command_name
         meta_data[:collection] = command[collection_key]
         unless command["filter"].nil?
-          filters  = command["filter"].map { |key, _v| [key, '?'] }.to_h
+          filters = command["filter"].map { |key, _v| [key, '?'] }.to_h
           meta_data[:filters] = JSON.dump(filters)
         end
       end
