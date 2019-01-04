@@ -35,6 +35,7 @@ module Bugsnag
     #
     # This allows Bugsnag to track error rates for a release.
     def start_session
+      return unless Bugsnag.configuration.send_sessions
       start_delivery_thread
       start_time = Time.now().utc().strftime('%Y-%m-%dT%H:%M:00')
       new_session = {
