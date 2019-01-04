@@ -1,5 +1,6 @@
 # Rails 3.x hooks
 
+require "json"
 require "rails"
 require "bugsnag"
 require "bugsnag/middleware/rails3_request"
@@ -77,6 +78,11 @@ module Bugsnag
         filtered_data = data.slice(*event[:allowed_data])
         filtered_data[:event_name] = event[:id]
         filtered_data[:event_id] = event_id
+        if event[:id] == "sql.active_record"
+          binds = data[:binds].map { |bind| defined?(bind.name) ? [bind.name, '?'] : nil }
+          binds.select! { |bind| bind }
+          filtered_data[:bindings] = JSON.dump(binds.to_h)
+        end
         Bugsnag.leave_breadcrumb(
           event[:message],
           filtered_data,
