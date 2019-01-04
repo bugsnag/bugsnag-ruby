@@ -53,9 +53,11 @@ module Bugsnag
         :duration => event.duration
       }
       if command = pop_command(event.request_id)
-        meta_data[:collection] = command[event.command_name]
-        command["filter"].keys.each_with_index do |key, index|
-          meta_data[:"filter_#{index}"] = key
+        collection_key = event.command_name == "getMore" ? "collection" : event.command_name
+        meta_data[:collection] = command[collection_key]
+        unless command["filter"].nil?
+          filters  = command["filter"].map { |key, _v| [key, '?'] }.to_h
+          meta_data[:filters] = JSON.dump(filters)
         end
       end
       meta_data[:message] = event.message if defined?(event.message)
@@ -63,15 +65,29 @@ module Bugsnag
       Bugsnag.leave_breadcrumb(message, meta_data, Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE, :auto)
     end
 
+    ##
+    # Stores the mongo command in the request data by the request_id
+    #
+    # @param event [Mongo::Event::Base] the mongo_ruby_driver generated event
     def leave_command(event)
-      events[event.request_id] = event.command
+      event_commands[event.request_id] = event.command
     end
 
+    ##
+    # Removes and retrieves a stored command from the request data
+    #
+    # @param request_id [String] the id of the mongo_ruby_driver event
+    #
+    # @return [Hash|nil] the requested command, or nil if not found
     def pop_command(request_id)
-      events.delete(request_id) { nil }
+      event_commands.delete(request_id)
     end
 
-    def events
+    ##
+    # Provides access to a thread-based mongo event command hash
+    #
+    # @return [Hash] the hash of mongo event commands
+    def event_commands
       Bugsnag.configuration.request_data[MONGO_COMMAND_KEY] ||= {}
     end
   end

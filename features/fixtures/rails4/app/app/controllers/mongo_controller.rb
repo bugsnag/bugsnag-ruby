@@ -7,7 +7,7 @@ class MongoController < ApplicationController
   end
 
   def get_crash
-    MongoModel.where(string_field: true)
+    MongoModel.where(string_field: true).as_json
     "Statement".prepnd("Failing")
   end
 
