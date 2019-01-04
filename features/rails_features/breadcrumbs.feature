@@ -21,6 +21,7 @@ Scenario Outline: Request breadcrumb
   And the event "breadcrumbs.0.metaData.method" equals "GET"
   And the event "breadcrumbs.0.metaData.path" equals "/breadcrumbs/handled"
   And the event "breadcrumbs.0.metaData.event_name" equals "start_processing.action_controller"
+  And the event "breadcrumbs.0.metaData.event_id" is not null
 
   Examples:
     | ruby_version | rails_version |
@@ -75,6 +76,7 @@ Scenario Outline: Active job breadcrumb
   And the event has a "process" breadcrumb named "Start perform ActiveJob"
   And the event "breadcrumbs.0.timestamp" is a timestamp
   And the event "breadcrumbs.0.metaData.event_name" equals "perform_start.active_job"
+  And the event "breadcrumbs.0.metaData.event_id" is not null
 
   Examples:
     | ruby_version | rails_version |
