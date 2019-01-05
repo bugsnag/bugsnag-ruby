@@ -57,7 +57,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
     end
 
     describe "tests meta_data types" do
-      it "accepts Strings, Numerics, & Booleans" do
+      it "accepts Strings, Numerics, Booleans, & nil" do
         config = instance_double(Bugsnag::Configuration)
         allow(config).to receive(:enabled_automatic_breadcrumb_types).and_return(enabled_automatic_breadcrumb_types)
         validator = Bugsnag::Breadcrumbs::Validator.new(config)
@@ -67,7 +67,8 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
           :integer => 12345,
           :float => 12345.6789,
           :false => false,
-          :true => true
+          :true => true,
+          :nil => nil
         }
 
         breadcrumb = instance_double(Bugsnag::Breadcrumbs::Breadcrumb, {
