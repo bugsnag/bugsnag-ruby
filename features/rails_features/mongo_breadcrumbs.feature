@@ -51,7 +51,7 @@ Scenario Outline: Breadcrumb with filter parameters
   And the event "breadcrumbs.1.metaData.request_id" is not null
   And the event "breadcrumbs.1.metaData.duration" is not null
   And the event "breadcrumbs.1.metaData.collection" equals "mongo_models"
-  And the event "breadcrumbs.1.metaData.filters" equals "{"string_field":"?"}"
+  And the event "breadcrumbs.1.metaData.filter" equals "{"string_field":"?"}"
 
   Examples:
     | ruby_version | rails_version |

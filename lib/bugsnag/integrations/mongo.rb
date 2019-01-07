@@ -56,8 +56,8 @@ module Bugsnag
         collection_key = event.command_name == "getMore" ? "collection" : event.command_name
         meta_data[:collection] = command[collection_key]
         unless command["filter"].nil?
-          filters = command["filter"].map { |key, _v| [key, '?'] }.to_h
-          meta_data[:filters] = JSON.dump(filters)
+          filter = command["filter"].map { |key, _v| [key, '?'] }.to_h
+          meta_data[:filter] = JSON.dump(filter)
         end
       end
       meta_data[:message] = event.message if defined?(event.message)
@@ -78,7 +78,7 @@ module Bugsnag
     #
     # @param request_id [String] the id of the mongo_ruby_driver event
     #
-    # @return [Hash|nil] the requested command, or nil if not found
+    # @return [Hash, nil] the requested command, or nil if not found
     def pop_command(request_id)
       event_commands.delete(request_id)
     end
