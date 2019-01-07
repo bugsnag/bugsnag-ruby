@@ -5,6 +5,11 @@ class MongoController < ApplicationController
     "Statement".prepnd("Failing")
   end
 
+  def get_crash
+    MongoModel.where(string_field: true).as_json
+    "Statement".prepnd("Failing")
+  end
+
   def failure_crash
     begin
       Mongoid::Clients.default.database.command(:bogus => 1)
