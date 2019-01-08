@@ -1,3 +1,4 @@
+require 'pp'
 class BreadcrumbsController < ApplicationController
   def handled
     Bugsnag.notify("Request breadcrumb")
@@ -5,7 +6,7 @@ class BreadcrumbsController < ApplicationController
   end
 
   def sql_breadcrumb
-    User.take
+    User.where(:email => "foo").as_json
     Bugsnag.notify("SQL breadcrumb")
     render json: {}
   end

@@ -40,7 +40,6 @@ module Bugsnag::Rails
       :message => "ActiveRecord SQL query",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
-        :sql,
         :name,
         :connection_id,
         :cached

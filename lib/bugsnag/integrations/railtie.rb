@@ -81,7 +81,8 @@ module Bugsnag
         if event[:id] == "sql.active_record"
           binds = data[:binds].map { |bind| defined?(bind.name) ? [bind.name, '?'] : nil }
           binds.select! { |bind| bind }
-          filtered_data[:bindings] = JSON.dump(binds.to_h)
+          filtered_data[:bindings] = JSON.dump(binds.to_h) unless binds.empty?
+          filtered_data[:sql] = data[:sql].gsub(/(=|>|<|=>|=<|IN) (\S+)/, '\1 "?"')
         end
         Bugsnag.leave_breadcrumb(
           event[:message],
