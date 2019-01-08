@@ -56,13 +56,30 @@ module Bugsnag
         collection_key = event.command_name == "getMore" ? "collection" : event.command_name
         meta_data[:collection] = command[collection_key]
         unless command["filter"].nil?
-          filter = command["filter"].map { |key, _v| [key, '?'] }.to_h
+          filter = sanitize_filter(command["filter"])
           meta_data[:filter] = JSON.dump(filter)
         end
       end
       meta_data[:message] = event.message if defined?(event.message)
 
       Bugsnag.leave_breadcrumb(message, meta_data, Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE, :auto)
+    end
+
+    ##
+    # Removes values from filter hashes, replacing them with '?'
+    #
+    # @param filter_hash [Hash] the filter hash for the mongo transaction
+    #
+    # @return [Hash] the filtered hash
+    def sanitize_filter(filter_hash)
+      filter_hash.map do |key, value|
+        if value && value.is_a?(Array)
+          filtered_or = value.map { |filter| sanitize_filter(filter) }
+          [key, filtered_or]
+        else
+          [key, '?']
+        end
+      end.to_h
     end
 
     ##
