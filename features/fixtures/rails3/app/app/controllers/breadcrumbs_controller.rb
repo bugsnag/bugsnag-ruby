@@ -1,4 +1,3 @@
-require 'pp'
 class BreadcrumbsController < ApplicationController
   def handled
     Bugsnag.notify("Request breadcrumb")
