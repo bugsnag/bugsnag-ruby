@@ -213,7 +213,7 @@ module Bugsnag
     #
     # @deprecated Use {#set_endpoints} instead
     def endpoint=(new_notify_endpoint)
-      warn("The 'endpoint' configuration option is deprecated.  The 'set_endpoints' method should be used instead")
+      warn("The 'endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
       set_endpoints(new_notify_endpoint, session_endpoint) # Pass the existing session_endpoint through so it doesn't get overwritten
     end
 
@@ -242,11 +242,11 @@ module Bugsnag
           @session_endpoint = new_session_endpoint
         else
           warn("The session endpoint has not set, all further session capturing will be disabled")
-          auto_capture_sessions = false
+          self.auto_capture_sessions = false
           @send_sessions = false
         end
       elsif session_set
-        throw ArgumentError.new("The session endpoint cannot be modified without the notify endpoint")
+        raise ArgumentError.new("The session endpoint cannot be modified without the notify endpoint")
       end
     end
 
