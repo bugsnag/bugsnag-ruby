@@ -41,7 +41,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
 
     let(:subscriber) { Bugsnag::MongoBreadcrumbSubscriber.new }
 
-    context "#started" do
+    describe "#started" do
       it "calls #leave_command with the event" do
         event = double
         expect(subscriber).to receive(:leave_command).with(event)
@@ -49,7 +49,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
     end
 
-    context "#succeeded" do
+    describe "#succeeded" do
       it "calls #leave_mongo_beradcrumb with the event_name and event" do
         event = double
         expect(subscriber).to receive(:leave_mongo_breadcrumb).with("succeeded", event)
@@ -57,7 +57,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
     end
 
-    context "#failed" do
+    describe "#failed" do
       it "calls #leave_mongo_beradcrumb with the event_name and event" do
         event = double
         expect(subscriber).to receive(:leave_mongo_breadcrumb).with("failed", event)
@@ -65,7 +65,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
     end
 
-    context "#leave_mongo_breadcrumb" do
+    describe "#leave_mongo_breadcrumb" do
       let(:event) { double(
         :command_name => "command",
         :database_name => "database",
@@ -181,7 +181,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
     end
 
-    context "#sanitize_filter_hash" do
+    describe "#sanitize_filter_hash" do
       it "calls into #sanitize_filter_value with the value from each {k,v} pair" do
         expect(subscriber).to receive(:sanitize_filter_value).with(1, 0).ordered.and_return('?')
         expect(subscriber).to receive(:sanitize_filter_value).with(2, 0).ordered.and_return('?')
@@ -199,7 +199,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
     end
 
-    context "#sanitize_filter_value" do
+    describe "#sanitize_filter_value" do
       it "returns '?' for strings, numbers, booleans, and nil" do
         expect(subscriber.send(:sanitize_filter_value, 523, 0)).to eq('?')
         expect(subscriber.send(:sanitize_filter_value, "string", 0)).to eq('?')
@@ -235,7 +235,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
     end
 
-    context "#leave_command" do
+    describe "#leave_command" do
       it "extracts and stores the command by request_id" do
         request_id = "123456"
         command = "this is a command string"
@@ -247,7 +247,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
     end
 
-    context "#pop_command" do
+    describe "#pop_command" do
       let(:request_id) { "123456" }
       let(:command) { "this is a command string" }
       before do
@@ -270,7 +270,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
     end
 
-    context "#event_commands" do
+    describe "#event_commands" do
       it "returns a hash" do
         expect(subscriber.send(:event_commands)).to be_a(Hash)
       end
