@@ -5,7 +5,7 @@ class BreadcrumbsController < ApplicationController
   end
 
   def sql_breadcrumb
-    User.where(:email => "foo")
+    User.find_by(email: "foo")
     Bugsnag.notify("SQL breadcrumb")
     render json: {}
   end

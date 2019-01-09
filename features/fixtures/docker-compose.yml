@@ -120,6 +120,7 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
+      - SQL_ONLY_BREADCRUMBS
     ports:
       - target: 3000
         published: 61283
@@ -157,6 +158,7 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
+      - SQL_ONLY_BREADCRUMBS
     ports:
       - target: 3000
         published: 61284
@@ -194,6 +196,7 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
+      - SQL_ONLY_BREADCRUMBS
     ports:
       - target: 3000
         published: 61285
