@@ -74,7 +74,7 @@ module Bugsnag
     #
     # @return [Hash] the filtered hash
     def sanitize_filter_hash(filter_hash, depth = 0)
-      filter_hash.each_with_object(Hash.new) do |args, output|
+      filter_hash.each_with_object({}) do |args, output|
         key, value = *args
         output[key] = sanitize_filter_value(value, depth)
       end
