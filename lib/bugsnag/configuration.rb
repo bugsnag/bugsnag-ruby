@@ -53,7 +53,7 @@ module Bugsnag
 
     DEFAULT_NOTIFY_ENDPOINT = "https://notify.bugsnag.com"
     DEFAULT_SESSION_ENDPOINT = "https://sessions.bugsnag.com"
-    alias DEFAULT_ENDPOINT DEFAULT_NOTIFY_ENDPOINT
+    DEFAULT_ENDPOINT = DEFAULT_NOTIFY_ENDPOINT
 
     DEFAULT_META_DATA_FILTERS = [
       /authorization/i,
@@ -81,7 +81,7 @@ module Bugsnag
       self.auto_capture_sessions = true
 
       # These are set exclusively using the "set_endpoints" method
-      @endpoint = DEFAULT_NOTIFY_ENDPOINT
+      @notify_endpoint = DEFAULT_NOTIFY_ENDPOINT
       @session_endpoint = DEFAULT_SESSION_ENDPOINT
       @send_sessions = true
 
