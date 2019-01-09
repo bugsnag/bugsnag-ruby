@@ -64,7 +64,6 @@ describe Bugsnag::SessionTracker do
     Bugsnag.configure do |conf|
       conf.set_endpoints("http://localhost:#{server.config[:Port]}", nil)
     end
-    WebMock.allow_net_connect!
     Bugsnag.start_session
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
   end

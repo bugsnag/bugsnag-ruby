@@ -246,7 +246,7 @@ module Bugsnag
           @send_sessions = false
         end
       elsif session_set
-        raise ArgumentError.new("The session endpoint cannot be modified without the notify endpoint")
+        raise ArgumentError, "The session endpoint cannot be modified without the notify endpoint"
       end
     end
 
