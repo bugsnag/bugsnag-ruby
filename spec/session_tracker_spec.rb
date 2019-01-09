@@ -64,7 +64,7 @@ describe Bugsnag::SessionTracker do
     Bugsnag.configure do |conf|
       conf.auto_capture_sessions = true
       conf.delivery_method = :synchronous
-      conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
+      conf.set_endpoints("http://localhost:#{server.config[:Port]}", "http://localhost:#{server.config[:Port]}")
     end
     WebMock.allow_net_connect!
     Bugsnag.start_session
@@ -84,7 +84,7 @@ describe Bugsnag::SessionTracker do
       conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
       conf.delivery_method = :synchronous
-      conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
+      conf.set_endpoints("http://localhost:#{server.config[:Port]}", "http://localhost:#{server.config[:Port]}")
     end
     WebMock.allow_net_connect!
     Bugsnag.start_session
