@@ -10,6 +10,7 @@ module Bugsnag
     MONGO_MESSAGE_PREFIX = "Mongo query "
     MONGO_EVENT_PREFIX = "mongo."
     MONGO_COMMAND_KEY = :bugsnag_mongo_commands
+    MAX_FILTER_DEPTH = 5
 
     ##
     # Listens to the 'started' event, storing the command for later usage
@@ -56,7 +57,7 @@ module Bugsnag
         collection_key = event.command_name == "getMore" ? "collection" : event.command_name
         meta_data[:collection] = command[collection_key]
         unless command["filter"].nil?
-          filter = sanitize_filter(command["filter"])
+          filter = sanitize_filter_hash(command["filter"])
           meta_data[:filter] = JSON.dump(filter)
         end
       end
@@ -69,17 +70,33 @@ module Bugsnag
     # Removes values from filter hashes, replacing them with '?'
     #
     # @param filter_hash [Hash] the filter hash for the mongo transaction
+    # @param depth [Numeric] the current filter depth
     #
     # @return [Hash] the filtered hash
-    def sanitize_filter(filter_hash)
+    def sanitize_filter_hash(filter_hash, depth = 0)
       filter_hash.map do |key, value|
-        if value && value.is_a?(Array)
-          filtered_or = value.map { |filter| sanitize_filter(filter) }
-          [key, filtered_or]
-        else
-          [key, '?']
-        end
+        [key, sanitize_filter_value(value, depth)]
       end.to_h
+    end
+
+    ##
+    # Transforms a value element into a useful, redacted, version
+    #
+    # @param value [Object] the filter value
+    # @param depth [Numeric] the current filter depth
+    #
+    # @return [Array, Hash, String] the sanitized value
+    def sanitize_filter_value(value, depth)
+      depth += 1
+      if depth >= MAX_FILTER_DEPTH
+        '[MAX_FILTER_DEPTH_REACHED]'
+      elsif value.is_a?(Array)
+        value.map { |array_value| sanitize_filter_value(array_value, depth) }
+      elsif value.is_a?(Hash)
+        sanitize_filter_hash(value, depth)
+      else
+        '?'
+      end
     end
 
     ##
