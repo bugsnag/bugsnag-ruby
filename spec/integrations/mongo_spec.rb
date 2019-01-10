@@ -7,7 +7,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       @mocked_mongo = true
       module ::Mongo
         module Monitoring
-          COMMAND = 'command'
+          COMMAND = 'Command'
           module Global
           end
         end
@@ -54,7 +54,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
     end
 
     describe "#failed" do
-      it "calls #leave_mongo_beradcrumb with the event_name and event" do
+      it "calls #leave_mongo_breadcrumb with the event_name and event" do
         event = double
         expect(subscriber).to receive(:leave_mongo_breadcrumb).with("failed", event)
         subscriber.failed(event)
@@ -181,14 +181,6 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       it "calls into #sanitize_filter_value with the value from each {k,v} pair" do
         expect(subscriber.send(:sanitize_filter_hash, {:a => 1, :b => 2})).to eq({:a => '?', :b => '?'})
       end
-
-      it "defaults the depth to 0" do
-        subscriber.send(:sanitize_filter_hash, {:a => 1})
-      end
-
-      it "passes through a given depth" do
-        subscriber.send(:sanitize_filter_hash, {:a => 1}, 3)
-      end
     end
 
     describe "#sanitize_filter_value" do
@@ -200,16 +192,12 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
 
       it "is recursive and iterative for array values" do
-        expect(subscriber.send(:sanitize_filter_value, [1, 2, 3], 0)).to eq(['?', '?', '?'])
+        expect(subscriber.send(:sanitize_filter_value, [1, [2, [3]]], 0)).to eq(['?', ['?', ['?']]])
       end
 
       it "calls #santize_filter_hash for hash values" do
         expect(subscriber).to receive(:sanitize_filter_hash).with({:a => 1}, 1)
         subscriber.send(:sanitize_filter_value, {:a => 1}, 0)
-      end
-
-      it "increments the depth for each call" do
-        expect(subscriber.send(:sanitize_filter_value, [1, [2, [3]]], 0)).to eq(['?', ['?', ['?']]])
       end
 
       it "returns [MAX_FILTER_DEPTH_REACHED] if the filter depth is exceeded" do
