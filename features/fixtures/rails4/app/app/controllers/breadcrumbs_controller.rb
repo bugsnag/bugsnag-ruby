@@ -5,10 +5,8 @@ class BreadcrumbsController < ApplicationController
   end
 
   def sql_breadcrumb
-    Thread.new {
-      User.take
-      Bugsnag.notify("SQL breadcrumb")
-    }.join
+    User.find_by(email: "foo")
+    Bugsnag.notify("SQL breadcrumb")
     render json: {}
   end
 

@@ -1,5 +1,6 @@
 # Rails 3.x hooks
 
+require "json"
 require "rails"
 require "bugsnag"
 require "bugsnag/middleware/rails3_request"
@@ -73,9 +74,14 @@ module Bugsnag
     # @api private
     # @param event [Hash] details of the event to subscribe to
     def event_subscription(event)
-      ActiveSupport::Notifications.subscribe(event[:id]) do |*, data|
+      ActiveSupport::Notifications.subscribe(event[:id]) do |*, event_id, data|
         filtered_data = data.slice(*event[:allowed_data])
         filtered_data[:event_name] = event[:id]
+        filtered_data[:event_id] = event_id
+        if event[:id] == "sql.active_record"
+          binds = data[:binds].each_with_object({}) { |bind, output| output[bind.name] = '?' if defined?(bind.name) }
+          filtered_data[:binds] = JSON.dump(binds) unless binds.empty?
+        end
         Bugsnag.leave_breadcrumb(
           event[:message],
           filtered_data,
