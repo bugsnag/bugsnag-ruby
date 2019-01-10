@@ -234,20 +234,15 @@ module Bugsnag
     # @param new_notify_endpoint [String] The URL to deliver error notifications to
     # @param new_session_endpoint [String] The URL to deliver session notifications to
     def set_endpoints(new_notify_endpoint, new_session_endpoint)
-      notify_set = new_notify_endpoint && new_notify_endpoint != DEFAULT_NOTIFY_ENDPOINT
-      session_set = new_session_endpoint && new_session_endpoint != DEFAULT_SESSION_ENDPOINT
-      if notify_set
-        @notify_endpoint = new_notify_endpoint
-        if session_set
-          @session_endpoint = new_session_endpoint
-        else
-          warn("The session endpoint has not set, all further session capturing will be disabled")
-          self.auto_capture_sessions = false
-          @send_sessions = false
-        end
-      elsif session_set
-        raise ArgumentError, "The session endpoint cannot be modified without the notify endpoint"
-      end
+      @notify_endpoint = new_notify_endpoint
+      @session_endpoint = new_session_endpoint
+    end
+
+    ##
+    # Disables session tracking and delivery.  Cannot be undone
+    def disable_sessions
+      self.auto_capture_sessions = false
+      @send_sessions = false
     end
 
     private

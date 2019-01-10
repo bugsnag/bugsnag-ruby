@@ -44,6 +44,7 @@ module Bugsnag
       yield(configuration) if block_given?
 
       check_key_valid if validate_api_key
+      check_endpoint_setup
 
       register_at_exit
     end
@@ -215,6 +216,22 @@ module Bugsnag
       if !configuration.valid_api_key? && !@key_warning
         configuration.warn("No valid API key has been set, notifications will not be sent")
         @key_warning = true
+      end
+    end
+
+    ##
+    # Verifies the current endpoint setup
+    #
+    # If only a notify_endpoint has been set, session tracking will be disabled
+    # If only a session_endpoint has been set, and ArgumentError will be raised
+    def check_endpoint_setup
+      notify_set = configuration.notify_endpoint && configuration.notify_endpoint != Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT
+      session_set = configuration.session_endpoint && configuration.session_endpoint != Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT
+      if notify_set && !session_set
+        warn("The session endpoint has not been set, all further session capturing will be disabled")
+        configuration.disable_sessions
+      elsif !notify_set && session_set
+        raise ArgumentError, "The session endpoint cannot be modified without the notify endpoint"
       end
     end
   end

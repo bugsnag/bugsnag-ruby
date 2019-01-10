@@ -97,35 +97,18 @@ describe Bugsnag::Configuration do
   describe "#set_endpoints" do
     let(:custom_notify_endpoint) { "My custom notify endpoint" }
     let(:custom_session_endpoint) { "My custom session endpoint" }
-    it "does nothing if nothing changes from default" do
-      expect(subject).not_to receive(:warn)
-      subject.set_endpoints(Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT, Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT)
-      expect(subject.notify_endpoint).to eq(Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT)
-      expect(subject.session_endpoint).to eq(Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT)
-      expect(subject.send_sessions).to eq(true)
-      expect(subject.auto_capture_sessions).to eq(true)
-    end
-
-    it "sets notify_endpoint and session_endpoint if both change from default" do
-      expect(subject).not_to receive(:warn)
+    it "set notify_endpoint and session_endpoint" do
       subject.set_endpoints(custom_notify_endpoint, custom_session_endpoint)
       expect(subject.notify_endpoint).to eq(custom_notify_endpoint)
       expect(subject.session_endpoint).to eq(custom_session_endpoint)
-      expect(subject.send_sessions).to eq(true)
-      expect(subject.auto_capture_sessions).to eq(true)
     end
+  end
 
-    it "sets notify_endpoint, warns, and disables sessions if only notify_endpoint changes" do
-      expect(subject).to receive(:warn).with("The session endpoint has not set, all further session capturing will be disabled")
-      subject.set_endpoints(custom_notify_endpoint, nil)
-      expect(subject.notify_endpoint).to eq(custom_notify_endpoint)
-      expect(subject.session_endpoint).to eq(Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT)
-      expect(subject.send_sessions).to eq(false)
-      expect(subject.auto_capture_sessions).to eq(false)
-    end
-
-    it "throws an error if only the session_endpoint is changed from default" do
-      expect{ subject.set_endpoints(nil, custom_session_endpoint) }.to raise_error(ArgumentError, "The session endpoint cannot be modified without the notify endpoint")
+  describe "disable_sessions" do
+    it "sets #send_session and #auto_capture_sessions to false" do
+      subject.disable_sessions
+      expect(subject.auto_capture_sessions).to be false
+      expect(subject.send_sessions).to be false
     end
   end
 
