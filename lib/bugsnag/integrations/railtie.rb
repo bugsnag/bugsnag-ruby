@@ -79,9 +79,8 @@ module Bugsnag
         filtered_data[:event_name] = event[:id]
         filtered_data[:event_id] = event_id
         if event[:id] == "sql.active_record"
-          binds = data[:binds].map { |bind| defined?(bind.name) ? [bind.name, '?'] : nil }
-          binds.select! { |bind| bind }
-          filtered_data[:bindings] = JSON.dump(binds.to_h) unless binds.empty?
+          binds = data[:binds].each_with_object({}) { |bind, output| output[bind.name] = '?' if defined?(bind.name) }
+          filtered_data[:binds] = JSON.dump(binds) unless binds.empty?
         end
         Bugsnag.leave_breadcrumb(
           event[:message],
