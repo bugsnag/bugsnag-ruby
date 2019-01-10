@@ -8,7 +8,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       module ::Mongo
         module Monitoring
           COMMAND = 'command'
-          class Global
+          module Global
           end
         end
       end
@@ -22,15 +22,11 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
   end
 
   it "should subscribe to the mongo monitoring service" do
-    expect(::Mongo::Monitoring::Global).to receive(:subscribe) do |*args|
-      expect(args[0]).to equal(::Mongo::Monitoring::COMMAND)
-      subscriber = args[1]
-      expect(subscriber.class).to equal(Bugsnag::MongoBreadcrumbSubscriber)
-      expect(subscriber.respond_to?(:started)).to be true
-      expect(subscriber.respond_to?(:succeeded)).to be true
-      expect(subscriber.respond_to?(:failed)).to be true
+    expect(::Mongo::Monitoring::Global).to receive(:subscribe) do |command, subscriber|
+      expect(command).to eq(::Mongo::Monitoring::COMMAND)
+      expect(subscriber).to be_an_instance_of(::Bugsnag::MongoBreadcrumbSubscriber)
     end
-    require './lib/bugsnag/integrations/mongo'
+    load './lib/bugsnag/integrations/mongo.rb'
   end
 
   context "with the module loaded" do
@@ -50,7 +46,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
     end
 
     describe "#succeeded" do
-      it "calls #leave_mongo_beradcrumb with the event_name and event" do
+      it "calls #leave_mongo_breadcrumb with the event_name and event" do
         event = double
         expect(subscriber).to receive(:leave_mongo_breadcrumb).with("succeeded", event)
         subscriber.succeeded(event)
@@ -138,7 +134,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
           subscriber.send(:leave_mongo_breadcrumb, event_name, event)
         end
 
-        it "adds the correct colleciton name for 'getMore' commands" do
+        it "adds the correct collection name for 'getMore' commands" do
           allow(event).to receive(:command_name).and_return("getMore")
           expect(subscriber).to receive(:pop_command).with("123456").and_return(command)
           expect(Bugsnag).to receive(:leave_breadcrumb).with(
@@ -171,7 +167,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
               :request_id => "123456",
               :duration => "123.456",
               :collection => "collection_name_command",
-              :filter => "{\"a\":\"?\",\"b\":\"?\",\"$or\":[{\"c\":\"?\"},{\"d\":\"?\"}]}"
+              :filter => '{"a":"?","b":"?","$or":[{"c":"?"},{"d":"?"}]}'
             },
             "process",
             :auto
@@ -183,18 +179,14 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
 
     describe "#sanitize_filter_hash" do
       it "calls into #sanitize_filter_value with the value from each {k,v} pair" do
-        expect(subscriber).to receive(:sanitize_filter_value).with(1, 0).ordered.and_return('?')
-        expect(subscriber).to receive(:sanitize_filter_value).with(2, 0).ordered.and_return('?')
         expect(subscriber.send(:sanitize_filter_hash, {:a => 1, :b => 2})).to eq({:a => '?', :b => '?'})
       end
 
       it "defaults the depth to 0" do
-        expect(subscriber).to receive(:sanitize_filter_value).with(1, 0).ordered.and_return('?')
         subscriber.send(:sanitize_filter_hash, {:a => 1})
       end
 
       it "passes through a given depth" do
-        expect(subscriber).to receive(:sanitize_filter_value).with(1, 3).ordered.and_return('?')
         subscriber.send(:sanitize_filter_hash, {:a => 1}, 3)
       end
     end
@@ -208,10 +200,6 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
 
       it "is recursive and iterative for array values" do
-        expect(subscriber).to receive(:sanitize_filter_value).with([1, 2, 3], 0).ordered.and_call_original
-        expect(subscriber).to receive(:sanitize_filter_value).with(1, 1).ordered.and_call_original
-        expect(subscriber).to receive(:sanitize_filter_value).with(2, 1).ordered.and_call_original
-        expect(subscriber).to receive(:sanitize_filter_value).with(3, 1).ordered.and_call_original
         expect(subscriber.send(:sanitize_filter_value, [1, 2, 3], 0)).to eq(['?', '?', '?'])
       end
 
@@ -221,12 +209,6 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       end
 
       it "increments the depth for each call" do
-        expect(subscriber).to receive(:sanitize_filter_value).with([1, [2, [3]]], 0).ordered.and_call_original
-        expect(subscriber).to receive(:sanitize_filter_value).with(1, 1).ordered.and_call_original
-        expect(subscriber).to receive(:sanitize_filter_value).with([2, [3]], 1).ordered.and_call_original
-        expect(subscriber).to receive(:sanitize_filter_value).with(2, 2).ordered.and_call_original
-        expect(subscriber).to receive(:sanitize_filter_value).with([3], 2).ordered.and_call_original
-        expect(subscriber).to receive(:sanitize_filter_value).with(3, 3).ordered.and_call_original
         expect(subscriber.send(:sanitize_filter_value, [1, [2, [3]]], 0)).to eq(['?', ['?', ['?']]])
       end
 
@@ -262,7 +244,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
       it "removes the command from the request_data" do
         subscriber.send(:pop_command, request_id)
         command_hash = Bugsnag.configuration.request_data[Bugsnag::MongoBreadcrumbSubscriber::MONGO_COMMAND_KEY]
-        expect(command_hash).not_to include(request_id => command)
+        expect(command_hash).not_to have_key(request_id)
       end
 
       it "returns nil if the request_id is not found" do

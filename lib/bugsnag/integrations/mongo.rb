@@ -70,12 +70,11 @@ module Bugsnag
     # Removes values from filter hashes, replacing them with '?'
     #
     # @param filter_hash [Hash] the filter hash for the mongo transaction
-    # @param depth [Numeric] the current filter depth
+    # @param depth [Integer] the current filter depth
     #
     # @return [Hash] the filtered hash
     def sanitize_filter_hash(filter_hash, depth = 0)
-      filter_hash.each_with_object({}) do |args, output|
-        key, value = *args
+      filter_hash.each_with_object({}) do |(key, value), output|
         output[key] = sanitize_filter_value(value, depth)
       end
     end
@@ -84,7 +83,7 @@ module Bugsnag
     # Transforms a value element into a useful, redacted, version
     #
     # @param value [Object] the filter value
-    # @param depth [Numeric] the current filter depth
+    # @param depth [Integer] the current filter depth
     #
     # @return [Array, Hash, String] the sanitized value
     def sanitize_filter_value(value, depth)
