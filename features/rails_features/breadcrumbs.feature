@@ -82,7 +82,7 @@ Scenario Outline: SQL Breadcrumb with bindings
   And the event "breadcrumbs.0.metaData.connection_id" is not null
   And the event "breadcrumbs.0.metaData.event_name" equals "sql.active_record"
   And the event "breadcrumbs.0.metaData.event_id" is not null
-  And the event "breadcrumbs.0.metaData.bindings" equals "{"email":"?","LIMIT":"?"}"
+  And the event "breadcrumbs.0.metaData.binds" equals "{"email":"?","LIMIT":"?"}"
 
   Examples:
     | ruby_version | rails_version |
