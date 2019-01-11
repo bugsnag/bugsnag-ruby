@@ -195,7 +195,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
         expect(subscriber.send(:sanitize_filter_value, [1, [2, [3]]], 0)).to eq(['?', ['?', ['?']]])
       end
 
-      it "calls #santize_filter_hash for hash values" do
+      it "calls #sanitize_filter_hash for hash values" do
         expect(subscriber).to receive(:sanitize_filter_hash).with({:a => 1}, 1)
         subscriber.send(:sanitize_filter_value, {:a => 1}, 0)
       end
