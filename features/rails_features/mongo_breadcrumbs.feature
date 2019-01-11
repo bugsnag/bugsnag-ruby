@@ -52,6 +52,15 @@ Scenario Outline: Breadcrumb with filter parameters
   And the event "breadcrumbs.1.metaData.duration" is not null
   And the event "breadcrumbs.1.metaData.collection" equals "mongo_models"
   And the event "breadcrumbs.1.metaData.filter" equals "{"string_field":"?"}"
+  And the event "breadcrumbs.2.timestamp" is a timestamp
+  And the event "breadcrumbs.2.metaData.event_name" equals "mongo.succeeded"
+  And the event "breadcrumbs.2.metaData.command_name" equals "find"
+  And the event "breadcrumbs.2.metaData.database_name" equals "rails<rails_version>_development"
+  And the event "breadcrumbs.2.metaData.operation_id" is not null
+  And the event "breadcrumbs.2.metaData.request_id" is not null
+  And the event "breadcrumbs.2.metaData.duration" is not null
+  And the event "breadcrumbs.2.metaData.collection" equals "mongo_models"
+  And the event "breadcrumbs.2.metaData.filter" equals "{"$or":[{"string_field":"?"},{"numeric_field":"?"}]}"
 
   Examples:
     | ruby_version | rails_version |

@@ -8,6 +8,7 @@ class MongoController < ApplicationController
 
   def get_crash
     MongoModel.where(string_field: true).as_json
+    MongoModel.any_of({string_field: true}, {numeric_field: 123}).as_json
     "Statement".prepnd("Failing")
   end
 
