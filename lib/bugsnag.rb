@@ -228,7 +228,7 @@ module Bugsnag
       notify_set = configuration.notify_endpoint && configuration.notify_endpoint != Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT
       session_set = configuration.session_endpoint && configuration.session_endpoint != Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT
       if notify_set && !session_set
-        warn("The session endpoint has not been set, all further session capturing will be disabled")
+        configuration.warn("The session endpoint has not been set, all further session capturing will be disabled")
         configuration.disable_sessions
       elsif !notify_set && session_set
         raise ArgumentError, "The session endpoint cannot be modified without the notify endpoint"
