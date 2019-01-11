@@ -225,7 +225,7 @@ module Bugsnag
     # @deprecated Use {#set_endpoints} instead
     def session_endpoint=(new_session_endpoint)
       warn("The 'session_endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
-      set_endpoints(notify_endpoint, new_session_endpoint) # Pass the existing notify_endpoint through so it doesn't get overwritte
+      set_endpoints(notify_endpoint, new_session_endpoint) # Pass the existing notify_endpoint through so it doesn't get overwritten
     end
 
     ##
