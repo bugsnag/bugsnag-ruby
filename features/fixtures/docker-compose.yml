@@ -117,6 +117,7 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
+      - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
     ports:
       - target: 3000
         published: 61283
@@ -152,6 +153,7 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
+      - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
     ports:
       - target: 3000
         published: 61284
@@ -187,6 +189,7 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
+      - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
     ports:
       - target: 3000
         published: 61285
