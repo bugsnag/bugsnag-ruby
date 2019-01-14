@@ -2,6 +2,14 @@
 require 'webrick'
 require 'spec_helper'
 require 'json'
+require 'concurrent'
+
+# Enable reset of session_counts between each example
+module Bugsnag
+  class SessionTracker
+    attr_accessor :session_counts
+  end
+end
 
 describe Bugsnag::SessionTracker do
   server = nil
@@ -17,6 +25,10 @@ describe Bugsnag::SessionTracker do
       res.body = "OK\n"
     end
     Thread.new{ server.start }
+  end
+
+  after(:each) do
+    Bugsnag.session_tracker.session_counts = Concurrent::Hash.new(0)
   end
 
   after do
@@ -64,8 +76,10 @@ describe Bugsnag::SessionTracker do
     Bugsnag.configure do |conf|
       conf.set_endpoints("http://localhost:#{server.config[:Port]}", nil)
     end
-    Bugsnag.start_session
+    expect(Bugsnag.configuration.send_sessions).to eq(false)
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
+    Bugsnag.start_session
+    # expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
   end
 
   it 'sends sessions when send_sessions is called' do
