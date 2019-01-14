@@ -8,6 +8,7 @@ group :test, optional: true do
     gem 'pry'
     gem 'addressable', '~> 2.3.8'
     gem 'delayed_job' if RUBY_VERSION >= '2.2.2'
+    gem 'i18n', RUBY_VERSION <= '2.3.0' ? '1.4.0': '>1.4.0' if RUBY_VERSION >= '2.2.2'
     gem 'webmock', RUBY_VERSION <= '1.9.3' ? '2.3.2': '>2.3.2'
 end
 
