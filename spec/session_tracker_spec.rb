@@ -72,11 +72,11 @@ describe Bugsnag::SessionTracker do
     expect(session_one[:id]).to_not eq(session_two[:id])
   end
 
-  it 'will not create sessions if Configuration.send_sessions is false' do
+  it 'will not create sessions if Configuration.enable_sessions is false' do
     Bugsnag.configure do |conf|
       conf.set_endpoints("http://localhost:#{server.config[:Port]}", nil)
     end
-    expect(Bugsnag.configuration.send_sessions).to eq(false)
+    expect(Bugsnag.configuration.enable_sessions).to eq(false)
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
     Bugsnag.start_session
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)

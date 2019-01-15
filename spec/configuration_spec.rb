@@ -50,13 +50,13 @@ describe Bugsnag::Configuration do
     end
   end
 
-  describe "#send_sessions" do
+  describe "#enable_sessions" do
     it "defaults to true" do
-      expect(subject.send_sessions).to eq(true)
+      expect(subject.enable_sessions).to eq(true)
     end
 
     it "is readonly" do
-      expect{ subject.send_sessions = true }.to raise_error(NoMethodError)
+      expect{ subject.enable_sessions = true }.to raise_error(NoMethodError)
     end
   end
 
@@ -108,7 +108,7 @@ describe Bugsnag::Configuration do
     it "sets #send_session and #auto_capture_sessions to false" do
       subject.disable_sessions
       expect(subject.auto_capture_sessions).to be false
-      expect(subject.send_sessions).to be false
+      expect(subject.enable_sessions).to be false
     end
   end
 

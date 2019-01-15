@@ -46,7 +46,7 @@ module Bugsnag
 
     ##
     # @return [Boolean] whether any sessions types will be delivered
-    attr_reader :send_sessions
+    attr_reader :enable_sessions
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
@@ -83,7 +83,7 @@ module Bugsnag
       # These are set exclusively using the "set_endpoints" method
       @notify_endpoint = DEFAULT_NOTIFY_ENDPOINT
       @session_endpoint = DEFAULT_SESSION_ENDPOINT
-      @send_sessions = true
+      @enable_sessions = true
 
       # SystemExit and SignalException are common Exception types seen with
       # successful exits and are not automatically reported to Bugsnag
@@ -242,7 +242,7 @@ module Bugsnag
     # Disables session tracking and delivery.  Cannot be undone
     def disable_sessions
       self.auto_capture_sessions = false
-      @send_sessions = false
+      @enable_sessions = false
     end
 
     private
