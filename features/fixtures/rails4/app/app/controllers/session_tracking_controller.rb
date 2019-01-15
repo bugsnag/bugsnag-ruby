@@ -16,7 +16,7 @@ class SessionTrackingController < ActionController::Base
     render json: {}
   end
 
-  def hundred
+  def multi_sessions
     (0...100).each { Bugsnag.start_session }
     Bugsnag.session_tracker.send_sessions
     render json: {}

@@ -79,7 +79,7 @@ describe Bugsnag::SessionTracker do
     expect(Bugsnag.configuration.send_sessions).to eq(false)
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
     Bugsnag.start_session
-    # expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
   end
 
   it 'sends sessions when send_sessions is called' do

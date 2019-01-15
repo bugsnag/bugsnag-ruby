@@ -37,7 +37,7 @@ Rails.application.routes.draw do
 
   get 'session_tracking/initializer', to: 'session_tracking#initializer'
   get 'session_tracking/manual', to: 'session_tracking#manual'
-  get 'session_tracking/hundred', to: 'session_tracking#hundred'
+  get 'session_tracking/multi_sessions', to: 'session_tracking#multi_sessions'
 
   get 'release_stage/default', to: 'release_stage#default'
   get 'release_stage/after', to: 'release_stage#after'
