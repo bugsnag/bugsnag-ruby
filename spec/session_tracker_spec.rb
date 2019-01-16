@@ -28,7 +28,7 @@ describe Bugsnag::SessionTracker do
   end
 
   after(:each) do
-    Bugsnag.session_tracker.session_counts = Concurrent::Hash.new(0)
+    Bugsnag.instance_variable_set(:@session_tracker, Bugsnag::SessionTracker.new)
   end
 
   after do

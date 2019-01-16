@@ -27,5 +27,5 @@ end
 Then(/^the total sessionStarted count equals (\d+)(?: for request (\d+))?$/) do |value, request_index|
   session_counts = read_key_path(find_request(request_index)[:body], "sessionCounts")
   total_count = session_counts.inject(0) { |count, session| count += session["sessionsStarted"] }
-  assert_equal(total_count, value)
+  assert_equal(value, total_count)
 end

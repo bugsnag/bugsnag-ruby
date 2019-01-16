@@ -104,7 +104,7 @@ describe Bugsnag::Configuration do
     end
   end
 
-  describe "disable_sessions" do
+  describe "#disable_sessions" do
     it "sets #send_session and #auto_capture_sessions to false" do
       subject.disable_sessions
       expect(subject.auto_capture_sessions).to be false
