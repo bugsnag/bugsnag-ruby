@@ -10,11 +10,15 @@ class SessionTrackingController < ActionController::Base
     render json: {}
   end
 
-  def after
-    Bugsnag.configure do |conf|
-      conf.auto_capture_sessions = true
-    end
-    Bugsnag.session_tracker.send_sessions()
+  def manual
+    Bugsnag.start_session
+    Bugsnag.session_tracker.send_sessions
+    render json: {}
+  end
+
+  def multi_sessions
+    (0...100).each { Bugsnag.start_session }
+    Bugsnag.session_tracker.send_sessions
     render json: {}
   end
 end

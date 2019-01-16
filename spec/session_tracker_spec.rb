@@ -2,6 +2,14 @@
 require 'webrick'
 require 'spec_helper'
 require 'json'
+require 'concurrent'
+
+# Enable reset of session_counts between each example
+module Bugsnag
+  class SessionTracker
+    attr_accessor :session_counts
+  end
+end
 
 describe Bugsnag::SessionTracker do
   server = nil
@@ -17,6 +25,10 @@ describe Bugsnag::SessionTracker do
       res.body = "OK\n"
     end
     Thread.new{ server.start }
+  end
+
+  after(:each) do
+    Bugsnag.instance_variable_set(:@session_tracker, Bugsnag::SessionTracker.new)
   end
 
   after do
@@ -60,11 +72,21 @@ describe Bugsnag::SessionTracker do
     expect(session_one[:id]).to_not eq(session_two[:id])
   end
 
+  it 'will not create sessions if Configuration.enable_sessions is false' do
+    Bugsnag.configure do |conf|
+      conf.set_endpoints("http://localhost:#{server.config[:Port]}", nil)
+    end
+    expect(Bugsnag.configuration.enable_sessions).to eq(false)
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
+    Bugsnag.start_session
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
+  end
+
   it 'sends sessions when send_sessions is called' do
     Bugsnag.configure do |conf|
       conf.auto_capture_sessions = true
       conf.delivery_method = :synchronous
-      conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
+      conf.set_endpoints("http://localhost:#{server.config[:Port]}", "http://localhost:#{server.config[:Port]}")
     end
     WebMock.allow_net_connect!
     Bugsnag.start_session
@@ -84,7 +106,7 @@ describe Bugsnag::SessionTracker do
       conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
       conf.delivery_method = :synchronous
-      conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
+      conf.set_endpoints("http://localhost:#{server.config[:Port]}", "http://localhost:#{server.config[:Port]}")
     end
     WebMock.allow_net_connect!
     Bugsnag.start_session
