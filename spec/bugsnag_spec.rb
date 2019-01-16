@@ -11,9 +11,54 @@ describe Bugsnag do
       notify_test_exception(true)
       expect(Bugsnag.configuration.logger).to_not have_received(:warn)
     end
+
     it 'logs an error when sending invalid arguments as auto_notify' do
       notify_test_exception({severity: 'info'})
       expect(Bugsnag.configuration.logger).to have_received(:warn)
+    end
+  end
+
+  describe '#configure' do
+    it 'calls #check_endpoint_setup every time' do
+      expect(Bugsnag).to receive(:check_endpoint_setup).twice
+
+      Bugsnag.configure
+      Bugsnag.configure
+    end
+  end
+
+  describe '#check_endpoint_setup' do
+    let(:custom_notify_endpoint) { "Custom notify endpoint" }
+    let(:custom_session_endpoint) { "Custom session endpoint" }
+
+    it "does nothing for default endpoints or if both endpoints are set" do
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      Bugsnag.send(:check_endpoint_setup)
+
+      Bugsnag.configuration.set_endpoints(custom_notify_endpoint, custom_session_endpoint)
+      Bugsnag.send(:check_endpoint_setup)
+    end
+
+    it "warns and disables sessions if a notify endpoint is set without a session endpoint" do
+      expect(Bugsnag.configuration).to receive(:warn).with("The session endpoint has not been set, all further session capturing will be disabled")
+      expect(Bugsnag.configuration).to receive(:disable_sessions)
+      Bugsnag.configuration.set_endpoints(custom_notify_endpoint, nil)
+      Bugsnag.send(:check_endpoint_setup)
+    end
+
+    it "raises an ArgumentError if a session endpoint is set without a notify endpoint" do
+      Bugsnag.configuration.set_endpoints(nil, "custom session endpoint")
+      expect{ Bugsnag.send(:check_endpoint_setup) }.to raise_error(ArgumentError, "The session endpoint cannot be modified without the notify endpoint")
+    end
+
+    it "is called after the configuration block has returned" do
+      expect(Bugsnag.configuration).to receive(:warn).with("The 'endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead").once
+      expect(Bugsnag.configuration).to receive(:warn).with("The 'session_endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead").once
+      expect(Bugsnag.configuration).not_to receive(:warn).with("The session endpoint has not been set, all further session capturing will be disabled")
+      Bugsnag.configure do |configuration|
+        configuration.endpoint = custom_notify_endpoint
+        configuration.session_endpoint = custom_session_endpoint
+      end
     end
   end
 

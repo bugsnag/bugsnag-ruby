@@ -305,6 +305,7 @@ Metrics/ModuleLength:
   Max: 125
   Exclude:
     - 'lib/bugsnag/helpers.rb'
+    - 'lib/bugsnag.rb'
 
 # Offense count: 11
 Metrics/PerceivedComplexity:

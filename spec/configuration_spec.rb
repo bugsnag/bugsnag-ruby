@@ -22,10 +22,93 @@ describe Bugsnag::Configuration do
       subject.delivery_method = :wow
       expect(subject.delivery_method).to eq(:wow)
     end
+  end
 
-    it "should have sensible defaults for session tracking" do
-      expect(subject.session_endpoint).to eq("https://sessions.bugsnag.com")
+  describe "#notify_endpoint" do
+    it "defaults to DEFAULT_NOTIFY_ENDPOINT" do
+      expect(subject.notify_endpoint).to eq(Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT)
+    end
+
+    it "is readonly" do
+      expect{ subject.notify_endpoint = "My Custom Url" }.to raise_error(NoMethodError)
+    end
+
+    it "is the same as endpoint" do
+      expect(subject.notify_endpoint).to equal(subject.endpoint)
+    end
+  end
+
+  describe "#session_endpoint" do
+    it "defaults to DEFAULT_SESSION_ENDPOINT" do
+      expect(subject.session_endpoint).to eq(Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT)
+    end
+  end
+
+  describe "#auto_capture_sessions" do
+    it "defaults to true" do
+      expect(subject.auto_capture_sessions).to eq(true)
+    end
+  end
+
+  describe "#enable_sessions" do
+    it "defaults to true" do
+      expect(subject.enable_sessions).to eq(true)
+    end
+
+    it "is readonly" do
+      expect{ subject.enable_sessions = true }.to raise_error(NoMethodError)
+    end
+  end
+
+  describe "#endpoint=" do
+    let(:custom_notify_endpoint) { "My custom notify endpoint" }
+    let(:session_endpoint) { "My session endpoint" }
+    it "calls #warn with a deprecation notice" do
+      allow(subject).to receive(:set_endpoints)
+      expect(subject).to receive(:warn).with("The 'endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
+      subject.endpoint = custom_notify_endpoint
+    end
+
+    it "calls #set_endpoints with the new notify_endpoint and existing session endpoint" do
+      allow(subject).to receive(:session_endpoint).and_return(session_endpoint)
+      allow(subject).to receive(:warn)
+      expect(subject).to receive(:set_endpoints).with(custom_notify_endpoint, session_endpoint)
+      subject.endpoint = custom_notify_endpoint
+    end
+  end
+
+  describe "#session_endpoint=" do
+    let(:notify_endpoint) { "My notify endpoint" }
+    let(:custom_session_endpoint) { "My custom session endpoint" }
+    it "calls #warn with a deprecation notice" do
+      allow(subject).to receive(:set_endpoints)
+      expect(subject).to receive(:warn).with("The 'session_endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
+      subject.session_endpoint = custom_session_endpoint
+    end
+
+    it "calls #set_endpoints with the existing notify_endpoint and new session endpoint" do
+      allow(subject).to receive(:notify_endpoint).and_return(notify_endpoint)
+      allow(subject).to receive(:warn)
+      expect(subject).to receive(:set_endpoints).with(notify_endpoint, custom_session_endpoint)
+      subject.session_endpoint = custom_session_endpoint
+    end
+  end
+
+  describe "#set_endpoints" do
+    let(:custom_notify_endpoint) { "My custom notify endpoint" }
+    let(:custom_session_endpoint) { "My custom session endpoint" }
+    it "set notify_endpoint and session_endpoint" do
+      subject.set_endpoints(custom_notify_endpoint, custom_session_endpoint)
+      expect(subject.notify_endpoint).to eq(custom_notify_endpoint)
+      expect(subject.session_endpoint).to eq(custom_session_endpoint)
+    end
+  end
+
+  describe "#disable_sessions" do
+    it "sets #send_session and #auto_capture_sessions to false" do
+      subject.disable_sessions
       expect(subject.auto_capture_sessions).to be false
+      expect(subject.enable_sessions).to be false
     end
   end
 
