@@ -29,9 +29,13 @@ require "bugsnag/middleware/callbacks"
 require "bugsnag/middleware/classify_error"
 require "bugsnag/middleware/delayed_job"
 
+require "bugsnag/breadcrumbs/validator"
+require "bugsnag/breadcrumbs/breadcrumb"
+require "bugsnag/breadcrumbs/breadcrumbs"
+
 module Bugsnag
   LOCK = Mutex.new
-  INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que]
+  INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que, :mongo]
 
   NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
 
@@ -112,6 +116,8 @@ module Bugsnag
         options = {:headers => report.headers}
         payload = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.notify_endpoint, payload, configuration, options)
+        report_summary = report.summary
+        leave_breadcrumb(report_summary[:error_class], report_summary, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
       end
     end
 
@@ -187,6 +193,39 @@ module Bugsnag
         require "bugsnag/integrations/#{integration}"
       else
         configuration.debug("Integration #{integration} is not currently supported")
+      end
+    end
+
+    ##
+    # Leave a breadcrumb to be attached to subsequent reports
+    #
+    # @param name [String] the main breadcrumb name/message
+    # @param meta_data [Hash] String, Numeric, or Boolean meta data to attach
+    # @param type [String] the breadcrumb type, from Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
+    # @param auto [Symbol] set to :auto if the breadcrumb is automatically created
+    def leave_breadcrumb(name, meta_data={}, type=Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE, auto=:manual)
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(name, type, meta_data, auto)
+      validator = Bugsnag::Breadcrumbs::Validator.new(configuration)
+
+      # Initial validation
+      validator.validate(breadcrumb)
+
+      # Skip if it's already invalid
+      unless breadcrumb.ignore?
+        # Run callbacks
+        configuration.before_breadcrumb_callbacks.each do |c|
+          c.arity > 0 ? c.call(breadcrumb) : c.call
+          break if breadcrumb.ignore?
+        end
+
+        # Return early if ignored
+        return if breadcrumb.ignore?
+
+        # Validate again in case of callback alteration
+        validator.validate(breadcrumb)
+
+        # Add to breadcrumbs buffer if still valid
+        configuration.breadcrumbs << breadcrumb unless breadcrumb.ignore?
       end
     end
 

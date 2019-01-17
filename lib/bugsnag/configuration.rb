@@ -8,6 +8,9 @@ require "bugsnag/middleware/ignore_error_class"
 require "bugsnag/middleware/suggestion_data"
 require "bugsnag/middleware/classify_error"
 require "bugsnag/middleware/session_data"
+require "bugsnag/middleware/breadcrumbs"
+require "bugsnag/utility/circular_buffer"
+require "bugsnag/breadcrumbs/breadcrumbs"
 
 module Bugsnag
   class Configuration
@@ -48,6 +51,18 @@ module Bugsnag
     # @return [Boolean] whether any sessions types will be delivered
     attr_reader :enable_sessions
 
+    ##
+    # @return [Array<String>] strings indicating allowable automatic breadcrumb types
+    attr_accessor :enabled_automatic_breadcrumb_types
+
+    ##
+    # @return [Array<#call>] callables to be run before a breadcrumb is logged
+    attr_accessor :before_breadcrumb_callbacks
+
+    ##
+    # @return [Integer] the maximum allowable amount of breadcrumbs per thread
+    attr_reader :max_breadcrumbs
+
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -64,6 +79,8 @@ module Bugsnag
       "rack.request.form_vars"
     ].freeze
 
+    DEFAULT_MAX_BREADCRUMBS = 25
+
     alias :track_sessions :auto_capture_sessions
     alias :track_sessions= :auto_capture_sessions=
 
@@ -79,6 +96,14 @@ module Bugsnag
       self.timeout = 15
       self.notify_release_stages = nil
       self.auto_capture_sessions = true
+
+      # All valid breadcrumb types should be allowable initially
+      self.enabled_automatic_breadcrumb_types = Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.dup
+      self.before_breadcrumb_callbacks = []
+
+      # Store max_breadcrumbs here instead of outputting breadcrumbs.max_items
+      # to avoid infinite recursion when creating breadcrumb buffer
+      @max_breadcrumbs = DEFAULT_MAX_BREADCRUMBS
 
       # These are set exclusively using the "set_endpoints" method
       @notify_endpoint = DEFAULT_NOTIFY_ENDPOINT
@@ -111,6 +136,7 @@ module Bugsnag
       self.internal_middleware.use Bugsnag::Middleware::SuggestionData
       self.internal_middleware.use Bugsnag::Middleware::ClassifyError
       self.internal_middleware.use Bugsnag::Middleware::SessionData
+      self.internal_middleware.use Bugsnag::Middleware::Breadcrumbs
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
@@ -207,6 +233,22 @@ module Bugsnag
     end
 
     ##
+    # Sets the maximum allowable amount of breadcrumbs
+    #
+    # @param [Integer] the new maximum breadcrumb limit
+    def max_breadcrumbs=(new_max_breadcrumbs)
+      @max_breadcrumbs = new_max_breadcrumbs
+      breadcrumbs.max_items = new_max_breadcrumbs
+    end
+
+    ##
+    # Returns the breadcrumb circular buffer
+    #
+    # @return [Bugsnag::Utility::CircularBuffer] a thread based circular buffer containing breadcrumbs
+    def breadcrumbs
+      request_data[:breadcrumbs] ||= Bugsnag::Utility::CircularBuffer.new(@max_breadcrumbs)
+    end
+
     # Sets the notification endpoint
     #
     # @param new_notify_endpoint [String] The URL to deliver error notifications to

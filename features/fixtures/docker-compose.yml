@@ -4,6 +4,9 @@ services:
   redis:
     image: redis
 
+  mongo:
+    image: mongo
+
   plain-ruby:
     build:
       context: plain
@@ -117,6 +120,7 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
+      - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
     ports:
       - target: 3000
@@ -129,6 +133,8 @@ services:
       args:
         - RUBY_VERSION
         - APP_PATH
+    depends_on:
+      - mongo
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -153,6 +159,7 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
+      - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
     ports:
       - target: 3000
@@ -165,6 +172,8 @@ services:
       args:
         - RUBY_VERSION
         - APP_PATH
+    depends_on:
+      - mongo
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -189,6 +198,7 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
+      - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
     ports:
       - target: 3000

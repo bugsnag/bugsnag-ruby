@@ -45,3 +45,7 @@ gem 'bugsnag', path: '/bugsnag'
 
 # Added at 2018-04-26 10:20:10 +0100 by amoinet:
 gem "clearance", "~> 1.16"
+
+gem "mongoid"
+
+gem "nokogiri", "1.6.8"

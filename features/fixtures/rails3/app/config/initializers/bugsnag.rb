@@ -11,4 +11,10 @@ Bugsnag.configure do |config|
   config.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] if ENV.include? "BUGSNAG_RELEASE_STAGE"
   config.send_code = ENV["BUGSNAG_SEND_CODE"] != "false"
   config.send_environment = ENV["BUGSNAG_SEND_ENVIRONMENT"] == "true"
+
+  if ENV["SQL_ONLY_BREADCRUMBS"] == "true"
+    config.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
+      breadcrumb.ignore! unless breadcrumb.meta_data[:event_name] == "sql.active_record" && breadcrumb.meta_data[:name] == "User Load"
+    end
+  end
 end
