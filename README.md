@@ -10,6 +10,7 @@ The Bugsnag exception reporter for Ruby gives you instant notification of except
 * Report handled exceptions
 * Attach user information to determine how many people are affected by a crash
 * Send customized diagnostic data
+* Track events that occur leading up to a crash
 
 ## Getting started
 
