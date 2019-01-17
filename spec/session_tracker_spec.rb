@@ -2,7 +2,6 @@
 require 'webrick'
 require 'spec_helper'
 require 'json'
-require 'concurrent'
 
 describe Bugsnag::SessionTracker do
   server = nil
