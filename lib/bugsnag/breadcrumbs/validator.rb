@@ -17,7 +17,7 @@ module Bugsnag::Breadcrumbs
     def validate(breadcrumb)
       # Check name length
       if breadcrumb.name.size > Bugsnag::Breadcrumbs::MAX_NAME_LENGTH
-        @configuration.warn("Breadcrumb name trimmed to length #{Bugsnag::Breadcrumbs::MAX_NAME_LENGTH}.  Original name: #{breadcrumb.name}")
+        @configuration.debug("Breadcrumb name trimmed to length #{Bugsnag::Breadcrumbs::MAX_NAME_LENGTH}.  Original name: #{breadcrumb.name}")
         breadcrumb.name = breadcrumb.name.slice(0...Bugsnag::Breadcrumbs::MAX_NAME_LENGTH)
       end
 
@@ -26,21 +26,21 @@ module Bugsnag::Breadcrumbs
         if valid_meta_data_type?(v)
           true
         else
-          @configuration.warn("Breadcrumb #{breadcrumb.name} meta_data #{k}:#{v} has been dropped for having an invalid data type")
+          @configuration.debug("Breadcrumb #{breadcrumb.name} meta_data #{k}:#{v.class} has been dropped for having an invalid data type")
           false
         end
       end
 
       # Check type is valid, set to manual otherwise
       unless Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.include?(breadcrumb.type)
-        @configuration.warn("Invalid type: #{breadcrumb.type} for breadcrumb: #{breadcrumb.name}, defaulting to #{Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE}")
+        @configuration.debug("Invalid type: #{breadcrumb.type} for breadcrumb: #{breadcrumb.name}, defaulting to #{Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE}")
         breadcrumb.type = Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE
       end
 
       # If auto is true, check type is in enabled_automatic_breadcrumb_types
       return unless breadcrumb.auto && !@configuration.enabled_automatic_breadcrumb_types.include?(breadcrumb.type)
 
-      @configuration.warn("Automatic breadcrumb of type #{breadcrumb.type} ignored: #{breadcrumb.name}")
+      @configuration.debug("Automatic breadcrumb of type #{breadcrumb.type} ignored: #{breadcrumb.name}")
       breadcrumb.ignore!
     end
 
