@@ -1,6 +1,26 @@
 Changelog
 =========
 
+## 6.11.0 (17 Jan 2019)
+
+**Note**: this release alters the behaviour of the notifier to track sessions automatically.
+
+### Enhancements
+
+* Added Breadcrumbs.  Breadcrumbs allow you to track events that may have led
+up to an error, such as handled errors, page redirects, or SQL queries. For info on what
+is tracked and how you can customize the data that breadcrumbs collect, see the
+[Logging breadcrumbs](https://docs.bugsnag.com/platforms/ruby/other#logging-breadcrumbs)
+section of our documentation.
+  | [#525](https://github.com/bugsnag/bugsnag-ruby/pull/525)
+
+* Bugsnag will now capture automatically created sessions by default.
+  | [#523](https://github.com/bugsnag/bugsnag-ruby/pull/523)
+
+### Deprecated
+
+* The `endpoint` and `session_endpoint` configuration options are now deprecated but still supported. The [`set_endpoints`](https://docs.bugsnag.com/platforms/ruby/other/configuration-options#endpoints) method should be used instead. Note that session tracking will be disabled if the notify endpoint is configured but the sessions endpoint is not - this is to avoid inadvertently sending session payloads to the wrong server.
+
 ## 6.10.0 (05 Dec 2018)
 
 ### Enhancements
