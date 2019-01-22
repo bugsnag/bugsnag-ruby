@@ -2,14 +2,6 @@
 require 'webrick'
 require 'spec_helper'
 require 'json'
-require 'concurrent'
-
-# Enable reset of session_counts between each example
-module Bugsnag
-  class SessionTracker
-    attr_accessor :session_counts
-  end
-end
 
 describe Bugsnag::SessionTracker do
   server = nil
@@ -27,7 +19,7 @@ describe Bugsnag::SessionTracker do
     Thread.new{ server.start }
   end
 
-  after(:each) do
+  before(:each) do
     Bugsnag.instance_variable_set(:@session_tracker, Bugsnag::SessionTracker.new)
   end
 
@@ -38,6 +30,10 @@ describe Bugsnag::SessionTracker do
     end
     server.stop
     queue.clear
+  end
+
+  after(:all) do
+    Bugsnag.instance_variable_set(:@session_tracker, Bugsnag::SessionTracker.new)
   end
 
   it 'adds session object to queue' do
