@@ -26,7 +26,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
       })
 
       expect(breadcrumb).to_not receive(:ignore!)
-      expect(config).to_not receive(:warn)
+      expect(config).to_not receive(:debug)
 
       validator.validate(breadcrumb)
     end
@@ -49,7 +49,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
       expect(breadcrumb).to_not receive(:ignore!)
       expect(breadcrumb).to receive(:name=).with("123456789012345678901234567890")
       expected_string = "Breadcrumb name trimmed to length 30.  Original name: #{name}"
-      expect(config).to receive(:warn).with(expected_string)
+      expect(config).to receive(:debug).with(expected_string)
 
       validator.validate(breadcrumb)
       # Check the original message has not been modified
@@ -80,7 +80,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         })
 
         expect(breadcrumb).to_not receive(:ignore!)
-        expect(config).to_not receive(:warn)
+        expect(config).to_not receive(:debug)
 
         validator.validate(breadcrumb)
       end
@@ -110,12 +110,12 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         })
 
         expect(breadcrumb).to_not receive(:ignore!)
-        expected_string_1 = "Breadcrumb #{breadcrumb.name} meta_data array:#{meta_data[:array]} has been dropped for having an invalid data type"
-        expected_string_2 = "Breadcrumb #{breadcrumb.name} meta_data hash:#{meta_data[:hash]} has been dropped for having an invalid data type"
-        expected_string_3 = "Breadcrumb #{breadcrumb.name} meta_data object:#{ meta_data[:object]} has been dropped for having an invalid data type"
-        expect(config).to receive(:warn).with(expected_string_1)
-        expect(config).to receive(:warn).with(expected_string_2)
-        expect(config).to receive(:warn).with(expected_string_3)
+        expected_string_1 = "Breadcrumb #{breadcrumb.name} meta_data array has been dropped for having an invalid data type"
+        expected_string_2 = "Breadcrumb #{breadcrumb.name} meta_data hash has been dropped for having an invalid data type"
+        expected_string_3 = "Breadcrumb #{breadcrumb.name} meta_data object has been dropped for having an invalid data type"
+        expect(config).to receive(:debug).with(expected_string_1)
+        expect(config).to receive(:debug).with(expected_string_2)
+        expect(config).to receive(:debug).with(expected_string_3)
 
         # Confirms that the meta_data is being filtered
         expect(breadcrumb).to receive(:meta_data=).with({
@@ -144,7 +144,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
       expect(breadcrumb).to receive(:type=).with(Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE)
       expect(breadcrumb).to_not receive(:ignore!)
       expected_string = "Invalid type: #{type} for breadcrumb: #{breadcrumb.name}, defaulting to #{Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE}"
-      expect(config).to receive(:warn).with(expected_string)
+      expect(config).to receive(:debug).with(expected_string)
 
       validator.validate(breadcrumb)
     end
@@ -169,7 +169,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
 
         expect(breadcrumb).to receive(:ignore!)
         expected_string = "Automatic breadcrumb of type #{Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE} ignored: #{breadcrumb.name}"
-        expect(config).to receive(:warn).with(expected_string)
+        expect(config).to receive(:debug).with(expected_string)
 
         validator.validate(breadcrumb)
       end
@@ -191,7 +191,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         })
 
         expect(breadcrumb).to_not receive(:ignore!)
-        expect(config).to_not receive(:warn)
+        expect(config).to_not receive(:debug)
 
         validator.validate(breadcrumb)
       end

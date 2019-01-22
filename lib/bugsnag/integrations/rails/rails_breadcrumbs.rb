@@ -22,7 +22,6 @@ module Bugsnag::Rails
       :message => "Read cache",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
-        :key,
         :hit,
         :super_operation
       ]
@@ -31,9 +30,7 @@ module Bugsnag::Rails
       :id => "cache_fetch_hit.active_support",
       :message => "Fetch cache hit",
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
-      :allowed_data => [
-        :key
-      ]
+      :allowed_data => []
     },
     {
       :id => "sql.active_record",

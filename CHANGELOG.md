@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 6.11.1 (TBD)
+
+### Fixes
+
+* Fix issue with unnecessary meta_data being logged during breadcrumb validation.
+  | [#]()
+
 ## 6.11.0 (17 Jan 2019)
 
 **Note**: this release alters the behaviour of the notifier to track sessions automatically.
