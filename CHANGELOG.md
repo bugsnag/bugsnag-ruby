@@ -1,12 +1,12 @@
 Changelog
 =========
 
-## 6.11.1 (TBD)
+## 6.11.1 (22 Jan 2019)
 
 ### Fixes
 
 * Fix issue with unnecessary meta_data being logged during breadcrumb validation.
-  | [#]()
+  | [#530](https://github.com/bugsnag/bugsnag-ruby/pull/530)
 
 ## 6.11.0 (17 Jan 2019)
 
