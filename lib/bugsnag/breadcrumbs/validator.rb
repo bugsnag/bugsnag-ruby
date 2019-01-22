@@ -26,7 +26,7 @@ module Bugsnag::Breadcrumbs
         if valid_meta_data_type?(v)
           true
         else
-          @configuration.debug("Breadcrumb #{breadcrumb.name} meta_data #{k} has been dropped for having an invalid data type")
+          @configuration.debug("Breadcrumb #{breadcrumb.name} meta_data #{k}:#{v.class} has been dropped for having an invalid data type")
           false
         end
       end

@@ -110,9 +110,9 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
         })
 
         expect(breadcrumb).to_not receive(:ignore!)
-        expected_string_1 = "Breadcrumb #{breadcrumb.name} meta_data array has been dropped for having an invalid data type"
-        expected_string_2 = "Breadcrumb #{breadcrumb.name} meta_data hash has been dropped for having an invalid data type"
-        expected_string_3 = "Breadcrumb #{breadcrumb.name} meta_data object has been dropped for having an invalid data type"
+        expected_string_1 = "Breadcrumb #{breadcrumb.name} meta_data array:Array has been dropped for having an invalid data type"
+        expected_string_2 = "Breadcrumb #{breadcrumb.name} meta_data hash:Hash has been dropped for having an invalid data type"
+        expected_string_3 = "Breadcrumb #{breadcrumb.name} meta_data object:TestClass has been dropped for having an invalid data type"
         expect(config).to receive(:debug).with(expected_string_1)
         expect(config).to receive(:debug).with(expected_string_2)
         expect(config).to receive(:debug).with(expected_string_3)
