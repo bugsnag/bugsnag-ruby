@@ -1,0 +1,1 @@
+cat target.eml | bundle exec ruby app.rb
