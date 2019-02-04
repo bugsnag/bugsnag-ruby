@@ -20,9 +20,8 @@ Scenario Outline: An unhandled RuntimeError sends a report
   And the event "context" equals "UnhandledError@default"
   And the event "severityReason.type" equals "unhandledExceptionMiddleware"
   And the event "severityReason.attributes.framework" equals "Sidekiq"
+  And the event "app.type" equals "sidekiq"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of stack frame 0 equals "/usr/src/app.rb"
-  And the "lineNumber" of stack frame 0 equals 33
   And the payload field "events.0.metaData.sidekiq" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_<created_at_present>.json"
   And the event "metaData.sidekiq.msg.created_at" is a parsable timestamp in seconds
   And the event "metaData.sidekiq.msg.enqueued_at" is a parsable timestamp in seconds
@@ -65,9 +64,8 @@ Scenario Outline: A handled RuntimeError can be notified
   And the event "context" equals "HandledError@default"
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
+  And the event "app.type" equals "sidekiq"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of stack frame 0 equals "/usr/src/app.rb"
-  And the "lineNumber" of stack frame 0 equals 24
   And the payload field "events.0.metaData.sidekiq" matches the JSON fixture in "features/fixtures/sidekiq/payloads/handled_metadata_ca_<created_at_present>.json"
   And the event "metaData.sidekiq.msg.created_at" is a parsable timestamp in seconds
   And the event "metaData.sidekiq.msg.enqueued_at" is a parsable timestamp in seconds
