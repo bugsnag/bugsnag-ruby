@@ -1,8 +1,15 @@
 class AppTypeController < ActionController::Base
   protect_from_forgery
 
-  def index
+  def default_handled
+    raise RuntimeError.new ("Handled error")
+  rescue Exception => e
+    Bugsnag.notify(e)
     render json: {}
+  end
+
+  def default_unhandled
+    raise RuntimeError.new ("Unhandled error")
   end
 
   def initializer

@@ -14,6 +14,8 @@ Rails.application.routes.draw do
   get 'api_key/environment', to: 'api_key#environment'
   get 'api_key/changing', to: 'api_key#changing'
 
+  get 'app_type/default_handled', to: 'app_type#default_handled'
+  get 'app_type/default_unhandled', to: 'app_type#default_unhandled'
   get 'app_type/initializer', to: 'app_type#initializer'
   get 'app_type/after', to: 'app_type#after'
 
