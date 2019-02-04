@@ -298,6 +298,20 @@ services:
       - endpoint
     restart: "no"
 
+  mailman:
+    build:
+      context: mailman
+      args:
+        - RUBY_VERSION
+        - APP_PATH
+        - TEST_EMAIL
+    environment:
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+    ports:
+      - "6245:6245"
+    restart: "no"
+
 networks:
   default:
     name: ${NETWORK_NAME}
