@@ -295,3 +295,11 @@ services:
       - BUGSNAG_ENDPOINT
     ports:
       - "3008:8080"
+  rake:
+    build:
+      context: rake
+      args:
+        - RUBY_VERSION
+    environment:
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
