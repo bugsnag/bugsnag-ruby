@@ -285,3 +285,13 @@ services:
     ports:
       - "6245:6245"
     restart: "no"
+  rack:
+    build:
+      context: rack
+      args:
+        - RUBY_VERSION
+    environment:
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+    ports:
+      - "3008:8080"
