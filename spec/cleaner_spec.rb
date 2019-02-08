@@ -134,6 +134,16 @@ describe Bugsnag::Cleaner do
       expect(subject.clean_object(object)).to eq("[RECURSION]")
     end
 
+    it "cleans custom objects to show the id of the object if object responds to id method" do
+      class Macaron
+        def id
+          10
+        end
+      end
+      a = Macaron.new
+      expect(subject.clean_object(a)).to eq("[OBJECT]: [Class]: #{a.class.name} [ID]: #{a.id}")
+    end
+
     it "cleans up binary strings properly" do
       if RUBY_VERSION > "1.9"
         obj = "Andr\xc7\xff"
