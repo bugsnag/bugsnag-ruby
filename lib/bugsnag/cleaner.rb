@@ -7,6 +7,7 @@ module Bugsnag
     RECURSION = '[RECURSION]'.freeze
     OBJECT = '[OBJECT]'.freeze
     RAISED = '[RAISED]'.freeze
+    OBJECT_WITH_ID_AND_CLASS = '[OBJECT]: [Class]: %{class_name} [ID]: %{id}'.freeze
 
     def initialize(filters)
       @filters = Array(filters)
@@ -47,7 +48,12 @@ module Bugsnag
         str = obj.to_s rescue RAISED
         # avoid leaking potentially sensitive data from objects' #inspect output
         if str =~ /#<.*>/
-          OBJECT
+          # Use id of the object if available
+          if obj.respond_to?(:id)
+            OBJECT_WITH_ID_AND_CLASS % { class_name: obj.class, id: obj.id }
+          else
+            OBJECT
+          end
         else
           clean_string(str)
         end
