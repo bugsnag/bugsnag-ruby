@@ -4,6 +4,11 @@ services:
   redis:
     image: redis
 
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=test_password
+
   mongo:
     image: mongo
 
@@ -322,6 +327,7 @@ services:
       - BUGSNAG_ENDPOINT
     ports:
       - "3008:8080"
+    restart: 'no'
 
   rake:
     build:
@@ -331,6 +337,19 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
+    restart: 'no'
+
+  que:
+    build:
+      context: que
+      args:
+        - RUBY_VERSION
+    depends_on:
+      - postgres
+    environment:
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+    restart: 'no'
 
 networks:
   default:
