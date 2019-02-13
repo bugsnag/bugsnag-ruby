@@ -1,0 +1,9 @@
+source "https://rubygems.org"
+
+gem "bugsnag", path: "/bugsnag"
+
+gem "que", "~> 0.14.3"
+
+gem "pg", RUBY_VERSION < "2.2.0" ? "0.21.0" : "> 0.21.0"
+
+gem "activerecord", RUBY_VERSION < "2.2.0" ? "4.2.11" : "> 4.2.11"
