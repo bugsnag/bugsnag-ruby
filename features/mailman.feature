@@ -7,7 +7,7 @@ Background:
 
 Scenario Outline: An unhandled RuntimeError sends a report
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I set environment variable "TEST_EMAIL" to "/usr/src/emails/Unhandled.eml"
+  And I set environment variable "TARGET_EMAIL" to "emails/unhandled.eml"
   And I start the service "mailman"
   And I wait for 1 seconds
   Then I should receive a request
@@ -32,7 +32,7 @@ Scenario Outline: An unhandled RuntimeError sends a report
 
 Scenario Outline: A handled RuntimeError sends a report
   And I set environment variable "RUBY_VERSION" to "<ruby version>"
-  And I set environment variable "TEST_EMAIL" to "/usr/src/emails/Handled.eml"
+  And I set environment variable "TARGET_EMAIL" to "emails/handled.eml"
   And I start the service "mailman"
   And I wait for 1 seconds
   Then I should receive a request

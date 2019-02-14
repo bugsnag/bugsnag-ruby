@@ -286,10 +286,10 @@ services:
       args:
         - RUBY_VERSION
         - APP_PATH
-        - TEST_EMAIL
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
+      - TARGET_EMAIL
     ports:
       - "6245:6245"
     restart: "no"
