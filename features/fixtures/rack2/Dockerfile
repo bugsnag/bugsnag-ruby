@@ -10,4 +10,4 @@ RUN bundle install
 
 COPY app/ /usr/src/app
 
-CMD ["ruby", "app.rb"]
+CMD ["bundle", "exec", "ruby", "app.rb"]

@@ -1,9 +1,7 @@
-require 'rack'
-require 'rack/request'
-require 'rack/response'
-
 require 'bugsnag'
+require 'rack'
 
+puts "HERE"
 
 Bugsnag.configure do |config|
   puts "Configuring `api_key` to #{ENV['BUGSNAG_API_KEY']}"
@@ -16,7 +14,7 @@ class BugsnagTests
   def call(env)
     req = Rack::Request.new(env)
 
-    case req.env['REQUEST_PATH']
+     case req.env['REQUEST_PATH']
     when '/unhandled'
       raise RuntimeError.new('Unhandled error')
     when '/handled'
@@ -27,9 +25,9 @@ class BugsnagTests
       end
     end
 
-    res = Rack::Response.new
+     res = Rack::Response.new
     res.finish
   end
 end
 
-Rack::Server.start(app: Bugsnag::Rack.new(BugsnagTests.new),  Host: '0.0.0.0', Port: 8080)
+ Rack::Server.start(app: Bugsnag::Rack.new(BugsnagTests.new),  Host: '0.0.0.0', Port: 3000)
