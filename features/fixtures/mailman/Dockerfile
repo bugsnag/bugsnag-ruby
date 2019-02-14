@@ -13,6 +13,4 @@ RUN bundle install
 
 COPY app/ .
 
-ARG TEST_EMAIL
-RUN cp $TEST_EMAIL "./target.eml"
-CMD "./run.sh"
+CMD ["./run.sh"]
