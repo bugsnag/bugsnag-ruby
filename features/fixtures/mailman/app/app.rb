@@ -1,6 +1,5 @@
 require 'mailman'
 require 'bugsnag'
-require 'pp'
 
 Bugsnag.configure do |conf|
   puts "Configuring `api_key` to #{ENV['BUGSNAG_API_KEY']}"
