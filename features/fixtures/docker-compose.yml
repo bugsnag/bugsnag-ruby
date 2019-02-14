@@ -83,7 +83,10 @@ services:
       args:
         - RUBY_TEST_VERSION
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+    ports:
+      - "3001:3000"
     restart: "no"
 
   rack2:
@@ -92,7 +95,10 @@ services:
       args:
         - RUBY_TEST_VERSION
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+    ports:
+      - "3002:3000"
     restart: "no"
 
   rails3:
@@ -316,18 +322,6 @@ services:
     ports:
       - "6245:6245"
     restart: "no"
-
-  rack:
-    build:
-      context: rack
-      args:
-        - RUBY_VERSION
-    environment:
-      - BUGSNAG_API_KEY
-      - BUGSNAG_ENDPOINT
-    ports:
-      - "3008:8080"
-    restart: 'no'
 
   rake:
     build:
