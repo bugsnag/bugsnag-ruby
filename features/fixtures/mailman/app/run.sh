@@ -1,1 +1,2 @@
-cat target.eml | bundle exec ruby app.rb
+#!/bin/bash
+cat $TARGET_EMAIL | bundle exec ruby app.rb
