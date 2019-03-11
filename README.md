@@ -34,7 +34,7 @@ The Bugsnag exception reporter for Ruby gives you instant notification of except
     * [Rake](https://docs.bugsnag.com/platforms/ruby/rake/configuration-options)
     * [Sidekiq](https://docs.bugsnag.com/platforms/ruby/sidekiq/configuration-options)
     * [Other Ruby apps](https://docs.bugsnag.com/platforms/ruby/other/configuration-options)
-* Check out some [example apps integrated with Bugsnag](https://github.com/bugsnag/bugsnag-example-apps/tree/master/apps/ruby) using Rails, Sinatra, Padrino, and more.
+* Check out some [example apps integrated with Bugsnag](https://github.com/bugsnag/bugsnag-ruby/tree/master/example) using Rails, Sinatra, Padrino, and more.
 * [Search open and closed issues](https://github.com/bugsnag/bugsnag-ruby/issues?utf8=✓&q=is%3Aissue) for similar problems
 * [Report a bug or request a feature](https://github.com/bugsnag/bugsnag-ruby/issues/new)
 
