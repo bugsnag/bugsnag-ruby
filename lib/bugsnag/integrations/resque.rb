@@ -43,7 +43,8 @@ module Bugsnag
           :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
           :attributes => FRAMEWORK_ATTRIBUTES
         }
-        report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload})
+        report.context = "#{payload['class']}@#{queue}"
+        report.meta_data[:payload] = payload
       end
     end
   end

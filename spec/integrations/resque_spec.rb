@@ -71,13 +71,11 @@ describe 'Bugsnag::Resque', :order => :defined do
       :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
       :attributes => Bugsnag::Resque::FRAMEWORK_ATTRIBUTES
     })
+    expect(report).to receive(:context=).with("class@queue")
     meta_data = double('meta_data')
     expect(report).to receive(:meta_data).and_return(meta_data)
-    expect(meta_data).to receive(:merge!).with({
-      :context => "class@queue",
-      :payload => {
-        "class" => "class"
-      }
+    expect(meta_data).to receive(:[]=).with(:payload, {
+      "class" => "class"
     })
     expect(Bugsnag).to receive(:notify).with(exception, true).and_yield(report)
     resque.save
