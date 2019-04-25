@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+
+# gem "rails"
+
+# Added at 2019-04-24 17:20:31 +0100 by amoinet:
+gem "rails", "= 6.0.0.beta3"

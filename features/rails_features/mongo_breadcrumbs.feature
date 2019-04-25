@@ -26,12 +26,13 @@ Scenario Outline: Successful breadcrumbs
 
   Examples:
     | ruby_version | rails_version |
-    | 2.2          | 4             |
-    | 2.2          | 5             |
-    | 2.3          | 4             |
-    | 2.3          | 5             |
-    | 2.4          | 5             |
-    | 2.5          | 5             |
+   # | 2.2          | 4             |
+   # | 2.2          | 5             |
+   # | 2.3          | 4             |
+   # | 2.3          | 5             |
+   # | 2.4          | 5             |
+   # | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Breadcrumb with filter parameters
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -64,12 +65,13 @@ Scenario Outline: Breadcrumb with filter parameters
 
   Examples:
     | ruby_version | rails_version |
-    | 2.2          | 4             |
-    | 2.2          | 5             |
-    | 2.3          | 4             |
-    | 2.3          | 5             |
-    | 2.4          | 5             |
-    | 2.5          | 5             |
+   # | 2.2          | 4             |
+   # | 2.2          | 5             |
+   # | 2.3          | 4             |
+   # | 2.3          | 5             |
+   # | 2.4          | 5             |
+   # | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Failure breadcrumbs
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -92,9 +94,10 @@ Scenario Outline: Failure breadcrumbs
 
   Examples:
     | ruby_version | rails_version |
-    | 2.2          | 4             |
-    | 2.2          | 5             |
-    | 2.3          | 4             |
-    | 2.3          | 5             |
-    | 2.4          | 5             |
-    | 2.5          | 5             |
+   # | 2.2          | 4             |
+   # | 2.2          | 5             |
+   # | 2.3          | 4             |
+    #| 2.3          | 5             |
+   # | 2.4          | 5             |
+   # | 2.5          | 5             |
+    | 2.5          | 6             |

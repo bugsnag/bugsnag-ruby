@@ -23,18 +23,19 @@ Scenario Outline: Setting app_type in initializer works
 
   Examples:
     | ruby_version | rails_version |
-    | 2.0          | 3             |
-    | 2.1          | 3             |
-    | 2.2          | 3             |
-    | 2.2          | 4             |
-    | 2.2          | 5             |
-    | 2.3          | 3             |
-    | 2.3          | 4             |
-    | 2.3          | 5             |
-    | 2.4          | 3             |
-    | 2.4          | 5             |
-    | 2.5          | 3             |
-    | 2.5          | 5             |
+  #  | 2.0          | 3             |
+  #  | 2.1          | 3             |
+  #  | 2.2          | 3             |
+  #  | 2.2          | 4             |
+  #  | 2.2          | 5             |
+  #  | 2.3          | 3             |
+  #  | 2.3          | 4             |
+  #  | 2.3          | 5             |
+  #  | 2.4          | 3             |
+  #  | 2.4          | 5             |
+  #  | 2.5          | 3             |
+  #  | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Changing app_type after initializer works
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -53,15 +54,16 @@ Scenario Outline: Changing app_type after initializer works
 
   Examples:
     | ruby_version | rails_version |
-    | 2.0          | 3             |
-    | 2.1          | 3             |
-    | 2.2          | 3             |
-    | 2.2          | 4             |
-    | 2.2          | 5             |
-    | 2.3          | 3             |
-    | 2.3          | 4             |
-    | 2.3          | 5             |
-    | 2.4          | 3             |
-    | 2.4          | 5             |
-    | 2.5          | 3             |
-    | 2.5          | 5             |
+  #  | 2.0          | 3             |
+  #  | 2.1          | 3             |
+  #  | 2.2          | 3             |
+  #  | 2.2          | 4             |
+  #  | 2.2          | 5             |
+  #  | 2.3          | 3             |
+  #  | 2.3          | 4             |
+  #  | 2.3          | 5             |
+  #  | 2.4          | 3             |
+  #  | 2.4          | 5             |
+  #  | 2.5          | 3             |
+  #  | 2.5          | 5             |
+    | 2.5          | 6             |

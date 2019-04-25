@@ -23,17 +23,17 @@ Scenario Outline: Warden user information is sent
 
   Examples:
     | ruby_version | rails_version | route     |
-    | 2.0          | 3             | handled   |
-    | 2.0          | 3             | unhandled |
-    | 2.1          | 3             | handled   |
-    | 2.1          | 3             | unhandled |
-    | 2.2          | 3             | handled   |
-    | 2.2          | 3             | unhandled |
-    | 2.3          | 3             | handled   |
-    | 2.3          | 3             | unhandled |
-    | 2.4          | 3             | handled   |
-    | 2.4          | 3             | unhandled |
-    | 2.5          | 3             | handled   |
+   # | 2.0          | 3             | handled   |
+   # | 2.0          | 3             | unhandled |
+   # | 2.1          | 3             | handled   |
+   # | 2.1          | 3             | unhandled |
+   # | 2.2          | 3             | handled   |
+   # | 2.2          | 3             | unhandled |
+   # | 2.3          | 3             | handled   |
+   # | 2.3          | 3             | unhandled |
+   # | 2.4          | 3             | handled   |
+   # | 2.4          | 3             | unhandled |
+   # | 2.5          | 3             | handled   |
     | 2.5          | 3             | unhandled |
 
 
@@ -55,9 +55,9 @@ Scenario Outline: Devise user information is sent
 
   Examples:
     | ruby_version | rails_version | route     |
-    | 2.2          | 4             | handled   |
-    | 2.2          | 4             | unhandled |
-    | 2.3          | 4             | handled   |
+   # | 2.2          | 4             | handled   |
+   # | 2.2          | 4             | unhandled |
+   # | 2.3          | 4             | handled   |
     | 2.3          | 4             | unhandled |
 
 Scenario Outline: Clearance user information is sent
@@ -78,11 +78,13 @@ Scenario Outline: Clearance user information is sent
 
   Examples:
     | ruby_version | rails_version | route     |
-    | 2.2          | 5             | handled   |
-    | 2.2          | 5             | unhandled |
-    | 2.3          | 5             | handled   |
-    | 2.3          | 5             | unhandled |
-    | 2.4          | 5             | handled   |
-    | 2.4          | 5             | unhandled |
-    | 2.5          | 5             | handled   |
-    | 2.5          | 5             | unhandled |
+   # | 2.2          | 5             | handled   |
+   # | 2.2          | 5             | unhandled |
+   # | 2.3          | 5             | handled   |
+   # | 2.3          | 5             | unhandled |
+   # | 2.4          | 5             | handled   |
+   # | 2.4          | 5             | unhandled |
+   # | 2.5          | 5             | handled   |
+   # | 2.5          | 5             | unhandled |
+    | 2.5          | 6             | handled   |
+    | 2.5          | 6             | unhandled |
