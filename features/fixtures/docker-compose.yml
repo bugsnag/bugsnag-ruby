@@ -211,8 +211,6 @@ services:
       args:
         - RUBY_VERSION
         - APP_PATH
-    depends_on:
-      - mongo
     environment:
       - BUGSNAG_API_KEY
       - http_proxy

@@ -19,18 +19,18 @@ Scenario Outline: Auto_capture_sessions defaults to true
 
   Examples:
     | ruby_version | rails_version |
-  #  | 2.0          | 3             |
-  #  | 2.1          | 3             |
-  #  | 2.2          | 3             |
-  #  | 2.2          | 4             |
-  #  | 2.2          | 5             |
-  #  | 2.3          | 3             |
-  #  | 2.3          | 4             |
-  #  | 2.3          | 5             |
-  #  | 2.4          | 3             |
-  #  | 2.4          | 5             |
-  #  | 2.5          | 3             |
-  #  | 2.5          | 5             |
+    | 2.0          | 3             |
+    | 2.1          | 3             |
+    | 2.2          | 3             |
+    | 2.2          | 4             |
+    | 2.2          | 5             |
+    | 2.3          | 3             |
+    | 2.3          | 4             |
+    | 2.3          | 5             |
+    | 2.4          | 3             |
+    | 2.4          | 5             |
+    | 2.5          | 3             |
+    | 2.5          | 5             |
     | 2.5          | 6             |
 
 Scenario Outline: Auto_capture_sessions can be set to false in the initializer
@@ -43,18 +43,18 @@ Scenario Outline: Auto_capture_sessions can be set to false in the initializer
 
   Examples:
     | ruby_version | rails_version |
-  #  | 2.0          | 3             |
-  #  | 2.1          | 3             |
-  #  | 2.2          | 3             |
-  #  | 2.2          | 4             |
-  #  | 2.2          | 5             |
-  #  | 2.3          | 3             |
-  #  | 2.3          | 4             |
-  #  | 2.3          | 5             |
-  #  | 2.4          | 3             |
-  #  | 2.4          | 5             |
-  #  | 2.5          | 3             |
-  #  | 2.5          | 5             |
+    | 2.0          | 3             |
+    | 2.1          | 3             |
+    | 2.2          | 3             |
+    | 2.2          | 4             |
+    | 2.2          | 5             |
+    | 2.3          | 3             |
+    | 2.3          | 4             |
+    | 2.3          | 5             |
+    | 2.4          | 3             |
+    | 2.4          | 5             |
+    | 2.5          | 3             |
+    | 2.5          | 5             |
     | 2.5          | 6             |
 
 Scenario Outline: Manual sessions are still sent if Auto_capture_sessions is false
@@ -71,18 +71,18 @@ Scenario Outline: Manual sessions are still sent if Auto_capture_sessions is fal
 
   Examples:
     | ruby_version | rails_version |
-   # | 2.0          | 3             |
-   # | 2.1          | 3             |
-   # | 2.2          | 3             |
-   # | 2.2          | 4             |
-   # | 2.2          | 5             |
-   # | 2.3          | 3             |
-   # | 2.3          | 4             |
-   # | 2.3          | 5             |
-   # | 2.4          | 3             |
-   # | 2.4          | 5             |
-   # | 2.5          | 3             |
-   # | 2.5          | 5             |
+    | 2.0          | 3             |
+    | 2.1          | 3             |
+    | 2.2          | 3             |
+    | 2.2          | 4             |
+    | 2.2          | 5             |
+    | 2.3          | 3             |
+    | 2.3          | 4             |
+    | 2.3          | 5             |
+    | 2.4          | 3             |
+    | 2.4          | 5             |
+    | 2.5          | 3             |
+    | 2.5          | 5             |
     | 2.5          | 6             |
 
 Scenario Outline: 100 session calls results in 100 sessions
@@ -100,16 +100,16 @@ Scenario Outline: 100 session calls results in 100 sessions
 
   Examples:
     | ruby_version | rails_version |
-   # | 2.0          | 3             |
-   # | 2.1          | 3             |
-   # | 2.2          | 3             |
-   # | 2.2          | 4             |
-   # | 2.2          | 5             |
-   # | 2.3          | 3             |
-   # | 2.3          | 4             |
-   # | 2.3          | 5             |
-   # | 2.4          | 3             |
-   # | 2.4          | 5             |
-   # | 2.5          | 3             |
-   # | 2.5          | 5             |
+    | 2.0          | 3             |
+    | 2.1          | 3             |
+    | 2.2          | 3             |
+    | 2.2          | 4             |
+    | 2.2          | 5             |
+    | 2.3          | 3             |
+    | 2.3          | 4             |
+    | 2.3          | 5             |
+    | 2.4          | 3             |
+    | 2.4          | 5             |
+    | 2.5          | 3             |
+    | 2.5          | 5             |
     | 2.5          | 6             |

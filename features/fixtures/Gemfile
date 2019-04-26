@@ -6,5 +6,8 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
 # gem "rails"
 
-# Added at 2019-04-24 17:20:31 +0100 by amoinet:
+# Added at 2019-04-24 14:43:11 +0100 by amoinet:
 gem "rails", "= 6.0.0.beta3"
+
+# Added at 2019-04-24 15:02:31 +0100 by amoinet:
+gem "bootsnap", "~> 1.4"

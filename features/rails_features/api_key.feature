@@ -19,18 +19,18 @@ Scenario Outline: Setting api_key in environment variable works
 
   Examples:
     | ruby_version | rails_version |
-    #| 2.0          | 3             |
-    #| 2.1          | 3             |
-    #| 2.2          | 3             |
-    #| 2.2          | 4             |
-    #| 2.2          | 5             |
-    #| 2.3          | 3             |
-    #| 2.3          | 4             |
-    #| 2.3          | 5             |
-    #| 2.4          | 3             |
-    #| 2.4          | 5             |
-    #| 2.5          | 3             |
-    #| 2.5          | 5             |
+    | 2.0          | 3             |
+    | 2.1          | 3             |
+    | 2.2          | 3             |
+    | 2.2          | 4             |
+    | 2.2          | 5             |
+    | 2.3          | 3             |
+    | 2.3          | 4             |
+    | 2.3          | 5             |
+    | 2.4          | 3             |
+    | 2.4          | 5             |
+    | 2.5          | 3             |
+    | 2.5          | 5             |
     | 2.5          | 6             |
 
  Scenario Outline: Changing api_key after initializer works
@@ -46,16 +46,16 @@ Scenario Outline: Setting api_key in environment variable works
 
   Examples:
     | ruby_version | rails_version |
-    #| 2.0          | 3             |
-    #| 2.1          | 3             |
-    #| 2.2          | 3             |
-    #| 2.2          | 4             |
-    #| 2.2          | 5             |
-    #| 2.3          | 3             |
-    #| 2.3          | 4             |
-    #| 2.3          | 5             |
-    #| 2.4          | 3             |
-    #| 2.4          | 5             |
-    #| 2.5          | 3             |
-    #| 2.5          | 5             |
+    | 2.0          | 3             |
+    | 2.1          | 3             |
+    | 2.2          | 3             |
+    | 2.2          | 4             |
+    | 2.2          | 5             |
+    | 2.3          | 3             |
+    | 2.3          | 4             |
+    | 2.3          | 5             |
+    | 2.4          | 3             |
+    | 2.4          | 5             |
+    | 2.5          | 3             |
+    | 2.5          | 5             |
     | 2.5          | 6             |

@@ -55,7 +55,3 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 gem "bugsnag", "~> 6.11"
 
 gem "clearance", "~> 1.16"
-
-gem "mongoid"
-
-gem "nokogiri", "1.6.8"
