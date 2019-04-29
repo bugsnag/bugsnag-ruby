@@ -4,7 +4,7 @@ gem 'rails', '3.2.22.5'
 
 gem 'nokogiri', '1.6.8'
 
-gem 'sqlite3'
+gem 'sqlite3', '< 1.4'
 
 gem 'jquery-rails'
 

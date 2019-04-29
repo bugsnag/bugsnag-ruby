@@ -10,6 +10,7 @@ group :test, optional: true do
     gem 'delayed_job' if RUBY_VERSION >= '2.2.2'
     gem 'i18n', RUBY_VERSION <= '2.3.0' ? '1.4.0': '>1.4.0' if RUBY_VERSION >= '2.2.2'
     gem 'webmock', RUBY_VERSION <= '1.9.3' ? '2.3.2': '>2.3.2'
+    gem 'hashdiff', RUBY_VERSION <= '1.9.3' ? '0.3.8': '>0.3.8'
 end
 
 group :coverage, optional: true do
