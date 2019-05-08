@@ -86,3 +86,5 @@ Scenario Outline: Clearance user information is sent
     | 2.4          | 5             | unhandled |
     | 2.5          | 5             | handled   |
     | 2.5          | 5             | unhandled |
+    | 2.5          | 6             | handled   |
+    | 2.5          | 6             | unhandled |

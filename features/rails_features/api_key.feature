@@ -31,6 +31,7 @@ Scenario Outline: Setting api_key in environment variable works
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
  Scenario Outline: Changing api_key after initializer works
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -57,3 +58,4 @@ Scenario Outline: Setting api_key in environment variable works
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |

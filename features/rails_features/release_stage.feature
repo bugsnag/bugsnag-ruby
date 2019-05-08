@@ -31,6 +31,7 @@ Scenario Outline: Release_stage should default to RAILS_ENV
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Release_stage can be set in an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -58,6 +59,7 @@ Scenario Outline: Release_stage can be set in an initializer
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Release_stage can be set after an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -84,3 +86,4 @@ Scenario Outline: Release_stage can be set after an initializer
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |

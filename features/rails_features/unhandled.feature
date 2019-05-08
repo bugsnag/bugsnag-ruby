@@ -38,3 +38,4 @@ Scenario Outline: Unhandled RuntimeError
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |

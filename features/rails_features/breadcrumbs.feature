@@ -37,6 +37,7 @@ Scenario Outline: Request breadcrumb
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: SQL Breadcrumb without bindings
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -65,6 +66,7 @@ Scenario Outline: SQL Breadcrumb without bindings
     | 2.3          | 4             |
     | 2.4          | 3             |
     | 2.5          | 3             |
+    | 2.5          | 6             |
 
 Scenario Outline: SQL Breadcrumb with bindings
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -90,6 +92,7 @@ Scenario Outline: SQL Breadcrumb with bindings
     | 2.3          | 5             |
     | 2.4          | 5             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Active job breadcrumb
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -113,6 +116,7 @@ Scenario Outline: Active job breadcrumb
     | 2.3          | 5             |
     | 2.4          | 5             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Cache read
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -133,3 +137,4 @@ Scenario Outline: Cache read
     | 2.3          | 5             |
     | 2.4          | 5             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
