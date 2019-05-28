@@ -20,7 +20,7 @@ module Bugsnag
           if defined?(settings)
             config.project_root = settings.root
           else
-            config.warn("You should set your app's project_root (see https://bugsnag.com/docs/notifiers/ruby#project_root).")
+            config.warn("You should set your app's project_root (see https://docs.bugsnag.com/platforms/ruby/rails/configuration-options/#project_root).")
           end
         end
 
