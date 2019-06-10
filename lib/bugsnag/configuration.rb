@@ -63,6 +63,10 @@ module Bugsnag
     # @return [Integer] the maximum allowable amount of breadcrumbs per thread
     attr_reader :max_breadcrumbs
 
+    ##
+    # @return [Regexp] matching file paths within the project
+    attr_writer :vendor_path
+
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -171,6 +175,13 @@ module Bugsnag
     # configured release stage.
     def should_notify_release_stage?
       @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
+    end
+
+    ##
+    # Regex used to mark stacktrace lines as within the project. Lines marked
+    # as "out of project" will only appear in the full trace.
+    def vendor_path
+      @vendor_path || Bugsnag::Stacktrace::VENDOR_PATH
     end
 
     ##

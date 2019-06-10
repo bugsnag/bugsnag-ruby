@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Add option to configure what file paths are included in the project stacktrace (`vendor_path`)
+  | [#544](https://github.com/bugsnag/bugsnag-ruby/pull/544)
+
 ## 6.11.1 (22 Jan 2019)
 
 ### Fixes

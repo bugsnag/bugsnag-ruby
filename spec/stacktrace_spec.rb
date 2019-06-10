@@ -87,4 +87,43 @@ describe Bugsnag::Stacktrace do
       })
     }
   end
+
+  describe "#vendor_cache" do
+    let(:configuration) do
+      configuration = Bugsnag::Configuration.new
+      configuration.project_root = "/foo/bar"
+      configuration
+    end
+
+    let(:backtrace) do
+      [
+        "/foo/bar/app/models/user.rb:1:in `something'",
+        "/foo/bar/other_vendor/lib/dont.rb:1:in `to_s'",
+        "/foo/bar/vendor/lib/ignore_me.rb:1:in `to_s'",
+        "/foo/bar/.bundle/lib/ignore_me.rb:1:in `to_s'",
+      ]
+    end
+
+    def out_project_trace(stacktrace)
+      stacktrace.to_a.map do |trace_line|
+        trace_line[:file] if !trace_line[:inProject]
+      end.compact
+    end
+
+    it "marks vendor/ and .bundle/ as out-project by default" do
+      stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration)
+
+      expect(out_project_trace(stacktrace)).to eq([
+        "vendor/lib/ignore_me.rb",
+        ".bundle/lib/ignore_me.rb",
+      ])
+    end
+
+    it "allows vendor_path to be configured" do
+      configuration.vendor_path = /other_vendor\//
+      stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration)
+
+      expect(out_project_trace(stacktrace)).to eq(["other_vendor/lib/dont.rb"])
+    end
+  end
 end
