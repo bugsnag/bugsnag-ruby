@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+ruby_version = Gem::Version.new(RUBY_VERSION)
+
 group :test, optional: true do
     gem 'rake', RUBY_VERSION <= '1.9.3' ? '~> 11.3.0' : '~> 12.3.0'
     gem 'rspec'
@@ -24,6 +26,7 @@ end
 
 group :sidekiq, optional: true do
   gem 'sidekiq', '~> 5.0.4'
+  gem 'redis', ruby_version < Gem::Version.new('2.3.0') ? '4.1.1' : '>= 4.1.2'
 end
 
 group :doc, optional: true do
