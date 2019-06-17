@@ -6,6 +6,9 @@ describe 'Bugsnag::Que', :order => :defined do
     unless defined?(::Que)
       @mocked_que = true
       class ::Que
+        class << self
+          attr_accessor :error_notifier
+        end
       end
     end
   end
@@ -25,7 +28,6 @@ describe 'Bugsnag::Que', :order => :defined do
     expect(report).to receive(:add_tab).with(:job, {
       :error_count => 1,
       :job_class => 'ActiveJob::QueueAdapters::QueAdapter::JobWrapper',
-      :args => [{"queue_name" => "foo", "arguments" => "bar"}],
       :job_id => "ID",
       :wrapper_job_class => 'ActiveJob::QueueAdapters::QueAdapter::JobWrapper',
       :wrapper_job_id => "ID",
@@ -52,6 +54,24 @@ describe 'Bugsnag::Que', :order => :defined do
 
     #Kick off
     load './lib/bugsnag/integrations/que.rb'
+  end
+
+  context 'when the job is nil' do
+    it 'notifies Bugsnag' do
+      load './lib/bugsnag/integrations/que.rb'
+      error = RuntimeError.new('nil job')
+      report = Bugsnag::Report.new(error, Bugsnag::Configuration.new)
+      expect(Bugsnag).to receive(:notify).with(error, true).and_yield(report)
+
+      Que.error_notifier.call(error, nil)
+
+      expect(report.meta_data['custom'].fetch('job')).to eq(nil)
+      expect(report.severity).to eq('error')
+      expect(report.severity_reason).to eq({
+        :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+        :attributes => {:framework => 'Que'},
+      })
+    end
   end
 
   after do
