@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* Handle `nil` values for the `job` block parameter for the Que error notifier.
+  This occurs under some conditions such as database connection failures.
+  | [#545](https://github.com/bugsnag/bugsnag-ruby/issues/545)
+  | [#548](https://github.com/bugsnag/bugsnag-ruby/pull/548)
+
 ## 6.11.1 (22 Jan 2019)
 
 ### Fixes

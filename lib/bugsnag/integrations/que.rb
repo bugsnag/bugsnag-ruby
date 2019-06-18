@@ -1,21 +1,23 @@
 if defined?(::Que)
   handler = proc do |error, job|
     begin
-      job = job.dup # Make sure the original job object is not mutated.
+      job &&= job.dup # Make sure the original job object is not mutated.
 
       Bugsnag.notify(error, true) do |report|
-        job[:error_count] += 1
+        if job
+          job[:error_count] += 1
 
-        # If the job was scheduled using ActiveJob then unwrap the job details for clarity:
-        if job[:job_class] == "ActiveJob::QueueAdapters::QueAdapter::JobWrapper"
-          wrapped_job = job[:args].last
-          wrapped_job = wrapped_job.each_with_object({}) { |(k, v), result| result[k.to_sym] = v } # Symbolize keys
+          # If the job was scheduled using ActiveJob then unwrap the job details for clarity:
+          if job[:job_class] == "ActiveJob::QueueAdapters::QueAdapter::JobWrapper"
+            wrapped_job = job[:args].last
+            wrapped_job = wrapped_job.each_with_object({}) { |(k, v), result| result[k.to_sym] = v } # Symbolize keys
 
-          # Align key names with keys in `job`
-          wrapped_job[:queue] = wrapped_job.delete(:queue_name)
-          wrapped_job[:args]  = wrapped_job.delete(:arguments)
+            # Align key names with keys in `job`
+            wrapped_job[:queue] = wrapped_job.delete(:queue_name)
+            wrapped_job[:args]  = wrapped_job.delete(:arguments)
 
-          job.merge!(wrapper_job_class: job[:job_class], wrapper_job_id: job[:job_id]).merge!(wrapped_job)
+            job.merge!(wrapper_job_class: job[:job_class], wrapper_job_id: job[:job_id]).merge!(wrapped_job)
+          end
         end
 
         report.add_tab(:job, job)
