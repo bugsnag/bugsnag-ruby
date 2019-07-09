@@ -29,6 +29,7 @@ module Bugsnag
     attr_accessor :delivery_method
     attr_accessor :exceptions
     attr_accessor :hostname
+    attr_accessor :runtime_versions
     attr_accessor :grouping_hash
     attr_accessor :meta_data
     attr_accessor :raw_exceptions
@@ -55,6 +56,7 @@ module Bugsnag
       self.breadcrumbs = []
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
+      self.runtime_versions = configuration.runtime_versions
       self.meta_data = {}
       self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
@@ -97,7 +99,8 @@ module Bugsnag
         },
         context: context,
         device: {
-          hostname: hostname
+          hostname: hostname,
+          runtimeVersions: runtime_versions
         },
         exceptions: exceptions,
         groupingHash: grouping_hash,

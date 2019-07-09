@@ -18,6 +18,19 @@ describe Bugsnag::Rack do
     app = lambda { |env| raise exception }
     rack_stack = Bugsnag::Rack.new(app)
 
+    before do
+      unless defined?(::Rack)
+        @mocked_rack = true
+        class Rack
+          def self.release
+            '9.9.9'
+          end
+          class Request
+          end
+        end
+      end
+    end
+
     it "re-raises the exception" do
       expect { rack_stack.call(rack_env) }.to raise_error(BugsnagTestException)
     end
@@ -47,6 +60,14 @@ describe Bugsnag::Rack do
       }
     end
 
+    it "applies the rack version" do
+      app = lambda { |env| raise BugsnagTestException.new("It crashed") }
+      rack_stack = Bugsnag::Rack.new(app)
+
+      expect(Bugsnag.configuration.runtime_versions["rack"]).to_not be nil
+      expect(Bugsnag.configuration.runtime_versions["rack"]).to eq '9.9.9'
+    end
+
     it "does not deliver an exception if auto_notify is disabled" do
       Bugsnag.configure do |config|
         config.auto_notify = false
@@ -63,6 +84,9 @@ describe Bugsnag::Rack do
       unless defined?(::Rack)
         @mocked_rack = true
         class Rack
+          def self.release
+            '9.9.9'
+          end
           class Request
           end
         end
@@ -196,7 +220,6 @@ describe Bugsnag::Rack do
   end
 
   it "don't mess with middlewares list on each req" do
-    stub_const('Rack', nil)
     app = lambda { |env| ['200', {}, ['']] }
 
     Bugsnag::Rack.new(app)

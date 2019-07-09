@@ -129,6 +129,7 @@ describe Bugsnag::SessionTracker do
     device = payload["device"]
     expect(device.include?("hostname")).to be true
     expect(device["hostname"]).to eq(Bugsnag.configuration.hostname)
+    expect(device["runtimeVersions"]).to eq(Bugsnag.configuration.runtime_versions)
   end
 
   it 'uses middleware to attach session to notification' do

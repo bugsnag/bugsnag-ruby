@@ -34,6 +34,7 @@ module Bugsnag
     attr_accessor :proxy_password
     attr_accessor :timeout
     attr_accessor :hostname
+    attr_accessor :runtime_versions
     attr_accessor :ignore_classes
     attr_accessor :auto_capture_sessions
     attr_accessor :track_sessions
@@ -93,6 +94,8 @@ module Bugsnag
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
       self.hostname = default_hostname
+      self.runtime_versions = { "ruby" => RUBY_VERSION }
+      self.runtime_versions["jruby"] = JRUBY_VERSION if defined?(JRUBY_VERSION)
       self.timeout = 15
       self.notify_release_stages = nil
       self.auto_capture_sessions = true

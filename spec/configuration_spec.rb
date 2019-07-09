@@ -1,4 +1,6 @@
 # encoding: utf-8
+require 'json'
+require 'socket'
 require 'spec_helper'
 
 describe Bugsnag::Configuration do
@@ -158,6 +160,33 @@ describe Bugsnag::Configuration do
     after do
       ENV['http_proxy'] = nil
       ENV['https_proxy'] = nil
+    end
+  end
+
+  describe "#hostname" do
+    it "has a default value" do
+        expect(subject.hostname.length).to be > 0
+    end
+    it "has a value set by Socket" do
+        expect(subject.hostname).to eq(Socket.gethostname)
+    end
+    it "has a value set by DYNO environment variable" do
+        ENV['DYNO'] = 'localhost'
+        expect(subject.hostname).to eq("localhost")
+    end
+    after do
+        ENV['DYNO'] = nil
+    end
+  end
+
+  describe "#runtime_versions" do
+    it "has a default value" do
+        expect(subject.runtime_versions.length).to be > 0
+        expect(subject.runtime_versions["ruby"]).to eq(RUBY_VERSION)
+    end
+    it "has a settable value" do
+        subject.runtime_versions["ruby"] = '9.9.9'
+        expect(subject.runtime_versions["ruby"]).to eq('9.9.9')
     end
   end
 

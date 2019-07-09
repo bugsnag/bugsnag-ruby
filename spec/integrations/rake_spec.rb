@@ -1,6 +1,7 @@
 require 'webrick'
 require 'spec_helper'
 require 'json'
+require 'rake'
 
 describe "Bugsnag Rake integration" do
   describe Bugsnag::Middleware::Rake do
@@ -64,6 +65,8 @@ describe "Bugsnag Rake integration" do
       result = request()
       expect(result["events"][0]["metaData"]["rake_task"]).not_to be_nil
       expect(result["events"][0]["metaData"]["rake_task"]["name"]).to eq("test:crash")
+      expect(result["events"][0]["app"]["type"]).to eq("rake")
+      expect(result["events"][0]["device"]["runtimeVersions"]["rake"]).to eq(::Rake::VERSION)
     end
   end
 end

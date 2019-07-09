@@ -6,6 +6,7 @@ describe 'Bugsnag::Que', :order => :defined do
     unless defined?(::Que)
       @mocked_que = true
       class ::Que
+        Version = '9.9.9'
         class << self
           attr_accessor :error_notifier
         end
@@ -53,6 +54,8 @@ describe 'Bugsnag::Que', :order => :defined do
     allow(Bugsnag).to receive(:configuration).and_return(config)
     expect(config).to receive(:app_type)
     expect(config).to receive(:app_type=).with('que')
+    runtime = {}
+    expect(config).to receive(:runtime_versions).and_return(runtime)
     allow(config).to receive(:clear_request_data)
     expect(Que).to receive(:error_notifier=) do |handler|
       handler.call(error, job)
@@ -60,6 +63,8 @@ describe 'Bugsnag::Que', :order => :defined do
 
     #Kick off
     load './lib/bugsnag/integrations/que.rb'
+    
+    expect(runtime).to eq(:que => '9.9.9')
   end
 
   context 'when the job is nil' do

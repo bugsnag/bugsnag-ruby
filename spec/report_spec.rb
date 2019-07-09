@@ -1267,4 +1267,16 @@ describe Bugsnag::Report do
       }
     end
   end
+
+  it 'should include device data when notify is called' do
+    Bugsnag.configuration.hostname = 'test-host'
+    Bugsnag.configuration.runtime_versions["ruby"] = '9.9.9'
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = payload["events"][0]
+      expect(event["device"]["hostname"]).to eq('test-host')
+      expect(event["device"]["runtimeVersions"]["ruby"]).to eq('9.9.9')
+    }
+  end
 end

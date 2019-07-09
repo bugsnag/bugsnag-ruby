@@ -118,7 +118,8 @@ module Bugsnag
           :version => Bugsnag::Report::NOTIFIER_VERSION
         },
         :device => {
-          :hostname => Bugsnag.configuration.hostname
+          :hostname => Bugsnag.configuration.hostname,
+          :runtimeVersions => Bugsnag.configuration.runtime_versions
         },
         :app => {
           :version => Bugsnag.configuration.app_version,

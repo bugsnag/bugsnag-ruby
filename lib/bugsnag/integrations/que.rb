@@ -1,5 +1,4 @@
 require 'que'
-
 if defined?(::Que)
   handler = proc do |error, job|
     begin
@@ -40,9 +39,11 @@ if defined?(::Que)
 
   if Que.respond_to?(:error_notifier=)
     Bugsnag.configuration.app_type ||= "que"
+    Bugsnag.configuration.runtime_versions[:que] = ::Que::Version
     Que.error_notifier = handler
   elsif Que.respond_to?(:error_handler=)
     Bugsnag.configuration.app_type ||= "que"
+    Bugsnag.configuration.runtime_versions[:que] = ::Que::Version
     Que.error_handler = handler
   end
 end

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'sidekiq'
 require 'sidekiq/testing'
 
 class Worker
@@ -29,6 +30,8 @@ describe Bugsnag::Sidekiq do
         expect(event["metaData"]["sidekiq"]["msg"]["args"]).to eq([-0])
         expect(event["metaData"]["sidekiq"]["msg"]["queue"]).to eq("default")
         expect(event["severity"]).to eq("error")
+        expect(event["app"]["type"]).to eq("sidekiq")
+        expect(event["device"]["runtimeVersions"]["sidekiq"]).to eq(::Sidekiq::VERSION)
       }
     end
   end
