@@ -1,7 +1,7 @@
 PATH
   remote: ../..
   specs:
-    bugsnag (6.6.4)
+    bugsnag (6.11.1)
       concurrent-ruby (~> 1.0)
 
 GEM
@@ -101,7 +101,7 @@ GEM
     pg (1.0.0)
     public_suffix (3.0.2)
     puma (3.11.2)
-    que (0.12.1)
+    que (0.14.3)
     rack (2.0.4)
     rack-protection (2.0.1)
       rack
@@ -234,4 +234,4 @@ DEPENDENCIES
   web-console (>= 3.3.0)
 
 BUNDLED WITH
-   1.16.0
+   2.0.2

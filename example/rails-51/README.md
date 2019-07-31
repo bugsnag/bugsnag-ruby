@@ -66,7 +66,13 @@ bundle exec sidekiq
 
 Que requires a database backend in order to queue jobs.  By default this database will be PostgreSQL although this can be changed via options as detailed in [the que documentation](https://github.com/chanks/que).
 
-Once PostgreSQL is set up as detailed using [the PostgreSQL documentation](https://www.postgresql.org/docs/), ensure Que can connect correctly before running and of the following examples. You may need to configure your connection in the `config/database.yml` file.
+Once PostgreSQL is set up as detailed using [the PostgreSQL documentation](https://www.postgresql.org/docs/), ensure Que can connect correctly before running any of the following examples which reference a `quedb` that can be created with the following command:
+
+```shell
+createdb quedb
+```
+
+You can configure your connection in the `config/database.yml` file.
 
 ### Configuration
 

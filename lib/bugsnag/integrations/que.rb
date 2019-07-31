@@ -1,3 +1,5 @@
+require 'que'
+
 if defined?(::Que)
   handler = proc do |error, job|
     begin
