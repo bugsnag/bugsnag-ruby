@@ -83,18 +83,14 @@ describe 'Configuration.logger' do
     key_warning = /\[Bugsnag\] .* No valid API key has been set, notifications will not be sent/
 
     def run_app(name)
-      out_reader, out_writer = IO.pipe
+      output = ''
       Dir.chdir(File.join(File.dirname(__FILE__), "../fixtures/apps/scripts")) do
         Bundler.with_clean_env do
-          pid = Process.spawn(@env, "bundle exec ruby #{name}.rb",
-                              out: out_writer.fileno,
-                              err: out_writer.fileno)
-          Process.waitpid(pid, 0)
+          IO.popen([@env, 'bundle', 'exec', 'ruby', "#{name}.rb", err: [:child, :out]]) do |io|
+            output << io.read
+          end
         end
       end
-      out_writer.close
-      output = ""
-      output << out_reader.gets until out_reader.eof?
       output
     end
 
