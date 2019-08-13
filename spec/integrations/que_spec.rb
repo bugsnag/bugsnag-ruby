@@ -7,6 +7,12 @@ describe 'Bugsnag::Que', :order => :defined do
       @mocked_que = true
       class ::Que
       end
+      module Kernel
+        alias_method :old_require, :require
+        def require(path)
+          old_require(path) unless /^que/.match(path)
+        end
+      end
     end
   end
 
@@ -56,5 +62,8 @@ describe 'Bugsnag::Que', :order => :defined do
 
   after do
     Object.send(:remove_const, :Que) if @mocked_que
+    module Kernel
+      alias_method :require, :old_require
+    end
   end
 end
