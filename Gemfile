@@ -25,7 +25,7 @@ group :rubocop, optional: true do
 end
 
 group :sidekiq, optional: true do
-  gem 'sidekiq', '~> 5.0.4'
+  gem 'sidekiq', '~> 5.2.7'
   # redis 4.1.2 dropped support for Ruby 2.2
   gem 'redis', ruby_version < Gem::Version.new('2.3.0') ? '4.1.1' : '>= 4.1.2'
 end
