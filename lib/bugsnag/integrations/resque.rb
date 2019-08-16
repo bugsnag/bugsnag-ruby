@@ -62,12 +62,12 @@ if Resque::Worker.new(:bugsnag_fork_check).fork_per_job?
   Resque.after_fork do
     Bugsnag.configuration.app_type = "resque"
     Bugsnag.configuration.default_delivery_method = :synchronous
-    Bugsnag.configuration.runtime_versions[:resque] = ::Resque::VERSION
+    Bugsnag.configuration.runtime_versions["resque"] = ::Resque::VERSION
   end
 else
   Resque.before_first_fork do
     Bugsnag.configuration.app_type = "resque"
     Bugsnag.configuration.default_delivery_method = :synchronous
-    Bugsnag.configuration.runtime_versions[:resque] = ::Resque::VERSION
+    Bugsnag.configuration.runtime_versions["resque"] = ::Resque::VERSION
   end
 end

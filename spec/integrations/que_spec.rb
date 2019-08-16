@@ -64,7 +64,7 @@ describe 'Bugsnag::Que', :order => :defined do
     #Kick off
     load './lib/bugsnag/integrations/que.rb'
     
-    expect(runtime).to eq(:que => '9.9.9')
+    expect(runtime).to eq("que" => "9.9.9")
   end
 
   context 'when the job is nil' do

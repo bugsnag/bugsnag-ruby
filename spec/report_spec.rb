@@ -1252,7 +1252,7 @@ describe Bugsnag::Report do
 
   if defined?(JRUBY_VERSION)
 
-    it "should work with java.lang.Throwables" do
+    it "works with java.lang.Throwables" do
       begin
         JRubyException.raise!
       rescue
@@ -1268,7 +1268,7 @@ describe Bugsnag::Report do
     end
   end
 
-  it 'should include device data when notify is called' do
+  it 'includes device data when notify is called' do
     Bugsnag.configuration.hostname = 'test-host'
     Bugsnag.configuration.runtime_versions["ruby"] = '9.9.9'
     Bugsnag.notify(BugsnagTestException.new("It crashed"))

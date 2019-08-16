@@ -52,7 +52,7 @@ describe 'Bugsnag::Resque', :order => :defined do
     #Kick off
     require './lib/bugsnag/integrations/resque'
 
-    expect(runtime).to eq(:resque => '9.9.9')
+    expect(runtime).to eq("resque" => "9.9.9")
   end
 
   it "can configure" do

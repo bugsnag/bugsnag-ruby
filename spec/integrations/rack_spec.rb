@@ -64,7 +64,6 @@ describe Bugsnag::Rack do
       app = lambda { |env| raise BugsnagTestException.new("It crashed") }
       rack_stack = Bugsnag::Rack.new(app)
 
-      expect(Bugsnag.configuration.runtime_versions["rack"]).to_not be nil
       expect(Bugsnag.configuration.runtime_versions["rack"]).to eq '9.9.9'
     end
 

@@ -18,7 +18,7 @@ Changelog
 
 ### Enhancements
 
-* Add Ruby (and other framework) version strings to report and session payloads (device.runtimeVersions)
+* Add Ruby (and other framework) version strings to report and session payloads (device.runtimeVersions).
   | [560](https://github.com/bugsnag/bugsnag-ruby/pull/560)
 
 ## 6.11.1 (22 Jan 2019)

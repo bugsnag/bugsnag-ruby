@@ -66,7 +66,7 @@ describe "Bugsnag Rake integration" do
       expect(result["events"][0]["metaData"]["rake_task"]).not_to be_nil
       expect(result["events"][0]["metaData"]["rake_task"]["name"]).to eq("test:crash")
       expect(result["events"][0]["app"]["type"]).to eq("rake")
-      expect(result["events"][0]["device"]["runtimeVersions"]["rake"]).to eq(::Rake::VERSION)
+      expect(result["events"][0]["device"]["runtimeVersions"]["rake"]).to match(/\d+\.\d+\.\d+/)
     end
   end
 end

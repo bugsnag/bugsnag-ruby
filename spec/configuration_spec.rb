@@ -165,28 +165,32 @@ describe Bugsnag::Configuration do
 
   describe "#hostname" do
     it "has a default value" do
-        expect(subject.hostname.length).to be > 0
+      expect(subject.hostname.length).to be > 0
     end
+
     it "has a value set by Socket" do
-        expect(subject.hostname).to eq(Socket.gethostname)
+      expect(subject.hostname).to eq(Socket.gethostname)
     end
+
     it "has a value set by DYNO environment variable" do
-        ENV['DYNO'] = 'localhost'
-        expect(subject.hostname).to eq("localhost")
+      ENV['DYNO'] = 'localhost'
+      expect(subject.hostname).to eq("localhost")
     end
+
     after do
-        ENV['DYNO'] = nil
+      ENV['DYNO'] = nil
     end
   end
 
   describe "#runtime_versions" do
     it "has a default value" do
-        expect(subject.runtime_versions.length).to be > 0
-        expect(subject.runtime_versions["ruby"]).to eq(RUBY_VERSION)
+      expect(subject.runtime_versions.length).to be > 0
+      expect(subject.runtime_versions["ruby"]).to eq(RUBY_VERSION)
     end
+
     it "has a settable value" do
-        subject.runtime_versions["ruby"] = '9.9.9'
-        expect(subject.runtime_versions["ruby"]).to eq('9.9.9')
+      subject.runtime_versions["ruby"] = '9.9.9'
+      expect(subject.runtime_versions["ruby"]).to eq('9.9.9')
     end
   end
 

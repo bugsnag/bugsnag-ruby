@@ -94,7 +94,8 @@ module Bugsnag
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
       self.hostname = default_hostname
-      self.runtime_versions = { "ruby" => RUBY_VERSION }
+      self.runtime_versions = {}
+      self.runtime_versions["ruby"] = RUBY_VERSION
       self.runtime_versions["jruby"] = JRUBY_VERSION if defined?(JRUBY_VERSION)
       self.timeout = 15
       self.notify_release_stages = nil
