@@ -55,18 +55,15 @@ describe "Bugsnag Rake integration" do
     let(:request) { JSON.parse(queue.pop) }
 
     it 'should run the rake middleware when rake tasks crash' do
-      #Skips this test in ruby 1.9.3 with travis
-      unless ENV['TRAVIS'] && RUBY_VERSION == "1.9.3"
-        ENV['BUGSNAG_TEST_SERVER_PORT'] = server.config[:Port].to_s
-        task_fixtures_path = File.join(File.dirname(__FILE__), '../fixtures', 'tasks')
-        Dir.chdir(task_fixtures_path) do
-          system("bundle exec rake test:crash > /dev/null 2>&1")
-        end
-
-        result = request()
-        expect(result["events"][0]["metaData"]["rake_task"]).not_to be_nil
-        expect(result["events"][0]["metaData"]["rake_task"]["name"]).to eq("test:crash")
+      ENV['BUGSNAG_TEST_SERVER_PORT'] = server.config[:Port].to_s
+      task_fixtures_path = File.join(File.dirname(__FILE__), '../fixtures', 'tasks')
+      Dir.chdir(task_fixtures_path) do
+        system("bundle exec rake test:crash > /dev/null 2>&1")
       end
+
+      result = request()
+      expect(result["events"][0]["metaData"]["rake_task"]).not_to be_nil
+      expect(result["events"][0]["metaData"]["rake_task"]["name"]).to eq("test:crash")
     end
   end
 end
