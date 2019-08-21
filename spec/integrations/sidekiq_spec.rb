@@ -31,7 +31,7 @@ describe Bugsnag::Sidekiq do
         expect(event["metaData"]["sidekiq"]["msg"]["queue"]).to eq("default")
         expect(event["severity"]).to eq("error")
         expect(event["app"]["type"]).to eq("sidekiq")
-        expect(event["device"]["runtimeVersions"]["sidekiq"]).to eq(::Sidekiq::VERSION)
+        expect(event["device"]["runtimeVersions"]["sidekiq"]).to match(/\A\d+\.\d+\.\d+/)
       }
     end
   end
