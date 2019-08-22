@@ -9,7 +9,7 @@ group :test, optional: true do
   gem 'rdoc', '~> 5.1.0'
   gem 'pry'
   gem 'addressable', '~> 2.3.8'
-  gem 'delayed_job' if ruby_version >= Gem::Version.new('2.2.2')
+  gem 'delayed_job', ruby_version < Gem::Version.new('2.5.0') ? '4.1.7': '>4.1.7' if ruby_version >= Gem::Version.new('2.2.2')
   gem 'i18n', ruby_version <= Gem::Version.new('2.3.0') ? '1.4.0': '>1.4.0' if ruby_version >= Gem::Version.new('2.2.2')
   gem 'webmock', ruby_version <= Gem::Version.new('1.9.3') ? '2.3.2': '>2.3.2'
   gem 'hashdiff', ruby_version <= Gem::Version.new('1.9.3') ? '0.3.8': '>0.3.8'
