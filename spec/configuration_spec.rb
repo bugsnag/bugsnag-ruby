@@ -1,5 +1,6 @@
 # encoding: utf-8
-require 'json'
+require 'socket'	
+require 'spec_helper'
 
 describe Bugsnag::Configuration do
   describe "delivery_method" do

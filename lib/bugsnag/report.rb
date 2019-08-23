@@ -50,15 +50,15 @@ module Bugsnag
       self.raw_exceptions = generate_raw_exceptions(exception)
       self.exceptions = generate_exception_list
 
-      self.api_key = configuration.api_key.dup
-      self.app_type = configuration.app_type.dup
-      self.app_version = configuration.app_version.dup
+      self.api_key = configuration.api_key
+      self.app_type = configuration.app_type
+      self.app_version = configuration.app_version
       self.breadcrumbs = []
-      self.delivery_method = configuration.delivery_method.dup
-      self.hostname = configuration.hostname.dup
+      self.delivery_method = configuration.delivery_method
+      self.hostname = configuration.hostname
       self.runtime_versions = configuration.runtime_versions.dup
       self.meta_data = {}
-      self.release_stage = configuration.release_stage.dup
+      self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
       self.user = {}
