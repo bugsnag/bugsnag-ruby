@@ -1,5 +1,4 @@
 # encoding: utf-8
-require 'socket'	
 require 'spec_helper'
 
 describe Bugsnag::Configuration do
