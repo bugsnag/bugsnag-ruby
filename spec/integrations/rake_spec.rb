@@ -1,7 +1,6 @@
 require 'webrick'
 require 'spec_helper'
 require 'json'
-require 'rake'
 
 describe "Bugsnag Rake integration" do
   describe Bugsnag::Middleware::Rake do

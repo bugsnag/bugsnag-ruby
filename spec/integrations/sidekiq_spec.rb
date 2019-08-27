@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'sidekiq'
 require 'sidekiq/testing'
 
 class Worker
@@ -31,7 +30,7 @@ describe Bugsnag::Sidekiq do
         expect(event["metaData"]["sidekiq"]["msg"]["queue"]).to eq("default")
         expect(event["severity"]).to eq("error")
         expect(event["app"]["type"]).to eq("sidekiq")
-        expect(event["device"]["runtimeVersions"]["sidekiq"]).to match(/\A\d+\.\d+\.\d+/)
+        expect(event["device"]["runtimeVersions"]["sidekiq"]).to eq('2.0.0')
       }
     end
   end
