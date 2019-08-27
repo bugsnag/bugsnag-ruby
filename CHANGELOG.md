@@ -16,6 +16,9 @@ Changelog
   | [#545](https://github.com/bugsnag/bugsnag-ruby/issues/545)
   | [#548](https://github.com/bugsnag/bugsnag-ruby/pull/548)
 
+* Allow symbols in breadcrumb meta data.
+  | [#563](https://github.com/bugsnag/bugsnag-ruby/pull/563)
+
 ## 6.11.1 (22 Jan 2019)
 
 ### Fixes
