@@ -64,6 +64,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
 
         meta_data = {
           :string => "This is a string",
+          :symbol => :this_is_a_symbol,
           :integer => 12345,
           :float => 12345.6789,
           :false => false,
