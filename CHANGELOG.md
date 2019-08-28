@@ -10,6 +10,7 @@ Changelog
 
 * Allow symbols in breadcrumb meta data.
   | [#563](https://github.com/bugsnag/bugsnag-ruby/pull/563)
+  | [directionless](https://github.com/directionless)
 
 ### Fixes
 
