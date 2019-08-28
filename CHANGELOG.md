@@ -1,7 +1,15 @@
 Changelog
 =========
 
-## TBD
+## 6.12.0 (28 Aug 2019)
+
+### Enhancements
+
+* Add Ruby (and other framework) version strings to report and session payloads (device.runtimeVersions).
+  | [560](https://github.com/bugsnag/bugsnag-ruby/pull/560)
+
+* Allow symbols in breadcrumb meta data.
+  | [#563](https://github.com/bugsnag/bugsnag-ruby/pull/563)
 
 ### Fixes
 
@@ -15,14 +23,6 @@ Changelog
   This occurs under some conditions such as database connection failures.
   | [#545](https://github.com/bugsnag/bugsnag-ruby/issues/545)
   | [#548](https://github.com/bugsnag/bugsnag-ruby/pull/548)
-
-### Enhancements
-
-* Add Ruby (and other framework) version strings to report and session payloads (device.runtimeVersions).
-  | [560](https://github.com/bugsnag/bugsnag-ruby/pull/560)
-
-* Allow symbols in breadcrumb meta data.
-  | [#563](https://github.com/bugsnag/bugsnag-ruby/pull/563)
 
 ## 6.11.1 (22 Jan 2019)
 
