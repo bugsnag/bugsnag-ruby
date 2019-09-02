@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## TBC
+
+### Fixes
+
+* Fix nil dereference in SQL Active Record `bind` key.
+  | [#555](https://github.com/bugsnag/bugsnag-ruby/issues/555)
+  | [#565](https://github.com/bugsnag/bugsnag-ruby/pull/565)
+
 ## 6.12.0 (28 Aug 2019)
 
 ### Enhancements
