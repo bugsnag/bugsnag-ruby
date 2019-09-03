@@ -5,7 +5,7 @@ Changelog
 
 ### Fixes
 
-* Fix nil dereference in SQL Active Record `bind` key.
+* Account for missing `:binds` key in `sql.active_record` ActiveSupport notifications
   | [#555](https://github.com/bugsnag/bugsnag-ruby/issues/555)
   | [#565](https://github.com/bugsnag/bugsnag-ruby/pull/565)
 
