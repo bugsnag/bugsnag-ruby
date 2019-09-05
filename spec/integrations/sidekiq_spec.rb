@@ -29,6 +29,8 @@ describe Bugsnag::Sidekiq do
         expect(event["metaData"]["sidekiq"]["msg"]["args"]).to eq([-0])
         expect(event["metaData"]["sidekiq"]["msg"]["queue"]).to eq("default")
         expect(event["severity"]).to eq("error")
+        expect(event["app"]["type"]).to eq("sidekiq")
+        expect(event["device"]["runtimeVersions"]["sidekiq"]).to eq('2.0.0')
       }
     end
   end

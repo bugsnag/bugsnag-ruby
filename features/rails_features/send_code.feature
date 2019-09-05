@@ -30,6 +30,7 @@ Scenario Outline: Send_code can be updated in an initializer
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Send_code can be updated after an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -56,3 +57,4 @@ Scenario Outline: Send_code can be updated after an initializer
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |

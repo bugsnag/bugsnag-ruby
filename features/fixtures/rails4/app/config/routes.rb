@@ -16,4 +16,6 @@ App::Application.routes.draw do
   get "/send_code/(:action)", controller: 'send_code'
   get "/send_environment/(:action)", controller: 'send_environment'
   get "/devise/(:action)", controller: 'devise'
+  get "/breadcrumbs/(:action)", controller: 'breadcrumbs'
+  get "/mongo/(:action)", controller: 'mongo'
 end

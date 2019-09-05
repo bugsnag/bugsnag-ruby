@@ -29,9 +29,13 @@ require "bugsnag/middleware/callbacks"
 require "bugsnag/middleware/classify_error"
 require "bugsnag/middleware/delayed_job"
 
+require "bugsnag/breadcrumbs/validator"
+require "bugsnag/breadcrumbs/breadcrumb"
+require "bugsnag/breadcrumbs/breadcrumbs"
+
 module Bugsnag
   LOCK = Mutex.new
-  INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que]
+  INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que, :mongo]
 
   NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
 
@@ -44,6 +48,7 @@ module Bugsnag
       yield(configuration) if block_given?
 
       check_key_valid if validate_api_key
+      check_endpoint_setup
 
       register_at_exit
     end
@@ -107,10 +112,12 @@ module Bugsnag
         end
 
         # Deliver
-        configuration.info("Notifying #{configuration.endpoint} of #{report.exceptions.last[:errorClass]}")
+        configuration.info("Notifying #{configuration.notify_endpoint} of #{report.exceptions.last[:errorClass]}")
         options = {:headers => report.headers}
         payload = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
-        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.endpoint, payload, configuration, options)
+        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.notify_endpoint, payload, configuration, options)
+        report_summary = report.summary
+        leave_breadcrumb(report_summary[:error_class], report_summary, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
       end
     end
 
@@ -189,6 +196,39 @@ module Bugsnag
       end
     end
 
+    ##
+    # Leave a breadcrumb to be attached to subsequent reports
+    #
+    # @param name [String] the main breadcrumb name/message
+    # @param meta_data [Hash] String, Numeric, or Boolean meta data to attach
+    # @param type [String] the breadcrumb type, from Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
+    # @param auto [Symbol] set to :auto if the breadcrumb is automatically created
+    def leave_breadcrumb(name, meta_data={}, type=Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE, auto=:manual)
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(name, type, meta_data, auto)
+      validator = Bugsnag::Breadcrumbs::Validator.new(configuration)
+
+      # Initial validation
+      validator.validate(breadcrumb)
+
+      # Skip if it's already invalid
+      unless breadcrumb.ignore?
+        # Run callbacks
+        configuration.before_breadcrumb_callbacks.each do |c|
+          c.arity > 0 ? c.call(breadcrumb) : c.call
+          break if breadcrumb.ignore?
+        end
+
+        # Return early if ignored
+        return if breadcrumb.ignore?
+
+        # Validate again in case of callback alteration
+        validator.validate(breadcrumb)
+
+        # Add to breadcrumbs buffer if still valid
+        configuration.breadcrumbs << breadcrumb unless breadcrumb.ignore?
+      end
+    end
+
     private
 
     def deliver_notification?(exception, auto_notify)
@@ -215,6 +255,22 @@ module Bugsnag
       if !configuration.valid_api_key? && !@key_warning
         configuration.warn("No valid API key has been set, notifications will not be sent")
         @key_warning = true
+      end
+    end
+
+    ##
+    # Verifies the current endpoint setup
+    #
+    # If only a notify_endpoint has been set, session tracking will be disabled
+    # If only a session_endpoint has been set, and ArgumentError will be raised
+    def check_endpoint_setup
+      notify_set = configuration.notify_endpoint && configuration.notify_endpoint != Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT
+      session_set = configuration.session_endpoint && configuration.session_endpoint != Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT
+      if notify_set && !session_set
+        configuration.warn("The session endpoint has not been set, all further session capturing will be disabled")
+        configuration.disable_sessions
+      elsif !notify_set && session_set
+        raise ArgumentError, "The session endpoint cannot be modified without the notify endpoint"
       end
     end
   end

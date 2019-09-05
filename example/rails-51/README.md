@@ -56,18 +56,37 @@ Navigate to the `/sidekiq` page and run any of the examples using the links prov
 
 The worker code can be found in `app/workers/sidekiq_workers.rb`.
 
+To process the jobs, run Sidekiq using the following command:
+
+```shell
+bundle exec sidekiq
+```
+
 ## Que in Rails
 
 Que requires a database backend in order to queue jobs.  By default this database will be PostgreSQL although this can be changed via options as detailed in [the que documentation](https://github.com/chanks/que).
 
-Once PostgreSQL is set up as detailed using [the PostgreSQL documentation](https://www.postgresql.org/docs/), ensure Que can connect correctly before running and of the following examples. You may need to configure your connection in the `config/database.yml` file.
+Once PostgreSQL is set up as detailed using [the PostgreSQL documentation](https://www.postgresql.org/docs/), ensure Que can connect correctly before running any of the following examples which reference a `quedb` that can be created with the following command:
+
+```shell
+createdb quedb
+```
+
+You can configure your connection in the `config/database.yml` file.
 
 ### Configuration
+
+All tasks run with Que should set the rails environment to `que`.  This ensures that the correct database and connection settings are used.
+Do this by prepending `RAILS_ENV=que` before each command, or run:
+
+```shell
+export RAILS_ENV=que
+```
 
 Ensure that the initial Que setup is complete by running:
 
 ```shell
-bundle exec bin/rake que:install
+bundle exec bin/rails generate que:install
 ```
 
 and

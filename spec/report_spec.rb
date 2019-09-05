@@ -1101,9 +1101,158 @@ describe Bugsnag::Report do
     }
   end
 
+  describe "breadcrumbs" do
+    let(:timestamp_regex) { /^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:[\d\.]+Z$/ }
+
+    it "includes left breadcrumbs" do
+      Bugsnag.leave_breadcrumb("Test breadcrumb")
+      notify_test_exception
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["breadcrumbs"].size).to eq(1)
+        expect(event["breadcrumbs"].first).to match({
+          "name" => "Test breadcrumb",
+          "type" => "manual",
+          "metaData" => {},
+          "timestamp" => match(timestamp_regex)
+        })
+      }
+    end
+
+    it "filters left breadcrumbs" do
+      Bugsnag.leave_breadcrumb("Test breadcrumb", {
+        :forbidden_key => false,
+        :allowed_key => true
+      })
+      Bugsnag.configuration.meta_data_filters << "forbidden"
+      notify_test_exception
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["breadcrumbs"].size).to eq(1)
+        expect(event["breadcrumbs"].first).to match({
+          "name" => "Test breadcrumb",
+          "type" => "manual",
+          "metaData" => {
+            "forbidden_key" => "[FILTERED]",
+            "allowed_key" => true
+          },
+          "timestamp" => match(timestamp_regex)
+        })
+      }
+    end
+
+    it "defaults to an empty array" do
+      notify_test_exception
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["breadcrumbs"].size).to eq(0)
+      }
+    end
+
+    it "allows breadcrumbs to be editted in callbacks" do
+      Bugsnag.leave_breadcrumb("Test breadcrumb")
+      Bugsnag.before_notify_callbacks << Proc.new { |report|
+        breadcrumb = report.breadcrumbs.first
+        breadcrumb.meta_data = {:a => 1, :b => 2}
+      }
+      notify_test_exception
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["breadcrumbs"].size).to eq(1)
+        expect(event["breadcrumbs"].first).to match({
+          "name" => "Test breadcrumb",
+          "type" => "manual",
+          "metaData" => {"a" => 1, "b" => 2},
+          "timestamp" => match(timestamp_regex)
+        })
+      }
+    end
+  end
+
+  describe "#summary" do
+    it "provides a hash of the name, message, and severity" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report = Bugsnag::Report.new(e, Bugsnag.configuration)
+
+        expect(report.summary).to eq({
+          :error_class => "ZeroDivisionError",
+          :message => "divided by 0",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles strings" do
+      report = Bugsnag::Report.new("test string", Bugsnag.configuration)
+
+      expect(report.summary).to eq({
+        :error_class => "RuntimeError",
+        :message => "test string",
+        :severity => "warning"
+      })
+    end
+
+    it "handles error edge cases" do
+      report = Bugsnag::Report.new(Timeout::Error, Bugsnag.configuration)
+
+      expect(report.summary).to eq({
+        :error_class => "Timeout::Error",
+        :message => "Timeout::Error",
+        :severity => "warning"
+      })
+    end
+
+    it "handles empty exceptions" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report = Bugsnag::Report.new(e, Bugsnag.configuration)
+
+        report.exceptions = []
+
+        expect(report.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles removed exceptions" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report = Bugsnag::Report.new(e, Bugsnag.configuration)
+
+        report.exceptions = nil
+
+        expect(report.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles exceptions being replaced" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report = Bugsnag::Report.new(e, Bugsnag.configuration)
+
+        report.exceptions = "no one should ever do this"
+
+        expect(report.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+  end
+
   if defined?(JRUBY_VERSION)
 
-    it "should work with java.lang.Throwables" do
+    it "works with java.lang.Throwables" do
       begin
         JRubyException.raise!
       rescue
@@ -1117,5 +1266,17 @@ describe Bugsnag::Report do
         expect(exception["stacktrace"].size).to be > 0
       }
     end
+  end
+
+  it 'includes device data when notify is called' do
+    Bugsnag.configuration.hostname = 'test-host'
+    Bugsnag.configuration.runtime_versions["ruby"] = '9.9.9'
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = payload["events"][0]
+      expect(event["device"]["hostname"]).to eq('test-host')
+      expect(event["device"]["runtimeVersions"]["ruby"]).to eq('9.9.9')
+    }
   end
 end

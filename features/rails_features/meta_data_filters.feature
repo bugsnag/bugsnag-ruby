@@ -37,3 +37,4 @@ Scenario Outline: Meta_data_filters should include Rails.configuration.filter_pa
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |

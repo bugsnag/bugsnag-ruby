@@ -6,6 +6,7 @@ describe 'Bugsnag::Resque', :order => :defined do
     unless defined?(::Resque)
       @mocked_resque = true
       class ::Resque
+        VERSION = '9.9.9'
         class Worker
         end
         class Failure
@@ -44,10 +45,14 @@ describe 'Bugsnag::Resque', :order => :defined do
     expect(fork_check).to receive(:fork_per_job?).and_return(true)
     expect(::Resque).to receive(:after_fork).and_yield
     expect(Bugsnag.configuration).to receive(:app_type=).with("resque")
+    runtime = {}
+    expect(Bugsnag.configuration).to receive(:runtime_versions).and_return(runtime)
     expect(Bugsnag.configuration).to receive(:default_delivery_method=).with(:synchronous)
 
     #Kick off
     require './lib/bugsnag/integrations/resque'
+
+    expect(runtime).to eq("resque" => "9.9.9")
   end
 
   it "can configure" do
@@ -71,14 +76,16 @@ describe 'Bugsnag::Resque', :order => :defined do
       :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
       :attributes => Bugsnag::Resque::FRAMEWORK_ATTRIBUTES
     })
+    expected_context = "class@queue"
     meta_data = double('meta_data')
     expect(report).to receive(:meta_data).and_return(meta_data)
     expect(meta_data).to receive(:merge!).with({
-      :context => "class@queue",
+      :context => expected_context,
       :payload => {
         "class" => "class"
       }
     })
+    expect(report).to receive(:context=).with(expected_context)
     expect(Bugsnag).to receive(:notify).with(exception, true).and_yield(report)
     resque.save
   end

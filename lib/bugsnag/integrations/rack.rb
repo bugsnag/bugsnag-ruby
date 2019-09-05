@@ -20,7 +20,7 @@ module Bugsnag
           if defined?(settings)
             config.project_root = settings.root
           else
-            config.warn("You should set your app's project_root (see https://bugsnag.com/docs/notifiers/ruby#project_root).")
+            config.warn("You should set your app's project_root (see https://docs.bugsnag.com/platforms/ruby/rails/configuration-options/#project_root).")
           end
         end
 
@@ -29,7 +29,10 @@ module Bugsnag
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::WardenUser) if defined?(Warden)
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::ClearanceUser) if defined?(Clearance)
 
+        # Set environment data for payload
         config.app_type ||= "rack"
+        config.runtime_versions["rack"] = ::Rack.release if defined?(::Rack)
+        config.runtime_versions["sinatra"] = ::Sinatra::VERSION if defined?(::Sinatra)
       end
     end
 

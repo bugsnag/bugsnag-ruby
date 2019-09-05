@@ -27,6 +27,7 @@ Scenario Outline: Auto_notify set to false in the initializer prevents unhandled
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Auto_notify set to false in the initializer still sends handled errors
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -59,6 +60,7 @@ Scenario Outline: Auto_notify set to false in the initializer still sends handle
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Auto_notify set to false after the initializer prevents unhandled error sending
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -81,6 +83,7 @@ Scenario Outline: Auto_notify set to false after the initializer prevents unhand
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
 
 Scenario Outline: Auto_notify set to false after the initializer still sends handled errors
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -112,3 +115,4 @@ Scenario Outline: Auto_notify set to false after the initializer still sends han
     | 2.4          | 5             |
     | 2.5          | 3             |
     | 2.5          | 5             |
+    | 2.5          | 6             |

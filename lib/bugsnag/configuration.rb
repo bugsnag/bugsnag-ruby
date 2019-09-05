@@ -8,6 +8,9 @@ require "bugsnag/middleware/ignore_error_class"
 require "bugsnag/middleware/suggestion_data"
 require "bugsnag/middleware/classify_error"
 require "bugsnag/middleware/session_data"
+require "bugsnag/middleware/breadcrumbs"
+require "bugsnag/utility/circular_buffer"
+require "bugsnag/breadcrumbs/breadcrumbs"
 
 module Bugsnag
   class Configuration
@@ -22,7 +25,6 @@ module Bugsnag
     attr_accessor :app_version
     attr_accessor :app_type
     attr_accessor :meta_data_filters
-    attr_accessor :endpoint
     attr_accessor :logger
     attr_accessor :middleware
     attr_accessor :internal_middleware
@@ -32,14 +34,41 @@ module Bugsnag
     attr_accessor :proxy_password
     attr_accessor :timeout
     attr_accessor :hostname
+    attr_accessor :runtime_versions
     attr_accessor :ignore_classes
     attr_accessor :auto_capture_sessions
-    attr_accessor :session_endpoint
+
+    ##
+    # @return [String] URL error notifications will be delivered to
+    attr_reader :notify_endpoint
+    alias :endpoint :notify_endpoint
+
+    ##
+    # @return [String] URL session notifications will be delivered to
+    attr_reader :session_endpoint
+
+    ##
+    # @return [Boolean] whether any sessions types will be delivered
+    attr_reader :enable_sessions
+
+    ##
+    # @return [Array<String>] strings indicating allowable automatic breadcrumb types
+    attr_accessor :enabled_automatic_breadcrumb_types
+
+    ##
+    # @return [Array<#call>] callables to be run before a breadcrumb is logged
+    attr_accessor :before_breadcrumb_callbacks
+
+    ##
+    # @return [Integer] the maximum allowable amount of breadcrumbs per thread
+    attr_reader :max_breadcrumbs
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
-    DEFAULT_ENDPOINT = "https://notify.bugsnag.com"
+
+    DEFAULT_NOTIFY_ENDPOINT = "https://notify.bugsnag.com"
     DEFAULT_SESSION_ENDPOINT = "https://sessions.bugsnag.com"
+    DEFAULT_ENDPOINT = DEFAULT_NOTIFY_ENDPOINT
 
     DEFAULT_META_DATA_FILTERS = [
       /authorization/i,
@@ -49,6 +78,8 @@ module Bugsnag
       /warden\.user\.([^.]+)\.key/,
       "rack.request.form_vars"
     ].freeze
+
+    DEFAULT_MAX_BREADCRUMBS = 25
 
     alias :track_sessions :auto_capture_sessions
     alias :track_sessions= :auto_capture_sessions=
@@ -61,12 +92,26 @@ module Bugsnag
       self.send_environment = false
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
-      self.endpoint = DEFAULT_ENDPOINT
       self.hostname = default_hostname
+      self.runtime_versions = {}
+      self.runtime_versions["ruby"] = RUBY_VERSION
+      self.runtime_versions["jruby"] = JRUBY_VERSION if defined?(JRUBY_VERSION)
       self.timeout = 15
       self.notify_release_stages = nil
-      self.auto_capture_sessions = false
-      self.session_endpoint = DEFAULT_SESSION_ENDPOINT
+      self.auto_capture_sessions = true
+
+      # All valid breadcrumb types should be allowable initially
+      self.enabled_automatic_breadcrumb_types = Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.dup
+      self.before_breadcrumb_callbacks = []
+
+      # Store max_breadcrumbs here instead of outputting breadcrumbs.max_items
+      # to avoid infinite recursion when creating breadcrumb buffer
+      @max_breadcrumbs = DEFAULT_MAX_BREADCRUMBS
+
+      # These are set exclusively using the "set_endpoints" method
+      @notify_endpoint = DEFAULT_NOTIFY_ENDPOINT
+      @session_endpoint = DEFAULT_SESSION_ENDPOINT
+      @enable_sessions = true
 
       # SystemExit and SignalException are common Exception types seen with
       # successful exits and are not automatically reported to Bugsnag
@@ -94,6 +139,7 @@ module Bugsnag
       self.internal_middleware.use Bugsnag::Middleware::SuggestionData
       self.internal_middleware.use Bugsnag::Middleware::ClassifyError
       self.internal_middleware.use Bugsnag::Middleware::SessionData
+      self.internal_middleware.use Bugsnag::Middleware::Breadcrumbs
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
@@ -187,6 +233,61 @@ module Bugsnag
       self.proxy_port = proxy.port
       self.proxy_user = proxy.user
       self.proxy_password = proxy.password
+    end
+
+    ##
+    # Sets the maximum allowable amount of breadcrumbs
+    #
+    # @param [Integer] the new maximum breadcrumb limit
+    def max_breadcrumbs=(new_max_breadcrumbs)
+      @max_breadcrumbs = new_max_breadcrumbs
+      breadcrumbs.max_items = new_max_breadcrumbs
+    end
+
+    ##
+    # Returns the breadcrumb circular buffer
+    #
+    # @return [Bugsnag::Utility::CircularBuffer] a thread based circular buffer containing breadcrumbs
+    def breadcrumbs
+      request_data[:breadcrumbs] ||= Bugsnag::Utility::CircularBuffer.new(@max_breadcrumbs)
+    end
+
+    # Sets the notification endpoint
+    #
+    # @param new_notify_endpoint [String] The URL to deliver error notifications to
+    #
+    # @deprecated Use {#set_endpoints} instead
+    def endpoint=(new_notify_endpoint)
+      warn("The 'endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
+      set_endpoints(new_notify_endpoint, session_endpoint) # Pass the existing session_endpoint through so it doesn't get overwritten
+    end
+
+    ##
+    # Sets the sessions endpoint
+    #
+    # @param new_session_endpoint [String] The URL to deliver session notifications to
+    #
+    # @deprecated Use {#set_endpoints} instead
+    def session_endpoint=(new_session_endpoint)
+      warn("The 'session_endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
+      set_endpoints(notify_endpoint, new_session_endpoint) # Pass the existing notify_endpoint through so it doesn't get overwritten
+    end
+
+    ##
+    # Sets the notification and session endpoints
+    #
+    # @param new_notify_endpoint [String] The URL to deliver error notifications to
+    # @param new_session_endpoint [String] The URL to deliver session notifications to
+    def set_endpoints(new_notify_endpoint, new_session_endpoint)
+      @notify_endpoint = new_notify_endpoint
+      @session_endpoint = new_session_endpoint
+    end
+
+    ##
+    # Disables session tracking and delivery.  Cannot be undone
+    def disable_sessions
+      self.auto_capture_sessions = false
+      @enable_sessions = false
     end
 
     private

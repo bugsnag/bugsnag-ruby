@@ -35,6 +35,7 @@ module Bugsnag
     #
     # This allows Bugsnag to track error rates for a release.
     def start_session
+      return unless Bugsnag.configuration.enable_sessions
       start_delivery_thread
       start_time = Time.now().utc().strftime('%Y-%m-%dT%H:%M:00')
       new_session = {
@@ -117,7 +118,8 @@ module Bugsnag
           :version => Bugsnag::Report::NOTIFIER_VERSION
         },
         :device => {
-          :hostname => Bugsnag.configuration.hostname
+          :hostname => Bugsnag.configuration.hostname,
+          :runtimeVersions => Bugsnag.configuration.runtime_versions
         },
         :app => {
           :version => Bugsnag.configuration.app_version,

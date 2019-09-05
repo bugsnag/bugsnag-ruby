@@ -7,8 +7,14 @@ Bugsnag.configure do |config|
   config.auto_notify = ENV["BUGSNAG_AUTO_NOTIFY"] != "false"
   config.project_root = ENV["BUGSNAG_PROJECT_ROOT"] if ENV.include? "BUGSNAG_PROJECT_ROOT"
   config.ignore_classes << lambda { |ex| ex.class.to_s == ENV["BUGSNAG_IGNORE_CLASS"] } if ENV.include? "BUGSNAG_IGNORE_CLASS"
-  config.auto_capture_sessions = ENV["BUGSNAG_AUTO_CAPTURE_SESSIONS"] == "true"
+  config.auto_capture_sessions = ENV["BUGSNAG_AUTO_CAPTURE_SESSIONS"] == "true" unless ENV["USE_DEFAULT_AUTO_CAPTURE_SESSIONS"]
   config.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] if ENV.include? "BUGSNAG_RELEASE_STAGE"
   config.send_code = ENV["BUGSNAG_SEND_CODE"] != "false"
   config.send_environment = ENV["BUGSNAG_SEND_ENVIRONMENT"] == "true"
+
+  if ENV["SQL_ONLY_BREADCRUMBS"] == "true"
+    config.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
+      breadcrumb.ignore! unless breadcrumb.meta_data[:event_name] == "sql.active_record" && breadcrumb.meta_data[:name] == "User Load"
+    end
+  end
 end

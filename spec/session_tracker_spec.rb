@@ -19,6 +19,10 @@ describe Bugsnag::SessionTracker do
     Thread.new{ server.start }
   end
 
+  before(:each) do
+    Bugsnag.instance_variable_set(:@session_tracker, Bugsnag::SessionTracker.new)
+  end
+
   after do
     Bugsnag.configure do |conf|
       conf.auto_capture_sessions = false
@@ -26,6 +30,10 @@ describe Bugsnag::SessionTracker do
     end
     server.stop
     queue.clear
+  end
+
+  after(:all) do
+    Bugsnag.instance_variable_set(:@session_tracker, Bugsnag::SessionTracker.new)
   end
 
   it 'adds session object to queue' do
@@ -60,11 +68,21 @@ describe Bugsnag::SessionTracker do
     expect(session_one[:id]).to_not eq(session_two[:id])
   end
 
+  it 'will not create sessions if Configuration.enable_sessions is false' do
+    Bugsnag.configure do |conf|
+      conf.set_endpoints("http://localhost:#{server.config[:Port]}", nil)
+    end
+    expect(Bugsnag.configuration.enable_sessions).to eq(false)
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
+    Bugsnag.start_session
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
+  end
+
   it 'sends sessions when send_sessions is called' do
     Bugsnag.configure do |conf|
       conf.auto_capture_sessions = true
       conf.delivery_method = :synchronous
-      conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
+      conf.set_endpoints("http://localhost:#{server.config[:Port]}", "http://localhost:#{server.config[:Port]}")
     end
     WebMock.allow_net_connect!
     Bugsnag.start_session
@@ -84,7 +102,7 @@ describe Bugsnag::SessionTracker do
       conf.auto_capture_sessions = true
       conf.release_stage = "test_stage"
       conf.delivery_method = :synchronous
-      conf.session_endpoint = "http://localhost:#{server.config[:Port]}"
+      conf.set_endpoints("http://localhost:#{server.config[:Port]}", "http://localhost:#{server.config[:Port]}")
     end
     WebMock.allow_net_connect!
     Bugsnag.start_session
@@ -111,6 +129,7 @@ describe Bugsnag::SessionTracker do
     device = payload["device"]
     expect(device.include?("hostname")).to be true
     expect(device["hostname"]).to eq(Bugsnag.configuration.hostname)
+    expect(device["runtimeVersions"]["ruby"]).to eq(Bugsnag.configuration.runtime_versions["ruby"])
   end
 
   it 'uses middleware to attach session to notification' do

@@ -43,7 +43,10 @@ module Bugsnag
           :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
           :attributes => FRAMEWORK_ATTRIBUTES
         }
-        report.meta_data.merge!({:context => "#{payload['class']}@#{queue}", :payload => payload})
+
+        context = "#{payload['class']}@#{queue}"
+        report.meta_data.merge!({:context => context, :payload => payload})
+        report.context = context
       end
     end
   end
@@ -59,10 +62,12 @@ if Resque::Worker.new(:bugsnag_fork_check).fork_per_job?
   Resque.after_fork do
     Bugsnag.configuration.app_type = "resque"
     Bugsnag.configuration.default_delivery_method = :synchronous
+    Bugsnag.configuration.runtime_versions["resque"] = ::Resque::VERSION
   end
 else
   Resque.before_first_fork do
     Bugsnag.configuration.app_type = "resque"
     Bugsnag.configuration.default_delivery_method = :synchronous
+    Bugsnag.configuration.runtime_versions["resque"] = ::Resque::VERSION
   end
 end

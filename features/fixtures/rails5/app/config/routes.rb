@@ -36,7 +36,8 @@ Rails.application.routes.draw do
   get 'metadata_filters/filter', to: 'metadata_filters#filter'
 
   get 'session_tracking/initializer', to: 'session_tracking#initializer'
-  get 'session_tracking/after', to: 'session_tracking#after'
+  get 'session_tracking/manual', to: 'session_tracking#manual'
+  get 'session_tracking/multi_sessions', to: 'session_tracking#multi_sessions'
 
   get 'release_stage/default', to: 'release_stage#default'
   get 'release_stage/after', to: 'release_stage#after'
@@ -49,4 +50,13 @@ Rails.application.routes.draw do
   get 'clearance/create', to: 'clearance#create'
   get 'clearance/unhandled', to: 'clearance#unhandled'
   get 'clearance/handled', to: 'clearance#handled'
+
+  get 'breadcrumbs/handled', to: 'breadcrumbs#handled'
+  get 'breadcrumbs/sql_breadcrumb', to: 'breadcrumbs#sql_breadcrumb'
+  get 'breadcrumbs/active_job', to: 'breadcrumbs#active_job'
+  get 'breadcrumbs/cache_read', to: 'breadcrumbs#cache_read'
+
+  get 'mongo/success_crash', to: 'mongo#success_crash'
+  get 'mongo/get_crash', to: 'mongo#get_crash'
+  get 'mongo/failure_crash', to: 'mongo#failure_crash'
 end

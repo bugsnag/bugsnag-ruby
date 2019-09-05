@@ -1,6 +1,65 @@
 Changelog
 =========
 
+## TBC
+
+### Fixes
+
+* Account for missing `:binds` key in `sql.active_record` ActiveSupport notifications
+  | [#555](https://github.com/bugsnag/bugsnag-ruby/issues/555)
+  | [#565](https://github.com/bugsnag/bugsnag-ruby/pull/565)
+
+## 6.12.0 (28 Aug 2019)
+
+### Enhancements
+
+* Add Ruby (and other framework) version strings to report and session payloads (device.runtimeVersions).
+  | [560](https://github.com/bugsnag/bugsnag-ruby/pull/560)
+
+* Allow symbols in breadcrumb meta data.
+  | [#563](https://github.com/bugsnag/bugsnag-ruby/pull/563)
+  | [directionless](https://github.com/directionless)
+
+### Fixes
+
+* Use `Module#prepend` for Rake integration when on a new enough Ruby version
+  to avoid infinite mutual recursion issues when something else monkey patches
+  `Rake::Task`.
+  | [#556](https://github.com/bugsnag/bugsnag-ruby/issues/556)
+  | [#559](https://github.com/bugsnag/bugsnag-ruby/issues/559)
+
+* Handle `nil` values for the `job` block parameter for the Que error notifier.
+  This occurs under some conditions such as database connection failures.
+  | [#545](https://github.com/bugsnag/bugsnag-ruby/issues/545)
+  | [#548](https://github.com/bugsnag/bugsnag-ruby/pull/548)
+
+## 6.11.1 (22 Jan 2019)
+
+### Fixes
+
+* Fix issue with unnecessary meta_data being logged during breadcrumb validation.
+  | [#530](https://github.com/bugsnag/bugsnag-ruby/pull/530)
+
+## 6.11.0 (17 Jan 2019)
+
+**Note**: this release alters the behaviour of the notifier to track sessions automatically.
+
+### Enhancements
+
+* Added Breadcrumbs.  Breadcrumbs allow you to track events that may have led
+up to an error, such as handled errors, page redirects, or SQL queries. For info on what
+is tracked and how you can customize the data that breadcrumbs collect, see the
+[Logging breadcrumbs](https://docs.bugsnag.com/platforms/ruby/other#logging-breadcrumbs)
+section of our documentation.
+  | [#525](https://github.com/bugsnag/bugsnag-ruby/pull/525)
+
+* Bugsnag will now capture automatically created sessions by default.
+  | [#523](https://github.com/bugsnag/bugsnag-ruby/pull/523)
+
+### Deprecated
+
+* The `endpoint` and `session_endpoint` configuration options are now deprecated but still supported. The [`set_endpoints`](https://docs.bugsnag.com/platforms/ruby/other/configuration-options#endpoints) method should be used instead. Note that session tracking will be disabled if the notify endpoint is configured but the sessions endpoint is not - this is to avoid inadvertently sending session payloads to the wrong server.
+
 ## 6.10.0 (05 Dec 2018)
 
 ### Enhancements

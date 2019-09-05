@@ -1,5 +1,5 @@
-# Bugsnag exception reporter for Ruby
-[![build status](https://travis-ci.org/bugsnag/bugsnag-ruby.svg?branch=master)](https://travis-ci.org/bugsnag/bugsnag-ruby)
+# Bugsnag error monitoring & exception reporter for Ruby
+[![build status](https://travis-ci.com/bugsnag/bugsnag-ruby.svg?branch=master)](https://travis-ci.com/bugsnag/bugsnag-ruby)
 
 
 The Bugsnag exception reporter for Ruby gives you instant notification of exceptions thrown from your **[Rails](https://www.bugsnag.com/platforms/rails)**, **Sinatra**, **Rack** or **plain Ruby** app. Any uncaught exceptions will trigger a notification to be sent to your Bugsnag project.
@@ -10,6 +10,7 @@ The Bugsnag exception reporter for Ruby gives you instant notification of except
 * Report handled exceptions
 * Attach user information to determine how many people are affected by a crash
 * Send customized diagnostic data
+* Track events that occur leading up to a crash
 
 ## Getting started
 
@@ -33,7 +34,7 @@ The Bugsnag exception reporter for Ruby gives you instant notification of except
     * [Rake](https://docs.bugsnag.com/platforms/ruby/rake/configuration-options)
     * [Sidekiq](https://docs.bugsnag.com/platforms/ruby/sidekiq/configuration-options)
     * [Other Ruby apps](https://docs.bugsnag.com/platforms/ruby/other/configuration-options)
-* Check out some [example apps integrated with Bugsnag](https://github.com/bugsnag/bugsnag-example-apps/tree/master/apps/ruby) using Rails, Sinatra, Padrino, and more.
+* Check out some [example apps integrated with Bugsnag](https://github.com/bugsnag/bugsnag-ruby/tree/master/example) using Rails, Sinatra, Padrino, and more.
 * [Search open and closed issues](https://github.com/bugsnag/bugsnag-ruby/issues?utf8=✓&q=is%3Aissue) for similar problems
 * [Report a bug or request a feature](https://github.com/bugsnag/bugsnag-ruby/issues/new)
 
