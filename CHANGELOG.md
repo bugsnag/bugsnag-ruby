@@ -1,6 +1,17 @@
 Changelog
 =========
 
+## 6.12.1 (05 Sep 2019)
+
+### Fixes
+
+* Account for missing `:binds` key in `sql.active_record` ActiveSupport notifications.
+  | [#555](https://github.com/bugsnag/bugsnag-ruby/issues/555)
+  | [#565](https://github.com/bugsnag/bugsnag-ruby/pull/565)
+* Remove duplicate attribute declaration warning for `track_sessions` in Configuration.
+  | [#510](https://github.com/bugsnag/bugsnag-ruby/pull/510)
+  | [pocke](https://github.com/pocke)
+
 ## 6.12.0 (28 Aug 2019)
 
 ### Enhancements
