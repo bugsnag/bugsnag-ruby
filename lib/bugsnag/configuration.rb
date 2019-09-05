@@ -37,7 +37,6 @@ module Bugsnag
     attr_accessor :runtime_versions
     attr_accessor :ignore_classes
     attr_accessor :auto_capture_sessions
-    attr_accessor :track_sessions
 
     ##
     # @return [String] URL error notifications will be delivered to
