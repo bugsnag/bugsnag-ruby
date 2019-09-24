@@ -35,6 +35,8 @@ Scenario Outline: Project_root should default to Rails.root
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Project_root can be set in an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -67,6 +69,8 @@ Scenario Outline: Project_root can be set in an initializer
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Project_root can be set after an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -98,3 +102,5 @@ Scenario Outline: Project_root can be set after an initializer
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |

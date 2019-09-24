@@ -38,6 +38,8 @@ Scenario Outline: Unhandled RuntimeError
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Thrown handled NameError
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -72,6 +74,8 @@ Scenario Outline: Thrown handled NameError
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Manual string notify
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -104,3 +108,5 @@ Scenario Outline: Manual string notify
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |

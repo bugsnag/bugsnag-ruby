@@ -28,6 +28,8 @@ Scenario Outline: Ignore_classes can be set to a different value in initializer
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Ignore_classes can be set to a different value after initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -51,3 +53,5 @@ Scenario Outline: Ignore_classes can be set to a different value after initializ
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |

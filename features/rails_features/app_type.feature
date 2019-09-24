@@ -36,6 +36,8 @@ Scenario Outline: Setting app_type in initializer works
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Changing app_type after initializer works
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -67,3 +69,5 @@ Scenario Outline: Changing app_type after initializer works
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
