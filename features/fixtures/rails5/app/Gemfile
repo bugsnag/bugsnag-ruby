@@ -43,8 +43,9 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 # Added at 2018-03-26 15:20:23 +0100 by amoinet:
 gem 'bugsnag', path: '/bugsnag'
 
-# Added at 2018-04-26 10:20:10 +0100 by amoinet:
-gem "clearance", "~> 1.16"
+# Clearance breaks in Ruby < 2.3 and needs to be pinned to `1.16.1`
+ruby_version = Gem::Version.new(RUBY_VERSION)
+gem "clearance",  ruby_version < Gem::Version.new('2.3.0') ? '1.16.1' : '~> 1.16'
 
 gem "mongoid"
 

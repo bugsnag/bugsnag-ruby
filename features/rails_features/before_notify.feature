@@ -38,6 +38,8 @@ Scenario Outline: Rails before_notify controller method works on handled errors
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Rails before_notify controller method works on unhandled errors
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -72,6 +74,8 @@ Scenario Outline: Rails before_notify controller method works on unhandled error
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Inline block on handled errors is called
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -106,4 +110,6 @@ Scenario Outline: Inline block on handled errors is called
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 

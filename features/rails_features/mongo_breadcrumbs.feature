@@ -32,6 +32,9 @@ Scenario Outline: Successful breadcrumbs
     | 2.3          | 5             |
     | 2.4          | 5             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Breadcrumb with filter parameters
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -70,6 +73,9 @@ Scenario Outline: Breadcrumb with filter parameters
     | 2.3          | 5             |
     | 2.4          | 5             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Failure breadcrumbs
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -98,3 +104,6 @@ Scenario Outline: Failure breadcrumbs
     | 2.3          | 5             |
     | 2.4          | 5             |
     | 2.5          | 5             |
+    | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |

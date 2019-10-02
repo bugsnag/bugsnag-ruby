@@ -32,6 +32,8 @@ Scenario Outline: Auto_capture_sessions defaults to true
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Auto_capture_sessions can be set to false in the initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -56,6 +58,8 @@ Scenario Outline: Auto_capture_sessions can be set to false in the initializer
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: Manual sessions are still sent if Auto_capture_sessions is false
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -84,6 +88,8 @@ Scenario Outline: Manual sessions are still sent if Auto_capture_sessions is fal
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
 
 Scenario Outline: 100 session calls results in 100 sessions
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
@@ -113,3 +119,5 @@ Scenario Outline: 100 session calls results in 100 sessions
     | 2.5          | 3             |
     | 2.5          | 5             |
     | 2.5          | 6             |
+    | 2.6          | 5             |
+    | 2.6          | 6             |
