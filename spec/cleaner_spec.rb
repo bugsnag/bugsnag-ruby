@@ -79,14 +79,24 @@ describe Bugsnag::Cleaner do
       expect(described_class.new([/fb+/]).clean_object({ :foo => 'bar' })).to eq({ :foo => 'bar' })
     end
 
-    it "filters deeply nested keys" do
+    it "filters deeply nested keys by regular expression" do
       params = {:foo => {:bar => "baz"}}
       expect(described_class.new([/^foo\.bar/]).clean_object(params)).to eq({:foo => {:bar => '[FILTERED]'}})
     end
 
-    it "filters deeply nested request parameters" do
+    it "filters deeply nested keys by string inclusion" do
+      params = {:foo => {:bar => "baz"}}
+      expect(described_class.new(['foo.bar']).clean_object(params)).to eq({:foo => {:bar => '[FILTERED]'}})
+    end
+
+    it "filters deeply nested request parameters by regular expression" do
       params = {:request => {:params => {:foo => {:bar => "baz"}}}}
       expect(described_class.new([/^foo\.bar/]).clean_object(params)).to eq({:request => {:params => {:foo => {:bar => '[FILTERED]'}}}})
+    end
+
+    it "filters deeply nested request parameters by string inclusion" do
+      params = {:request => {:params => {:foo => {:bar => "baz"}}}}
+      expect(described_class.new(['foo.bar']).clean_object(params)).to eq({:request => {:params => {:foo => {:bar => '[FILTERED]'}}}})
     end
 
     it "filters objects which can't be stringified" do

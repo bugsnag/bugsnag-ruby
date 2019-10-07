@@ -7,10 +7,11 @@ module Bugsnag
     RECURSION = '[RECURSION]'.freeze
     OBJECT = '[OBJECT]'.freeze
     RAISED = '[RAISED]'.freeze
+    ESCAPED_PERIOD = '\.'.freeze
+    PERIOD = '.'.freeze
 
     def initialize(filters)
       @filters = Array(filters)
-      @deep_filters = @filters.any? {|f| f.kind_of?(Regexp) && f.to_s.include?("\\.".freeze) }
     end
 
     def clean_object(obj)
@@ -113,11 +114,24 @@ module Bugsnag
     # so we try it both with and without the "request.params." bit.
     def filters_match_deeply?(key, scope)
       return true if filters_match?(key)
-      return false unless @deep_filters
+      return false unless deep_filters?
 
       long = [scope, key].compact.join('.')
       short = long.sub(/^request\.params\./, '')
       filters_match?(long) || filters_match?(short)
+    end
+    
+    def deep_filters?
+      return @deep_filters if defined?(@deep_filters)
+
+      @deep_filters = @filters.any? do |filter|
+        case filter
+        when Regexp
+          filter.to_s.include?(ESCAPED_PERIOD)
+        when String
+          filter.include?(PERIOD)
+        end
+      end
     end
   end
 end
