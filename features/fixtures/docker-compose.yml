@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.6'
 services:
   # dep for job systems
   redis:
@@ -38,6 +38,12 @@ services:
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
     restart: "no"
+    networks:
+      default:
+        aliases:
+          - plain
+    depends_on:
+      - proxy
 
   delayed_job:
     build:
@@ -309,3 +315,16 @@ services:
     ports:
       - "3007:3000"
     restart: "no"
+
+  proxy:
+    build:
+      context: proxy
+    restart: "no"
+    networks:
+      default:
+        aliases:
+          - proxy
+
+networks:
+  default:
+    name: ${NETWORK_NAME:-ruby-maze-runner}

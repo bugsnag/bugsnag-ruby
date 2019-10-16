@@ -1,0 +1,21 @@
+steps:
+  - label: ':docker: Build CI image'
+    plugins:
+      - docker-compose#v2.6.0:
+          build: ruby-maze-runner
+          image-repository: 855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby
+          cache-from: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:ci-ruby${BRANCH_NAME}
+      - docker-compose#v2.6.0:
+          push:
+            - ci: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:ci-ruby${BRANCH_NAME}
+
+  - wait
+
+  - label: ':ruby: Ruby 2.6 plain tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_VERSION: 2.6
+    command: features/plain_features

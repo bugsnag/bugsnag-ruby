@@ -37,7 +37,7 @@ group :doc, optional: true do
 end
 
 group :maze, optional: true do
-  gem 'bugsnag-maze-runner', git: 'https://github.com/bugsnag/maze-runner' if ruby_version >= Gem::Version.new('2.0.0')
+  gem 'bugsnag-maze-runner', git: 'https://github.com/bugsnag/maze-runner', branch: "v2" if ruby_version >= Gem::Version.new('2.0.0')
 end
 
 gemspec

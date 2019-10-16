@@ -1,0 +1,40 @@
+version: '3.6'
+services:
+  ruby-maze-runner:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ruby-maze-runner
+      target: ruby-maze-runner
+    environment:
+      NETWORK_NAME: "${BUILDKITE_JOB_ID:-ruby-maze-runner}"
+      VERBOSE:
+      DEBUG:
+    networks:
+      default:
+        aliases:
+          - maze-runner
+    command:  --tags "not @wip"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  ruby-unit-tests:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ruby-unit-tests
+      args:
+        - RUBY_VERSION
+        - GEMSETS=${GEMSETS:-test}
+        - BUNDLER_VERSION=${BUNDLER_VERSION:-1.12.0}
+    environment:
+      VERBOSE:
+      DEBUG:
+    networks:
+      default:
+        aliases:
+          - maze-runner
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  default:
+    name: ${BUILDKITE_JOB_ID:-ruby-maze-runner}

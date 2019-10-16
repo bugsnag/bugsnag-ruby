@@ -1,0 +1,15 @@
+ARG RUBY_VERSION
+FROM ruby:$RUBY_VERSION
+
+WORKDIR /app/
+
+COPY Gemfile bugsnag.gemspec VERSION ./
+ARG BUNDLER_VERSION
+ARG GEMSETS
+RUN env
+RUN gem install bundler -v $BUNDLER_VERSION
+RUN bundle _${BUNDLER_VERSION}_ install --with "$GEMSETS" --binstubs
+
+COPY . .
+
+CMD ["bundle", "exec", "./bin/rake", "spec"]
