@@ -42,8 +42,6 @@ services:
       default:
         aliases:
           - plain
-    depends_on:
-      - proxy
 
   delayed_job:
     build:
@@ -315,15 +313,6 @@ services:
     ports:
       - "3007:3000"
     restart: "no"
-
-  proxy:
-    build:
-      context: proxy
-    restart: "no"
-    networks:
-      default:
-        aliases:
-          - proxy
 
 networks:
   default:

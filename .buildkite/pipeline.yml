@@ -3,11 +3,11 @@ steps:
     plugins:
       - docker-compose#v2.6.0:
           build: ruby-maze-runner
-          image-repository: 855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby
-          cache-from: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:ci-ruby${BRANCH_NAME}
-      - docker-compose#v2.6.0:
-          push:
-            - ci: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:ci-ruby${BRANCH_NAME}
+          # image-repository: 855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby
+          # cache-from: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:ci-ruby${BRANCH_NAME}
+      # - docker-compose#v2.6.0:
+      #     push:
+      #       - ci: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:ci-ruby${BRANCH_NAME}
 
   - wait
 
@@ -18,4 +18,4 @@ steps:
         use-aliases: true
     env:
       RUBY_VERSION: 2.6
-    command: features/plain_features
+    command: features/plain_features --tags "not @wip"
