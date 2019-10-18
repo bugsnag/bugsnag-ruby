@@ -51,3 +51,18 @@ Given("I set environment variable {string} to target the test server with creden
     When I set environment variable "#{variable}" to "#{credentials}@maze-runner:#{MOCK_API_PORT}"
   }
 end
+
+Given("I start the rails service") do
+  rails_version = ENV["RAILS_VERSION"]
+  steps %Q{
+    When I start the service "rails#{rails_version}"
+    And I wait for the host "rails#{rails_version}" to open port "6128#{rails_version}"
+  }
+end
+
+When("I navigate to the route {string} on the rails app") do |route|
+  rails_version = ENV["RAILS_VERSION"]
+  steps %Q{
+    When I open the URL "rails#{rails_version}:6128#{rails_version}#{route}"
+  }
+end

@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Release_stage should default to RAILS_ENV
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "RAILS_ENV" to "rails_env"
@@ -35,6 +36,7 @@ Scenario Outline: Release_stage should default to RAILS_ENV
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Release_stage can be set in an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "BUGSNAG_RELEASE_STAGE" to "maze_release_stage_env"
@@ -65,6 +67,7 @@ Scenario Outline: Release_stage can be set in an initializer
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Release_stage can be set after an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"

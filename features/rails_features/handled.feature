@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Unhandled RuntimeError
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -41,6 +42,7 @@ Scenario Outline: Unhandled RuntimeError
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Thrown handled NameError
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -77,6 +79,7 @@ Scenario Outline: Thrown handled NameError
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Manual string notify
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"

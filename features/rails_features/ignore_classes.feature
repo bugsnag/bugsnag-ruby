@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Ignore_classes can be set to a different value in initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "BUGSNAG_IGNORE_CLASS" to "IgnoredError"
@@ -31,6 +32,7 @@ Scenario Outline: Ignore_classes can be set to a different value in initializer
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Ignore_classes can be set to a different value after initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"

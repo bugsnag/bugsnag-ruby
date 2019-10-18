@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3
 Scenario Outline: Warden user information is sent
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -36,6 +37,7 @@ Scenario Outline: Warden user information is sent
     | 2.5          | 3             | handled   |
     | 2.5          | 3             | unhandled |
 
+@rails4
 Scenario Outline: Devise user information is sent
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -59,6 +61,7 @@ Scenario Outline: Devise user information is sent
     | 2.3          | 4             | handled   |
     | 2.3          | 4             | unhandled |
 
+@rails5 @rails6
 Scenario Outline: Clearance user information is sent
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"

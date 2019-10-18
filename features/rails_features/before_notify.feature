@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Rails before_notify controller method works on handled errors
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -41,6 +42,7 @@ Scenario Outline: Rails before_notify controller method works on handled errors
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Rails before_notify controller method works on unhandled errors
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -77,6 +79,7 @@ Scenario Outline: Rails before_notify controller method works on unhandled error
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Inline block on handled errors is called
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"

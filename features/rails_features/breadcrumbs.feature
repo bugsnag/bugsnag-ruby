@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Request breadcrumb
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -41,6 +42,7 @@ Scenario Outline: Request breadcrumb
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: SQL Breadcrumb without bindings
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "SQL_ONLY_BREADCRUMBS" to "true"
@@ -72,6 +74,7 @@ Scenario Outline: SQL Breadcrumb without bindings
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails5 @rails6
 Scenario Outline: SQL Breadcrumb with bindings
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "SQL_ONLY_BREADCRUMBS" to "true"
@@ -100,6 +103,7 @@ Scenario Outline: SQL Breadcrumb with bindings
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails4 @rails5 @rails6
 Scenario Outline: Active job breadcrumb
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -126,6 +130,7 @@ Scenario Outline: Active job breadcrumb
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails4 @rails5 @rails6
 Scenario Outline: Cache read
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"

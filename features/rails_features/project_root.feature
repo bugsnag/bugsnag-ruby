@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Project_root should default to Rails.root
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -38,6 +39,7 @@ Scenario Outline: Project_root should default to Rails.root
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Project_root can be set in an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "BUGSNAG_PROJECT_ROOT" to "/foo/bar"
@@ -72,6 +74,7 @@ Scenario Outline: Project_root can be set in an initializer
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Project_root can be set after an initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"

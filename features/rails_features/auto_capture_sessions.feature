@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Auto_capture_sessions defaults to true
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "USE_DEFAULT_AUTO_CAPTURE_SESSIONS" to "true"
@@ -35,6 +36,7 @@ Scenario Outline: Auto_capture_sessions defaults to true
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Auto_capture_sessions can be set to false in the initializer
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "BUGSNAG_AUTO_CAPTURE_SESSIONS" to "false"
@@ -61,6 +63,7 @@ Scenario Outline: Auto_capture_sessions can be set to false in the initializer
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Manual sessions are still sent if Auto_capture_sessions is false
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "BUGSNAG_AUTO_CAPTURE_SESSIONS" to "false"
@@ -91,6 +94,7 @@ Scenario Outline: Manual sessions are still sent if Auto_capture_sessions is fal
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: 100 session calls results in 100 sessions
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "BUGSNAG_AUTO_CAPTURE_SESSIONS" to "false"

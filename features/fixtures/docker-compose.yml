@@ -245,6 +245,10 @@ services:
       - target: 3000
         published: 61286
     restart: "no"
+    networks:
+      default:
+        aliases:
+          - rails6
 
   resque:
     build:

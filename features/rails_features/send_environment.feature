@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Send_environment should send environment in handled errors when true
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "BUGSNAG_SEND_ENVIRONMENT" to "true"

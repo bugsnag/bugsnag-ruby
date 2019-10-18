@@ -5,6 +5,7 @@ Background:
   And I set environment variable "APP_PATH" to "/usr/src"
   And I configure the bugsnag endpoint
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Auto_notify set to false in the initializer prevents unhandled error sending
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "BUGSNAG_AUTO_NOTIFY" to "false"
@@ -31,6 +32,7 @@ Scenario Outline: Auto_notify set to false in the initializer prevents unhandled
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Auto_notify set to false in the initializer still sends handled errors
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I set environment variable "BUGSNAG_AUTO_NOTIFY" to "false"
@@ -66,6 +68,7 @@ Scenario Outline: Auto_notify set to false in the initializer still sends handle
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Auto_notify set to false after the initializer prevents unhandled error sending
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"
@@ -91,6 +94,7 @@ Scenario Outline: Auto_notify set to false after the initializer prevents unhand
     | 2.6          | 5             |
     | 2.6          | 6             |
 
+@rails3 @rails4 @rails5 @rails6
 Scenario Outline: Auto_notify set to false after the initializer still sends handled errors
   Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
   And I start the service "rails<rails_version>"

@@ -20,6 +20,16 @@ steps:
       RUBY_VERSION: 2.6
     command: features/plain_features --tags "not @wip"
 
+  - label: ':ruby: :rails: Rails 6 Ruby 2.6 tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_VERSION: 2.6
+      RAILS_VERSION: 6
+    command: features/rails_features/api_key.feature --tags "@rails6"
+
   - block: "Trigger full test suite"
 
   - label: ':ruby: Ruby 1.9.3 plain tests'
