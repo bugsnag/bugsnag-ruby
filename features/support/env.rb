@@ -16,4 +16,3 @@ AfterConfiguration do |config|
   Runner.environment["BUGSNAG_API_KEY"] = $api_key
   Runner.environment["BUGSNAG_ENDPOINT"] = "http://maze-runner:#{MOCK_API_PORT}"
 end
-

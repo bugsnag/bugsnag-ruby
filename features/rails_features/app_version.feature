@@ -7,9 +7,7 @@ Background:
 
 @rails3 @rails4 @rails5 @rails6
 Scenario Outline: App_version is nil by default
-  Given I set environment variable "RUBY_VERSION" to "<ruby_version>"
-  And I start the service "rails<rails_version>"
-  And I wait for the app to respond on port "6128<rails_version>"
+  Given I start the rails service
   When I navigate to the route "/app_version/default" on port "6128<rails_version>"
   Then I should receive a request
   And the request is a valid for the error reporting API

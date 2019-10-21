@@ -56,13 +56,23 @@ Given("I start the rails service") do
   rails_version = ENV["RAILS_VERSION"]
   steps %Q{
     When I start the service "rails#{rails_version}"
-    And I wait for the host "rails#{rails_version}" to open port "6128#{rails_version}"
+    And I wait for the host "rails#{rails_version}" to open port "3000"
   }
 end
 
 When("I navigate to the route {string} on the rails app") do |route|
   rails_version = ENV["RAILS_VERSION"]
   steps %Q{
-    When I open the URL "rails#{rails_version}:6128#{rails_version}#{route}"
+    When I open the URL "http://rails#{rails_version}:3000#{route}"
   }
+end
+
+Given("I output some docker-network debugs") do
+  pp `docker network ls`
+  pp `docker network inspect #{ENV["NETWORK_NAME"]}`
+end
+
+When("I run the service {string} in debug mode with the command {string}") do |service, command|
+  Runner.run_command("docker-compose -f features/fixtures/docker-compose.yml build #{service}")
+  Runner.run_command("docker-compose -f features/fixtures/docker-compose.yml run --use-aliases #{service} #{command}")
 end

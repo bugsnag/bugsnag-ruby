@@ -18,7 +18,7 @@ steps:
         use-aliases: true
     env:
       RUBY_VERSION: 2.6
-    command: features/plain_features --tags "not @wip"
+    command: features/plain_features/ --tags "not @wip"
 
   - label: ':ruby: :rails: Rails 6 Ruby 2.6 tests'
     plugins:
@@ -27,7 +27,7 @@ steps:
         use-aliases: true
     env:
       RUBY_VERSION: 2.6
-      RAILS_VERSION: 6
+      RAILS_VERSION: 5
     command: features/rails_features/api_key.feature --tags "@rails6"
 
   - block: "Trigger full test suite"

@@ -80,8 +80,6 @@ services:
         - RUBY_VERSION
     environment:
       - endpoint
-    ports:
-      - "3001:3000"
     restart: "no"
   rack2:
     build:
@@ -90,8 +88,6 @@ services:
         - RUBY_VERSION
     environment:
       - endpoint
-    ports:
-      - "3002:3000"
     restart: "no"
 
   rails3:
@@ -126,9 +122,6 @@ services:
       - CALLBACK_INITIATOR
       - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
-    ports:
-      - target: 3000
-        published: 61283
     restart: "no"
 
   rails4:
@@ -165,9 +158,6 @@ services:
       - CALLBACK_INITIATOR
       - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
-    ports:
-      - target: 3000
-        published: 61284
     restart: "no"
 
   rails5:
@@ -204,9 +194,6 @@ services:
       - CALLBACK_INITIATOR
       - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
-    ports:
-      - target: 3000
-        published: 61285
     restart: "no"
 
   rails6:
@@ -241,9 +228,6 @@ services:
       - CALLBACK_INITIATOR
       - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
-    ports:
-      - target: 3000
-        published: 61286
     restart: "no"
     networks:
       default:
@@ -303,8 +287,6 @@ services:
         - RUBY_VERSION
     environment:
       - endpoint
-    ports:
-      - "3006:3000"
     restart: "no"
 
   sinatra2:
@@ -314,10 +296,8 @@ services:
         - RUBY_VERSION
     environment:
       - endpoint
-    ports:
-      - "3007:3000"
     restart: "no"
 
 networks:
   default:
-    name: ${NETWORK_NAME:-ruby-maze-runner}
+    name: ${NETWORK_NAME}
