@@ -6,7 +6,7 @@ describe 'Bugsnag::Que', :order => :defined do
     unless defined?(::Que)
       @mocked_que = true
       class ::Que
-        Version = '9.9.9'
+        VERSION = '9.9.9'
         class << self
           attr_accessor :error_notifier
         end
@@ -63,7 +63,7 @@ describe 'Bugsnag::Que', :order => :defined do
 
     #Kick off
     load './lib/bugsnag/integrations/que.rb'
-    
+
     expect(runtime).to eq("que" => "9.9.9")
   end
 

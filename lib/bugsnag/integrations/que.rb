@@ -39,11 +39,11 @@ if defined?(::Que)
 
   if Que.respond_to?(:error_notifier=)
     Bugsnag.configuration.app_type ||= "que"
-    Bugsnag.configuration.runtime_versions["que"] = ::Que::Version
+    Bugsnag.configuration.runtime_versions["que"] = ::Que::VERSION
     Que.error_notifier = handler
   elsif Que.respond_to?(:error_handler=)
     Bugsnag.configuration.app_type ||= "que"
-    Bugsnag.configuration.runtime_versions["que"] = ::Que::Version
+    Bugsnag.configuration.runtime_versions["que"] = ::Que::VERSION
     Que.error_handler = handler
   end
 end
