@@ -17,7 +17,7 @@ steps:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_VERSION: 2.6
+      RUBY_TEST_VERSION: "2.6"
     command: features/plain_features/ --tags "not @wip"
 
   - label: ':ruby: :rails: Rails 6 Ruby 2.6 tests'
@@ -26,8 +26,8 @@ steps:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_VERSION: 2.6
-      RAILS_VERSION: 5
+      RUBY_TEST_VERSION: "2.6"
+      RAILS_VERSION: "6"
     command: features/rails_features/api_key.feature --tags "@rails6"
 
   - block: "Trigger full test suite"
@@ -38,7 +38,7 @@ steps:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_VERSION: 1.9.3
+      RUBY_TEST_VERSION: "1.9.3"
     command: features/plain_features --tags "not @wip"
 
   - label: ':ruby: Ruby 2.0 plain tests'
@@ -47,7 +47,7 @@ steps:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_VERSION: 2.0
+      RUBY_TEST_VERSION: "2.0"
     command: features/plain_features --tags "not @wip"
 
   - label: ':ruby: Ruby 2.1 plain tests'
@@ -56,7 +56,7 @@ steps:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_VERSION: 2.1
+      RUBY_TEST_VERSION: "2.1"
     command: features/plain_features --tags "not @wip"
 
   - label: ':ruby: Ruby 2.2 plain tests'
@@ -65,7 +65,7 @@ steps:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_VERSION: 2.2
+      RUBY_TEST_VERSION: "2.2"
     command: features/plain_features --tags "not @wip"
 
   - label: ':ruby: Ruby 2.3 plain tests'
@@ -74,7 +74,7 @@ steps:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_VERSION: 2.3
+      RUBY_TEST_VERSION: "2.3"
     command: features/plain_features --tags "not @wip"
 
   - label: ':ruby: Ruby 2.4 plain tests'
@@ -83,7 +83,7 @@ steps:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_VERSION: 2.4
+      RUBY_TEST_VERSION: "2.4"
     command: features/plain_features --tags "not @wip"
 
   - label: ':ruby: Ruby 2.5 plain tests'
@@ -92,5 +92,5 @@ steps:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_VERSION: 2.5
+      RUBY_TEST_VERSION: "2.5"
     command: features/plain_features --tags "not @wip"

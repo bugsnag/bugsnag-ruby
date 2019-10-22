@@ -11,8 +11,7 @@ services:
     build:
       context: plain
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -47,7 +46,7 @@ services:
     build:
       context: delayed_job
       args:
-        RUBY_VERSION: 2.5
+        RUBY_TEST_VERSION: 2.5
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -77,15 +76,16 @@ services:
     build:
       context: rack1
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     environment:
       - endpoint
     restart: "no"
+
   rack2:
     build:
       context: rack2
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     environment:
       - endpoint
     restart: "no"
@@ -94,8 +94,7 @@ services:
     build:
       context: rails3
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -128,8 +127,7 @@ services:
     build:
       context: rails4
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     depends_on:
       - mongo
     environment:
@@ -164,8 +162,7 @@ services:
     build:
       context: rails5
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     depends_on:
       - mongo
     environment:
@@ -200,8 +197,7 @@ services:
     build:
       context: rails6
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -238,8 +234,7 @@ services:
     build:
       context: resque
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     depends_on:
       - redis
     environment:
@@ -250,8 +245,7 @@ services:
     build:
       context: sidekiq
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
         - SIDEKIQ_VERSION
     depends_on:
       - redis
@@ -284,7 +278,7 @@ services:
     build:
       context: sinatra1
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     environment:
       - endpoint
     restart: "no"
@@ -293,7 +287,7 @@ services:
     build:
       context: sinatra2
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     environment:
       - endpoint
     restart: "no"

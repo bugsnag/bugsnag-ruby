@@ -6,8 +6,9 @@ services:
       dockerfile: dockerfiles/Dockerfile.ruby-maze-runner
       target: ruby-maze-runner
     environment:
-      NETWORK_NAME: "${BUILDKITE_JOB_ID:-ruby-maze-runner}-${RUBY_VERSION:-local}"
+      NETWORK_NAME: "${BUILDKITE_JOB_ID:-ruby-maze-runner}-${RUBY_TEST_VERSION:-local}"
       RAILS_VERSION:
+      RUBY_TEST_VERSION:
       VERBOSE:
       DEBUG:
     networks:
@@ -33,4 +34,4 @@ services:
 
 networks:
   default:
-    name: ${BUILDKITE_JOB_ID:-ruby-maze-runner}-${RUBY_VERSION:-local}
+    name: ${BUILDKITE_JOB_ID:-ruby-maze-runner}-${RUBY_TEST_VERSION:-local}
