@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/bugsnag/bugsnag-ruby"
   s.licenses = ["MIT"]
 
-  s.files = `git ls-files`.split("\n").reject {|file| file.start_with? "example/"}
+  s.files = `git ls-files -z lib`.split("\x0")
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.md",
