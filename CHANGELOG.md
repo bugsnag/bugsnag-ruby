@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## 6.12.2 (TBC)
+
+### Fixes
+
+* Handle change in capitalisation of framework version constant for Que in v1.x
+  | [#570](https://github.com/bugsnag/bugsnag-ruby/pull/570)
+  | [#572](https://github.com/bugsnag/bugsnag-ruby/pull/572)
+  | [tommeier](https://github.com/tommeier)
+
 ## 6.12.1 (05 Sep 2019)
 
 ### Fixes
