@@ -13,6 +13,8 @@ Bugsnag.notify("handled string") do |report|
   })
 end
 
+# Added to stop Process deadlock
+sleep(0.01)
 Process.fork do
   Bugsnag.notify("handled string number 2") do |report|
     report.add_tab(:config, {

@@ -28,7 +28,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.6"
       RAILS_VERSION: "6"
-    command: features/rails_features/api_key.feature --tags "@rails6"
+    command: features/rails_features/ --tags "@rails6 and not @wip"
 
   - block: "Trigger full test suite"
 
@@ -41,6 +41,8 @@ steps:
       RUBY_TEST_VERSION: "1.9.3"
     command: features/plain_features --tags "not @wip"
 
+  - wait
+
   - label: ':ruby: Ruby 2.0 plain tests'
     plugins:
       docker-compose#v2.6.0:
@@ -49,6 +51,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.0"
     command: features/plain_features --tags "not @wip"
+
+  - wait
 
   - label: ':ruby: Ruby 2.1 plain tests'
     plugins:
@@ -59,6 +63,8 @@ steps:
       RUBY_TEST_VERSION: "2.1"
     command: features/plain_features --tags "not @wip"
 
+  - wait
+
   - label: ':ruby: Ruby 2.2 plain tests'
     plugins:
       docker-compose#v2.6.0:
@@ -67,6 +73,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.2"
     command: features/plain_features --tags "not @wip"
+
+  - wait
 
   - label: ':ruby: Ruby 2.3 plain tests'
     plugins:
@@ -77,6 +85,8 @@ steps:
       RUBY_TEST_VERSION: "2.3"
     command: features/plain_features --tags "not @wip"
 
+  - wait
+
   - label: ':ruby: Ruby 2.4 plain tests'
     plugins:
       docker-compose#v2.6.0:
@@ -85,6 +95,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.4"
     command: features/plain_features --tags "not @wip"
+
+  - wait
 
   - label: ':ruby: Ruby 2.5 plain tests'
     plugins:

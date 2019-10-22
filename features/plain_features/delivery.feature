@@ -12,7 +12,6 @@ Scenario: When the delivery_method is set to :thread_queue
   Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
   And the event "metaData.config" matches the JSON fixture in "features/fixtures/plain/json/delivery_threadpool.json"
 
-
 Scenario: When the delivery_method is set to :thread_queue in a fork
   When I run the service "plain-ruby" with the command "bundle exec ruby delivery/fork_threadpool.rb"
   And I wait to receive 2 requests

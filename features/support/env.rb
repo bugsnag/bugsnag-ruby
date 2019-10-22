@@ -13,6 +13,10 @@ end
 
 AfterConfiguration do |config|
   install_fixture_gems
+end
+
+Before do
+  Runner.environment.clear
   Runner.environment["BUGSNAG_API_KEY"] = $api_key
   Runner.environment["BUGSNAG_ENDPOINT"] = "http://maze-runner:#{MOCK_API_PORT}"
 end
