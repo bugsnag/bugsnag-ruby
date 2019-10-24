@@ -1,0 +1,525 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Report</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::Report
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/bugsnag/integrations/que_rb.html">lib/bugsnag/integrations/que.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/rack_rb.html">lib/bugsnag/integrations/rack.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/rails/active_record_rescue_rb.html">lib/bugsnag/integrations/rails/active_record_rescue.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/rake_rb.html">lib/bugsnag/integrations/rake.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/resque_rb.html">lib/bugsnag/integrations/resque.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/shoryuken_rb.html">lib/bugsnag/integrations/shoryuken.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/sidekiq_rb.html">lib/bugsnag/integrations/sidekiq.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/classify_error_rb.html">lib/bugsnag/middleware/classify_error.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/report_rb.html">lib/bugsnag/report.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/session_tracker_rb.html">lib/bugsnag/session_tracker.rb</a>
+</li>
+<li>
+<a class='show' href='#' onclick='this.parentNode.parentNode.className += &quot; expanded&quot;; this.parentNode.removeChild(this); return false'>show all</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-add_tab">add_tab</a></li>
+<li><a href="#attribute-i-api_key">api_key</a></li>
+<li><a href="#attribute-i-app_type">app_type</a></li>
+<li><a href="#attribute-i-app_version">app_version</a></li>
+<li><a href="#method-i-as_json">as_json</a></li>
+<li><a href="#attribute-i-breadcrumbs">breadcrumbs</a></li>
+<li><a href="#attribute-i-configuration">configuration</a></li>
+<li><a href="#attribute-i-context">context</a></li>
+<li><a href="#attribute-i-delivery_method">delivery_method</a></li>
+<li><a href="#attribute-i-exceptions">exceptions</a></li>
+<li><a href="#attribute-i-grouping_hash">grouping_hash</a></li>
+<li><a href="#method-i-headers">headers</a></li>
+<li><a href="#attribute-i-hostname">hostname</a></li>
+<li><a href="#method-i-ignore-21">ignore!</a></li>
+<li><a href="#method-i-ignore-3F">ignore?</a></li>
+<li><a href="#attribute-i-meta_data">meta_data</a></li>
+<li><a href="#attribute-i-raw_exceptions">raw_exceptions</a></li>
+<li><a href="#attribute-i-release_stage">release_stage</a></li>
+<li><a href="#method-i-remove_tab">remove_tab</a></li>
+<li><a href="#method-i-request_data">request_data</a></li>
+<li><a href="#attribute-i-runtime_versions">runtime_versions</a></li>
+<li><a href="#attribute-i-session">session</a></li>
+<li><a href="#attribute-i-severity">severity</a></li>
+<li><a href="#attribute-i-severity_reason">severity_reason</a></li>
+<li><a href="#method-i-summary">summary</a></li>
+<li><a href="#attribute-i-unhandled">unhandled</a></li>
+<li><a href="#attribute-i-user">user</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='constants-list'>
+<h2>Constants</h2>
+<div class='name-list'>
+<table summary='Constants'>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>CURRENT_PAYLOAD_VERSION</td>
+<td>=</td>
+<td class='context-item-value'>"4.0"</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>ERROR_CLASS</td>
+<td>=</td>
+<td class='context-item-value'>"errorClass"</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>HANDLED_EXCEPTION</td>
+<td>=</td>
+<td class='context-item-value'>"handledException"</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>MAX_EXCEPTIONS_TO_UNWRAP</td>
+<td>=</td>
+<td class='context-item-value'>5</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>NOTIFIER_NAME</td>
+<td>=</td>
+<td class='context-item-value'>"Ruby Bugsnag Notifier"</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>NOTIFIER_URL</td>
+<td>=</td>
+<td class='context-item-value'>"https://www.bugsnag.com"</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>NOTIFIER_VERSION</td>
+<td>=</td>
+<td class='context-item-value'>Bugsnag::VERSION</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>UNHANDLED_EXCEPTION</td>
+<td>=</td>
+<td class='context-item-value'>"unhandledException"</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>UNHANDLED_EXCEPTION_MIDDLEWARE</td>
+<td>=</td>
+<td class='context-item-value'>"unhandledExceptionMiddleware"</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>USER_CALLBACK_SET_SEVERITY</td>
+<td>=</td>
+<td class='context-item-value'>"userCallbackSetSeverity"</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>USER_SPECIFIED_SEVERITY</td>
+<td>=</td>
+<td class='context-item-value'>"userSpecifiedSeverity"</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+</table>
+</div>
+</div>
+<div id='attribute-list'>
+<h2 class='section-bar'>Attributes</h2>
+<div class='name-list'>
+<table>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-api_key'>api_key</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-app_type'>app_type</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-app_version'>app_version</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-breadcrumbs'>breadcrumbs</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-configuration'>configuration</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-context'>context</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-delivery_method'>delivery_method</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-exceptions'>exceptions</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-grouping_hash'>grouping_hash</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-hostname'>hostname</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-meta_data'>meta_data</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-raw_exceptions'>raw_exceptions</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-release_stage'>release_stage</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-runtime_versions'>runtime_versions</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-session'>session</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-severity'>severity</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-severity_reason'>severity_reason</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-unhandled'>unhandled</a>
+</td>
+<td class='context-item-value'>[R]</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-user'>user</a>
+</td>
+<td class='context-item-value'>[RW]</td>
+<td class='context-item-desc'></td>
+</tr>
+</table>
+</div>
+</div>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>(exception, passed_configuration, auto_notify=false)</span>
+
+</div>
+<div class='description'>
+
+<p>Initializes a new report from an exception.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/report.rb, line 44</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">exception</span>, <span class="ruby-identifier">passed_configuration</span>, <span class="ruby-identifier">auto_notify</span>=<span class="ruby-keyword">false</span>)&#x000A;  <span class="ruby-ivar">@should_ignore</span> = <span class="ruby-keyword">false</span>&#x000A;  <span class="ruby-ivar">@unhandled</span> = <span class="ruby-identifier">auto_notify</span>&#x000A;&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">configuration</span> = <span class="ruby-identifier">passed_configuration</span>&#x000A;&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">raw_exceptions</span> = <span class="ruby-identifier">generate_raw_exceptions</span>(<span class="ruby-identifier">exception</span>)&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">exceptions</span> = <span class="ruby-identifier">generate_exception_list</span>&#x000A;&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">api_key</span> = <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">api_key</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">app_type</span> = <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">app_type</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">app_version</span> = <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">app_version</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">breadcrumbs</span> = []&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">delivery_method</span> = <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">delivery_method</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">hostname</span> = <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">hostname</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">runtime_versions</span> = <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">runtime_versions</span>.<span class="ruby-identifier">dup</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">meta_data</span> = {}&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">release_stage</span> = <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">release_stage</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">severity</span> = <span class="ruby-identifier">auto_notify</span> <span class="ruby-operator">?</span> <span class="ruby-string">&quot;error&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-string">&quot;warning&quot;</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">severity_reason</span> = <span class="ruby-identifier">auto_notify</span> <span class="ruby-operator">?</span> {<span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">UNHANDLED_EXCEPTION</span>} <span class="ruby-operator">:</span> {<span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">HANDLED_EXCEPTION</span>}&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">user</span> = {}&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-add_tab'>
+<a name='method-i-add_tab'></a>
+<div class='synopsis'>
+<span class='name'>add_tab</span>
+<span class='arguments'>(name, value)</span>
+
+</div>
+<div class='description'>
+
+<p>Add a new metadata tab to this notification.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-add_tab-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-add_tab-source'><span class="ruby-comment"># File lib/bugsnag/report.rb, line 69</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_tab</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span>)&#x000A;  <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">nil?</span>&#x000A;&#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Hash</span>&#x000A;    <span class="ruby-identifier">meta_data</span>[<span class="ruby-identifier">name</span>] <span class="ruby-operator">||=</span> {}&#x000A;    <span class="ruby-identifier">meta_data</span>[<span class="ruby-identifier">name</span>].<span class="ruby-identifier">merge!</span> <span class="ruby-identifier">value</span>&#x000A;  <span class="ruby-keyword">else</span>&#x000A;    <span class="ruby-identifier">meta_data</span>[<span class="ruby-string">&quot;custom&quot;</span>] = {} <span class="ruby-keyword">unless</span> <span class="ruby-identifier">meta_data</span>[<span class="ruby-string">&quot;custom&quot;</span>]&#x000A;&#x000A;    <span class="ruby-identifier">meta_data</span>[<span class="ruby-string">&quot;custom&quot;</span>][<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>] = <span class="ruby-identifier">value</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-as_json'>
+<a name='method-i-as_json'></a>
+<div class='synopsis'>
+<span class='name'>as_json</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Builds and returns the exception payload for this notification.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-as_json-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-as_json-source'><span class="ruby-comment"># File lib/bugsnag/report.rb, line 92</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">as_json</span>&#x000A;  <span class="ruby-comment"># Build the payload&#39;s exception event</span>&#x000A;  <span class="ruby-identifier">payload_event</span> = {&#x000A;    <span class="ruby-identifier">app</span><span class="ruby-operator">:</span> {&#x000A;      <span class="ruby-identifier">version</span><span class="ruby-operator">:</span> <span class="ruby-identifier">app_version</span>,&#x000A;      <span class="ruby-identifier">releaseStage</span><span class="ruby-operator">:</span> <span class="ruby-identifier">release_stage</span>,&#x000A;      <span class="ruby-identifier">type</span><span class="ruby-operator">:</span> <span class="ruby-identifier">app_type</span>&#x000A;    },&#x000A;    <span class="ruby-identifier">context</span><span class="ruby-operator">:</span> <span class="ruby-identifier">context</span>,&#x000A;    <span class="ruby-identifier">device</span><span class="ruby-operator">:</span> {&#x000A;      <span class="ruby-identifier">hostname</span><span class="ruby-operator">:</span> <span class="ruby-identifier">hostname</span>,&#x000A;      <span class="ruby-identifier">runtimeVersions</span><span class="ruby-operator">:</span> <span class="ruby-identifier">runtime_versions</span>&#x000A;    },&#x000A;    <span class="ruby-identifier">exceptions</span><span class="ruby-operator">:</span> <span class="ruby-identifier">exceptions</span>,&#x000A;    <span class="ruby-identifier">groupingHash</span><span class="ruby-operator">:</span> <span class="ruby-identifier">grouping_hash</span>,&#x000A;    <span class="ruby-identifier">session</span><span class="ruby-operator">:</span> <span class="ruby-identifier">session</span>,&#x000A;    <span class="ruby-identifier">severity</span><span class="ruby-operator">:</span> <span class="ruby-identifier">severity</span>,&#x000A;    <span class="ruby-identifier">severityReason</span><span class="ruby-operator">:</span> <span class="ruby-identifier">severity_reason</span>,&#x000A;    <span class="ruby-identifier">unhandled</span><span class="ruby-operator">:</span> <span class="ruby-ivar">@unhandled</span>,&#x000A;    <span class="ruby-identifier">user</span><span class="ruby-operator">:</span> <span class="ruby-identifier">user</span>&#x000A;  }&#x000A;&#x000A;  <span class="ruby-comment"># cleanup character encodings</span>&#x000A;  <span class="ruby-identifier">payload_event</span> = <span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Cleaner</span>.<span class="ruby-identifier">clean_object_encoding</span>(<span class="ruby-identifier">payload_event</span>)&#x000A;&#x000A;  <span class="ruby-comment"># filter out sensitive values in (and cleanup encodings) metaData</span>&#x000A;  <span class="ruby-identifier">filter_cleaner</span> = <span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Cleaner</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">meta_data_filters</span>)&#x000A;  <span class="ruby-identifier">payload_event</span>[<span class="ruby-value">:metaData</span>] = <span class="ruby-identifier">filter_cleaner</span>.<span class="ruby-identifier">clean_object</span>(<span class="ruby-identifier">meta_data</span>)&#x000A;  <span class="ruby-identifier">payload_event</span>[<span class="ruby-value">:breadcrumbs</span>] = <span class="ruby-identifier">breadcrumbs</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">breadcrumb</span><span class="ruby-operator">|</span>&#x000A;    <span class="ruby-identifier">breadcrumb_hash</span> = <span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">to_h</span>&#x000A;    <span class="ruby-identifier">breadcrumb_hash</span>[<span class="ruby-value">:metaData</span>] = <span class="ruby-identifier">filter_cleaner</span>.<span class="ruby-identifier">clean_object</span>(<span class="ruby-identifier">breadcrumb_hash</span>[<span class="ruby-value">:metaData</span>])&#x000A;    <span class="ruby-identifier">breadcrumb_hash</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-identifier">payload_event</span>.<span class="ruby-identifier">reject!</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">nil?</span> }&#x000A;&#x000A;  <span class="ruby-comment"># return the payload hash</span>&#x000A;  {&#x000A;    <span class="ruby-value">:apiKey</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">api_key</span>,&#x000A;    <span class="ruby-value">:notifier</span> =<span class="ruby-operator">&gt;</span> {&#x000A;      <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">NOTIFIER_NAME</span>,&#x000A;      <span class="ruby-value">:version</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">NOTIFIER_VERSION</span>,&#x000A;      <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">NOTIFIER_URL</span>&#x000A;    },&#x000A;    <span class="ruby-value">:events</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-identifier">payload_event</span>]&#x000A;  }&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-headers'>
+<a name='method-i-headers'></a>
+<div class='synopsis'>
+<span class='name'>headers</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Returns the headers required for the notification.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-headers-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-headers-source'><span class="ruby-comment"># File lib/bugsnag/report.rb, line 142</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">headers</span>&#x000A;  {&#x000A;    <span class="ruby-string">&quot;Bugsnag-Api-Key&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">api_key</span>,&#x000A;    <span class="ruby-string">&quot;Bugsnag-Payload-Version&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">CURRENT_PAYLOAD_VERSION</span>,&#x000A;    <span class="ruby-string">&quot;Bugsnag-Sent-At&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>().<span class="ruby-identifier">utc</span>().<span class="ruby-identifier">strftime</span>(<span class="ruby-string">&#39;%Y-%m-%dT%H:%M:%S&#39;</span>)&#x000A;  }&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-ignore-21'>
+<a name='method-i-ignore-21'></a>
+<div class='synopsis'>
+<span class='name'>ignore!</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Tells the client this report should not be sent.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-ignore-21-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-ignore-21-source'><span class="ruby-comment"># File lib/bugsnag/report.rb, line 164</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">ignore!</span>&#x000A;  <span class="ruby-ivar">@should_ignore</span> = <span class="ruby-keyword">true</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-ignore-3F'>
+<a name='method-i-ignore-3F'></a>
+<div class='synopsis'>
+<span class='name'>ignore?</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Whether this report should be ignored and not sent.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-ignore-3F-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-ignore-3F-source'><span class="ruby-comment"># File lib/bugsnag/report.rb, line 152</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">ignore?</span>&#x000A;  <span class="ruby-ivar">@should_ignore</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-remove_tab'>
+<a name='method-i-remove_tab'></a>
+<div class='synopsis'>
+<span class='name'>remove_tab</span>
+<span class='arguments'>(name)</span>
+
+</div>
+<div class='description'>
+
+<p>Removes a metadata tab from this notification.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-remove_tab-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-remove_tab-source'><span class="ruby-comment"># File lib/bugsnag/report.rb, line 84</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">remove_tab</span>(<span class="ruby-identifier">name</span>)&#x000A;  <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">nil?</span>&#x000A;&#x000A;  <span class="ruby-identifier">meta_data</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">name</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-request_data'>
+<a name='method-i-request_data'></a>
+<div class='synopsis'>
+<span class='name'>request_data</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Data set on the configuration to be attached to every error notification.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-request_data-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-request_data-source'><span class="ruby-comment"># File lib/bugsnag/report.rb, line 158</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">request_data</span>&#x000A;  <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">request_data</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-summary'>
+<a name='method-i-summary'></a>
+<div class='synopsis'>
+<span class='name'>summary</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Generates a summary to be attached as a breadcrumb</p>
+
+<p>@return [Hash] a Hash containing the report&#39;s error class, error
+message, and severity</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-summary-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-summary-source'><span class="ruby-comment"># File lib/bugsnag/report.rb, line 172</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">summary</span>&#x000A;  <span class="ruby-comment"># Guard against the exceptions array being removed/changed or emptied here</span>&#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-identifier">exceptions</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:first</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">exceptions</span>.<span class="ruby-identifier">first</span>&#x000A;    {&#x000A;      <span class="ruby-value">:error_class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">exceptions</span>.<span class="ruby-identifier">first</span>[<span class="ruby-value">:errorClass</span>],&#x000A;      <span class="ruby-value">:message</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">exceptions</span>.<span class="ruby-identifier">first</span>[<span class="ruby-value">:message</span>],&#x000A;      <span class="ruby-value">:severity</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">severity</span>&#x000A;    }&#x000A;  <span class="ruby-keyword">else</span>&#x000A;    {&#x000A;      <span class="ruby-value">:error_class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;Unknown&quot;</span>,&#x000A;      <span class="ruby-value">:severity</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">severity</span>&#x000A;    }&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Delivery</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>module</span>
+Bugsnag::Delivery
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/bugsnag/delivery_rb.html">lib/bugsnag/delivery.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/delivery/synchronous_rb.html">lib/bugsnag/delivery/synchronous.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/delivery/thread_queue_rb.html">lib/bugsnag/delivery/thread_queue.rb</a>
+</li>
+<li>
+<a class='show' href='#' onclick='this.parentNode.parentNode.className += &quot; expanded&quot;; this.parentNode.removeChild(this); return false'>show all</a>
+</li>
+</ol>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-5B-5D">[]</a></li>
+<li><a href="#method-c-register">register</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='class-list'>
+<h2>Classes and Modules</h2>
+<ol>
+<li><a href="Delivery/Synchronous.html">Bugsnag::Delivery::Synchronous</a></li>
+<li><a href="Delivery/ThreadQueue.html">Bugsnag::Delivery::ThreadQueue</a></li>
+</ol>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-5B-5D'>
+<a name='method-c-5B-5D'></a>
+<div class='synopsis'>
+<span class='name'>[]</span>
+<span class='arguments'>(name)</span>
+
+</div>
+<div class='description'>
+
+<p>Reference a delivery method by name</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-5B-5D-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-5B-5D-source'><span class="ruby-comment"># File lib/bugsnag/delivery.rb, line 21</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-operator">[]</span>(<span class="ruby-identifier">name</span>)&#x000A;  <span class="ruby-identifier">delivery_methods</span>[<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_sym</span>]&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-class' id='method-method-c-register'>
+<a name='method-c-register'></a>
+<div class='synopsis'>
+<span class='name'>register</span>
+<span class='arguments'>(name, delivery_method)</span>
+
+</div>
+<div class='description'>
+
+<p>Add a delivery method to the list of supported methods. Any registered
+method can then be used by name in <a
+href="Configuration.html">Configuration</a>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&#39;bugsnag&#39;</span>&#x000A;<span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Delivery</span>.<span class="ruby-identifier">register</span>(:<span class="ruby-identifier">my_delivery_queue</span>, <span class="ruby-constant">MyDeliveryQueue</span>)&#x000A;<span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configure</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">config</span><span class="ruby-operator">|</span>&#x000A;  <span class="ruby-identifier">config</span>.<span class="ruby-identifier">delivery_method</span> = :<span class="ruby-identifier">my_delivery_queue</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-register-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-register-source'><span class="ruby-comment"># File lib/bugsnag/delivery.rb, line 15</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">register</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">delivery_method</span>)&#x000A;  <span class="ruby-identifier">delivery_methods</span>[<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_sym</span>] = <span class="ruby-identifier">delivery_method</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

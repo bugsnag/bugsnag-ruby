@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::MongoBreadcrumbSubscriber</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::MongoBreadcrumbSubscriber
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/bugsnag/integrations/mongo_rb.html">lib/bugsnag/integrations/mongo.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p>Subscribes to, and creates breadcrumbs from, mongo_ruby_driver events</p>
+
+<p>@api private</p>
+</div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-failed">failed</a></li>
+<li><a href="#method-i-started">started</a></li>
+<li><a href="#method-i-succeeded">succeeded</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='constants-list'>
+<h2>Constants</h2>
+<div class='name-list'>
+<table summary='Constants'>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>MAX_FILTER_DEPTH</td>
+<td>=</td>
+<td class='context-item-value'>5</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>MONGO_COMMAND_KEY</td>
+<td>=</td>
+<td class='context-item-value'>:bugsnag_mongo_commands</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>MONGO_EVENT_PREFIX</td>
+<td>=</td>
+<td class='context-item-value'>"mongo."</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>MONGO_MESSAGE_PREFIX</td>
+<td>=</td>
+<td class='context-item-value'>"Mongo query "</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+</table>
+</div>
+</div>
+<div id='methods'>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-failed'>
+<a name='method-i-failed'></a>
+<div class='synopsis'>
+<span class='name'>failed</span>
+<span class='arguments'>(event)</span>
+
+</div>
+<div class='description'>
+
+<p>Listens to the &#39;failed&#39; event, leaving a breadcrumb</p>
+
+<p>@param event [Mongo::Event::Base] the mongo_ruby_driver generated event</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-failed-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-failed-source'><span class="ruby-comment"># File lib/bugsnag/integrations/mongo.rb, line 35</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">failed</span>(<span class="ruby-identifier">event</span>)&#x000A;  <span class="ruby-identifier">leave_mongo_breadcrumb</span>(<span class="ruby-string">&quot;failed&quot;</span>, <span class="ruby-identifier">event</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-started'>
+<a name='method-i-started'></a>
+<div class='synopsis'>
+<span class='name'>started</span>
+<span class='arguments'>(event)</span>
+
+</div>
+<div class='description'>
+
+<p>Listens to the &#39;started&#39; event, storing the command for later usage</p>
+
+<p>@param event [Mongo::Event::Base] the mongo_ruby_driver generated event</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-started-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-started-source'><span class="ruby-comment"># File lib/bugsnag/integrations/mongo.rb, line 19</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">started</span>(<span class="ruby-identifier">event</span>)&#x000A;  <span class="ruby-identifier">leave_command</span>(<span class="ruby-identifier">event</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-succeeded'>
+<a name='method-i-succeeded'></a>
+<div class='synopsis'>
+<span class='name'>succeeded</span>
+<span class='arguments'>(event)</span>
+
+</div>
+<div class='description'>
+
+<p>Listens to the &#39;succeeded&#39; event, leaving a breadcrumb</p>
+
+<p>@param event [Mongo::Event::Base] the mongo_ruby_driver generated event</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-succeeded-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-succeeded-source'><span class="ruby-comment"># File lib/bugsnag/integrations/mongo.rb, line 27</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">succeeded</span>(<span class="ruby-identifier">event</span>)&#x000A;  <span class="ruby-identifier">leave_mongo_breadcrumb</span>(<span class="ruby-string">&quot;succeeded&quot;</span>, <span class="ruby-identifier">event</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

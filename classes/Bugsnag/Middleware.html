@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Middleware</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>module</span>
+Bugsnag::Middleware
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/bugsnag/integrations/delayed_job_rb.html">lib/bugsnag/integrations/delayed_job.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/mailman_rb.html">lib/bugsnag/integrations/mailman.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/rack_rb.html">lib/bugsnag/integrations/rack.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/railtie_rb.html">lib/bugsnag/integrations/railtie.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/rake_rb.html">lib/bugsnag/integrations/rake.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/integrations/sidekiq_rb.html">lib/bugsnag/integrations/sidekiq.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/breadcrumbs_rb.html">lib/bugsnag/middleware/breadcrumbs.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/callbacks_rb.html">lib/bugsnag/middleware/callbacks.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/classify_error_rb.html">lib/bugsnag/middleware/classify_error.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/clearance_user_rb.html">lib/bugsnag/middleware/clearance_user.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/delayed_job_rb.html">lib/bugsnag/middleware/delayed_job.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/exception_meta_data_rb.html">lib/bugsnag/middleware/exception_meta_data.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/ignore_error_class_rb.html">lib/bugsnag/middleware/ignore_error_class.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/mailman_rb.html">lib/bugsnag/middleware/mailman.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/rack_request_rb.html">lib/bugsnag/middleware/rack_request.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/rails3_request_rb.html">lib/bugsnag/middleware/rails3_request.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/rake_rb.html">lib/bugsnag/middleware/rake.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/session_data_rb.html">lib/bugsnag/middleware/session_data.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/sidekiq_rb.html">lib/bugsnag/middleware/sidekiq.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/suggestion_data_rb.html">lib/bugsnag/middleware/suggestion_data.rb</a>
+</li>
+<li class='other'>
+<a href="../../files/lib/bugsnag/middleware/warden_user_rb.html">lib/bugsnag/middleware/warden_user.rb</a>
+</li>
+<li>
+<a class='show' href='#' onclick='this.parentNode.parentNode.className += &quot; expanded&quot;; this.parentNode.removeChild(this); return false'>show all</a>
+</li>
+</ol>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='context'>
+</div>
+<div id='class-list'>
+<h2>Classes and Modules</h2>
+<ol>
+<li><a href="Middleware/Breadcrumbs.html">Bugsnag::Middleware::Breadcrumbs</a></li>
+<li><a href="Middleware/Callbacks.html">Bugsnag::Middleware::Callbacks</a></li>
+<li><a href="Middleware/ClassifyError.html">Bugsnag::Middleware::ClassifyError</a></li>
+<li><a href="Middleware/ClearanceUser.html">Bugsnag::Middleware::ClearanceUser</a></li>
+<li><a href="Middleware/DelayedJob.html">Bugsnag::Middleware::DelayedJob</a></li>
+<li><a href="Middleware/ExceptionMetaData.html">Bugsnag::Middleware::ExceptionMetaData</a></li>
+<li><a href="Middleware/IgnoreErrorClass.html">Bugsnag::Middleware::IgnoreErrorClass</a></li>
+<li><a href="Middleware/Mailman.html">Bugsnag::Middleware::Mailman</a></li>
+<li><a href="Middleware/RackRequest.html">Bugsnag::Middleware::RackRequest</a></li>
+<li><a href="Middleware/Rails3Request.html">Bugsnag::Middleware::Rails3Request</a></li>
+<li><a href="Middleware/Rake.html">Bugsnag::Middleware::Rake</a></li>
+<li><a href="Middleware/SessionData.html">Bugsnag::Middleware::SessionData</a></li>
+<li><a href="Middleware/Sidekiq.html">Bugsnag::Middleware::Sidekiq</a></li>
+<li><a href="Middleware/SuggestionData.html">Bugsnag::Middleware::SuggestionData</a></li>
+<li><a href="Middleware/WardenUser.html">Bugsnag::Middleware::WardenUser</a></li>
+</ol>
+</div>
+<div id='section'>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Middleware::ClassifyError</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::Middleware::ClassifyError
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../../files/lib/bugsnag/middleware/classify_error_rb.html">lib/bugsnag/middleware/classify_error.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p>Sets the severity to info for low-importance errors</p>
+</div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-call">call</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='constants-list'>
+<h2>Constants</h2>
+<div class='name-list'>
+<table summary='Constants'>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>INFO_CLASSES</td>
+<td>=</td>
+<td class='context-item-value'>[
+"AbstractController::ActionNotFound",
+"ActionController::InvalidAuthenticityToken",
+"ActionController::ParameterMissing",
+"ActionController::UnknownAction",
+"ActionController::UnknownFormat",
+"ActionController::UnknownHttpMethod",
+"ActiveRecord::RecordNotFound",
+"CGI::Session::CookieStore::TamperedWithCookie",
+"Mongoid::Errors::DocumentNotFound",
+"SignalException",
+"SystemExit"
+]</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+</table>
+</div>
+</div>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>(bugsnag)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/middleware/classify_error.rb, line 19</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">bugsnag</span>)&#x000A;  <span class="ruby-ivar">@bugsnag</span> = <span class="ruby-identifier">bugsnag</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-call'>
+<a name='method-i-call'></a>
+<div class='synopsis'>
+<span class='name'>call</span>
+<span class='arguments'>(report)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-call-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-call-source'><span class="ruby-comment"># File lib/bugsnag/middleware/classify_error.rb, line 23</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">call</span>(<span class="ruby-identifier">report</span>)&#x000A;  <span class="ruby-identifier">report</span>.<span class="ruby-identifier">raw_exceptions</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ex</span><span class="ruby-operator">|</span>&#x000A;&#x000A;    <span class="ruby-identifier">ancestor_chain</span> = <span class="ruby-identifier">ex</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">ancestors</span>.<span class="ruby-identifier">select</span> {&#x000A;      <span class="ruby-operator">|</span><span class="ruby-identifier">ancestor</span><span class="ruby-operator">|</span> <span class="ruby-identifier">ancestor</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Class</span>)&#x000A;    }.<span class="ruby-identifier">map</span> {&#x000A;      <span class="ruby-operator">|</span><span class="ruby-identifier">ancestor</span><span class="ruby-operator">|</span> <span class="ruby-identifier">ancestor</span>.<span class="ruby-identifier">to_s</span>&#x000A;    }&#x000A;&#x000A;    <span class="ruby-constant">INFO_CLASSES</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">info_class</span><span class="ruby-operator">|</span>&#x000A;      <span class="ruby-keyword">if</span> <span class="ruby-identifier">ancestor_chain</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">info_class</span>)&#x000A;        <span class="ruby-identifier">report</span>.<span class="ruby-identifier">severity_reason</span> = {&#x000A;          <span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Report</span><span class="ruby-operator">::</span><span class="ruby-constant">ERROR_CLASS</span>,&#x000A;          <span class="ruby-value">:attributes</span> =<span class="ruby-operator">&gt;</span> {&#x000A;            <span class="ruby-value">:errorClass</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">info_class</span>&#x000A;          }&#x000A;        }&#x000A;        <span class="ruby-identifier">report</span>.<span class="ruby-identifier">severity</span> = <span class="ruby-string">&#39;info&#39;</span>&#x000A;        <span class="ruby-keyword">break</span>&#x000A;      <span class="ruby-keyword">end</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-ivar">@bugsnag</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">report</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

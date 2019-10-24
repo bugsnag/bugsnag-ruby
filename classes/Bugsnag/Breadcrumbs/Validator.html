@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Breadcrumbs::Validator</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::Breadcrumbs::Validator
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../../files/lib/bugsnag/breadcrumbs/validator_rb.html">lib/bugsnag/breadcrumbs/validator.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p>Validates a given breadcrumb before it is stored</p>
+</div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-validate">validate</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>(configuration)</span>
+
+</div>
+<div class='description'>
+
+<p>@param configuration [Bugsnag::Configuration] The current configuration</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/breadcrumbs/validator.rb, line 9</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">configuration</span>)&#x000A;  <span class="ruby-ivar">@configuration</span> = <span class="ruby-identifier">configuration</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-validate'>
+<a name='method-i-validate'></a>
+<div class='synopsis'>
+<span class='name'>validate</span>
+<span class='arguments'>(breadcrumb)</span>
+
+</div>
+<div class='description'>
+
+<p>Validates a given breadcrumb.</p>
+
+<p>@param breadcrumb [Bugsnag::Breadcrumbs::Breadcrumb] the breadcrumb to be
+validated</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-validate-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-validate-source'><span class="ruby-comment"># File lib/bugsnag/breadcrumbs/validator.rb, line 17</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">validate</span>(<span class="ruby-identifier">breadcrumb</span>)&#x000A;  <span class="ruby-comment"># Check name length</span>&#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Breadcrumbs</span><span class="ruby-operator">::</span><span class="ruby-constant">MAX_NAME_LENGTH</span>&#x000A;    <span class="ruby-ivar">@configuration</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;Breadcrumb name trimmed to length #{Bugsnag::Breadcrumbs::MAX_NAME_LENGTH}.  Original name: #{breadcrumb.name}&quot;</span>)&#x000A;    <span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">name</span> = <span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">slice</span>(<span class="ruby-value">0</span><span class="ruby-operator">...</span><span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Breadcrumbs</span><span class="ruby-operator">::</span><span class="ruby-constant">MAX_NAME_LENGTH</span>)&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-comment"># Check meta_data hash doesn&#39;t contain complex values</span>&#x000A;  <span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">meta_data</span> = <span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">meta_data</span>.<span class="ruby-identifier">select</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span><span class="ruby-operator">|</span>&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">valid_meta_data_type?</span>(<span class="ruby-identifier">v</span>)&#x000A;      <span class="ruby-keyword">true</span>&#x000A;    <span class="ruby-keyword">else</span>&#x000A;      <span class="ruby-ivar">@configuration</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;Breadcrumb #{breadcrumb.name} meta_data #{k}:#{v.class} has been dropped for having an invalid data type&quot;</span>)&#x000A;      <span class="ruby-keyword">false</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-comment"># Check type is valid, set to manual otherwise</span>&#x000A;  <span class="ruby-keyword">unless</span> <span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Breadcrumbs</span><span class="ruby-operator">::</span><span class="ruby-constant">VALID_BREADCRUMB_TYPES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">type</span>)&#x000A;    <span class="ruby-ivar">@configuration</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;Invalid type: #{breadcrumb.type} for breadcrumb: #{breadcrumb.name}, defaulting to #{Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE}&quot;</span>)&#x000A;    <span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">type</span> = <span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Breadcrumbs</span><span class="ruby-operator">::</span><span class="ruby-constant">MANUAL_BREADCRUMB_TYPE</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-comment"># If auto is true, check type is in enabled_automatic_breadcrumb_types</span>&#x000A;  <span class="ruby-keyword">return</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">auto</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@configuration</span>.<span class="ruby-identifier">enabled_automatic_breadcrumb_types</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">type</span>)&#x000A;&#x000A;  <span class="ruby-ivar">@configuration</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-node">&quot;Automatic breadcrumb of type #{breadcrumb.type} ignored: #{breadcrumb.name}&quot;</span>)&#x000A;  <span class="ruby-identifier">breadcrumb</span>.<span class="ruby-identifier">ignore!</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>CONTRIBUTING.md</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='file' id='wrapper'>
+<div class='header'>
+<h1 class='name'>CONTRIBUTING.md
+</h1>
+<div class='paths'>
+CONTRIBUTING.md
+</div>
+<div class='last-update'>
+Last Update:
+<span class='datetime'>2019-10-24 17:25:22 +0000</span>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<h2 id="label-How+to+contribute">How to contribute<span><a href="#label-How+to+contribute">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>We are glad you&#39;re here! First-time and returning contributors are
+welcome to add bug fixes and new integrations. If you are unsure about the
+direction of an enhancement or if it would be generally useful, feel free
+to open an issue or a work-in-progress pull request and ask for input.</p>
+
+<p>Thank you!</p>
+
+<h3 id="label-Getting+started">Getting started<span><a href="#label-Getting+started">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p><a href="https://help.github.com/articles/fork-a-repo">Fork</a> the <a
+href="https://github.com/bugsnag/bugsnag-ruby">library on github</a></p>
+</li><li>
+<p>Commit and push until you are happy with your contribution</p>
+</li></ul>
+
+<h3 id="label-Polish">Polish<span><a href="#label-Polish">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Run the tests with and make sure they all pass</p>
+
+<pre class="ruby"><span class="ruby-identifier">bundle</span> <span class="ruby-identifier">exec</span> <span class="ruby-identifier">rake</span> <span class="ruby-identifier">spec</span></pre>
+</li><li>
+<p>You will need to add the following test dependencies:</p>
+
+<pre>bundle install --with test --binstubs</pre>
+</li><li>
+<p>For adding a new integration (like support for a web framework or worker
+queue), include an example in the <code>example/</code> directory showing
+off what you&#39;ve built. Include a <code>README</code> with the example
+app so others know how to run it.</p>
+</li></ul>
+
+<h3 id="label-Ship+it-21">Ship it!<span><a href="#label-Ship+it-21">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p><a href="https://help.github.com/articles/using-pull-requests">Make a pull
+request</a></p>
+</li></ul>
+
+<h2 id="label-How+to+release">How to release<span><a href="#label-How+to+release">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>If you&#39;re a member of the core team, follow these instructions for
+releasing bugsnag-ruby.</p>
+
+<h3 id="label-First+time+setup">First time setup<span><a href="#label-First+time+setup">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Create a Rubygems account</p>
+</li><li>
+<p>Get James/Simon to add you as contributor on bugsnag-ruby in Rubygems</p>
+</li></ul>
+
+<h3 id="label-Every+time">Every time<span><a href="#label-Every+time">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Update <code>VERSION</code></p>
+</li><li>
+<p>Update <code>CHANGELOG.md</code></p>
+</li><li>
+<p>Update <code>README.md</code> if necessary</p>
+</li><li>
+<p>Commit/push your changes</p>
+
+<pre>git add VERSION CHANGELOG.md README.md&#x000A;git commit -m &quot;Release v6.x.x&quot;&#x000A;git push origin master</pre>
+</li><li>
+<p>Release to rubygems</p>
+
+<pre class="ruby"><span class="ruby-identifier">gem</span> <span class="ruby-identifier">build</span> <span class="ruby-identifier">bugsnag</span>.<span class="ruby-identifier">gemspec</span>&#x000A;<span class="ruby-identifier">gem</span> <span class="ruby-identifier">push</span> <span class="ruby-identifier">bugsnag</span><span class="ruby-operator">-</span>[<span class="ruby-identifier">version</span>].<span class="ruby-identifier">gem</span></pre>
+</li><li>
+<p>Update the version running in the bugsnag-website project</p>
+</li></ul>
+
+<h3 id="label-Update+docs.bugsnag.com">Update docs.bugsnag.com<span><a href="#label-Update+docs.bugsnag.com">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>Update the setup guides for Ruby (and its frameworks) with any new content.</p>
+</div>
+<div id='context'>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

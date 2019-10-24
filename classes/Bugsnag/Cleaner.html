@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Cleaner</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::Cleaner
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/bugsnag/cleaner_rb.html">lib/bugsnag/cleaner.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-clean_object_encoding">clean_object_encoding</a></li>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-clean_object">clean_object</a></li>
+<li><a href="#method-i-clean_string">clean_string</a></li>
+<li><a href="#method-i-clean_url">clean_url</a></li>
+<li><a href="#method-i-traverse_object">traverse_object</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='constants-list'>
+<h2>Constants</h2>
+<div class='name-list'>
+<table summary='Constants'>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>ENCODING_OPTIONS</td>
+<td>=</td>
+<td class='context-item-value'>{:invalid => :replace, :undef => :replace}.freeze</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>FILTERED</td>
+<td>=</td>
+<td class='context-item-value'>'[FILTERED]'.freeze</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>OBJECT</td>
+<td>=</td>
+<td class='context-item-value'>'[OBJECT]'.freeze</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>RAISED</td>
+<td>=</td>
+<td class='context-item-value'>'[RAISED]'.freeze</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>RECURSION</td>
+<td>=</td>
+<td class='context-item-value'>'[RECURSION]'.freeze</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+</table>
+</div>
+</div>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-clean_object_encoding'>
+<a name='method-c-clean_object_encoding'></a>
+<div class='synopsis'>
+<span class='name'>clean_object_encoding</span>
+<span class='arguments'>(obj)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-clean_object_encoding-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-clean_object_encoding-source'><span class="ruby-comment"># File lib/bugsnag/cleaner.rb, line 74</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">clean_object_encoding</span>(<span class="ruby-identifier">obj</span>)&#x000A;  <span class="ruby-identifier">new</span>(<span class="ruby-keyword">nil</span>).<span class="ruby-identifier">clean_object</span>(<span class="ruby-identifier">obj</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>(filters)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/cleaner.rb, line 11</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">filters</span>)&#x000A;  <span class="ruby-ivar">@filters</span> = <span class="ruby-constant">Array</span>(<span class="ruby-identifier">filters</span>)&#x000A;  <span class="ruby-ivar">@deep_filters</span> = <span class="ruby-ivar">@filters</span>.<span class="ruby-identifier">any?</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Regexp</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&quot;\\.&quot;</span>.<span class="ruby-identifier">freeze</span>) }&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-clean_object'>
+<a name='method-i-clean_object'></a>
+<div class='synopsis'>
+<span class='name'>clean_object</span>
+<span class='arguments'>(obj)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-clean_object-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-clean_object-source'><span class="ruby-comment"># File lib/bugsnag/cleaner.rb, line 16</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">clean_object</span>(<span class="ruby-identifier">obj</span>)&#x000A;  <span class="ruby-identifier">traverse_object</span>(<span class="ruby-identifier">obj</span>, {}, <span class="ruby-keyword">nil</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-clean_string'>
+<a name='method-i-clean_string'></a>
+<div class='synopsis'>
+<span class='name'>clean_string</span>
+<span class='arguments'>(str)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-clean_string-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-clean_string-source'><span class="ruby-comment"># File lib/bugsnag/cleaner.rb, line 60</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">clean_string</span>(<span class="ruby-identifier">str</span>)&#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-keyword">defined?</span>(<span class="ruby-identifier">str</span>.<span class="ruby-identifier">encoding</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-keyword">defined?</span>(<span class="ruby-constant">Encoding</span><span class="ruby-operator">::</span><span class="ruby-constant">UTF_8</span>)&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">encoding</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Encoding</span><span class="ruby-operator">::</span><span class="ruby-constant">UTF_8</span>&#x000A;      <span class="ruby-identifier">str</span>.<span class="ruby-identifier">valid_encoding?</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">str</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">str</span>.<span class="ruby-identifier">encode</span>(<span class="ruby-string">&#39;utf-16&#39;</span>, <span class="ruby-constant">ENCODING_OPTIONS</span>).<span class="ruby-identifier">encode</span>(<span class="ruby-string">&#39;utf-8&#39;</span>)&#x000A;    <span class="ruby-keyword">else</span>&#x000A;      <span class="ruby-identifier">str</span>.<span class="ruby-identifier">encode</span>(<span class="ruby-string">&#39;utf-8&#39;</span>, <span class="ruby-constant">ENCODING_OPTIONS</span>)&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">elsif</span> <span class="ruby-keyword">defined?</span>(<span class="ruby-constant">Iconv</span>)&#x000A;    <span class="ruby-constant">Iconv</span>.<span class="ruby-identifier">conv</span>(<span class="ruby-string">&#39;UTF-8//IGNORE&#39;</span>, <span class="ruby-string">&#39;UTF-8&#39;</span>, <span class="ruby-identifier">str</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">str</span>&#x000A;  <span class="ruby-keyword">else</span>&#x000A;    <span class="ruby-identifier">str</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-clean_url'>
+<a name='method-i-clean_url'></a>
+<div class='synopsis'>
+<span class='name'>clean_url</span>
+<span class='arguments'>(url)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-clean_url-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-clean_url-source'><span class="ruby-comment"># File lib/bugsnag/cleaner.rb, line 78</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">clean_url</span>(<span class="ruby-identifier">url</span>)&#x000A;  <span class="ruby-keyword">return</span> <span class="ruby-identifier">url</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@filters</span>.<span class="ruby-identifier">empty?</span>&#x000A;&#x000A;  <span class="ruby-identifier">uri</span> = <span class="ruby-constant">URI</span>(<span class="ruby-identifier">url</span>)&#x000A;  <span class="ruby-keyword">return</span> <span class="ruby-identifier">url</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">query</span>&#x000A;&#x000A;  <span class="ruby-identifier">query_params</span> = <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">query</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;&amp;&#39;</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">pair</span><span class="ruby-operator">|</span> <span class="ruby-identifier">pair</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;=&#39;</span>) }&#x000A;  <span class="ruby-identifier">query_params</span>.<span class="ruby-identifier">map!</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span>, <span class="ruby-identifier">val</span><span class="ruby-operator">|</span>&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">filters_match?</span>(<span class="ruby-identifier">key</span>)&#x000A;      <span class="ruby-node">&quot;#{key}=#{FILTERED}&quot;</span>&#x000A;    <span class="ruby-keyword">else</span>&#x000A;      <span class="ruby-node">&quot;#{key}=#{val}&quot;</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">query</span> = <span class="ruby-identifier">query_params</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;&amp;&#39;</span>)&#x000A;  <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">to_s</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-traverse_object'>
+<a name='method-i-traverse_object'></a>
+<div class='synopsis'>
+<span class='name'>traverse_object</span>
+<span class='arguments'>(obj, seen, scope)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-traverse_object-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-traverse_object-source'><span class="ruby-comment"># File lib/bugsnag/cleaner.rb, line 20</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">traverse_object</span>(<span class="ruby-identifier">obj</span>, <span class="ruby-identifier">seen</span>, <span class="ruby-identifier">scope</span>)&#x000A;  <span class="ruby-keyword">return</span> <span class="ruby-keyword">nil</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">nil?</span>&#x000A;&#x000A;  <span class="ruby-comment"># Protect against recursion of recursable items</span>&#x000A;  <span class="ruby-identifier">protection</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Set</span>)&#x000A;    <span class="ruby-keyword">return</span> <span class="ruby-identifier">seen</span>[<span class="ruby-identifier">obj</span>] <span class="ruby-keyword">if</span> <span class="ruby-identifier">seen</span>[<span class="ruby-identifier">obj</span>]&#x000A;    <span class="ruby-identifier">seen</span>[<span class="ruby-identifier">obj</span>] = <span class="ruby-constant">RECURSION</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-identifier">value</span> = <span class="ruby-keyword">case</span> <span class="ruby-identifier">obj</span>&#x000A;  <span class="ruby-keyword">when</span> <span class="ruby-constant">Hash</span>&#x000A;    <span class="ruby-identifier">clean_hash</span> = {}&#x000A;    <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span>&#x000A;      <span class="ruby-keyword">if</span> <span class="ruby-identifier">filters_match_deeply?</span>(<span class="ruby-identifier">k</span>, <span class="ruby-identifier">scope</span>)&#x000A;        <span class="ruby-identifier">clean_hash</span>[<span class="ruby-identifier">k</span>] = <span class="ruby-constant">FILTERED</span>&#x000A;      <span class="ruby-keyword">else</span>&#x000A;        <span class="ruby-identifier">clean_hash</span>[<span class="ruby-identifier">k</span>] = <span class="ruby-identifier">traverse_object</span>(<span class="ruby-identifier">v</span>, <span class="ruby-identifier">seen</span>, [<span class="ruby-identifier">scope</span>, <span class="ruby-identifier">k</span>].<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;.&#39;</span>))&#x000A;      <span class="ruby-keyword">end</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;    <span class="ruby-identifier">clean_hash</span>&#x000A;  <span class="ruby-keyword">when</span> <span class="ruby-constant">Array</span>, <span class="ruby-constant">Set</span>&#x000A;    <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">el</span><span class="ruby-operator">|</span> <span class="ruby-identifier">traverse_object</span>(<span class="ruby-identifier">el</span>, <span class="ruby-identifier">seen</span>, <span class="ruby-identifier">scope</span>) }&#x000A;  <span class="ruby-keyword">when</span> <span class="ruby-constant">Numeric</span>, <span class="ruby-constant">TrueClass</span>, <span class="ruby-constant">FalseClass</span>&#x000A;    <span class="ruby-identifier">obj</span>&#x000A;  <span class="ruby-keyword">when</span> <span class="ruby-constant">String</span>&#x000A;    <span class="ruby-identifier">clean_string</span>(<span class="ruby-identifier">obj</span>)&#x000A;  <span class="ruby-keyword">else</span>&#x000A;    <span class="ruby-identifier">str</span> = <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-keyword">rescue</span> <span class="ruby-constant">RAISED</span>&#x000A;    <span class="ruby-comment"># avoid leaking potentially sensitive data from objects&#39; #inspect output</span>&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">str</span> <span class="ruby-operator">=~</span> <span class="ruby-node">/#&lt;.*&gt;/</span>&#x000A;      <span class="ruby-constant">OBJECT</span>&#x000A;    <span class="ruby-keyword">else</span>&#x000A;      <span class="ruby-identifier">clean_string</span>(<span class="ruby-identifier">str</span>)&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-identifier">seen</span>[<span class="ruby-identifier">obj</span>] = <span class="ruby-identifier">value</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">protection</span>&#x000A;  <span class="ruby-identifier">value</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

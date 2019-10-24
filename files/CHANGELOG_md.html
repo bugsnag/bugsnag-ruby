@@ -1,0 +1,1301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>CHANGELOG.md</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='file' id='wrapper'>
+<div class='header'>
+<h1 class='name'>CHANGELOG.md
+</h1>
+<div class='paths'>
+CHANGELOG.md
+</div>
+<div class='last-update'>
+Last Update:
+<span class='datetime'>2019-10-24 17:25:22 +0000</span>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<h1 id="label-Changelog">Changelog<span><a href="#label-Changelog">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<h2 id="label-6.12.2+-2824+Oct+2019-29">6.12.2 (24 Oct 2019)<span><a href="#label-6.12.2+-2824+Oct+2019-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Handle change in capitalisation of framework version constant for <a
+href="../classes/Que.html">Que</a> in v1.x  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/570">#570</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/572">#572</a>  | <a
+href="https://github.com/tommeier">tommeier</a></p>
+</li></ul>
+
+<h2 id="label-6.12.1+-2805+Sep+2019-29">6.12.1 (05 Sep 2019)<span><a href="#label-6.12.1+-2805+Sep+2019-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Account for missing <code>:binds</code> key in
+<code>sql.active_record</code> ActiveSupport notifications.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/555">#555</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/565">#565</a></p>
+</li><li>
+<p>Remove duplicate attribute declaration warning for
+<code>track_sessions</code> in Configuration.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/510">#510</a>  | <a
+href="https://github.com/pocke">pocke</a></p>
+</li></ul>
+
+<h2 id="label-6.12.0+-2828+Aug+2019-29">6.12.0 (28 Aug 2019)<span><a href="#label-6.12.0+-2828+Aug+2019-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Add Ruby (and other framework) version strings to report and session
+payloads (device.runtimeVersions).  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/560">560</a></p>
+</li><li>
+<p>Allow symbols in breadcrumb meta data.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/563">#563</a>  | <a
+href="https://github.com/directionless">directionless</a></p>
+</li></ul>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Use <code>Module#prepend</code> for <a href="../classes/Rake.html">Rake</a>
+integration when on a new enough Ruby version  to avoid infinite mutual
+recursion issues when something else monkey patches 
+<code>Rake::Task</code>.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/556">#556</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/559">#559</a></p>
+</li><li>
+<p>Handle <code>nil</code> values for the <code>job</code> block parameter for
+the <a href="../classes/Que.html">Que</a> error notifier.  This occurs
+under some conditions such as database connection failures.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/545">#545</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/548">#548</a></p>
+</li></ul>
+
+<h2 id="label-6.11.1+-2822+Jan+2019-29">6.11.1 (22 Jan 2019)<span><a href="#label-6.11.1+-2822+Jan+2019-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix issue with unnecessary meta_data being logged during breadcrumb
+validation.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/530">#530</a></p>
+</li></ul>
+
+<h2 id="label-6.11.0+-2817+Jan+2019-29">6.11.0 (17 Jan 2019)<span><a href="#label-6.11.0+-2817+Jan+2019-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p><strong>Note</strong>: this release alters the behaviour of the notifier to
+track sessions automatically.</p>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Added Breadcrumbs. Breadcrumbs allow you to track events that may have led
+up to an error, such as handled errors, page redirects, or SQL queries. For
+info on what is tracked and how you can customize the data that breadcrumbs
+collect, see the <a
+href="https://docs.bugsnag.com/platforms/ruby/other#logging-breadcrumbs">Logging
+breadcrumbs</a> section of our documentation.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/525">#525</a></p>
+</li><li>
+<p><a href="../classes/Bugsnag.html">Bugsnag</a> will now capture
+automatically created sessions by default.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/523">#523</a></p>
+</li></ul>
+
+<h3 id="label-Deprecated">Deprecated<span><a href="#label-Deprecated">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>The <code>endpoint</code> and <code>session_endpoint</code> configuration
+options are now deprecated but still supported. The <a
+href="https://docs.bugsnag.com/platforms/ruby/other/configuration-options#endpoints">set_endpoints</a>
+method should be used instead. Note that session tracking will be disabled
+if the notify endpoint is configured but the sessions endpoint is not -
+this is to avoid inadvertently sending session payloads to the wrong
+server.</p>
+</li></ul>
+
+<h2 id="label-6.10.0+-2805+Dec+2018-29">6.10.0 (05 Dec 2018)<span><a href="#label-6.10.0+-2805+Dec+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Add SignalException to our default ignored classes  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/479">#479</a>  | <a
+href="https://github.com/tobyhs">Toby Hsieh</a></p>
+</li><li>
+<p>Include <a href="../classes/Bugsnag.html">Bugsnag</a> frames, marked out of
+project  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/497">#497</a></p>
+</li></ul>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Ensure Sidekiq request data is always attached to notifications  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/495">#495</a></p>
+</li></ul>
+
+<h2 id="label-6.9.0+-2812+Nov+2018-29">6.9.0 (12 Nov 2018)<span><a href="#label-6.9.0+-2812+Nov+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Ensure the correct error handler is used in newer versions of Sidekiq  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/434">#434</a></p>
+</li><li>
+<p>Rewrite Delayed::Job integration to fix potential issues and add more 
+collected data  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/492">#492</a>  | <a
+href="https://github.com/snmaynard">Simon Maynard</a></p>
+</li></ul>
+
+<h2 id="label-6.8.0+-2811+Jul+2018-29">6.8.0 (11 Jul 2018)<span><a href="#label-6.8.0+-2811+Jul+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>This release includes general performance improvements to payload trimming
+and filtering.</p>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Capture unexpected app terminations automatically with <code>at_exit</code>
+| <a href="https://github.com/bugsnag/bugsnag-ruby/pull/397">#397</a>  | <a
+href="https://github.com/Cawllec">Alex Moinet</a></p>
+</li><li>
+<p>(DelayedJob) Improve max attempts handling - If the max attempts method 
+returns nil it should fallback to <code>Delayed::Worker.max_attempts</code>
+| <a href="https://github.com/bugsnag/bugsnag-ruby/pull/471">#471</a>  | <a
+href="https://github.com/johnnyshields">Johnny Shields</a></p>
+</li><li>
+<p>Increase payload size limit to 512kb (from 256kb)  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/431">#431</a>  | <a
+href="https://github.com/Cawllec">Alex Moinet</a></p>
+</li></ul>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<h2 id="label-6.7.3+-2818+May+2018-29">6.7.3 (18 May 2018)<span><a href="#label-6.7.3+-2818+May+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Apply metadata filters to HTTP referer fields  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/460">#460</a>  | <a
+href="https://github.com/tremlab">Renee Balmert</a></p>
+</li></ul>
+
+<h2 id="label-6.7.2+-2824+Apr+2018-29">6.7.2 (24 Apr 2018)<span><a href="#label-6.7.2+-2824+Apr+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>(Notify) Handle <code>notify</code> calls with <code>nil</code> arguments
+correctly  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/439">#439</a></p>
+</li></ul>
+
+<h2 id="label-6.7.1+-2811+Apr+2018-29">6.7.1 (11 Apr 2018)<span><a href="#label-6.7.1+-2811+Apr+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>(Rails) Log missing key warning after initialization completes, avoiding 
+incorrectly logging a warning that the API key is missing  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/444">#444</a></p>
+</li></ul>
+
+<h2 id="label-6.7.0+-2805+Apr+2018-29">6.7.0 (05 Apr 2018)<span><a href="#label-6.7.0+-2805+Apr+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Support HTTP proxy from <code>http_proxy</code> and
+<code>https_proxy</code> environment variables  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/424">#424</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/437">#437</a>  | <a
+href="https://github.com/cluesque">Bill Kirtley</a></p>
+</li><li>
+<p>Add option to disable auto-configuration  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/419">#419</a></p>
+</li><li>
+<p>Add <code>warden.user.rack</code> data to default filters  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/436">#436</a></p>
+</li></ul>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Ensure logged messages include <a
+href="../classes/Bugsnag.html">Bugsnag</a> progname  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/443">#443</a></p>
+</li></ul>
+
+<h2 id="label-6.6.4+-2814+Feb+2018-29">6.6.4 (14 Feb 2018)<span><a href="#label-6.6.4+-2814+Feb+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Mark files in <code>.bundle/</code> directory as not “in project”  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/420">#420</a>  | <a
+href="https://github.com/Cawllec">Alex Moinet</a></p>
+</li><li>
+<p>Restore support for attaching <code>bugsnag_*</code> metadata to exceptions
+without  extending <code>Bugsnag::Middleware::ExceptionMetaData</code>  |
+<a href="https://github.com/bugsnag/bugsnag-ruby/pull/426">#426</a>  | <a
+href="https://github.com/jnraine">Jordan Raine</a></p>
+</li></ul>
+
+<h2 id="label-6.6.3+-2823+Jan+2018-29">6.6.3 (23 Jan 2018)<span><a href="#label-6.6.3+-2823+Jan+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Re-added apiKey to payload for compatibility  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/418">#418</a></p>
+</li></ul>
+
+<h2 id="label-6.6.2+-2818+Jan+2018-29">6.6.2 (18 Jan 2018)<span><a href="#label-6.6.2+-2818+Jan+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix Shoryuken integration &amp; <code>project_root</code>
+<code>Pathname</code> issue  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/416">#416</a>  | <a
+href="https://github.com/smaximov">Sergei Maximov</a></p>
+</li></ul>
+
+<h2 id="label-6.6.1+-2809+Jan+2018-29">6.6.1 (09 Jan 2018)<span><a href="#label-6.6.1+-2809+Jan+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Bug+fixes">Bug fixes<span><a href="#label-Bug+fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix failure to launch session polling task  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/414">#414</a></p>
+</li></ul>
+
+<h2 id="label-6.6.0+-2809+Jan+2018-29">6.6.0 (09 Jan 2018)<span><a href="#label-6.6.0+-2809+Jan+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Session tracking update:</p>
+</li><li>
+<p>Refactor of session tracking to adhere to a common interface, and simplify
+usage.</p>
+</li><li>
+<p>Includes several performance enhancements.</p>
+</li><li>
+<p>Reverts potentially breaking change of json body sanitation within delivery
+function.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/412">#412</a></p>
+</li><li>
+<p>Maintains backwards compatibility with previous session-tracking changes. 
+| <a href="https://github.com/bugsnag/bugsnag-ruby/pull/413">#413</a></p>
+</li></ul>
+
+<h2 id="label-6.5.0+-2804+Jan+2018-29">6.5.0 (04 Jan 2018)<span><a href="#label-6.5.0+-2804+Jan+2018-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Adds support for tracking sessions and crash rate by setting the
+configuration option <code>configuration.auto_capture_sessions</code> to
+<code>true</code>.  Sessions can be manually created using
+<code>Bugsnag.start_session</code>.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/411">#411</a></p>
+</li></ul>
+
+<h2 id="label-6.4.0+-2821+Dec+2017-29">6.4.0 (21 Dec 2017)<span><a href="#label-6.4.0+-2821+Dec+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Added support for DelayedJob custom job arguments  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/359">#359</a>  | <a
+href="https://github.com/calvinhughes">Calvin Hughes</a></p>
+</li></ul>
+
+<h2 id="label-6.3.0+-2814+Dec+2017-29">6.3.0 (14 Dec 2017)<span><a href="#label-6.3.0+-2814+Dec+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Allow skipping report generation using exception property  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/402">#402</a></p>
+</li></ul>
+
+<h2 id="label-6.2.0+-2807+Dec+2017-29">6.2.0 (07 Dec 2017)<span><a href="#label-6.2.0+-2807+Dec+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Added common exit exceptions - SystemExit and Interrupt - to default ignore
+classes.  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/404">#404</a></p>
+</li></ul>
+
+<h2 id="label-6.1.1+-2823+Nov+2017-29">6.1.1 (23 Nov 2017)<span><a href="#label-6.1.1+-2823+Nov+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Ensured <a href="../classes/Bugsnag.html">Bugsnag</a> class intialises
+before railties initialised  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/396">#396</a></p>
+</li></ul>
+
+<h2 id="label-6.1.0+-2817+Nov+2017-29">6.1.0 (17 Nov 2017)<span><a href="#label-6.1.0+-2817+Nov+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Use lazy load hooks to hook on ActionController::Base  | <a
+href="https://github.com/Edouard-chin">Edouard-chin</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/393">#393</a></p>
+</li></ul>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix type in Rack/Clearance integration  | <a
+href="https://github.com/geoffreymm">geofferymm</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/392">#392</a></p>
+</li><li>
+<p>Fix upgrade link to docs  | <a
+href="https://github.com/duncanhewett">duncanhewett</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/390">#390</a></p>
+</li></ul>
+
+<h2 id="label-6.0.1+-2809+Nov+2017-29">6.0.1 (09 Nov 2017)<span><a href="#label-6.0.1+-2809+Nov+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Adds a warning for the change in usage for the <code>notify()</code> method
+from &lt; 6.0 to ease upgrading.</p>
+
+<h2 id="label-6.0.0+-2809+Nov+2017-29">6.0.0 (09 Nov 2017)<span><a href="#label-6.0.0+-2809+Nov+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>This notifier has been extensively re-written to make it easier to add new
+integrations and maintain in the future. This has led to several changes
+that are not backwards compatible. Please refer to the <a
+href="https://github.com/bugsnag/bugsnag-ruby/blob/master/UPGRADING.md">upgrading
+guide</a> for more information.</p>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>General notifier re-write  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/320">#320</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/378">#378</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/368">#368</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/381">#381</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/385">#385</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/386">#386</a></p>
+</li><li>
+<p>Added Upgrade guide  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/370">#370</a></p>
+</li><li>
+<p>Did-you-mean suggestions middleware  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/372">#372</a></p>
+</li><li>
+<p>Updated examples  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/374">#374</a></p>
+</li></ul>
+
+<h2 id="label-5.5.0+-2809+Nov+2017-29">5.5.0 (09 Nov 2017)<span><a href="#label-5.5.0+-2809+Nov+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Allow environment variable proxy config for <code>Net::HTTP</code>  | <a
+href="https://github.com/dexhorthy">dexhorthy</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/380">#380</a></p>
+</li></ul>
+
+<h2 id="label-5.4.1+-2806+Oct+2017-29">5.4.1 (06 Oct 2017)<span><a href="#label-5.4.1+-2806+Oct+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>[DelayedJob] Fix <code>NameError</code> occurring on erroring job
+notification  | <a href="https://github.com/eitoball">Eito Katagiri</a>  |
+<a href="https://github.com/bugsnag/bugsnag-ruby/pull/377">#377</a></p>
+</li><li>
+<p>Fixed failing Rake/Java tests  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/378">#378</a></p>
+</li></ul>
+
+<h2 id="label-5.4.0+-2802+Oct+2017-29">5.4.0 (02 Oct 2017)<span><a href="#label-5.4.0+-2802+Oct+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>This release removes the default setting of ignoring classes of errors
+which are commonly associated with typos or server signals
+(<code>SystemExit</code>), instead recording them as
+<code>info</code>-level severity by default. This includes the following
+classes:</p>
+
+<pre>AbstractController::ActionNotFound,&#x000A;  ActionController::InvalidAuthenticityToken,&#x000A;  ActionController::ParameterMissing,&#x000A;  ActionController::RoutingError,&#x000A;  ActionController::UnknownAction,&#x000A;  ActionController::UnknownFormat,&#x000A;  ActionController::UnknownHttpMethod,&#x000A;  ActiveRecord::RecordNotFound,&#x000A;  CGI::Session::CookieStore::TamperedWithCookie,&#x000A;  Mongoid::Errors::DocumentNotFound,&#x000A;  SignalException,&#x000A;  SystemExit</pre>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Add a one-time warning if the API key is not set</p>
+</li><li>
+<p>Track whether errors were captured automatically and by which middleware</p>
+</li></ul>
+
+<h2 id="label-5.3.3+-2816+June+2017-29">5.3.3 (16 June 2017)<span><a href="#label-5.3.3+-2816+June+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>[Rails] Fix failure to report when encountering objects which throw in
+<code>to_s</code>  <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/361">#361</a></p>
+</li></ul>
+
+<h2 id="label-5.3.2+-2827+April+2017-29">5.3.2 (27 April 2017)<span><a href="#label-5.3.2+-2827+April+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Bug+fixes">Bug fixes<span><a href="#label-Bug+fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>[Sidekiq] Revert commit <a
+href="https://github.com/bugsnag/bugsnag-ruby/commit/c7862ea90397357f8daad8698c1572230f65075c">c7862ea</a>
+because Sidekiq&#39;s logging middleware was removed in version 5.0.0  | <a
+href="https://github.com/reubenbrown">Reuben Brown</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/358">#358</a></p>
+</li></ul>
+
+<h2 id="label-5.3.1+-2820+April+2017-29">5.3.1 (20 April 2017)<span><a href="#label-5.3.1+-2820+April+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Bug+fixes">Bug fixes<span><a href="#label-Bug+fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>[Resque] Fix error when creating a worker without a queue  | <a
+href="https://github.com/FreekingDean">Dean Galvin</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/355">#355</a></p>
+</li></ul>
+
+<h2 id="label-5.3.0+-2807+April+2017-29">5.3.0 (07 April 2017)<span><a href="#label-5.3.0+-2807+April+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>[Resque] Fix leaking config into parent process  | <a
+href="https://github.com/martin308">Martin Holman</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/347">#347</a></p>
+</li><li>
+<p>Add new integration for <a href="../classes/Que.html">Que</a>  | <a
+href="https://github.com/s-andringa">Sjoerd Andringa</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/305">#305</a></p>
+</li><li>
+<p>[Sidekiq] Start <a href="../classes/Bugsnag.html">Bugsnag</a> after the
+logger in the middleware chain  | <a
+href="https://github.com/sb8244">Stephen Bussey</a>  | <a
+href="https://github.com/akhiln">Akhil Naini</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/326">#326</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/350">#350</a></p>
+</li><li>
+<p>[Rake] Allow overriding <code>app_type</code> apps  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/351">#351</a></p>
+</li><li>
+<p>Send the dyno name as the hostname when running on Heroku  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/333">#333</a></p>
+</li><li>
+<p>[Delayed Job] Add additional job information such as arguments and number
+of  attempts when available  | <a href="https://github.com/timdiggins">Tim
+Diggins</a>  | <a href="https://github.com/abraham-chan">Abraham Chan</a> 
+| <a href="https://github.com/johnnyshields">Johnny Shields</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/329">#329</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/332">#332</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/321">#321</a></p>
+</li></ul>
+
+<h3 id="label-Bug+fixes">Bug fixes<span><a href="#label-Bug+fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Initialize Railtie after <a href="../classes/Bugsnag.html">Bugsnag</a>
+class  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/343">#343</a></p>
+</li><li>
+<p>Alias <code>notify_or_ignore</code> to <code>notify</code>  | <a
+href="https://github.com/snmaynard">Simon Maynard</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/319">#319</a></p>
+</li></ul>
+
+<h2 id="label-5.2.0+-2810+February+2017-29">5.2.0 (10 February 2017)<span><a href="#label-5.2.0+-2810+February+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Allow provider attribute in Deploy#notify  | <a
+href="https://github.com/jbaranov">@jbaranov</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/339">#339</a></p>
+</li></ul>
+
+<h3 id="label-Bug+fixes">Bug fixes<span><a href="#label-Bug+fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Correctly hook on Action Controller  | <a
+href="https://github.com/rafaelfranca">@rafaelfranca</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/338">#338</a></p>
+</li><li>
+<p>Fix <a href="../classes/Bugsnag.html">Bugsnag</a> error message typo  | <a
+href="https://github.com/Adsidera">@Adsidera</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/344">#344</a></p>
+</li><li>
+<p>Default delivery method  | <a
+href="https://github.com/martin308">@martin308</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/346">#346</a></p>
+</li></ul>
+
+<h2 id="label-5.1.0+-2823+January+2017-29">5.1.0 (23 January 2017)<span><a href="#label-5.1.0+-2823+January+2017-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Bug+fixes">Bug fixes<span><a href="#label-Bug+fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix behavior to not override Rails 5 <code>belongs_to</code> association  |
+<a href="https://github.com/bugsnag/bugsnag-ruby/pull/314">#314</a></p>
+</li></ul>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Add Clearance support  | <a href="https://github.com/jrochkind">Jonathan
+Rochkind</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/313">#313</a></p>
+</li><li>
+<p>Add Shoruken support  | <a href="https://github.com/nigelramsay">Nigel
+Ramsay</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/324">#324</a></p>
+</li></ul>
+
+<h2 id="label-5.0.1+-287+September+2016-29">5.0.1 (7 September 2016)<span><a href="#label-5.0.1+-287+September+2016-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Bug+fixes">Bug fixes<span><a href="#label-Bug+fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Show the job class name for Sidekiq jobs, not the wrapper class name  | <a
+href="https://github.com/snmaynard">Simon Maynard</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/323">#323</a></p>
+</li></ul>
+
+<h2 id="label-5.0.0+-2823+August+2016-29">5.0.0 (23 August 2016)<span><a href="#label-5.0.0+-2823+August+2016-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Remove RoutingError from default ignore classes  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/308">#308</a></p>
+</li><li>
+<p>Prefer BUGSNAG_RELEASE_STAGE over RAILS_ENV for release_stage  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/298">#298</a></p>
+</li><li>
+<p>Apply grouping hash if method <code>bugsnag_grouping_hash</code> is
+available on the object  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/318">#318</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/311">#311</a></p>
+</li><li>
+<p>Sidekiq improvements  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/317">#317</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/282">#282</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/309">#309</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/306">#306</a></p>
+</li></ul>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Exception backtrace could be empty  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/307">#307</a></p>
+</li></ul>
+
+<h2 id="label-4.2.1+-2823+Jun+2016-29">4.2.1 (23 Jun 2016)<span><a href="#label-4.2.1+-2823+Jun+2016-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Ensure Rails 2 extensions are not loaded on newer versions  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/303">#303</a></p>
+</li><li>
+<p>Remove API key logging when <a href="../classes/Bugsnag.html">Bugsnag</a>
+is logging successfully  | <a href="https://github.com/jborrey">Julian
+Borrey</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/299">#299</a></p>
+</li></ul>
+
+<h2 id="label-4.2.0+-2817+Jun+2016-29">4.2.0 (17 Jun 2016)<span><a href="#label-4.2.0+-2817+Jun+2016-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Add the name of the job class in context for Sidekiq and <a
+href="../classes/Resque.html">Resque</a> errors  | <a
+href="https://github.com/johanlunds">Johan Lundström</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/293">#293</a></p>
+</li></ul>
+
+<h2 id="label-4.1.0+-2811+May+2016-29">4.1.0 (11 May 2016)<span><a href="#label-4.1.0+-2811+May+2016-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Add support for &#39;block syntax&#39; on <a
+href="../classes/Bugsnag.html#method-c-notify">Bugsnag.notify</a> calls  |
+<a href="https://github.com/loopj">James Smith</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/292">#292</a></p>
+</li></ul>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Trim stacktraces and metadata to ensure payload delivery  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/294">#294</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/295">#295</a></p>
+</li></ul>
+
+<h2 id="label-4.0.2+-2813+Apr+2016-29">4.0.2 (13 Apr 2016)<span><a href="#label-4.0.2+-2813+Apr+2016-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix payload rejection due to truncating duplicate stacktrace frames  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/284">#284</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/291">#291</a></p>
+</li></ul>
+
+<h2 id="label-4.0.1+-285+Apr+2016-29">4.0.1 (5 Apr 2016)<span><a href="#label-4.0.1+-285+Apr+2016-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix Sidekiq app type being overwritten by Rails  | <a
+href="https://github.com/Draiken">Luiz Felipe G. Pereira</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/286">#286</a></p>
+</li><li>
+<p>Fix report uploads being rejected due to payload size  | <a
+href="https://github.com/CodeHex">Ben Ibinson</a>  | <a
+href="https://github.com/duncanhewett">Duncan Hewett</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/288">#288</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/290">#290</a></p>
+</li><li>
+<p>Fix a possible crash when parsing a URL for RackRequest  | <a
+href="https://github.com/perldork">Max Schubert</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/289">#289</a></p>
+</li><li>
+<p>Hide partial API key logged when loading <a
+href="../classes/Bugsnag.html">Bugsnag</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/283">#283</a></p>
+</li></ul>
+
+<h2 id="label-4.0.0+-289+Mar+2016-29">4.0.0 (9 Mar 2016)<span><a href="#label-4.0.0+-289+Mar+2016-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>This release includes general fixes as well as removing support for Ruby
+versions below 1.9.2.</p>
+
+<h3 id="label-Fixes">Fixes<span><a href="#label-Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix deployment notification failure in Capistrano  | <a
+href="https://github.com/snmaynard">Simon Maynard</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/275">#275</a></p>
+</li><li>
+<p>Fix Bad Request errors generated by large payloads  | <a
+href="https://github.com/snmaynard">Simon Maynard</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/276">#276</a></p>
+</li></ul>
+
+<h2 id="label-3.0.0+-2823+Dec+2015-29">3.0.0 (23 Dec 2015)<span><a href="#label-3.0.0+-2823+Dec+2015-29">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix warning from usage of <code>before_filter</code> in Rails 5  | <a
+href="https://github.com/sgringwe">Scott Ringwelski</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/267">#267</a></p>
+</li><li>
+<p>Use Rails 5-style deep parameter filtering  | <a
+href="https://github.com/fimmtiu">fimmtiu</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/256">#256</a></p>
+</li></ul>
+
+<p>Note: This is a backwards incompatible change, as filters containing
+<code>.</code> are  now parsed as nested instead of as a single key.</p>
+
+<h2 id="label-2.8.13">2.8.13<span><a href="#label-2.8.13">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<h3 id="label-Bug+Fixes">Bug Fixes<span><a href="#label-Bug+Fixes">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Fix crash during heroku <a href="../classes/Rake.html">Rake</a> task when
+an environment variable was empty  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/261">#261</a></p>
+</li></ul>
+
+<h3 id="label-Enhancements">Enhancements<span><a href="#label-Enhancements">&para;</a> <a href="#top">&uarr;</a></span></h3>
+<ul><li>
+<p>Various warning fixes  | <a href="https://github.com/tfausak">Taylor
+Fausak</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/254">#254</a></p>
+</li><li>
+<p>Make the list of vendor paths configurable  | <a
+href="https://github.com/byroot">Jean Boussier</a>  | <a
+href="https://github.com/bugsnag/bugsnag-ruby/pull/253">#253</a></p>
+</li></ul>
+
+<h2 id="label-2.8.12">2.8.12<span><a href="#label-2.8.12">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Ensure timeout is set when configured</p>
+</li><li>
+<p>Allow on premise installations to easily send deploy notifications</p>
+</li></ul>
+
+<h2 id="label-2.8.11">2.8.11<span><a href="#label-2.8.11">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Better handle errors in ActiveRecord transactions (thanks @arthurnn!)</p>
+</li></ul>
+
+<h2 id="label-2.8.10">2.8.10<span><a href="#label-2.8.10">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Remove multi_json from deploy</p>
+</li></ul>
+
+<h2 id="label-2.8.9">2.8.9<span><a href="#label-2.8.9">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Remove dependency on <code>multi_json</code>, fall back to the
+<code>json</code> gem for Ruby &lt; 1.9</p>
+</li></ul>
+
+<h2 id="label-2.8.8">2.8.8<span><a href="#label-2.8.8">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Pull IP address from action_dispatch.remote_ip if available</p>
+</li></ul>
+
+<h2 id="label-2.8.7">2.8.7<span><a href="#label-2.8.7">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix for old rails 3.2 not having runner defined in the railtie</p>
+</li><li>
+<p>Support for rails API</p>
+</li><li>
+<p>Added support for ca_file for dealing with SSL issues</p>
+</li><li>
+<p>Threadsafe ignore_classes</p>
+</li><li>
+<p>Add app type</p>
+</li><li>
+<p>Dont send cookies in their own tab</p>
+</li></ul>
+
+<h2 id="label-2.8.6">2.8.6<span><a href="#label-2.8.6">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Don&#39;t report SystemExit from <code>rails runner</code></p>
+</li><li>
+<p>Fix for stacktrace including custom bugsnag middleware</p>
+</li><li>
+<p>Fix reporting of errors in rails-defined rake tasks</p>
+</li></ul>
+
+<h2 id="label-2.8.5">2.8.5<span><a href="#label-2.8.5">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix performance problems in cleanup_obj</p>
+</li></ul>
+
+<h2 id="label-2.8.4">2.8.4<span><a href="#label-2.8.4">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Automatically catch errors in <code>rails runner</code></p>
+</li><li>
+<p>Accept meta_data from any exception that deines
+<code>bugsnag_meta_data</code></p>
+</li></ul>
+
+<h2 id="label-2.8.3">2.8.3<span><a href="#label-2.8.3">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Delay forking the delivery thread</p>
+</li></ul>
+
+<h2 id="label-2.8.2">2.8.2<span><a href="#label-2.8.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix various threading issues during library initialization</p>
+</li></ul>
+
+<h2 id="label-2.8.1">2.8.1<span><a href="#label-2.8.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Exclude cookies and authorization headers by default</p>
+</li><li>
+<p>Include rails exclusion list at the right time</p>
+</li></ul>
+
+<h2 id="label-2.8.0">2.8.0<span><a href="#label-2.8.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Make meta_data available to before_notify hooks</p>
+</li><li>
+<p>Fix bug with rails param filters</p>
+</li><li>
+<p>Fix encoding error in exception message</p>
+</li></ul>
+
+<h2 id="label-2.7.1">2.7.1<span><a href="#label-2.7.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add rake task to create a Heroku deploy hook</p>
+</li></ul>
+
+<h2 id="label-2.7.0">2.7.0<span><a href="#label-2.7.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix configuration of http timeouts</p>
+</li><li>
+<p>Fix configuration of http proxies</p>
+</li><li>
+<p>Remove dependency on httparty</p>
+</li><li>
+<p>Allow for symbols in rack env</p>
+</li></ul>
+
+<h2 id="label-2.6.1">2.6.1<span><a href="#label-2.6.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix Ruby 1.8 payload delivery bug (thanks @colin!)</p>
+</li></ul>
+
+<h2 id="label-2.6.0">2.6.0<span><a href="#label-2.6.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Collect and send snippets of source code to <a
+href="../classes/Bugsnag.html">Bugsnag</a></p>
+</li><li>
+<p>Fix resque integration</p>
+</li><li>
+<p>Allow configuration of delivery method (from the default
+<code>:thread_queue</code> to <code>:synchronous</code>)</p>
+</li><li>
+<p>Fix parameter filtering in rails 2</p>
+</li><li>
+<p>Allow pathname in project root</p>
+</li></ul>
+
+<h2 id="label-2.5.1">2.5.1<span><a href="#label-2.5.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Collect and send HTTP headers to bugsnag to help debugging</p>
+</li></ul>
+
+<h2 id="label-2.5.0">2.5.0<span><a href="#label-2.5.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Allow access to the metadata object in before bugsnag notify callbacks</p>
+</li><li>
+<p>Dont send the rack env by default</p>
+</li></ul>
+
+<h2 id="label-2.4.1">2.4.1<span><a href="#label-2.4.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Ensure filtering behaviour matches rails&#39; for symbol filters</p>
+</li><li>
+<p>Fix Rails 4 sessions appearing in Custom tab instead of its own (<a
+href="https://github.com/bugsnag/bugsnag-ruby/issues/144">144</a>)</p>
+</li></ul>
+
+<h2 id="label-2.4.0">2.4.0<span><a href="#label-2.4.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Allow filters to be regular expressions (thanks @tamird)</p>
+</li><li>
+<p>Ensure filtering behavior matches rails&#39; when importing filters from
+<code>Rails.configuration.filter_parameters</code></p>
+</li></ul>
+
+<h2 id="label-2.3.0">2.3.0<span><a href="#label-2.3.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Use ssl by default (Thanks @dkubb)</p>
+</li></ul>
+
+<h2 id="label-2.2.2">2.2.2<span><a href="#label-2.2.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add additional ignored classes</p>
+</li><li>
+<p>Check all chained exceptions on an error for ignored classes</p>
+</li></ul>
+
+<h2 id="label-2.2.1">2.2.1<span><a href="#label-2.2.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix occasional crash when reading rack params.</p>
+</li><li>
+<p>Don&#39;t strip files with bugsnag in the name.</p>
+</li></ul>
+
+<h2 id="label-2.2.0">2.2.0<span><a href="#label-2.2.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Move <a href="../classes/Bugsnag.html">Bugsnag</a> notifications onto a
+background thread.</p>
+</li></ul>
+
+<h2 id="label-2.1.0">2.1.0<span><a href="#label-2.1.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add job detail support to delayed_job integration (thanks dtaniwaki!)</p>
+</li></ul>
+
+<h2 id="label-2.0.3">2.0.3<span><a href="#label-2.0.3">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Load the env in the deploy rake task if there is no api key set</p>
+</li></ul>
+
+<h2 id="label-2.0.2">2.0.2<span><a href="#label-2.0.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix encoding issue when ensuring utf8 string is valid</p>
+</li></ul>
+
+<h2 id="label-2.0.1">2.0.1<span><a href="#label-2.0.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix capistrano v3 after 2.0.0</p>
+</li></ul>
+
+<h2 id="label-2.0.0">2.0.0<span><a href="#label-2.0.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>BREAKING: capistrano integration requires explicit configuration to avoid
+loading rails env (15x faster to notify)</p>
+</li><li>
+<p>Sidekiq 3 support</p>
+</li><li>
+<p>java.lang.Throwable support for jruby</p>
+</li><li>
+<p>Show non-serializable objects as &#39;[Object]&#39; instead of
+&#39;null&#39;.</p>
+</li><li>
+<p>Fix delayed job 2.x</p>
+</li><li>
+<p>Fix rake support</p>
+</li><li>
+<p>Fix missing notifications caused by invalid utf8</p>
+</li></ul>
+
+<h2 id="label-1.8.8">1.8.8<span><a href="#label-1.8.8">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Prepare &#39;severity&#39; feature for release</p>
+</li></ul>
+
+<h2 id="label-1.8.7">1.8.7<span><a href="#label-1.8.7">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix capistrano when <code>rake</code> is not set. #87</p>
+</li><li>
+<p>Fix capistrano when <code>Rails</code> is not loaded. #85</p>
+</li><li>
+<p>Various cleanup</p>
+</li></ul>
+
+<h2 id="label-1.8.6">1.8.6<span><a href="#label-1.8.6">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Proxy support in the bugsnag deploy notification rake task</p>
+</li></ul>
+
+<h2 id="label-1.8.5">1.8.5<span><a href="#label-1.8.5">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Capistrano3 support (for real)</p>
+</li><li>
+<p>delayed_job support</p>
+</li></ul>
+
+<h2 id="label-1.8.4">1.8.4<span><a href="#label-1.8.4">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Support for per-notification api keys</p>
+</li></ul>
+
+<h2 id="label-1.8.3">1.8.3<span><a href="#label-1.8.3">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Capistrano3 support</p>
+</li><li>
+<p>Allow <code>set :bugsnag_api_key, foo</code> in capistrano</p>
+</li></ul>
+
+<h2 id="label-1.8.2">1.8.2<span><a href="#label-1.8.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Notify all exceptions in mailman and sidekiq</p>
+</li></ul>
+
+<h2 id="label-1.8.1">1.8.1<span><a href="#label-1.8.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix Rails2 middleware issue that stopped automatic metadata collection</p>
+</li></ul>
+
+<h2 id="label-1.8.0">1.8.0<span><a href="#label-1.8.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Move away from Jeweler</p>
+</li><li>
+<p>Support for Exception#cause in ruby 2.1.0</p>
+</li></ul>
+
+<h2 id="label-1.7.0">1.7.0<span><a href="#label-1.7.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Allow users to configure app type</p>
+</li><li>
+<p>Send severity of error to bugsnag</p>
+</li><li>
+<p>Allo users to configure users in a structured way for search etc.</p>
+</li></ul>
+
+<h2 id="label-1.6.5">1.6.5<span><a href="#label-1.6.5">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Send hostname to <a href="../classes/Bugsnag.html">Bugsnag</a></p>
+</li></ul>
+
+<h2 id="label-1.6.4">1.6.4<span><a href="#label-1.6.4">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix load order issue with <a href="../classes/Resque.html">Resque</a></p>
+</li></ul>
+
+<h2 id="label-1.6.3">1.6.3<span><a href="#label-1.6.3">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Deal with SSL properly for deploy notifications on ruby &lt;2.0</p>
+</li></ul>
+
+<h2 id="label-1.6.2">1.6.2<span><a href="#label-1.6.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Notify about exceptions that occur in ActiveRecord <code>commit</code> and
+<code>rollback</code> callbacks (these are usually swallowed silently by
+rails)</p>
+</li></ul>
+
+<h2 id="label-1.6.1">1.6.1<span><a href="#label-1.6.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Ensure sidekiq, mailman and rake hooks respect the
+<code>ignore_classes</code> setting</p>
+</li><li>
+<p>Persist sidekiq and mailman meta-data through each job, so it can show up
+in manual <a
+href="../classes/Bugsnag.html#method-c-notify">Bugsnag.notify</a> calls</p>
+</li></ul>
+
+<h2 id="label-1.6.0">1.6.0<span><a href="#label-1.6.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add support for catching crashes in <a
+href="https://github.com/titanous/mailman">mailman</a> apps</p>
+</li><li>
+<p>Automatically enable Bugsnag&#39;s resque failure backend</p>
+</li><li>
+<p>Add automatic rake integration for rails apps</p>
+</li></ul>
+
+<h2 id="label-1.5.3">1.5.3<span><a href="#label-1.5.3">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Deal with self-referential meta data correctly.</p>
+</li><li>
+<p>Dont load the environment when performing a deploy with capistrano.</p>
+</li></ul>
+
+<h2 id="label-1.5.2">1.5.2<span><a href="#label-1.5.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Dont send rack.request.form_vars as it is a copy of form_hash and it may
+contain sensitive params.</p>
+</li></ul>
+
+<h2 id="label-1.5.1">1.5.1<span><a href="#label-1.5.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix rake block arguments for tasks that need them.</p>
+</li></ul>
+
+<h2 id="label-1.5.0">1.5.0<span><a href="#label-1.5.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add proxy support for http requests to <a
+href="../classes/Bugsnag.html">Bugsnag</a>.</p>
+</li><li>
+<p>Read the API key from the environment for Heroku users</p>
+</li></ul>
+
+<h2 id="label-1.4.2">1.4.2<span><a href="#label-1.4.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add HTTP Referer to the request tab on rack apps</p>
+</li></ul>
+
+<h2 id="label-1.4.0">1.4.0<span><a href="#label-1.4.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add ignore_user_agents to ignore certain user agents</p>
+</li><li>
+<p>Change bugsnag middleware order to have Callbacks last</p>
+</li><li>
+<p>Allow nil values to be sent to bugsnag</p>
+</li></ul>
+
+<h2 id="label-1.3.8">1.3.8<span><a href="#label-1.3.8">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add truncated only when a field has been truncated</p>
+</li></ul>
+
+<h2 id="label-1.3.7">1.3.7<span><a href="#label-1.3.7">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix warden bug where user id is an array of ids</p>
+</li><li>
+<p>Filter get params from URLs as well as meta_data</p>
+</li></ul>
+
+<h2 id="label-1.3.6">1.3.6<span><a href="#label-1.3.6">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Filter out meta-data keys containing the word &#39;secret&#39; by default</p>
+</li></ul>
+
+<h2 id="label-1.3.5">1.3.5<span><a href="#label-1.3.5">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fixed bug in rake integration with ruby 1.9 hash syntax</p>
+</li></ul>
+
+<h2 id="label-1.3.4">1.3.4<span><a href="#label-1.3.4">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix nil bug in windows backtraces</p>
+</li></ul>
+
+<h2 id="label-1.3.3">1.3.3<span><a href="#label-1.3.3">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Support windows-style paths in backtraces</p>
+</li><li>
+<p>Fix bug with <code>before_bugsnag_notify</code> in Rails 2</p>
+</li></ul>
+
+<h2 id="label-1.3.2">1.3.2<span><a href="#label-1.3.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Notify will now build exceptions if a non-exception is passed in.</p>
+</li></ul>
+
+<h2 id="label-1.3.1">1.3.1<span><a href="#label-1.3.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add support for <a href="../classes/Bugsnag.html">Bugsnag</a> rake
+integration</p>
+</li></ul>
+
+<h2 id="label-1.3.0">1.3.0<span><a href="#label-1.3.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>By default we notify in all release stages now</p>
+</li><li>
+<p>Return the notification in notify_or_ignore</p>
+</li></ul>
+
+<h2 id="label-1.2.18">1.2.18<span><a href="#label-1.2.18">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add support for bugsnag meta data in exceptions.</p>
+</li></ul>
+
+<h2 id="label-1.2.17">1.2.17<span><a href="#label-1.2.17">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Clear the before bugsnag notify callbacks on sidekiq when a job is complete</p>
+</li></ul>
+
+<h2 id="label-1.2.16">1.2.16<span><a href="#label-1.2.16">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Allow lambda functions in config.ignore_classes</p>
+</li></ul>
+
+<h2 id="label-1.2.15">1.2.15<span><a href="#label-1.2.15">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add stacktrace to internal bugsnag logging output</p>
+</li><li>
+<p>Protect against metadata not being a hash when truncation takes place</p>
+</li></ul>
+
+<h2 id="label-1.2.14">1.2.14<span><a href="#label-1.2.14">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add debug method, configuration option to help debug issues</p>
+</li><li>
+<p>Better protection against bad unicode strings in metadata</p>
+</li></ul>
+
+<h2 id="label-1.2.13">1.2.13<span><a href="#label-1.2.13">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Protect against invalid unicode strings in metadata</p>
+</li></ul>
+
+<h2 id="label-1.2.12">1.2.12<span><a href="#label-1.2.12">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fixed minor HTTParty dependency issue</p>
+</li></ul>
+
+<h2 id="label-1.2.11">1.2.11<span><a href="#label-1.2.11">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Send rails version with exceptions</p>
+</li><li>
+<p>Protect against nil params object when errors happen in rack</p>
+</li></ul>
+
+<h2 id="label-1.2.10">1.2.10<span><a href="#label-1.2.10">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Added Rack HTTP method (GET, POST, etc) to request tab</p>
+</li></ul>
+
+<h2 id="label-1.2.9">1.2.9<span><a href="#label-1.2.9">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fixed an issue with Warden userIds not being reported properly.</p>
+</li></ul>
+
+<h2 id="label-1.2.8">1.2.8<span><a href="#label-1.2.8">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Added <code>disable</code> method to <a
+href="../classes/Bugsnag.html">Bugsnag</a> middleware, allows you to
+force-disable built-in <a href="../classes/Bugsnag.html">Bugsnag</a>
+middleware.</p>
+</li></ul>
+
+<h2 id="label-1.2.7">1.2.7<span><a href="#label-1.2.7">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Protect against rare exception-unwrapping infinite loop (only in some
+exceptions using the <code>original_exception</code> pattern)</p>
+</li></ul>
+
+<h2 id="label-1.2.6">1.2.6<span><a href="#label-1.2.6">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix for rails 2 request data extraction</p>
+</li><li>
+<p>Deploy environment customization support (thanks coop)</p>
+</li><li>
+<p>Ensure <a href="../classes/Bugsnag.html">Bugsnag</a> rails 3 middleware
+runs before initializers</p>
+</li></ul>
+
+<h2 id="label-1.2.5">1.2.5<span><a href="#label-1.2.5">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Show a warning if no release_stage is set when delivering exceptions</p>
+</li><li>
+<p>Require resque plugin in a safer way</p>
+</li></ul>
+
+<h2 id="label-1.2.4">1.2.4<span><a href="#label-1.2.4">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Automatically set the release_stage in a safer way on rack/rails</p>
+</li></ul>
+
+<h2 id="label-1.2.3">1.2.3<span><a href="#label-1.2.3">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Re-add support for sending bugsnag notifications via resque</p>
+</li></ul>
+
+<h2 id="label-1.2.2">1.2.2<span><a href="#label-1.2.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Add rspec tests for rack middleware</p>
+</li></ul>
+
+<h2 id="label-1.2.1">1.2.1<span><a href="#label-1.2.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix a bug where before/after hooks were not being fired</p>
+</li></ul>
+
+<h2 id="label-1.2.0">1.2.0<span><a href="#label-1.2.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Added <a href="../classes/Bugsnag.html">Bugsnag</a> Middleware and
+callback, easier ways to add custom data to your exceptions</p>
+</li><li>
+<p>Added automatic Sidekiq integration</p>
+</li><li>
+<p>Added automatic Devise integration</p>
+</li><li>
+<p>Comprehensive rspec tests</p>
+</li></ul>
+
+<h2 id="label-1.1.5">1.1.5<span><a href="#label-1.1.5">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix minor internal version number parsing bug</p>
+</li></ul>
+
+<h2 id="label-1.1.4">1.1.4<span><a href="#label-1.1.4">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Move <a href="../classes/Bugsnag.html">Bugsnag</a> rack middleware later in
+the middleware stack, fixes issue where development exception may not have
+been delivered</p>
+</li></ul>
+
+<h2 id="label-1.1.3">1.1.3<span><a href="#label-1.1.3">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix multi_json conflict with rails 3.1</p>
+</li><li>
+<p>Make bugsnag_request_data public for easier EventMachine integration
+(thanks fblee)</p>
+</li></ul>
+
+<h2 id="label-1.1.2">1.1.2<span><a href="#label-1.1.2">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Fix multi_json gem dependency conflicts</p>
+</li></ul>
+
+<h2 id="label-1.1.1">1.1.1<span><a href="#label-1.1.1">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>Capistrano deploy tracking support</p>
+</li><li>
+<p>More reliable project_root detection for non-rails rack apps</p>
+</li><li>
+<p>Support for sending test exceptions from rake (<code>rake&#x000A;bugsnag:test_exception</code>)</p>
+</li></ul>
+
+<h2 id="label-1.1.0">1.1.0<span><a href="#label-1.1.0">&para;</a> <a href="#top">&uarr;</a></span></h2>
+<ul><li>
+<p>First public release</p>
+</li></ul>
+</div>
+<div id='context'>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

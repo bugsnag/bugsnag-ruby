@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Middleware::DelayedJob</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::Middleware::DelayedJob
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../../files/lib/bugsnag/middleware/delayed_job_rb.html">lib/bugsnag/middleware/delayed_job.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p>Attaches delayed_job information to an error report</p>
+</div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-call">call</a></li>
+<li><a href="#method-i-construct_job_payload">construct_job_payload</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>(bugsnag)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/middleware/delayed_job.rb, line 5</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">bugsnag</span>)&#x000A;  <span class="ruby-ivar">@bugsnag</span> = <span class="ruby-identifier">bugsnag</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-call'>
+<a name='method-i-call'></a>
+<div class='synopsis'>
+<span class='name'>call</span>
+<span class='arguments'>(report)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-call-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-call-source'><span class="ruby-comment"># File lib/bugsnag/middleware/delayed_job.rb, line 9</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">call</span>(<span class="ruby-identifier">report</span>)&#x000A;  <span class="ruby-identifier">job</span> = <span class="ruby-identifier">report</span>.<span class="ruby-identifier">request_data</span>[<span class="ruby-value">:delayed_job</span>]&#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>&#x000A;    <span class="ruby-identifier">job_data</span> = {&#x000A;      <span class="ruby-value">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>,&#x000A;      <span class="ruby-value">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">id</span>&#x000A;    }&#x000A;    <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:priority</span>] = <span class="ruby-identifier">job</span>.<span class="ruby-identifier">priority</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:priority</span>)&#x000A;    <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:run_at</span>] = <span class="ruby-identifier">job</span>.<span class="ruby-identifier">run_at</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:run_at</span>)&#x000A;    <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:locked_at</span>] = <span class="ruby-identifier">job</span>.<span class="ruby-identifier">locked_at</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:locked_at</span>)&#x000A;    <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:locked_by</span>] = <span class="ruby-identifier">job</span>.<span class="ruby-identifier">locked_by</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:locked_by</span>)&#x000A;    <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:created_at</span>] = <span class="ruby-identifier">job</span>.<span class="ruby-identifier">created_at</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:created_at</span>)&#x000A;    <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:queue</span>] = <span class="ruby-identifier">job</span>.<span class="ruby-identifier">queue</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:queue</span>)&#x000A;&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:payload_object</span>)&#x000A;      <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:active_job</span>] = <span class="ruby-identifier">job</span>.<span class="ruby-identifier">payload_object</span>.<span class="ruby-identifier">job_data</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">payload_object</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:job_data</span>)&#x000A;      <span class="ruby-identifier">payload_data</span> = <span class="ruby-identifier">construct_job_payload</span>(<span class="ruby-identifier">job</span>.<span class="ruby-identifier">payload_object</span>)&#x000A;      <span class="ruby-identifier">report</span>.<span class="ruby-identifier">context</span> = <span class="ruby-identifier">payload_data</span>[<span class="ruby-value">:display_name</span>] <span class="ruby-keyword">if</span> <span class="ruby-identifier">payload_data</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-value">:display_name</span>)&#x000A;      <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:payload</span>] = <span class="ruby-identifier">payload_data</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:attempts</span>)&#x000A;      <span class="ruby-comment"># +1 as &quot;attempts&quot; is zero-based and does not include the current failed attempt</span>&#x000A;      <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:attempt</span>] = <span class="ruby-identifier">job</span>.<span class="ruby-identifier">attempts</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>&#x000A;      <span class="ruby-identifier">job_data</span>[<span class="ruby-value">:max_attempts</span>] = (<span class="ruby-identifier">job</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:max_attempts</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">job</span>.<span class="ruby-identifier">max_attempts</span>) <span class="ruby-operator">||</span> <span class="ruby-constant">Delayed</span><span class="ruby-operator">::</span><span class="ruby-constant">Worker</span>.<span class="ruby-identifier">max_attempts</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;&#x000A;    <span class="ruby-identifier">report</span>.<span class="ruby-identifier">add_tab</span>(<span class="ruby-value">:job</span>, <span class="ruby-identifier">job_data</span>)&#x000A;  <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-ivar">@bugsnag</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">report</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-construct_job_payload'>
+<a name='method-i-construct_job_payload'></a>
+<div class='synopsis'>
+<span class='name'>construct_job_payload</span>
+<span class='arguments'>(payload)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-construct_job_payload-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-construct_job_payload-source'><span class="ruby-comment"># File lib/bugsnag/middleware/delayed_job.rb, line 41</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">construct_job_payload</span>(<span class="ruby-identifier">payload</span>)&#x000A;  <span class="ruby-identifier">data</span> = {&#x000A;    <span class="ruby-value">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>&#x000A;  }&#x000A;  <span class="ruby-identifier">data</span>[<span class="ruby-value">:id</span>]           = <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">id</span>           <span class="ruby-keyword">if</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:id</span>)&#x000A;  <span class="ruby-identifier">data</span>[<span class="ruby-value">:display_name</span>] = <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">display_name</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:display_name</span>)&#x000A;  <span class="ruby-identifier">data</span>[<span class="ruby-value">:method_name</span>]  = <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">method_name</span>  <span class="ruby-keyword">if</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:method_name</span>)&#x000A;&#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:args</span>)&#x000A;    <span class="ruby-identifier">data</span>[<span class="ruby-value">:args</span>] = <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">args</span>&#x000A;  <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:to_h</span>)&#x000A;    <span class="ruby-identifier">data</span>[<span class="ruby-value">:args</span>] = <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">to_h</span>&#x000A;  <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:instance_values</span>)&#x000A;    <span class="ruby-identifier">data</span>[<span class="ruby-value">:args</span>] = <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">instance_values</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Delayed</span><span class="ruby-operator">::</span><span class="ruby-constant">PerformableMethod</span>) <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-identifier">object</span> = <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">object</span>)&#x000A;    <span class="ruby-identifier">data</span>[<span class="ruby-value">:object</span>] = {&#x000A;      <span class="ruby-value">:class</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>&#x000A;    }&#x000A;    <span class="ruby-identifier">data</span>[<span class="ruby-value">:object</span>][<span class="ruby-value">:id</span>] = <span class="ruby-identifier">object</span>.<span class="ruby-identifier">id</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">object</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:id</span>)&#x000A;  <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:job_data</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">job_data</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:[]</span>)&#x000A;    [<span class="ruby-value">:job_class</span>, <span class="ruby-value">:arguments</span>, <span class="ruby-value">:queue_name</span>, <span class="ruby-value">:job_id</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">key</span><span class="ruby-operator">|</span>&#x000A;      <span class="ruby-keyword">if</span> (<span class="ruby-identifier">value</span> = <span class="ruby-identifier">payload</span>.<span class="ruby-identifier">job_data</span>[<span class="ruby-identifier">key</span>.<span class="ruby-identifier">to_s</span>])&#x000A;        <span class="ruby-identifier">data</span>[<span class="ruby-identifier">key</span>] = <span class="ruby-identifier">value</span>&#x000A;      <span class="ruby-keyword">end</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-identifier">data</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

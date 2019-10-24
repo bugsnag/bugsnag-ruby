@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Sidekiq</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::Sidekiq
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/bugsnag/integrations/sidekiq_rb.html">lib/bugsnag/integrations/sidekiq.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p>Extracts and attaches <a href="Sidekiq.html">Sidekiq</a> job and queue
+information to an error report</p>
+</div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-configure_server">configure_server</a></li>
+<li><a href="#method-c-new">new</a></li>
+<li><a href="#method-c-notify">notify</a></li>
+<li><a href="#method-c-sidekiq_supports_error_handlers">sidekiq_supports_error_handlers</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-call">call</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='constants-list'>
+<h2>Constants</h2>
+<div class='name-list'>
+<table summary='Constants'>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>FRAMEWORK_ATTRIBUTES</td>
+<td>=</td>
+<td class='context-item-value'>{
+:framework => "Sidekiq"
+}</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'></td>
+</tr>
+</table>
+</div>
+</div>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-configure_server'>
+<a name='method-c-configure_server'></a>
+<div class='synopsis'>
+<span class='name'>configure_server</span>
+<span class='arguments'>(server)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-configure_server-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-configure_server-source'><span class="ruby-comment"># File lib/bugsnag/integrations/sidekiq.rb, line 51</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">configure_server</span>(<span class="ruby-identifier">server</span>)&#x000A;  <span class="ruby-keyword">if</span> <span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Sidekiq</span>.<span class="ruby-identifier">sidekiq_supports_error_handlers</span>&#x000A;    <span class="ruby-identifier">server</span>.<span class="ruby-identifier">error_handlers</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">proc</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ex</span>, <span class="ruby-identifier">_context</span><span class="ruby-operator">|</span>&#x000A;      <span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Sidekiq</span>.<span class="ruby-identifier">notify</span>(<span class="ruby-identifier">ex</span>)&#x000A;      <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">clear_request_data</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-identifier">server</span>.<span class="ruby-identifier">server_middleware</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">chain</span><span class="ruby-operator">|</span>&#x000A;    <span class="ruby-identifier">chain</span>.<span class="ruby-identifier">add</span> <span class="ruby-operator">::</span><span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Sidekiq</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/integrations/sidekiq.rb, line 14</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>&#x000A;  <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">internal_middleware</span>.<span class="ruby-identifier">use</span>(<span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Middleware</span><span class="ruby-operator">::</span><span class="ruby-constant">Sidekiq</span>)&#x000A;  <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">app_type</span> = <span class="ruby-string">&quot;sidekiq&quot;</span>&#x000A;  <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">default_delivery_method</span> = <span class="ruby-value">:synchronous</span>&#x000A;  <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">runtime_versions</span>[<span class="ruby-string">&quot;sidekiq&quot;</span>] = <span class="ruby-operator">::</span><span class="ruby-constant">Sidekiq</span><span class="ruby-operator">::</span><span class="ruby-constant">VERSION</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-class' id='method-method-c-notify'>
+<a name='method-c-notify'></a>
+<div class='synopsis'>
+<span class='name'>notify</span>
+<span class='arguments'>(exception)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-notify-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-notify-source'><span class="ruby-comment"># File lib/bugsnag/integrations/sidekiq.rb, line 37</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">notify</span>(<span class="ruby-identifier">exception</span>)&#x000A;  <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">notify</span>(<span class="ruby-identifier">exception</span>, <span class="ruby-keyword">true</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">report</span><span class="ruby-operator">|</span>&#x000A;    <span class="ruby-identifier">report</span>.<span class="ruby-identifier">severity</span> = <span class="ruby-string">&quot;error&quot;</span>&#x000A;    <span class="ruby-identifier">report</span>.<span class="ruby-identifier">severity_reason</span> = {&#x000A;      <span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Bugsnag</span><span class="ruby-operator">::</span><span class="ruby-constant">Report</span><span class="ruby-operator">::</span><span class="ruby-constant">UNHANDLED_EXCEPTION_MIDDLEWARE</span>,&#x000A;      <span class="ruby-value">:attributes</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">FRAMEWORK_ATTRIBUTES</span>&#x000A;    }&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-class' id='method-method-c-sidekiq_supports_error_handlers'>
+<a name='method-c-sidekiq_supports_error_handlers'></a>
+<div class='synopsis'>
+<span class='name'>sidekiq_supports_error_handlers</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-sidekiq_supports_error_handlers-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-sidekiq_supports_error_handlers-source'><span class="ruby-comment"># File lib/bugsnag/integrations/sidekiq.rb, line 47</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">sidekiq_supports_error_handlers</span>&#x000A;  <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Version</span>.<span class="ruby-identifier">new</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Sidekiq</span><span class="ruby-operator">::</span><span class="ruby-constant">VERSION</span>) <span class="ruby-operator">&gt;=</span> <span class="ruby-constant">Gem</span><span class="ruby-operator">::</span><span class="ruby-constant">Version</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&#39;3.0.0&#39;</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-call'>
+<a name='method-i-call'></a>
+<div class='synopsis'>
+<span class='name'>call</span>
+<span class='arguments'>(worker, msg, queue)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-call-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-call-source'><span class="ruby-comment"># File lib/bugsnag/integrations/sidekiq.rb, line 21</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">call</span>(<span class="ruby-identifier">worker</span>, <span class="ruby-identifier">msg</span>, <span class="ruby-identifier">queue</span>)&#x000A;  <span class="ruby-comment"># store msg/queue in thread local state to be read by Bugsnag::Middleware::Sidekiq</span>&#x000A;  <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">set_request_data</span>(<span class="ruby-value">:sidekiq</span>, { <span class="ruby-value">:msg</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">msg</span>, <span class="ruby-value">:queue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">queue</span> })&#x000A;  <span class="ruby-identifier">error_raised</span> = <span class="ruby-keyword">false</span>&#x000A;  <span class="ruby-keyword">yield</span>&#x000A;<span class="ruby-keyword">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">ex</span>&#x000A;  <span class="ruby-identifier">error_raised</span> = <span class="ruby-keyword">true</span>&#x000A;  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">notify</span>(<span class="ruby-identifier">ex</span>) <span class="ruby-keyword">unless</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">sidekiq_supports_error_handlers</span>&#x000A;  <span class="ruby-identifier">raise</span>&#x000A;<span class="ruby-keyword">ensure</span>&#x000A;  <span class="ruby-comment"># if an error was raised and error handlers are installed, the data will be cleared after</span>&#x000A;  <span class="ruby-comment"># the notification is sent. Otherwise, the data must be cleared.</span>&#x000A;  <span class="ruby-identifier">keep_data</span> = <span class="ruby-identifier">error_raised</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">sidekiq_supports_error_handlers</span>&#x000A;  <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">clear_request_data</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">keep_data</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

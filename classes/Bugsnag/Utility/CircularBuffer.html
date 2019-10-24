@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Utility::CircularBuffer</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::Utility::CircularBuffer
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../../files/lib/bugsnag/utility/circular_buffer_rb.html">lib/bugsnag/utility/circular_buffer.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p>A container class with a maximum size, that removes oldest items as
+required.</p>
+
+<p>@api private</p>
+</div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-3C-3C"><<</a></li>
+<li><a href="#method-i-each">each</a></li>
+<li><a href="#attribute-i-max_items">max_items</a></li>
+<li><a href="#method-i-max_items-3D">max_items=</a></li>
+</ol>
+</div>
+<div id='context'>
+<div id='includes'>
+<h2>Included modules</h2>
+<ol>
+<li>Enumerable</li>
+</ol>
+</div>
+</div>
+<div id='section'>
+<div id='attribute-list'>
+<h2 class='section-bar'>Attributes</h2>
+<div class='name-list'>
+<table>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>
+<a name='attribute-i-max_items'>max_items</a>
+</td>
+<td class='context-item-value'>[R]</td>
+<td class='context-item-desc'>
+<p>@return [Integer] the current maximum allowable number of items</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>(max_items = 25)</span>
+
+</div>
+<div class='description'>
+
+<p>@param <a href="CircularBuffer.html#attribute-i-max_items">#max_items</a>
+[Integer] the initial maximum number of items</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/utility/circular_buffer.rb, line 14</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">max_items</span> = <span class="ruby-value">25</span>)&#x000A;  <span class="ruby-ivar">@max_items</span> = <span class="ruby-identifier">max_items</span>&#x000A;  <span class="ruby-ivar">@buffer</span> = []&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-3C-3C'>
+<a name='method-i-3C-3C'></a>
+<div class='synopsis'>
+<span class='name'><<</span>
+<span class='arguments'>(item)</span>
+
+</div>
+<div class='description'>
+
+<p>Adds an item to the circular buffer</p>
+
+<p>If this causes the buffer to exceed its maximum items, the oldest item will
+be removed</p>
+
+<p>@param item [Object] the item to add to the buffer @return [self] returns
+itself to allow method chaining</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-3C-3C-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-3C-3C-source'><span class="ruby-comment"># File lib/bugsnag/utility/circular_buffer.rb, line 26</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-operator">&lt;&lt;</span>(<span class="ruby-identifier">item</span>)&#x000A;  <span class="ruby-ivar">@buffer</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">item</span>&#x000A;  <span class="ruby-identifier">trim_buffer</span>&#x000A;  <span class="ruby-keyword">self</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-each'>
+<a name='method-i-each'></a>
+<div class='synopsis'>
+<span class='name'>each</span>
+<span class='arguments'>(&block)</span>
+
+</div>
+<div class='description'>
+
+<p>Iterates over the buffer</p>
+
+<p>@yield [Object] sequentially gives stored items to the block</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-each-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-each-source'><span class="ruby-comment"># File lib/bugsnag/utility/circular_buffer.rb, line 36</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">each</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)&#x000A;  <span class="ruby-ivar">@buffer</span>.<span class="ruby-identifier">each</span>(<span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-max_items-3D'>
+<a name='method-i-max_items-3D'></a>
+<div class='synopsis'>
+<span class='name'>max_items=</span>
+<span class='arguments'>(new_max_items)</span>
+
+</div>
+<div class='description'>
+
+<p>Sets the maximum allowable number of items</p>
+
+<p>If the current number of items exceeds the new maximum, oldest items will
+be removed until this is no longer the case</p>
+
+<p>@param new_max_items [Integer] the new allowed item maximum</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-max_items-3D-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-max_items-3D-source'><span class="ruby-comment"># File lib/bugsnag/utility/circular_buffer.rb, line 47</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">max_items=</span>(<span class="ruby-identifier">new_max_items</span>)&#x000A;  <span class="ruby-ivar">@max_items</span> = <span class="ruby-identifier">new_max_items</span>&#x000A;  <span class="ruby-identifier">trim_buffer</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

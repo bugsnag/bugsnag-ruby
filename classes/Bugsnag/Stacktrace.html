@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Stacktrace</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::Stacktrace
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/bugsnag/stacktrace_rb.html">lib/bugsnag/stacktrace.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-to_a">to_a</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='constants-list'>
+<h2>Constants</h2>
+<div class='name-list'>
+<table summary='Constants'>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>BACKTRACE_LINE_REGEX</td>
+<td>=</td>
+<td class='context-item-value'>/^((?:[a-zA-Z]:)?[^:]+):(\d+)(?::in `([^']+)')?$/</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'>
+<p>e.g. “org/jruby/RubyKernel.java:1264:in `catch&#39;”</p>
+</td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>JAVA_BACKTRACE_REGEX</td>
+<td>=</td>
+<td class='context-item-value'>/^(.*)\((.*)(?::([0-9]+))?\)$/</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'>
+<p>e.g. “org.jruby.Ruby.runScript(Ruby.java:807)”</p>
+</td>
+</tr>
+<tr class='top-aligned-row context-row'>
+<td class='context-item-name'>VENDOR_PATH</td>
+<td>=</td>
+<td class='context-item-value'>/^(vendor\/|\.bundle\/)/</td>
+<td>&nbsp;</td>
+<td class='context-item-desc'>
+<p>Path to vendored code. Used to mark file paths as out of project.</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>(backtrace, configuration)</span>
+
+</div>
+<div class='description'>
+
+<p>Process a backtrace and the configuration into a parsed stacktrace.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/stacktrace.rb, line 15</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">backtrace</span>, <span class="ruby-identifier">configuration</span>)&#x000A;  <span class="ruby-ivar">@configuration</span> = <span class="ruby-identifier">configuration</span>&#x000A;&#x000A;  <span class="ruby-identifier">backtrace</span> = <span class="ruby-identifier">caller</span> <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">backtrace</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">empty?</span>&#x000A;&#x000A;  <span class="ruby-ivar">@processed_backtrace</span> = <span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">trace</span><span class="ruby-operator">|</span>&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">trace</span>.<span class="ruby-identifier">match</span>(<span class="ruby-constant">BACKTRACE_LINE_REGEX</span>)&#x000A;      <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line_str</span>, <span class="ruby-identifier">method</span> = [<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>]&#x000A;    <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">trace</span>.<span class="ruby-identifier">match</span>(<span class="ruby-constant">JAVA_BACKTRACE_REGEX</span>)&#x000A;      <span class="ruby-identifier">method</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line_str</span> = [<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>]&#x000A;    <span class="ruby-keyword">end</span>&#x000A;&#x000A;    <span class="ruby-comment"># Parse the stacktrace line</span>&#x000A;&#x000A;    <span class="ruby-keyword">next</span>(<span class="ruby-keyword">nil</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">nil?</span>&#x000A;&#x000A;    <span class="ruby-comment"># Expand relative paths</span>&#x000A;    <span class="ruby-identifier">p</span> = <span class="ruby-constant">Pathname</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">file</span>)&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">p</span>.<span class="ruby-identifier">relative?</span>&#x000A;      <span class="ruby-identifier">file</span> = <span class="ruby-identifier">p</span>.<span class="ruby-identifier">realpath</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-keyword">rescue</span> <span class="ruby-identifier">file</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;&#x000A;    <span class="ruby-comment"># Generate the stacktrace line hash</span>&#x000A;    <span class="ruby-identifier">trace_hash</span> = {}&#x000A;    <span class="ruby-identifier">trace_hash</span>[<span class="ruby-value">:lineNumber</span>] = <span class="ruby-identifier">line_str</span>.<span class="ruby-identifier">to_i</span>&#x000A;&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">send_code</span>&#x000A;      <span class="ruby-identifier">trace_hash</span>[<span class="ruby-value">:code</span>] = <span class="ruby-identifier">code</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">trace_hash</span>[<span class="ruby-value">:lineNumber</span>])&#x000A;    <span class="ruby-keyword">end</span>&#x000A;&#x000A;    <span class="ruby-comment"># Clean up the file path in the stacktrace</span>&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-keyword">defined?</span>(<span class="ruby-ivar">@configuration</span>.<span class="ruby-identifier">project_root</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@configuration</span>.<span class="ruby-identifier">project_root</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">!=</span> <span class="ruby-string">&#39;&#39;</span>&#x000A;      <span class="ruby-identifier">trace_hash</span>[<span class="ruby-value">:inProject</span>] = <span class="ruby-keyword">true</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">start_with?</span>(<span class="ruby-ivar">@configuration</span>.<span class="ruby-identifier">project_root</span>.<span class="ruby-identifier">to_s</span>)&#x000A;      <span class="ruby-identifier">file</span>.<span class="ruby-identifier">sub!</span>(<span class="ruby-node">/#{@configuration.project_root}\//</span>, <span class="ruby-string">&quot;&quot;</span>)&#x000A;      <span class="ruby-identifier">trace_hash</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-value">:inProject</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">match</span>(<span class="ruby-constant">VENDOR_PATH</span>)&#x000A;    <span class="ruby-keyword">end</span>&#x000A;&#x000A;&#x000A;    <span class="ruby-comment"># Strip common gem path prefixes</span>&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-keyword">defined?</span>(<span class="ruby-constant">Gem</span>)&#x000A;      <span class="ruby-identifier">file</span> = <span class="ruby-constant">Gem</span>.<span class="ruby-identifier">path</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-identifier">file</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">line</span>, <span class="ruby-identifier">path</span><span class="ruby-operator">|</span> <span class="ruby-identifier">line</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-node">/#{path}\//</span>, <span class="ruby-string">&quot;&quot;</span>) }&#x000A;    <span class="ruby-keyword">end</span>&#x000A;&#x000A;    <span class="ruby-identifier">trace_hash</span>[<span class="ruby-value">:file</span>] = <span class="ruby-identifier">file</span>&#x000A;&#x000A;    <span class="ruby-comment"># Add a method if we have it</span>&#x000A;    <span class="ruby-identifier">trace_hash</span>[<span class="ruby-value">:method</span>] = <span class="ruby-identifier">method</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">method</span> <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-identifier">method</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^__bind/</span>).<span class="ruby-identifier">nil?</span>&#x000A;&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">trace_hash</span>[<span class="ruby-value">:file</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">trace_hash</span>[<span class="ruby-value">:file</span>].<span class="ruby-identifier">empty?</span>&#x000A;      <span class="ruby-identifier">trace_hash</span>&#x000A;    <span class="ruby-keyword">else</span>&#x000A;      <span class="ruby-keyword">nil</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">end</span>.<span class="ruby-identifier">compact</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-to_a'>
+<a name='method-i-to_a'></a>
+<div class='synopsis'>
+<span class='name'>to_a</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Returns the processed backtrace</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-to_a-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-to_a-source'><span class="ruby-comment"># File lib/bugsnag/stacktrace.rb, line 73</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">to_a</span>&#x000A;  <span class="ruby-ivar">@processed_backtrace</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::Middleware::IgnoreErrorClass</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::Middleware::IgnoreErrorClass
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../../files/lib/bugsnag/middleware/ignore_error_class_rb.html">lib/bugsnag/middleware/ignore_error_class.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'>
+<p>Determines if the exception should be ignored based on the configured
+<code>ignore_classes</code></p>
+</div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-call">call</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>(bugsnag)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/middleware/ignore_error_class.rb, line 6</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">bugsnag</span>)&#x000A;  <span class="ruby-ivar">@bugsnag</span> = <span class="ruby-identifier">bugsnag</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-call'>
+<a name='method-i-call'></a>
+<div class='synopsis'>
+<span class='name'>call</span>
+<span class='arguments'>(report)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-call-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-call-source'><span class="ruby-comment"># File lib/bugsnag/middleware/ignore_error_class.rb, line 10</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">call</span>(<span class="ruby-identifier">report</span>)&#x000A;  <span class="ruby-identifier">ignore_error_class</span> = <span class="ruby-identifier">report</span>.<span class="ruby-identifier">raw_exceptions</span>.<span class="ruby-identifier">any?</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ex</span><span class="ruby-operator">|</span>&#x000A;    <span class="ruby-identifier">ancestor_chain</span> = <span class="ruby-identifier">ex</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">ancestors</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">ancestor</span><span class="ruby-operator">|</span> <span class="ruby-identifier">ancestor</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Class</span>) }.<span class="ruby-identifier">to_set</span>&#x000A;&#x000A;    <span class="ruby-identifier">report</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">ignore_classes</span>.<span class="ruby-identifier">any?</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">to_ignore</span><span class="ruby-operator">|</span>&#x000A;      <span class="ruby-identifier">to_ignore</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Proc</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">to_ignore</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">ex</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">ancestor_chain</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">to_ignore</span>)&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-identifier">report</span>.<span class="ruby-identifier">ignore!</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">ignore_error_class</span>&#x000A;&#x000A;  <span class="ruby-ivar">@bugsnag</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">report</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang='en'>
+<head>
+<title>Bugsnag::MiddlewareStack</title>
+<meta content='text/html; charset=UTF-8' http-equiv='Content-Type'>
+<link href='../../css/style.css' media='screen' rel='stylesheet' type='text/css'>
+<script type='text/javascript'>
+  function popupCode(url) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+  
+  function toggleCode(id) {
+    var code = document.getElementById(id)
+  
+    code.style.display = code.style.display != 'block' ? 'block' : 'none'
+    return true
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln('<' + 'style type="text/css">.method .source pre { display: none }<\/style>')
+</script>
+</head>
+<body class='page'>
+<div class='class' id='wrapper'>
+<div class='header'>
+<h1 class='name'><span class='type'>class</span>
+Bugsnag::MiddlewareStack
+</h1>
+<ol class='paths'>
+<li>
+<a href="../../files/lib/bugsnag/middleware_stack_rb.html">lib/bugsnag/middleware_stack.rb</a>
+</li>
+</ol>
+<div class='parent'>
+Superclass:
+<strong>Object</strong>
+</div>
+</div>
+<div id='content'>
+<div id='text'>
+<div id='description'></div>
+<div id='method-list'>
+<h2>Methods</h2>
+<h3>Public Class</h3>
+<ol>
+<li><a href="#method-c-new">new</a></li>
+</ol>
+<h3>Public Instance</h3>
+<ol>
+<li><a href="#method-i-disable">disable</a></li>
+<li><a href="#method-i-insert_after">insert_after</a></li>
+<li><a href="#method-i-insert_before">insert_before</a></li>
+<li><a href="#method-i-method_missing">method_missing</a></li>
+<li><a href="#method-i-run">run</a></li>
+<li><a href="#method-i-use">use</a></li>
+</ol>
+</div>
+<div id='context'>
+</div>
+<div id='section'>
+<div id='methods'>
+<h2>Public Class methods</h2>
+<div class='method public-class' id='method-method-c-new'>
+<a name='method-c-new'></a>
+<div class='synopsis'>
+<span class='name'>new</span>
+<span class='arguments'>()</span>
+
+</div>
+<div class='description'>
+
+<p>Creates the middleware stack.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-c-new-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-c-new-source'><span class="ruby-comment"># File lib/bugsnag/middleware_stack.rb, line 5</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>&#x000A;  <span class="ruby-ivar">@middlewares</span> = []&#x000A;  <span class="ruby-ivar">@disabled_middleware</span> = []&#x000A;  <span class="ruby-ivar">@mutex</span> = <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<h2>Public Instance methods</h2>
+<div class='method public-instance' id='method-method-i-disable'>
+<a name='method-i-disable'></a>
+<div class='synopsis'>
+<span class='name'>disable</span>
+<span class='arguments'>(*middlewares)</span>
+
+</div>
+<div class='description'>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-disable-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-disable-source'><span class="ruby-comment"># File lib/bugsnag/middleware_stack.rb, line 68</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">disable</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">middlewares</span>)&#x000A;  <span class="ruby-ivar">@mutex</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword">do</span>&#x000A;    <span class="ruby-ivar">@disabled_middleware</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">middlewares</span>&#x000A;&#x000A;    <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">delete_if</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@disabled_middleware</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">m</span>)}&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-insert_after'>
+<a name='method-i-insert_after'></a>
+<div class='synopsis'>
+<span class='name'>insert_after</span>
+<span class='arguments'>(after, new_middleware)</span>
+
+</div>
+<div class='description'>
+
+<p>Inserts a new middleware to use after a given middleware already added.</p>
+
+<p>Will return early if given middleware is disabled or already added. New
+middleware will be inserted last if the existing middleware is not already
+included.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-insert_after-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-insert_after-source'><span class="ruby-comment"># File lib/bugsnag/middleware_stack.rb, line 29</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">insert_after</span>(<span class="ruby-identifier">after</span>, <span class="ruby-identifier">new_middleware</span>)&#x000A;  <span class="ruby-ivar">@mutex</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword">do</span>&#x000A;    <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@disabled_middleware</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">new_middleware</span>)&#x000A;    <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">new_middleware</span>)&#x000A;&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">after</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Array</span>&#x000A;      <span class="ruby-identifier">index</span> = <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">rindex</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">el</span><span class="ruby-operator">|</span> <span class="ruby-identifier">after</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">el</span>)}&#x000A;    <span class="ruby-keyword">else</span>&#x000A;      <span class="ruby-identifier">index</span> = <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">rindex</span>(<span class="ruby-identifier">after</span>)&#x000A;    <span class="ruby-keyword">end</span>&#x000A;&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">index</span>.<span class="ruby-identifier">nil?</span>&#x000A;      <span class="ruby-ivar">@middlewares</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">new_middleware</span>&#x000A;    <span class="ruby-keyword">else</span>&#x000A;      <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">insert</span> <span class="ruby-identifier">index</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">new_middleware</span>&#x000A;    <span class="ruby-keyword">end</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-insert_before'>
+<a name='method-i-insert_before'></a>
+<div class='synopsis'>
+<span class='name'>insert_before</span>
+<span class='arguments'>(before, new_middleware)</span>
+
+</div>
+<div class='description'>
+
+<p>Inserts a new middleware to use before a given middleware already added.</p>
+
+<p>Will return early if given middleware is disabled or already added. New
+middleware will be inserted last if the existing middleware is not already
+included.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-insert_before-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-insert_before-source'><span class="ruby-comment"># File lib/bugsnag/middleware_stack.rb, line 53</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">insert_before</span>(<span class="ruby-identifier">before</span>, <span class="ruby-identifier">new_middleware</span>)&#x000A;  <span class="ruby-ivar">@mutex</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword">do</span>&#x000A;    <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@disabled_middleware</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">new_middleware</span>)&#x000A;    <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">new_middleware</span>)&#x000A;&#x000A;    <span class="ruby-keyword">if</span> <span class="ruby-identifier">before</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-constant">Array</span>&#x000A;      <span class="ruby-identifier">index</span> = <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">index</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">el</span><span class="ruby-operator">|</span> <span class="ruby-identifier">before</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">el</span>)}&#x000A;    <span class="ruby-keyword">else</span>&#x000A;      <span class="ruby-identifier">index</span> = <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">index</span>(<span class="ruby-identifier">before</span>)&#x000A;    <span class="ruby-keyword">end</span>&#x000A;&#x000A;    <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">insert</span> <span class="ruby-identifier">index</span> <span class="ruby-operator">||</span> <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">length</span>, <span class="ruby-identifier">new_middleware</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-method_missing'>
+<a name='method-i-method_missing'></a>
+<div class='synopsis'>
+<span class='name'>method_missing</span>
+<span class='arguments'>(method, *args, &block)</span>
+
+</div>
+<div class='description'>
+
+<p>Allows the user to proxy methods for more complex functionality.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-method_missing-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-method_missing-source'><span class="ruby-comment"># File lib/bugsnag/middleware_stack.rb, line 78</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">method</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)&#x000A;  <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">method</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-run'>
+<a name='method-i-run'></a>
+<div class='synopsis'>
+<span class='name'>run</span>
+<span class='arguments'>(report)</span>
+
+</div>
+<div class='description'>
+
+<p>Runs the middleware stack.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-run-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-run-source'><span class="ruby-comment"># File lib/bugsnag/middleware_stack.rb, line 84</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">run</span>(<span class="ruby-identifier">report</span>)&#x000A;  <span class="ruby-comment"># The final lambda is the termination of the middleware stack. It calls deliver on the notification</span>&#x000A;  <span class="ruby-identifier">lambda_has_run</span> = <span class="ruby-keyword">false</span>&#x000A;  <span class="ruby-identifier">notify_lambda</span> = <span class="ruby-identifier">lambda</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">notif</span><span class="ruby-operator">|</span>&#x000A;    <span class="ruby-identifier">lambda_has_run</span> = <span class="ruby-keyword">true</span>&#x000A;    <span class="ruby-keyword">yield</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">block_given?</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-keyword">begin</span>&#x000A;    <span class="ruby-comment"># We reverse them, so we can call &quot;call&quot; on the first middleware</span>&#x000A;    <span class="ruby-identifier">middleware_procs</span>.<span class="ruby-identifier">reverse</span>.<span class="ruby-identifier">inject</span>(<span class="ruby-identifier">notify_lambda</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">n</span>,<span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">n</span>) }.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">report</span>)&#x000A;  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>&#x000A;    <span class="ruby-comment"># KLUDGE: Since we don&#39;t re-raise middleware exceptions, this breaks rspec</span>&#x000A;    <span class="ruby-identifier">raise</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;RSpec::Expectations::ExpectationNotMetError&quot;</span>&#x000A;&#x000A;    <span class="ruby-comment"># We dont notify, as we dont want to loop forever in the case of really broken middleware, we will</span>&#x000A;    <span class="ruby-comment"># still send this notify</span>&#x000A;    <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;Bugsnag middleware error: #{e}&quot;</span>&#x000A;    <span class="ruby-constant">Bugsnag</span>.<span class="ruby-identifier">configuration</span>.<span class="ruby-identifier">warn</span> <span class="ruby-node">&quot;Middleware error stacktrace: #{e.backtrace.inspect}&quot;</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;&#x000A;  <span class="ruby-comment"># Ensure that the deliver has been performed, and no middleware has botched it</span>&#x000A;  <span class="ruby-identifier">notify_lambda</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">report</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">lambda_has_run</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+<div class='method public-instance' id='method-method-i-use'>
+<a name='method-i-use'></a>
+<div class='synopsis'>
+<span class='name'>use</span>
+<span class='arguments'>(new_middleware)</span>
+
+</div>
+<div class='description'>
+
+<p>Defines a new middleware to use in the middleware call sequence.</p>
+
+<p>Will return early if given middleware is disabled or already included.</p>
+
+</div>
+<div class='source'>
+<a class='source-toggle' href='#' onclick='toggleCode(&#39;method-i-use-source&#39;); return false'>
+[show source]
+</a>
+<pre id='method-i-use-source'><span class="ruby-comment"># File lib/bugsnag/middleware_stack.rb, line 15</span>&#x000A;<span class="ruby-keyword">def</span> <span class="ruby-identifier">use</span>(<span class="ruby-identifier">new_middleware</span>)&#x000A;  <span class="ruby-ivar">@mutex</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword">do</span>&#x000A;    <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@disabled_middleware</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">new_middleware</span>)&#x000A;    <span class="ruby-keyword">return</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@middlewares</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">new_middleware</span>)&#x000A;&#x000A;    <span class="ruby-ivar">@middlewares</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">new_middleware</span>&#x000A;  <span class="ruby-keyword">end</span>&#x000A;<span class="ruby-keyword">end</span></pre>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id='footer-push'></div>
+</div>
+<div id='footer'>
+<a href="https://github.com/rdoc/hanna-nouveau"><strong>Hanna Nouveau</strong> RDoc template</a>
+</div>
+</body>
+</html>
