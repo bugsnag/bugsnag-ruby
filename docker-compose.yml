@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: dockerfiles/Dockerfile.ruby-unit-tests
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
         - GEMSETS=${GEMSETS:-test}
         - BUNDLER_VERSION=${BUNDLER_VERSION:-1.12.0}
     environment:

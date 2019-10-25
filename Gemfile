@@ -15,6 +15,9 @@ group :test, optional: true do
   end
   gem 'webmock', ruby_version <= Gem::Version.new('1.9.3') ? '2.3.2': '>2.3.2'
   gem 'hashdiff', ruby_version <= Gem::Version.new('1.9.3') ? '0.3.8': '>0.3.8'
+  if ruby_version >= Gem::Version.new('2.3.0')
+    gem 'did_you_mean'
+  end
 end
 
 group :coverage, optional: true do
