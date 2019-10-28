@@ -1,12 +1,12 @@
 source "https://rubygems.org"
 
-ruby_version = Gem::Version.new(RUBY_VERSION)
+ruby_version = Gem::Version.new(RUBY_VERSION.dup)
 
 group :test, optional: true do
   gem 'rake', ruby_version <= Gem::Version.new('1.9.3') ? '~> 11.3.0' : '~> 12.3.0'
   gem 'rspec'
   gem 'rspec-mocks'
-  gem 'rdoc', '~> 5.1.0'
+  gem 'rdoc', ruby_version < Gem::Version.new('2.2.0') ? '4.3.0' : '~> 5.1.0'
   gem 'pry'
   gem 'addressable', '~> 2.3.8'
   if ruby_version >= Gem::Version.new('2.2.2')
@@ -15,8 +15,12 @@ group :test, optional: true do
   end
   gem 'webmock', ruby_version <= Gem::Version.new('1.9.3') ? '2.3.2': '>2.3.2'
   gem 'hashdiff', ruby_version <= Gem::Version.new('1.9.3') ? '0.3.8': '>0.3.8'
-  if ruby_version >= Gem::Version.new('2.3.0')
-    gem 'did_you_mean'
+  if ruby_version >= Gem::Version.new('2.5.0')
+    gem 'did_you_mean', '~> 1.3.1'
+  elsif ruby_version >= Gem::Version.new('2.4.0')
+    gem 'did_you_mean', '~> 1.1.0'
+  elsif ruby_version >= Gem::Version.new('2.3.0')
+    gem 'did_you_mean', '~> 1.0.4'
   end
 end
 
@@ -37,10 +41,6 @@ end
 
 group :doc, optional: true do
   gem 'hanna-nouveau'
-end
-
-group :maze, optional: true do
-  gem 'bugsnag-maze-runner', git: 'https://github.com/bugsnag/maze-runner', branch: "v2" if ruby_version >= Gem::Version.new('2.0.0')
 end
 
 gemspec

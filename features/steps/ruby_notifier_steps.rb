@@ -66,17 +66,3 @@ When("I navigate to the route {string} on the rails app") do |route|
     When I open the URL "http://rails#{rails_version}:3000#{route}"
   }
 end
-
-Given("I output some docker-network debugs") do
-  pp `docker network ls`
-  pp `docker network inspect #{ENV["NETWORK_NAME"]}`
-end
-
-When("I run the service {string} in debug mode with the command {string}") do |service, command|
-  # Runner.run_command("docker-compose -f features/fixtures/docker-compose.yml build #{service}")
-  # Runner.run_command("docker-compose -f features/fixtures/docker-compose.yml run --use-aliases #{service} #{command}")
-  steps %Q{
-    When I run the service "#{service}" with the command "#{command}"
-  }
-  pp `docker logs $(docker-compose -f features/fixtures/docker-compose.yml ps -q #{service})`
-end

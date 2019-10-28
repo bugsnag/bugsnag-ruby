@@ -16,6 +16,7 @@ AfterConfiguration do |config|
 end
 
 Before do
+  Docker.compose_project_name = "#{rand.to_s}:#{Time.new.strftime("%s")}"
   Runner.environment.clear
   Runner.environment["BUGSNAG_API_KEY"] = $api_key
   Runner.environment["BUGSNAG_ENDPOINT"] = "http://maze-runner:#{MOCK_API_PORT}"
