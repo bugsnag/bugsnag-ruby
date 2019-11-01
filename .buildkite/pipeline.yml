@@ -19,6 +19,41 @@ steps:
     env:
       RUBY_TEST_VERSION: "1.9.3"
 
+  - label: ':ruby: Ruby 2.6 unit tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.6"
+
+  - label: ':ruby: JRuby unit tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: jruby-unit-tests
+        use-aliases: true
+
+  - label: ':ruby: Ruby 2.6 plain tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.6"
+    command: features/plain_features/ --tags "not @wip"
+
+  - label: ':rails: Rails 6 Ruby 2.6 tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.6"
+      RAILS_VERSION: "6"
+    command: features/rails_features/ --tags "@rails6 and not @wip"
+
+  - block: "Trigger full test suite"
+
   - label: ':ruby: Ruby 2.0 unit tests'
     plugins:
       docker-compose#v2.6.0:
@@ -67,40 +102,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.5"
 
-  - label: ':ruby: Ruby 2.6 unit tests'
-    plugins:
-      docker-compose#v2.6.0:
-        run: ruby-unit-tests
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "2.6"
-
-  - label: ':ruby: JRuby unit tests'
-    plugins:
-      docker-compose#v2.6.0:
-        run: jruby-unit-tests
-        use-aliases: true
-
-  - label: ':ruby: Ruby 2.6 plain tests'
-    plugins:
-      docker-compose#v2.6.0:
-        run: ruby-maze-runner
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "2.6"
-    command: features/plain_features/ --tags "not @wip"
-
-  - label: ':rails: Rails 6 Ruby 2.6 tests'
-    plugins:
-      docker-compose#v2.6.0:
-        run: ruby-maze-runner
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "2.6"
-      RAILS_VERSION: "6"
-    command: features/rails_features/ --tags "@rails6 and not @wip"
-
-  - block: "Trigger full test suite"
+  - wait
 
   - label: ':ruby: Ruby 1.9.3 plain tests'
     plugins:
@@ -165,6 +167,8 @@ steps:
       RUBY_TEST_VERSION: "2.5"
     command: features/plain_features --tags "not @wip"
 
+  - wait
+
   - label: ':rails: Rails 3 Ruby 2.0 tests'
     plugins:
       docker-compose#v2.6.0:
@@ -174,6 +178,8 @@ steps:
       RUBY_TEST_VERSION: "2.0"
       RAILS_VERSION: "3"
     command: features/rails_features/ --tags "@rails3 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 3 Ruby 2.1 tests'
     plugins:
@@ -184,6 +190,8 @@ steps:
       RUBY_TEST_VERSION: "2.1"
       RAILS_VERSION: "3"
     command: features/rails_features/ --tags "@rails3 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 3 Ruby 2.2 tests'
     plugins:
@@ -194,6 +202,8 @@ steps:
       RUBY_TEST_VERSION: "2.2"
       RAILS_VERSION: "3"
     command: features/rails_features/ --tags "@rails3 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 3 Ruby 2.3 tests'
     plugins:
@@ -204,6 +214,8 @@ steps:
       RUBY_TEST_VERSION: "2.3"
       RAILS_VERSION: "3"
     command: features/rails_features/ --tags "@rails3 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 3 Ruby 2.4 tests'
     plugins:
@@ -214,6 +226,8 @@ steps:
       RUBY_TEST_VERSION: "2.4"
       RAILS_VERSION: "3"
     command: features/rails_features/ --tags "@rails3 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 3 Ruby 2.4 tests'
     plugins:
@@ -224,6 +238,8 @@ steps:
       RUBY_TEST_VERSION: "2.4"
       RAILS_VERSION: "3"
     command: features/rails_features/ --tags "@rails3 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 3 Ruby 2.5 tests'
     plugins:
@@ -234,6 +250,8 @@ steps:
       RUBY_TEST_VERSION: "2.5"
       RAILS_VERSION: "3"
     command: features/rails_features/ --tags "@rails3 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 4 Ruby 2.2 tests'
     plugins:
@@ -244,6 +262,8 @@ steps:
       RUBY_TEST_VERSION: "2.2"
       RAILS_VERSION: "4"
     command: features/rails_features/ --tags "@rails4 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 4 Ruby 2.3 tests'
     plugins:
@@ -254,6 +274,8 @@ steps:
       RUBY_TEST_VERSION: "2.3"
       RAILS_VERSION: "4"
     command: features/rails_features/ --tags "@rails4 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 5 Ruby 2.2 tests'
     plugins:
@@ -264,6 +286,8 @@ steps:
       RUBY_TEST_VERSION: "2.2"
       RAILS_VERSION: "5"
     command: features/rails_features/ --tags "@rails5 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 5 Ruby 2.3 tests'
     plugins:
@@ -274,6 +298,8 @@ steps:
       RUBY_TEST_VERSION: "2.3"
       RAILS_VERSION: "5"
     command: features/rails_features/ --tags "@rails5 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 5 Ruby 2.4 tests'
     plugins:
@@ -284,6 +310,8 @@ steps:
       RUBY_TEST_VERSION: "2.4"
       RAILS_VERSION: "5"
     command: features/rails_features/ --tags "@rails5 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 5 Ruby 2.5 tests'
     plugins:
@@ -294,6 +322,8 @@ steps:
       RUBY_TEST_VERSION: "2.5"
       RAILS_VERSION: "5"
     command: features/rails_features/ --tags "@rails5 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 5 Ruby 2.6 tests'
     plugins:
@@ -304,6 +334,8 @@ steps:
       RUBY_TEST_VERSION: "2.6"
       RAILS_VERSION: "5"
     command: features/rails_features/ --tags "@rails5 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':rails: Rails 6 Ruby 2.5 tests'
     plugins:
@@ -314,3 +346,5 @@ steps:
       RUBY_TEST_VERSION: "2.5"
       RAILS_VERSION: "6"
     command: features/rails_features/ --tags "@rails6 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
