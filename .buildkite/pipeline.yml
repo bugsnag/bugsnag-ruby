@@ -169,6 +169,17 @@ steps:
 
   - wait
 
+  - label: ':ruby: Delayed job tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.5"
+    command: features/delayed_job.feature --tags "not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
   - label: ':rails: Rails 3 Ruby 2.0 tests'
     plugins:
       docker-compose#v2.6.0:
