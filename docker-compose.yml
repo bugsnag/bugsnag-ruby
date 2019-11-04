@@ -9,6 +9,7 @@ services:
       NETWORK_NAME: "${BUILDKITE_JOB_ID:-ruby-maze-runner}-${RUBY_TEST_VERSION:-local}"
       BUILDKITE_JOB_ID:
       RAILS_VERSION:
+      SIDEKIQ_VERSION:
       RUBY_TEST_VERSION:
       VERBOSE:
       DEBUG:

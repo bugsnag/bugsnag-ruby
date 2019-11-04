@@ -66,3 +66,25 @@ When("I navigate to the route {string} on the rails app") do |route|
     When I open the URL "http://rails#{rails_version}:3000#{route}"
   }
 end
+
+Then("the payload field {string} matches the appropriate handled JSON fixture") do |field|
+  if ENV["SIDEKIQ_VERSION"] == "~> 2"
+    created_at_present = "false"
+  else
+    created_at_present = "true"
+  end
+  steps %Q{
+    And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/handled_metadata_ca_#{created_at_present}.json"
+  }
+end
+
+Then("the payload field {string} matches the appropriate unhandled JSON fixture") do |field|
+  if ENV["SIDEKIQ_VERSION"] == "~> 2"
+    created_at_present = "false"
+  else
+    created_at_present = "true"
+  end
+  steps %Q{
+    And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_#{created_at_present}.json"
+  }
+end

@@ -27,12 +27,6 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.6"
 
-  - label: ':ruby: JRuby unit tests'
-    plugins:
-      docker-compose#v2.6.0:
-        run: jruby-unit-tests
-        use-aliases: true
-
   - label: ':ruby: Ruby 2.6 plain tests'
     plugins:
       docker-compose#v2.6.0:
@@ -52,7 +46,34 @@ steps:
       RAILS_VERSION: "6"
     command: features/rails_features/ --tags "@rails6 and not @wip"
 
+  - label: ':ruby: Delayed job tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.5"
+    command: features/delayed_job.feature --tags "not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Sidekiq 5 tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      SIDEKIQ_VERSION: "~> 5"
+    command: features/sidekiq.feature --tags "not @wip"
+
   - block: "Trigger full test suite"
+
+  - label: ':ruby: JRuby unit tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: jruby-unit-tests
+        use-aliases: true
 
   - label: ':ruby: Ruby 2.0 unit tests'
     plugins:
@@ -169,14 +190,39 @@ steps:
 
   - wait
 
-  - label: ':ruby: Delayed job tests'
+  - label: ':ruby: Sidekiq 2 tests'
     plugins:
       docker-compose#v2.6.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.5"
-    command: features/delayed_job.feature --tags "not @wip"
+      SIDEKIQ_VERSION: "~> 2"
+    command: features/sidekiq.feature --tags "not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Sidekiq 3 tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      SIDEKIQ_VERSION: "~> 3"
+    command: features/sidekiq.feature --tags "not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Sidekiq 4 tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      SIDEKIQ_VERSION: "~> 4"
+    command: features/sidekiq.feature --tags "not @wip"
     concurrency: 8
     concurrency_group: 'rails-tests'
 
