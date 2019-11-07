@@ -20,15 +20,7 @@ Thank you!
     ```
     bundle exec rake spec
     ```
--   You will need to add the following test dependencies:
-
-    ```
-    bundle install --with test --binstubs
-    ```
--   For adding a new integration (like support for a web framework or worker
-    queue), include an example in the `example/` directory showing off what
-    you've built. Include a `README` with the example app so others know how to
-    run it.
+-   Further information on installing and running the tests can be found in [the testing guide](TESTING.md)
 
 
 ### Ship it!
