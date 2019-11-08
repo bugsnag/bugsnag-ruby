@@ -4,10 +4,11 @@ steps:
       - docker-compose#v2.6.0:
           build: ruby-maze-runner
           image-repository: 855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby
-          cache-from: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:ci-ruby${BRANCH_NAME}
-      # - docker-compose#v2.6.0:
-      #     push:
-      #       - ci: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:ci-ruby${BRANCH_NAME}
+          cache-from: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
+      - docker-compose#v2.6.0:
+          push:
+            - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
+            - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby-latest
 
   - wait
 
@@ -26,6 +27,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.6"
+      GEMSETS: "test sidekiq coverage"
 
   - label: ':ruby: Ruby 2.6 plain tests'
     plugins:
@@ -98,6 +100,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.2"
+      GEMSETS: "test sidekiq"
 
   - label: ':ruby: Ruby 2.3 unit tests'
     plugins:
@@ -106,6 +109,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.3"
+      GEMSETS: "test sidekiq"
 
   - label: ':ruby: Ruby 2.4 unit tests'
     plugins:
@@ -114,6 +118,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.4"
+      GEMSETS: "test sidekiq"
 
   - label: ':ruby: Ruby 2.5 unit tests'
     plugins:
@@ -122,6 +127,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.5"
+      GEMSETS: "test sidekiq"
 
   - wait
 
@@ -269,18 +275,6 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.3"
-      RAILS_VERSION: "3"
-    command: features/rails_features/ --tags "@rails3 and not @wip"
-    concurrency: 8
-    concurrency_group: 'rails-tests'
-
-  - label: ':rails: Rails 3 Ruby 2.4 tests'
-    plugins:
-      docker-compose#v2.6.0:
-        run: ruby-maze-runner
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "2.4"
       RAILS_VERSION: "3"
     command: features/rails_features/ --tags "@rails3 and not @wip"
     concurrency: 8
