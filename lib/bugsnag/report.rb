@@ -196,7 +196,7 @@ module Bugsnag
         }
       end
     end
-    
+
     def trace_object(exception)
       Stacktrace.new(exception.backtrace, configuration).to_a
     rescue NoMethodError
