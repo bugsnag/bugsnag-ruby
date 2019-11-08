@@ -192,9 +192,15 @@ module Bugsnag
         {
           errorClass: error_class(exception),
           message: exception.message,
-          stacktrace: (exception.backtrace ? Stacktrace.new(exception.backtrace, configuration).to_a : nil)
+          stacktrace: trace_object(exception)
         }
       end
+    end
+    
+    def trace_object(exception)
+      Stacktrace.new(exception.backtrace, configuration).to_a
+    rescue NoMethodError
+      nil
     end
 
     def error_class(exception)
