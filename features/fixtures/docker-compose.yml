@@ -198,6 +198,8 @@ services:
       context: rails6
       args:
         - RUBY_TEST_VERSION
+    depends_on:
+      - mongo
     environment:
       - BUGSNAG_API_KEY
       - http_proxy

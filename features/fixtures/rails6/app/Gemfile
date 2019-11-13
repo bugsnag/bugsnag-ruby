@@ -51,7 +51,8 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-# Added at 2019-04-24 17:24:14 +0100 by amoinet:
-gem "bugsnag", "~> 6.11"
+gem 'bugsnag', path: '/bugsnag'
+
+gem "mongoid"
 
 gem "clearance", "~> 1.16"

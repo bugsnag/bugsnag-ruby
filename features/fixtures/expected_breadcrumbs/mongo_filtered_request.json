@@ -1,0 +1,15 @@
+{
+    "type": "process",
+    "name": "Mongo query succeeded",
+    "timestamp": "^\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:[\\d\\.]+Z?$",
+    "metaData": {
+        "command_name": "find",
+        "database_name": "^rails\\d_development$",
+        "operation_id": "NUMBER",
+        "event_name": "mongo.succeeded",
+        "request_id": "NUMBER",
+        "duration": "NUMBER",
+        "collection": "mongo_models",
+        "filter": "{\"string_field\":\"?\"}"
+    }
+}
