@@ -1,0 +1,9 @@
+{
+    "type": "process",
+    "name": "Start perform ActiveJob",
+    "timestamp": "^\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:[\\d\\.]+Z?$",
+    "metaData": {
+        "event_name": "perform_start.active_job",
+        "event_id": ".*"
+    }
+}

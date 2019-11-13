@@ -34,24 +34,6 @@ Then("the request is valid for the error reporting API version {string} for the 
   }
 end
 
-Given("I set environment variable {string} to the testing host") do |variable|
-  steps %Q{
-    When I set environment variable "#{variable}" to "http://maze-runner"
-  }
-end
-
-Given("I set environment variable {string} to the testing port") do |variable|
-  steps %Q{
-    When I set environment variable "#{variable}" to "#{MOCK_API_PORT}"
-  }
-end
-
-Given("I set environment variable {string} to target the test server with credentials {string}") do |variable, credentials|
-  steps %Q{
-    When I set environment variable "#{variable}" to "#{credentials}@maze-runner:#{MOCK_API_PORT}"
-  }
-end
-
 Given("I start the rails service") do
   rails_version = ENV["RAILS_VERSION"]
   steps %Q{
@@ -87,4 +69,11 @@ Then("the payload field {string} matches the appropriate unhandled JSON fixture"
   steps %Q{
     And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_#{created_at_present}.json"
   }
+end
+
+Then("the event contains a breadcrumb matching the JSON fixture in {string}") do |json_fixture|
+  breadcrumbs = read_key_path(Server.current_request[:body], "events.0.breadcrumbs")
+  expected = JSON.parse(open(json_fixture, &:read))
+  match = breadcrumbs.any? { |breadcrumb| value_compare(expected, breadcrumb).equal? }
+  assert(match, "No breadcrumbs in the event matched the given breadcrumb")
 end
