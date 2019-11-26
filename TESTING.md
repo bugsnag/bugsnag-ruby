@@ -23,9 +23,9 @@ docker-compose up --build jruby-unit-tests
 
 ## End-to-end tests
 
-These tests are implemented with our notifier testing tool [Maze runner](https://github.com/bugsnag/maze-runner).
+These tests are implemented with our notifier testing tool [Maze Runner](https://github.com/bugsnag/maze-runner).
 
-End to end tests are written in cucumber-style `.feature` files, and need Ruby-backed "steps" in order to know what to run. The tests are located in the top level [`tests`](/tests/) directory.
+End to end tests are written in cucumber-style `.feature` files, and need Ruby-backed "steps" in order to know what to run. The tests are located in the top level [`features`](/features/) directory.
 
 Maze runner's CLI and the test fixtures are containerised so you'll need Docker (and Docker Compose) to run them.
 
@@ -57,9 +57,9 @@ docker-compose build ruby-maze-runner
 
 Configure the tests to be run in the following way:
 
-- Determine the Ruby version to be tested using the environment variable `RUBY_TEST_VERSION` i.e. `RUBY_TEST_VERSION=2.6`
-- If testing rails, set the rails version to be tested using the environment variable `RAILS_VERSION` i.e. `RAILS_VERSION=3`
-- If testing sidekiq, set the version to be tested using the environment variable `SIDEKIQ_VERSION` as the bundler version,  i.e. `SIDEKIQ_VERSION="~> 2"`
+- Determine the Ruby version to be tested using the environment variable `RUBY_TEST_VERSION` e.g. `RUBY_TEST_VERSION=2.6`
+- If testing rails, set the rails version to be tested using the environment variable `RAILS_VERSION` e.g. `RAILS_VERSION=3`
+- If testing sidekiq, set the version to be tested using the environment variable `SIDEKIQ_VERSION` as the bundler version,  e.g. `SIDEKIQ_VERSION="~> 2"`
 
 When running the end-to-end tests, you'll want to restrict the feature files run to the specific test features for the platform.  This is done using the Cucumber CLI syntax at the end of the `docker-compose run ruby-maze-runner` command, i.e:
 
@@ -78,4 +78,4 @@ In order to target specific features the exact `.feature` file can be specified,
 RUBY_TEST_VERSION=2.6 RAILS_VERSION=6 docker-compose run ruby-maze-runner features/rails_features/app_version.feature --tags "@rails6"
 ```
 
-In order to avoid running flakey or unfinished tests, the tag `"not @wip"` can be added to the tags option. This is recommended for all CI runs. If a tag is already specified, this should be added using the `and` keyword, i.e. `--tags "@rails6 and not @wip"`
+In order to avoid running flakey or unfinished tests, the tag `"not @wip"` can be added to the tags option. This is recommended for all CI runs. If a tag is already specified, this should be added using the `and` keyword, e.g. `--tags "@rails6 and not @wip"`
