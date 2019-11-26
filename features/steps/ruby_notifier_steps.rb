@@ -13,7 +13,10 @@ Then(/^the total sessionStarted count equals (\d+)$/) do |value|
 end
 
 
-### THIS NEEDS TO BE REMOVED BEFORE MERGING
+# Due to an ongoing discussion on whether the `payload_version` needs to be present within the headers
+# and body of the payload, this step is a local replacement for the similar step present in the main
+# maze-runner library. Once the discussion is resolved this step should be removed and replaced in scenarios
+# with the main library version.
 Then("the request is valid for the error reporting API version {string} for the {string}") do |payload_version, notifier_name|
   steps %Q{
     Then the "Bugsnag-Api-Key" header equals "#{$api_key}"
@@ -49,7 +52,7 @@ When("I navigate to the route {string} on the rails app") do |route|
   }
 end
 
-Then("the payload field {string} matches the appropriate handled JSON fixture") do |field|
+Then("the payload field {string} matches the appropriate Sidekiq handled payload") do |field|
   if ENV["SIDEKIQ_VERSION"] == "~> 2"
     created_at_present = "false"
   else
@@ -60,7 +63,7 @@ Then("the payload field {string} matches the appropriate handled JSON fixture") 
   }
 end
 
-Then("the payload field {string} matches the appropriate unhandled JSON fixture") do |field|
+Then("the payload field {string} matches the appropriate Sidekiq unhandled payload") do |field|
   if ENV["SIDEKIQ_VERSION"] == "~> 2"
     created_at_present = "false"
   else

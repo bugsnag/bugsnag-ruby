@@ -12,7 +12,7 @@ Scenario: An unhandled RuntimeError sends a report
   And the exception "errorClass" equals "RuntimeError"
   And the "file" of stack frame 0 equals "/app/app.rb"
   And the "lineNumber" of stack frame 0 equals 33
-  And the payload field "events.0.metaData.sidekiq" matches the appropriate unhandled JSON fixture
+  And the payload field "events.0.metaData.sidekiq" matches the appropriate Sidekiq unhandled payload
   And the event "metaData.sidekiq.msg.created_at" is a parsable timestamp in seconds
   And the event "metaData.sidekiq.msg.enqueued_at" is a parsable timestamp in seconds
 
@@ -25,6 +25,6 @@ Scenario: A handled RuntimeError can be notified
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
   And the exception "errorClass" equals "RuntimeError"
-  And the payload field "events.0.metaData.sidekiq" matches the appropriate handled JSON fixture
+  And the payload field "events.0.metaData.sidekiq" matches the appropriate Sidekiq handled payload
   And the event "metaData.sidekiq.msg.created_at" is a parsable timestamp in seconds
   And the event "metaData.sidekiq.msg.enqueued_at" is a parsable timestamp in seconds
