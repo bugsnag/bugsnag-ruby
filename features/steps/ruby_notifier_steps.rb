@@ -73,10 +73,3 @@ Then("the payload field {string} matches the appropriate Sidekiq unhandled paylo
     And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_#{created_at_present}.json"
   }
 end
-
-Then("the event contains a breadcrumb matching the JSON fixture in {string}") do |json_fixture|
-  breadcrumbs = read_key_path(Server.current_request[:body], "events.0.breadcrumbs")
-  expected = JSON.parse(open(json_fixture, &:read))
-  match = breadcrumbs.any? { |breadcrumb| value_compare(expected, breadcrumb).equal? }
-  assert(match, "No breadcrumbs in the event matched the given breadcrumb")
-end
