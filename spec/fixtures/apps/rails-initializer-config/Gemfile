@@ -1,5 +1,9 @@
 source 'https://rubygems.org'
 
+ruby_version = Gem::Version.new(RUBY_VERSION.dup)
+
 gem 'railties', '4.2.10', require: %w(action_controller rails)
+gem 'rake', ruby_version <= Gem::Version.new('1.9.3') ? '~> 11.3.0' : '~> 12.3.0'
+gem 'minitest', ruby_version <= Gem::Version.new('2.2') ? '5.11.3' : '~> 5.13.0'
 gem 'nokogiri', '1.6.8'
 gem 'bugsnag', path: '../../../..'

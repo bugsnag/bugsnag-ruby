@@ -4,13 +4,11 @@ require 'pp'
 def configure_basics
   Bugsnag.configure do |conf|
     conf.api_key = ENV['BUGSNAG_API_KEY']
-    conf.endpoint = ENV['BUGSNAG_ENDPOINT']
-    conf.session_endpoint = ENV["BUGSNAG_SESSION_ENDPOINT"] if ENV.include? "BUGSNAG_SESSION_ENDPOINT"
+    conf.set_endpoints(ENV['BUGSNAG_ENDPOINT'], ENV["BUGSNAG_ENDPOINT"])
   end
 end
 
 def configure_using_environment
-  pp ENV
   Bugsnag.configure do |conf|
     conf.app_type = ENV["BUGSNAG_APP_TYPE"] if ENV.include? "BUGSNAG_APP_TYPE"
     conf.app_version = ENV["BUGSNAG_APP_VERSION"] if ENV.include? "BUGSNAG_APP_VERSION"
