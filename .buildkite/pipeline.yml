@@ -249,8 +249,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.6"
     command: features/plain_features/ --tags "not @wip"
-    concurreny: 8
-    concurreny_group: 'rails-tests'
+    concurrency: 8
+    concurrency_group: 'rails-tests'
 
   - label: ':ruby: Sidekiq 2 tests'
     plugins:
