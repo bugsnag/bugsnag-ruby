@@ -61,7 +61,7 @@ describe 'Configuration.logger' do
       end
     end
 
-    context 'sets an invalid API key using the BUGSNAG_API_KEY env var' do
+    context 'when the API key is invalid in the bugsnag initializer' do
       it 'logs a warning' do
         skip "Incompatible with Ruby <2.0 and JRuby" if incompatible
         output = run_app('rails-invalid-initializer-config')

@@ -20,41 +20,41 @@ steps:
     env:
       RUBY_TEST_VERSION: "1.9.3"
 
-  - label: ':ruby: Ruby 2.6 unit tests'
+  - label: ':ruby: Ruby 2.7 unit tests'
     plugins:
       docker-compose#v2.6.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
-      RUBY_TEST_VERSION: "2.6"
+      RUBY_TEST_VERSION: "2.7"
       GEMSETS: "test sidekiq coverage"
 
-  - label: ':ruby: Ruby 2.6 linting'
+  - label: ':ruby: Ruby 2.7 linting'
     plugins:
       docker-compose#v2.6.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
-      RUBY_TEST_VERSION: "2.6"
+      RUBY_TEST_VERSION: "2.7"
       GEMSETS: "test rubocop"
     command: "bundle exec ./bin/rubocop lib/"
 
-  - label: ':ruby: Ruby 2.6 plain tests'
+  - label: ':ruby: Ruby 2.7 plain tests'
     plugins:
       docker-compose#v2.6.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_TEST_VERSION: "2.6"
+      RUBY_TEST_VERSION: "2.7"
     command: features/plain_features/ --tags "not @wip"
 
-  - label: ':rails: Rails 6 Ruby 2.6 tests'
+  - label: ':rails: Rails 6 Ruby 2.7 tests'
     plugins:
       docker-compose#v2.6.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
-      RUBY_TEST_VERSION: "2.6"
+      RUBY_TEST_VERSION: "2.7"
       RAILS_VERSION: "6"
     command: features/rails_features/ --tags "@rails6 and not @wip"
 
@@ -153,6 +153,17 @@ steps:
     concurrency: 8
     concurrency_group: 'rails-tests'
 
+  - label: ':ruby: Ruby 2.6 unit tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.6"
+      GEMSETS: "test sidekiq"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
   - label: ':ruby: Ruby 1.9.3 plain tests'
     plugins:
       docker-compose#v2.6.0:
@@ -227,6 +238,17 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.5"
     command: features/plain_features --tags "not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.6 plain tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.6"
+    command: features/plain_features/ --tags "not @wip"
     concurrency: 8
     concurrency_group: 'rails-tests'
 
@@ -429,6 +451,18 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.5"
+      RAILS_VERSION: "6"
+    command: features/rails_features/ --tags "@rails6 and not @wip"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 6 Ruby 2.6 tests'
+    plugins:
+      docker-compose#v2.6.0:
+        run: ruby-maze-runner
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.6"
       RAILS_VERSION: "6"
     command: features/rails_features/ --tags "@rails6 and not @wip"
     concurrency: 8
