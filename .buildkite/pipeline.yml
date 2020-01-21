@@ -1,11 +1,11 @@
 steps:
   - label: ':docker: Build CI image'
     plugins:
-      - docker-compose#v2.6.0:
+      - docker-compose#v3.1.0:
           build: ruby-maze-runner
           image-repository: 855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby
           cache-from: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
-      - docker-compose#v2.6.0:
+      - docker-compose#v3.1.0:
           push:
             - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
             - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby-latest
@@ -14,7 +14,7 @@ steps:
 
   - label: ':ruby: Ruby 1.9.3 unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -22,7 +22,7 @@ steps:
 
   - label: ':ruby: Ruby 2.7 unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -31,7 +31,7 @@ steps:
 
   - label: ':ruby: Ruby 2.7 linting'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -41,7 +41,7 @@ steps:
 
   - label: ':ruby: Ruby 2.7 plain tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -50,7 +50,7 @@ steps:
 
   - label: ':rails: Rails 6 Ruby 2.7 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -60,7 +60,7 @@ steps:
 
   - label: ':ruby: Delayed job tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -71,7 +71,7 @@ steps:
 
   - label: ':ruby: Sidekiq 5 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -83,7 +83,7 @@ steps:
 
   - label: ':ruby: JRuby unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: jruby-unit-tests
         use-aliases: true
     concurrency: 8
@@ -91,7 +91,7 @@ steps:
 
   - label: ':ruby: Ruby 2.0 unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -101,7 +101,7 @@ steps:
 
   - label: ':ruby: Ruby 2.1 unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -111,7 +111,7 @@ steps:
 
   - label: ':ruby: Ruby 2.2 unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -122,7 +122,7 @@ steps:
 
   - label: ':ruby: Ruby 2.3 unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -133,7 +133,7 @@ steps:
 
   - label: ':ruby: Ruby 2.4 unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -144,7 +144,7 @@ steps:
 
   - label: ':ruby: Ruby 2.5 unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -155,7 +155,7 @@ steps:
 
   - label: ':ruby: Ruby 2.6 unit tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
@@ -166,7 +166,7 @@ steps:
 
   - label: ':ruby: Ruby 1.9.3 plain tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -177,7 +177,7 @@ steps:
 
   - label: ':ruby: Ruby 2.0 plain tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -188,7 +188,7 @@ steps:
 
   - label: ':ruby: Ruby 2.1 plain tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -199,7 +199,7 @@ steps:
 
   - label: ':ruby: Ruby 2.2 plain tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -210,7 +210,7 @@ steps:
 
   - label: ':ruby: Ruby 2.3 plain tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -221,7 +221,7 @@ steps:
 
   - label: ':ruby: Ruby 2.4 plain tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -232,7 +232,7 @@ steps:
 
   - label: ':ruby: Ruby 2.5 plain tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -243,7 +243,7 @@ steps:
 
   - label: ':ruby: Ruby 2.6 plain tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -254,7 +254,7 @@ steps:
 
   - label: ':ruby: Sidekiq 2 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -266,7 +266,7 @@ steps:
 
   - label: ':ruby: Sidekiq 3 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -278,7 +278,7 @@ steps:
 
   - label: ':ruby: Sidekiq 4 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -290,7 +290,7 @@ steps:
 
   - label: ':rails: Rails 3 Ruby 2.0 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -302,7 +302,7 @@ steps:
 
   - label: ':rails: Rails 3 Ruby 2.1 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -314,7 +314,7 @@ steps:
 
   - label: ':rails: Rails 3 Ruby 2.2 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -326,7 +326,7 @@ steps:
 
   - label: ':rails: Rails 3 Ruby 2.3 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -338,7 +338,7 @@ steps:
 
   - label: ':rails: Rails 3 Ruby 2.4 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -350,7 +350,7 @@ steps:
 
   - label: ':rails: Rails 3 Ruby 2.5 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -362,7 +362,7 @@ steps:
 
   - label: ':rails: Rails 4 Ruby 2.2 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -374,7 +374,7 @@ steps:
 
   - label: ':rails: Rails 4 Ruby 2.3 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -386,7 +386,7 @@ steps:
 
   - label: ':rails: Rails 5 Ruby 2.2 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -398,7 +398,7 @@ steps:
 
   - label: ':rails: Rails 5 Ruby 2.3 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -410,7 +410,7 @@ steps:
 
   - label: ':rails: Rails 5 Ruby 2.4 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -422,7 +422,7 @@ steps:
 
   - label: ':rails: Rails 5 Ruby 2.5 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -434,7 +434,7 @@ steps:
 
   - label: ':rails: Rails 5 Ruby 2.6 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -446,7 +446,7 @@ steps:
 
   - label: ':rails: Rails 6 Ruby 2.5 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
@@ -458,7 +458,7 @@ steps:
 
   - label: ':rails: Rails 6 Ruby 2.6 tests'
     plugins:
-      docker-compose#v2.6.0:
+      docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
     env:
