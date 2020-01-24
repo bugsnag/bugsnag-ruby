@@ -49,11 +49,11 @@ module Bugsnag::Breadcrumbs
     ##
     # Tests whether the meta_data types are non-complex objects.
     #
-    # Acceptable types are String, Numeric, TrueClass, FalseClass, and nil.
+    # Acceptable types are String, Symbol, Numeric, TrueClass, FalseClass, and nil.
     #
     # @param value [Object] the object to be type checked
     def valid_meta_data_type?(value)
-      value.nil? || value.is_a?(String) || value.is_a?(Numeric) || value.is_a?(FalseClass) || value.is_a?(TrueClass)
+      value.nil? || value.is_a?(String) || value.is_a?(Symbol) || value.is_a?(Numeric) || value.is_a?(FalseClass) || value.is_a?(TrueClass)
     end
   end
 end

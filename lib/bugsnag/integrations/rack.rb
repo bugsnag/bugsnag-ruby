@@ -29,7 +29,10 @@ module Bugsnag
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::WardenUser) if defined?(Warden)
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::ClearanceUser) if defined?(Clearance)
 
+        # Set environment data for payload
         config.app_type ||= "rack"
+        config.runtime_versions["rack"] = ::Rack.release if defined?(::Rack)
+        config.runtime_versions["sinatra"] = ::Sinatra::VERSION if defined?(::Sinatra)
       end
     end
 

@@ -28,6 +28,7 @@ module Bugsnag
         config.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] || ::Rails.env.to_s
         config.project_root = ::Rails.root.to_s
         config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
+        config.runtime_versions["rails"] = ::Rails::VERSION::STRING
       end
 
       ActiveSupport.on_load(:action_controller) do
@@ -78,7 +79,7 @@ module Bugsnag
         filtered_data = data.slice(*event[:allowed_data])
         filtered_data[:event_name] = event[:id]
         filtered_data[:event_id] = event_id
-        if event[:id] == "sql.active_record"
+        if event[:id] == "sql.active_record" && data.key?(:binds)
           binds = data[:binds].each_with_object({}) { |bind, output| output[bind.name] = '?' if defined?(bind.name) }
           filtered_data[:binds] = JSON.dump(binds) unless binds.empty?
         end
