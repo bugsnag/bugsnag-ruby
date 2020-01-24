@@ -88,7 +88,7 @@ describe Bugsnag::Stacktrace do
     }
   end
 
-  describe "#vendor_cache" do
+  context "with configurable vendor_path" do
     let(:configuration) do
       configuration = Bugsnag::Configuration.new
       configuration.project_root = "/foo/bar"
@@ -119,7 +119,7 @@ describe Bugsnag::Stacktrace do
       ])
     end
 
-    it "allows vendor_path to be configured" do
+    it "allows vendor_path to be configured and filters out backtrace file paths" do
       configuration.vendor_path = /other_vendor\//
       stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration)
 
