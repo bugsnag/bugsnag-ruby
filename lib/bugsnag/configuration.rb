@@ -64,8 +64,8 @@ module Bugsnag
     attr_reader :max_breadcrumbs
 
     ##
-    # @return [Regexp] matching file paths within the project
-    attr_writer :vendor_path
+    # @return [Regexp] matching file paths out of project
+    attr_accessor :vendor_path
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
@@ -84,6 +84,9 @@ module Bugsnag
     ].freeze
 
     DEFAULT_MAX_BREADCRUMBS = 25
+
+    # Path to vendored code. Used to mark file paths as out of project.
+    DEFAULT_VENDOR_PATH = /^(vendor\/|\.bundle\/)/
 
     alias :track_sessions :auto_capture_sessions
     alias :track_sessions= :auto_capture_sessions=
@@ -128,6 +131,11 @@ module Bugsnag
       if (proxy_uri = ENV["https_proxy"] || ENV['http_proxy'])
         parse_proxy(proxy_uri)
       end
+
+      # Set up vendor_path regex to mark stacktrace file paths as out of project.
+      # Stacktrace lines that matches regex will be marked as "out of project"
+      # will only appear in the full trace.
+      self.vendor_path = DEFAULT_VENDOR_PATH
 
       # Set up logging
       self.logger = Logger.new(STDOUT)
@@ -178,13 +186,6 @@ module Bugsnag
     # configured release stage.
     def should_notify_release_stage?
       @release_stage.nil? || @notify_release_stages.nil? || @notify_release_stages.include?(@release_stage)
-    end
-
-    ##
-    # Regex used to mark stacktrace lines as within the project. Lines marked
-    # as "out of project" will only appear in the full trace.
-    def vendor_path
-      @vendor_path || Bugsnag::Stacktrace::VENDOR_PATH
     end
 
     ##
