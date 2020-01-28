@@ -86,7 +86,7 @@ module Bugsnag
     DEFAULT_MAX_BREADCRUMBS = 25
 
     # Path to vendored code. Used to mark file paths as out of project.
-    DEFAULT_VENDOR_PATH = /^(vendor\/|\.bundle\/)/
+    DEFAULT_VENDOR_PATH = %r{^(vendor\/|\.bundle\/)}
 
     alias :track_sessions :auto_capture_sessions
     alias :track_sessions= :auto_capture_sessions=

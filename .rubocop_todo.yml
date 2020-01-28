@@ -568,7 +568,7 @@ Style/RedundantSelf:
     - 'lib/bugsnag/configuration.rb'
     - 'lib/bugsnag/integrations/railtie.rb'
 
-# Offense count: 3
+# Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, AllowInnerSlashes.
 # SupportedStyles: slashes, percent_r, mixed
