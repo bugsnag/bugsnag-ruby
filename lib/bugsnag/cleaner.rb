@@ -2,7 +2,6 @@ require 'uri'
 
 module Bugsnag
   class Cleaner
-    ENCODING_OPTIONS = {:invalid => :replace, :undef => :replace}.freeze
     FILTERED = '[FILTERED]'.freeze
     RECURSION = '[RECURSION]'.freeze
     OBJECT = '[OBJECT]'.freeze
@@ -60,9 +59,9 @@ module Bugsnag
     def clean_string(str)
       if defined?(str.encoding) && defined?(Encoding::UTF_8)
         if str.encoding == Encoding::UTF_8
-          str.valid_encoding? ? str : str.encode('utf-16', ENCODING_OPTIONS).encode('utf-8')
+          str.valid_encoding? ? str : str.encode('utf-16', invalid: :replace, undef: :replace).encode('utf-8')
         else
-          str.encode('utf-8', ENCODING_OPTIONS)
+          str.encode('utf-8', invalid: :replace, undef: :replace)
         end
       elsif defined?(Iconv)
         Iconv.conv('UTF-8//IGNORE', 'UTF-8', str) || str
