@@ -427,4 +427,15 @@ describe Bugsnag::Configuration do
       expect(second_array).to eq([1, 2])
     end
   end
+
+  describe "#vendor_path" do
+    it "returns the default vendor path" do
+      expect(subject.vendor_path).to eq(Bugsnag::Configuration::DEFAULT_VENDOR_PATH)
+    end
+
+    it "returns the defined vendor path" do
+      subject.vendor_path = /foo/
+      expect(subject.vendor_path).to eq(/foo/)
+    end
+  end
 end
