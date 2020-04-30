@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Only call custom diagnostic data methods once
+  | [#586](https://github.com/bugsnag/bugsnag-ruby/pull/586)
+  | [stoivo](https://github.com/stoivo)
+
 ## 6.13.0 (30 Jan 2020)
 
 ### Enhancements
