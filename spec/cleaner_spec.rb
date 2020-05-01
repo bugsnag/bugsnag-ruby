@@ -6,6 +6,8 @@ describe Bugsnag::Cleaner do
   subject { described_class.new(nil) }
 
   describe "#clean_object" do
+    is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
+
     it "cleans up recursive hashes" do
       a = {:a => {}}
       a[:a][:b] = a
@@ -13,6 +15,8 @@ describe Bugsnag::Cleaner do
     end
 
     it "cleans up hashes when keys infinitely recurse in to_s" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
       class RecursiveHashKey
         def to_s
           to_s
@@ -79,6 +83,8 @@ describe Bugsnag::Cleaner do
     end
 
     it "cleans custom objects when they infinitely recurse" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
       class RecursiveObject
         def to_s
           to_s
