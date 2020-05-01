@@ -12,6 +12,36 @@ describe Bugsnag::Cleaner do
       expect(subject.clean_object(a)).to eq({:a => {:b => "[RECURSION]"}})
     end
 
+    it "cleans up hashes when keys infinitely recurse in to_s" do
+      class RecursiveHashKey
+        def to_s
+          to_s
+        end
+      end
+
+      key = RecursiveHashKey.new
+
+      a = {}
+      a[key] = 1
+
+      expect(subject.clean_object(a)).to eq({ key => "[FILTERED]" })
+    end
+
+    it "cleans up hashes when keys raise in to_s" do
+      class RaisingHashKey
+        def to_s
+          raise "hey!"
+        end
+      end
+
+      key = RaisingHashKey.new
+
+      a = {}
+      a[key] = 1
+
+      expect(subject.clean_object(a)).to eq({ key => "[FILTERED]" })
+    end
+
     it "cleans up recursive arrays" do
       a = []
       a << a
@@ -46,6 +76,18 @@ describe Bugsnag::Cleaner do
       class Macaron; end
       a = Macaron.new
       expect(subject.clean_object(a)).to eq('[OBJECT]')
+    end
+
+    it "cleans custom objects when they infinitely recurse" do
+      class RecursiveObject
+        def to_s
+          to_s
+        end
+      end
+
+      object = RecursiveObject.new
+
+      expect(subject.clean_object(object)).to eq("[RECURSION]")
     end
 
     it "cleans up binary strings properly" do
