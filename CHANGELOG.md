@@ -9,6 +9,11 @@ Changelog
   | [#586](https://github.com/bugsnag/bugsnag-ruby/pull/586)
   | [stoivo](https://github.com/stoivo)
 
+### Fixes
+
+* Guard against exceptions in to_s when cleaning objects
+  | [#591](https://github.com/bugsnag/bugsnag-ruby/pull/591)
+
 ## 6.13.0 (30 Jan 2020)
 
 ### Enhancements

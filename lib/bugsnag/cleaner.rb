@@ -43,7 +43,15 @@ module Bugsnag
       when String
         clean_string(obj)
       else
-        str = obj.to_s rescue RAISED
+        # guard against objects that raise or blow the stack when stringified
+        begin
+          str = obj.to_s
+        rescue StandardError
+          str = RAISED
+        rescue SystemStackError
+          str = RECURSION
+        end
+
         # avoid leaking potentially sensitive data from objects' #inspect output
         if str =~ /#<.*>/
           OBJECT
@@ -96,7 +104,13 @@ module Bugsnag
     private
 
     def filters_match?(key)
-      str = key.to_s
+      # If we can't stringify this key, we assume it needs to be filtered to
+      # avoid leaking things we shouldn't
+      begin
+        str = key.to_s
+      rescue StandardError, SystemStackError
+        return true
+      end
 
       @filters.any? do |f|
         case f
