@@ -45,7 +45,9 @@ module Bugsnag
       else
         # guard against objects that raise or blow the stack when stringified
         begin
-          str = obj.to_s rescue RAISED
+          str = obj.to_s
+        rescue StandardError
+          str = RAISED
         rescue SystemStackError
           str = RECURSION
         end
