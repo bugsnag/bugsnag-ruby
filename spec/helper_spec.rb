@@ -70,6 +70,8 @@ describe Bugsnag::Helpers do
     end
 
     context "an object will infinitely recurse if `to_s` is called" do
+      is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
+
       class StringRecurser
         def to_s
           to_s
@@ -77,11 +79,15 @@ describe Bugsnag::Helpers do
       end
 
       it "uses the string '[RECURSION]' instead" do
+        skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
         value = Bugsnag::Helpers.trim_if_needed([1, 3, StringRecurser.new])
         expect(value[2]).to eq "[RECURSION]"
       end
 
       it "replaces hash key with '[RECURSION]'" do
+        skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
         a = {}
         a[StringRecurser.new] = 1
 
@@ -90,6 +96,8 @@ describe Bugsnag::Helpers do
       end
 
       it "uses a single '[RECURSION]'key when multiple keys recurse" do
+        skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
         a = {}
         a[StringRecurser.new] = 1
         a[StringRecurser.new] = 2
