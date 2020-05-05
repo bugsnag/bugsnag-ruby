@@ -28,7 +28,27 @@ describe Bugsnag::Cleaner do
       a = {}
       a[key] = 1
 
-      expect(subject.clean_object(a)).to eq({ key => "[FILTERED]" })
+      expect(subject.clean_object(a)).to eq({ "[RECURSION]" => "[FILTERED]" })
+    end
+
+    it "cleans up hashes when a nested key infinitely recurse in to_s" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      class RecursiveHashKey
+        def to_s
+          to_s
+        end
+      end
+
+      key = RecursiveHashKey.new
+
+      a = {}
+      a[:b] = {}
+      a[:b][key] = 1
+
+      expected = { :b => { "[RECURSION]" => "[FILTERED]" } }
+
+      expect(subject.clean_object(a)).to eq(expected)
     end
 
     it "cleans up hashes when keys raise in to_s" do
@@ -43,7 +63,25 @@ describe Bugsnag::Cleaner do
       a = {}
       a[key] = 1
 
-      expect(subject.clean_object(a)).to eq({ key => "[FILTERED]" })
+      expect(subject.clean_object(a)).to eq({ "[RAISED]" => "[FILTERED]" })
+    end
+
+    it "cleans up hashes when nested keys raise in to_s" do
+      class RaisingHashKey
+        def to_s
+          raise "hey!"
+        end
+      end
+
+      key = RaisingHashKey.new
+
+      a = {}
+      a[:b] = {}
+      a[:b][key] = 1
+
+      expected = { :b => { "[RAISED]" => "[FILTERED]" } }
+
+      expect(subject.clean_object(a)).to eq(expected)
     end
 
     it "cleans up recursive arrays" do
