@@ -29,10 +29,19 @@ module Bugsnag
       when Hash
         clean_hash = {}
         obj.each do |k,v|
-          if filters_match_deeply?(k, scope)
-            clean_hash[k] = FILTERED
-          else
-            clean_hash[k] = traverse_object(v, seen, [scope, k].compact.join('.'))
+          begin
+            if filters_match_deeply?(k, scope)
+              clean_hash[k] = FILTERED
+            else
+              clean_hash[k] = traverse_object(v, seen, [scope, k].compact.join('.'))
+            end
+          # If we get an error here, we assume the key needs to be filtered
+          # to avoid leaking things we shouldn't. We also remove the key itself
+          # because it may cause issues later e.g. when being converted to JSON
+          rescue StandardError
+            clean_hash[RAISED] = FILTERED
+          rescue SystemStackError
+            clean_hash[RECURSION] = FILTERED
           end
         end
         clean_hash
@@ -104,13 +113,7 @@ module Bugsnag
     private
 
     def filters_match?(key)
-      # If we can't stringify this key, we assume it needs to be filtered to
-      # avoid leaking things we shouldn't
-      begin
-        str = key.to_s
-      rescue StandardError, SystemStackError
-        return true
-      end
+      str = key.to_s
 
       @filters.any? do |f|
         case f
