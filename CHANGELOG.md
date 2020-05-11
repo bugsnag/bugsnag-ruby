@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## 6.14.0
+## 6.14.0 (11 May 2020)
 
 ### Enhancements
 
