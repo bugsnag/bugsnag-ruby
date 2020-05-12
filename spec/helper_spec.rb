@@ -50,6 +50,61 @@ describe Bugsnag::Helpers do
         value = Bugsnag::Helpers.trim_if_needed([1, 3, StringRaiser.new])
         expect(value[2]).to eq "[RAISED]"
       end
+
+      it "replaces hash key with '[RAISED]'" do
+        a = {}
+        a[StringRaiser.new] = 1
+
+        value = Bugsnag::Helpers.trim_if_needed(a)
+        expect(value).to eq({ "[RAISED]" => "[FILTERED]" })
+      end
+
+      it "uses a single '[RAISED]'key when multiple keys raise" do
+        a = {}
+        a[StringRaiser.new] = 1
+        a[StringRaiser.new] = 2
+
+        value = Bugsnag::Helpers.trim_if_needed(a)
+        expect(value).to eq({ "[RAISED]" => "[FILTERED]" })
+      end
+    end
+
+    context "an object will infinitely recurse if `to_s` is called" do
+      is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
+
+      class StringRecurser
+        def to_s
+          to_s
+        end
+      end
+
+      it "uses the string '[RECURSION]' instead" do
+        skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+        value = Bugsnag::Helpers.trim_if_needed([1, 3, StringRecurser.new])
+        expect(value[2]).to eq "[RECURSION]"
+      end
+
+      it "replaces hash key with '[RECURSION]'" do
+        skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+        a = {}
+        a[StringRecurser.new] = 1
+
+        value = Bugsnag::Helpers.trim_if_needed(a)
+        expect(value).to eq({ "[RECURSION]" => "[FILTERED]" })
+      end
+
+      it "uses a single '[RECURSION]'key when multiple keys recurse" do
+        skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+        a = {}
+        a[StringRecurser.new] = 1
+        a[StringRecurser.new] = 2
+
+        value = Bugsnag::Helpers.trim_if_needed(a)
+        expect(value).to eq({ "[RECURSION]" => "[FILTERED]" })
+      end
     end
 
     context "payload length is less than allowed" do
