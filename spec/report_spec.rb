@@ -710,38 +710,35 @@ describe Bugsnag::Report do
     expect(Bugsnag).not_to have_sent_notification
   end
 
-  it "does not notify if the exception class is in the default ignore_classes list" do
-    Bugsnag.configuration.ignore_classes << ActiveRecord::RecordNotFound
-    Bugsnag.notify(ActiveRecord::RecordNotFound.new("It crashed"))
+  context "ignore_classes" do
+    context "as a constant" do
+      it "ignores exception when its class is ignored" do
+        Bugsnag.configuration.ignore_classes << BugsnagTestException
 
-    expect(Bugsnag).not_to have_sent_notification
-  end
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-  it "does not notify if the non-default exception class is added to the ignore_classes" do
-    Bugsnag.configuration.ignore_classes << BugsnagTestException
+        expect(Bugsnag).not_to have_sent_notification
+      end
 
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+      it "ignores exception when its ancestor is ignored" do
+        Bugsnag.configuration.ignore_classes << BugsnagTestException
 
-    expect(Bugsnag).not_to have_sent_notification
-  end
+        Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
 
-  it "does not notify if exception's ancestor is an ignored class" do
-    Bugsnag.configuration.ignore_classes << BugsnagTestException
+        expect(Bugsnag).not_to have_sent_notification
+      end
 
-    Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+      it "ignores exception when the original exception is ignored" do
+        Bugsnag.configuration.ignore_classes << BugsnagTestException
 
-    expect(Bugsnag).not_to have_sent_notification
-  end
+        ex = NestedException.new("Self-referential exception")
+        ex.original_exception = BugsnagTestException.new("It crashed")
 
-  it "does not notify if any caused exception is an ignored class" do
-    Bugsnag.configuration.ignore_classes << NestedException
+        Bugsnag.notify(ex)
 
-    ex = NestedException.new("Self-referential exception")
-    ex.original_exception = BugsnagTestException.new("It crashed")
-
-    Bugsnag.notify(ex)
-
-    expect(Bugsnag).not_to have_sent_notification
+        expect(Bugsnag).not_to have_sent_notification
+      end
+    end
   end
 
   it "sends the cause of the exception" do
