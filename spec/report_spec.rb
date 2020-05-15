@@ -739,6 +739,29 @@ describe Bugsnag::Report do
         expect(Bugsnag).not_to have_sent_notification
       end
     end
+
+    context "as a proc" do
+      it "ignores exception when the proc returns true" do
+        Bugsnag.configuration.ignore_classes << ->(exception) { true }
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "does not ignore exception when proc returns false" do
+        Bugsnag.configuration.ignore_classes << ->(exception) { false }
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+    end
   end
 
   it "sends the cause of the exception" do
