@@ -32,7 +32,7 @@ group :coverage, optional: true do
 end
 
 group :rubocop, optional: true do
-  gem 'rubocop', '~> 0.52.1'
+  gem 'rubocop', '~> 0.83'
 end
 
 group :sidekiq, optional: true do

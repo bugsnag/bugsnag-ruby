@@ -1,2 +1,37 @@
 inherit_from: .rubocop_todo.yml
 
+AllCops:
+  Exclude:
+    - 'bin/**/*'
+    - 'example/**/*'
+    - 'spec/fixtures/**/*'
+    - 'features/fixtures/**/*'
+
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+Style/ExponentialNotation:
+  Enabled: false
+
+Style/HashEachMethods:
+  Enabled: true
+
+# These require newer version of Ruby than our minimum supported version, so
+# have to be disabled
+Style/HashTransformKeys: # Requires Ruby 2.5
+  Enabled: false
+
+Style/HashTransformValues: # Requires Ruby 2.4
+  Enabled: false
+
+Style/SlicingWithRange: # Requires Ruby 2.6
+  Enabled: false
