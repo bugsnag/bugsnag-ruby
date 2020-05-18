@@ -3,6 +3,7 @@ require "socket"
 require "logger"
 require "bugsnag/middleware_stack"
 require "bugsnag/middleware/callbacks"
+require "bugsnag/middleware/discard_error_class"
 require "bugsnag/middleware/exception_meta_data"
 require "bugsnag/middleware/ignore_error_class"
 require "bugsnag/middleware/suggestion_data"
@@ -36,6 +37,7 @@ module Bugsnag
     attr_accessor :hostname
     attr_accessor :runtime_versions
     attr_accessor :ignore_classes
+    attr_accessor :discard_classes
     attr_accessor :auto_capture_sessions
 
     ##
@@ -123,6 +125,7 @@ module Bugsnag
       # SystemExit and SignalException are common Exception types seen with
       # successful exits and are not automatically reported to Bugsnag
       self.ignore_classes = Set.new([SystemExit, SignalException])
+      self.discard_classes = Set.new(["SystemExit", "SignalException"])
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
@@ -147,6 +150,7 @@ module Bugsnag
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new
       self.internal_middleware.use Bugsnag::Middleware::ExceptionMetaData
+      self.internal_middleware.use Bugsnag::Middleware::DiscardErrorClass
       self.internal_middleware.use Bugsnag::Middleware::IgnoreErrorClass
       self.internal_middleware.use Bugsnag::Middleware::SuggestionData
       self.internal_middleware.use Bugsnag::Middleware::ClassifyError

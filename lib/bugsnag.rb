@@ -147,6 +147,7 @@ module Bugsnag
     # Configuration getters
     ##
     # Returns the client's Configuration object, or creates one if not yet created.
+    # @return [Configuration]
     def configuration
       @configuration = nil unless defined?(@configuration)
       @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }

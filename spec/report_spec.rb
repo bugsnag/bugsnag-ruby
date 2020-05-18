@@ -27,6 +27,7 @@ class JRubyException
   end
 end
 
+# rubocop:disable Metrics/BlockLength
 describe Bugsnag::Report do
   it "should contain an api_key if one is set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
@@ -147,12 +148,16 @@ describe Bugsnag::Report do
 
   it "sets correct severity and reason for specific error classes" do
     original_ignore_classes = Bugsnag.configuration.ignore_classes
+    original_discard_classes = Bugsnag.configuration.discard_classes
 
     begin
-      # The default ignore_classes includes SignalException, so we need to
-      # temporarily set it to something else.
+      # The default ignore/discard classes includes SignalException, so we need
+      # to temporarily set them to something else.
       Bugsnag.configuration.ignore_classes = Set[SystemExit]
+      Bugsnag.configuration.discard_classes = Set["SystemExit"]
+
       Bugsnag.notify(SignalException.new("TERM"))
+
       expect(Bugsnag).to have_sent_notification{ |payload, headers|
         event = get_event_from_payload(payload)
         expect(event["unhandled"]).to be false
@@ -166,6 +171,7 @@ describe Bugsnag::Report do
       }
     ensure
       Bugsnag.configuration.ignore_classes = original_ignore_classes
+      Bugsnag.configuration.discard_classes = original_discard_classes
     end
   end
 
@@ -764,6 +770,76 @@ describe Bugsnag::Report do
     end
   end
 
+  context "discard_classes" do
+    context "as a string" do
+      it "discards exception when its class should be discarded" do
+        Bugsnag.configuration.discard_classes << "BugsnagTestException"
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "discards exception when the original exception should be discarded" do
+        Bugsnag.configuration.discard_classes << "BugsnagTestException"
+
+        ex = NestedException.new("Self-referential exception")
+        ex.original_exception = BugsnagTestException.new("It crashed")
+
+        Bugsnag.notify(ex)
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "does not discard exception with a typo" do
+        Bugsnag.configuration.discard_classes << "BugsnagToastException"
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+    end
+
+    context "as a regexp" do
+      it "discards exception when its class should be discarded" do
+        Bugsnag.configuration.discard_classes << /^BugsnagTest.*/
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "discards exception when the original exception should be discarded" do
+        Bugsnag.configuration.discard_classes << /^BugsnagTest.*/
+
+        ex = NestedException.new("Self-referential exception")
+        ex.original_exception = BugsnagTestException.new("It crashed")
+
+        Bugsnag.notify(ex)
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "does not discard exception when regexp does not match" do
+        Bugsnag.configuration.discard_classes << /^NotBugsnag.*/
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+    end
+  end
+
   it "sends the cause of the exception" do
     begin
       begin
@@ -1300,3 +1376,4 @@ describe Bugsnag::Report do
     }
   end
 end
+# rubocop:enable Metrics/BlockLength
