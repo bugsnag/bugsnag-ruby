@@ -127,8 +127,10 @@ module Bugsnag
 
       # SystemExit and SignalException are common Exception types seen with
       # successful exits and are not automatically reported to Bugsnag
+      # TODO move these defaults into `discard_classes` when `ignore_classes`
+      #      is removed
       self.ignore_classes = Set.new([SystemExit, SignalException])
-      self.discard_classes = Set.new(["SystemExit", "SignalException"])
+      self.discard_classes = Set.new([])
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]

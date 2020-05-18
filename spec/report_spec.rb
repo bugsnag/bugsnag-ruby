@@ -148,13 +148,11 @@ describe Bugsnag::Report do
 
   it "sets correct severity and reason for specific error classes" do
     original_ignore_classes = Bugsnag.configuration.ignore_classes
-    original_discard_classes = Bugsnag.configuration.discard_classes
 
     begin
-      # The default ignore/discard classes includes SignalException, so we need
-      # to temporarily set them to something else.
+      # The default ignore classes includes SignalException, so we need to
+      # temporarily set it to something else.
       Bugsnag.configuration.ignore_classes = Set[SystemExit]
-      Bugsnag.configuration.discard_classes = Set["SystemExit"]
 
       Bugsnag.notify(SignalException.new("TERM"))
 
@@ -171,7 +169,6 @@ describe Bugsnag::Report do
       }
     ensure
       Bugsnag.configuration.ignore_classes = original_ignore_classes
-      Bugsnag.configuration.discard_classes = original_discard_classes
     end
   end
 
