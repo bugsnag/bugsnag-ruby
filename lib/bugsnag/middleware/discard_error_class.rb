@@ -12,7 +12,7 @@ module Bugsnag::Middleware
     ##
     # @param report [Report]
     def call(report)
-      ignore_error_class = report.raw_exceptions.any? do |ex|
+      should_discard = report.raw_exceptions.any? do |ex|
         report.configuration.discard_classes.any? do |to_ignore|
           case to_ignore
           when String then to_ignore == ex.class.name
@@ -22,7 +22,7 @@ module Bugsnag::Middleware
         end
       end
 
-      report.ignore! if ignore_error_class
+      report.ignore! if should_discard
 
       @middleware.call(report)
     end
