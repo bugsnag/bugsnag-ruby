@@ -803,6 +803,19 @@ describe Bugsnag::Report do
           expect(exception["message"]).to eq("It crashed")
         }
       end
+
+      it "does not discard exception when its ancestor is discarded" do
+        Bugsnag.configuration.discard_classes << "BugsnagTestException"
+
+        Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagSubclassTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
     end
 
     context "as a regexp" do
@@ -834,6 +847,19 @@ describe Bugsnag::Report do
           exception = get_exception_from_payload(payload)
 
           expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+
+      it "does not discard exception when its ancestor is discarded" do
+        Bugsnag.configuration.discard_classes << /^BugsnagTest.*/
+
+        Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagSubclassTestException")
           expect(exception["message"]).to eq("It crashed")
         }
       end
