@@ -36,9 +36,12 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :runtime_versions
-    attr_accessor :ignore_classes
     attr_accessor :discard_classes
     attr_accessor :auto_capture_sessions
+
+    ##
+    # @deprecated Use {#discard_classes} instead
+    attr_accessor :ignore_classes
 
     ##
     # @return [String] URL error notifications will be delivered to
