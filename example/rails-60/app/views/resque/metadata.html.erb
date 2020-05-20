@@ -1,1 +1,17 @@
-<%= markdown(@text)%>
+<h2>Resque</h2>
+
+<p>
+    The metadata task has been queued.
+</p>
+
+<p>
+    This can be executed by running:
+</p>
+
+<pre class="shell">QUEUE=metadata bundle exec rake resque:work</pre>
+
+<p>
+    Check <a href="https://app.bugsnag.com">your Bugsnag dashboard</a> for the result!
+</p>
+
+<p><a href="/resque">&larr; return to Resque examples</a></p>

@@ -6,6 +6,7 @@ gem "bugsnag",  path: "../../"
 
 # Example task queues
 gem "que"
+gem "resque"
 gem "sidekiq"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

@@ -25,6 +25,16 @@ code {
     font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
 }
 
+pre {
+    background: rgba(0, 0, 0, .05);
+    border: 1px solid rgba(0, 0, 0, .1);
+    padding: 1rem;
+}
+
+pre.shell::before {
+    content: '$ ';
+}
+
 a:link,
 a:visited {
     color: #536eec;

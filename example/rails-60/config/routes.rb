@@ -23,4 +23,5 @@ Rails.application.routes.draw do
   get '/resque', to: 'resque#index'
   get '/resque/crash', to: 'resque#crash'
   get '/resque/crash_with_callback', to: 'resque#callbacks'
+  get '/resque/notify_data', to: 'resque#metadata'
 end
