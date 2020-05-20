@@ -33,6 +33,7 @@ pre {
 
 pre.shell::before {
     content: '$ ';
+    pointer-events: none;
 }
 
 a:link,
