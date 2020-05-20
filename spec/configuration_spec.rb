@@ -332,8 +332,12 @@ describe Bugsnag::Configuration do
     end
   end
 
-  it "should have exit exception classes ignored by default" do
+  it "should have exit exception classes in ignore_classes by default" do
     expect(subject.ignore_classes).to eq(Set.new([SystemExit, SignalException]))
+  end
+
+  it "should have nothing in discard_classes by default" do
+    expect(subject.discard_classes).to eq(Set.new([]))
   end
 
   describe "#breadcrumbs" do

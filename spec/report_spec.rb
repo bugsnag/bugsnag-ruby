@@ -27,6 +27,7 @@ class JRubyException
   end
 end
 
+# rubocop:disable Metrics/BlockLength
 describe Bugsnag::Report do
   it "should contain an api_key if one is set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
@@ -149,10 +150,12 @@ describe Bugsnag::Report do
     original_ignore_classes = Bugsnag.configuration.ignore_classes
 
     begin
-      # The default ignore_classes includes SignalException, so we need to
+      # The default ignore classes includes SignalException, so we need to
       # temporarily set it to something else.
       Bugsnag.configuration.ignore_classes = Set[SystemExit]
+
       Bugsnag.notify(SignalException.new("TERM"))
+
       expect(Bugsnag).to have_sent_notification{ |payload, headers|
         event = get_event_from_payload(payload)
         expect(event["unhandled"]).to be false
@@ -710,38 +713,154 @@ describe Bugsnag::Report do
     expect(Bugsnag).not_to have_sent_notification
   end
 
-  it "does not notify if the exception class is in the default ignore_classes list" do
-    Bugsnag.configuration.ignore_classes << ActiveRecord::RecordNotFound
-    Bugsnag.notify(ActiveRecord::RecordNotFound.new("It crashed"))
+  context "ignore_classes" do
+    context "as a constant" do
+      it "ignores exception when its class is ignored" do
+        Bugsnag.configuration.ignore_classes << BugsnagTestException
 
-    expect(Bugsnag).not_to have_sent_notification
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "ignores exception when its ancestor is ignored" do
+        Bugsnag.configuration.ignore_classes << BugsnagTestException
+
+        Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "ignores exception when the original exception is ignored" do
+        Bugsnag.configuration.ignore_classes << BugsnagTestException
+
+        ex = NestedException.new("Self-referential exception")
+        ex.original_exception = BugsnagTestException.new("It crashed")
+
+        Bugsnag.notify(ex)
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+    end
+
+    context "as a proc" do
+      it "ignores exception when the proc returns true" do
+        Bugsnag.configuration.ignore_classes << ->(exception) { true }
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "does not ignore exception when proc returns false" do
+        Bugsnag.configuration.ignore_classes << ->(exception) { false }
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+    end
   end
 
-  it "does not notify if the non-default exception class is added to the ignore_classes" do
-    Bugsnag.configuration.ignore_classes << BugsnagTestException
+  context "discard_classes" do
+    context "as a string" do
+      it "discards exception when its class should be discarded" do
+        Bugsnag.configuration.discard_classes << "BugsnagTestException"
 
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).not_to have_sent_notification
-  end
+        expect(Bugsnag).not_to have_sent_notification
+      end
 
-  it "does not notify if exception's ancestor is an ignored class" do
-    Bugsnag.configuration.ignore_classes << BugsnagTestException
+      it "discards exception when the original exception should be discarded" do
+        Bugsnag.configuration.discard_classes << "BugsnagTestException"
 
-    Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+        ex = NestedException.new("Self-referential exception")
+        ex.original_exception = BugsnagTestException.new("It crashed")
 
-    expect(Bugsnag).not_to have_sent_notification
-  end
+        Bugsnag.notify(ex)
 
-  it "does not notify if any caused exception is an ignored class" do
-    Bugsnag.configuration.ignore_classes << NestedException
+        expect(Bugsnag).not_to have_sent_notification
+      end
 
-    ex = NestedException.new("Self-referential exception")
-    ex.original_exception = BugsnagTestException.new("It crashed")
+      it "does not discard exception with a typo" do
+        Bugsnag.configuration.discard_classes << "BugsnagToastException"
 
-    Bugsnag.notify(ex)
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).not_to have_sent_notification
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+
+      it "does not discard exception when its ancestor is discarded" do
+        Bugsnag.configuration.discard_classes << "BugsnagTestException"
+
+        Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagSubclassTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+    end
+
+    context "as a regexp" do
+      it "discards exception when its class should be discarded" do
+        Bugsnag.configuration.discard_classes << /^BugsnagTest.*/
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "discards exception when the original exception should be discarded" do
+        Bugsnag.configuration.discard_classes << /^BugsnagTest.*/
+
+        ex = NestedException.new("Self-referential exception")
+        ex.original_exception = BugsnagTestException.new("It crashed")
+
+        Bugsnag.notify(ex)
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "does not discard exception when regexp does not match" do
+        Bugsnag.configuration.discard_classes << /^NotBugsnag.*/
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+
+      it "does not discard exception when its ancestor is discarded" do
+        Bugsnag.configuration.discard_classes << /^BugsnagTest.*/
+
+        Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagSubclassTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+    end
   end
 
   it "sends the cause of the exception" do
@@ -1280,3 +1399,4 @@ describe Bugsnag::Report do
     }
   end
 end
+# rubocop:enable Metrics/BlockLength
