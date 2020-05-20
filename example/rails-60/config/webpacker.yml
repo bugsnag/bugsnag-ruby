@@ -48,7 +48,7 @@ default: &default
     - .jpeg
     - .jpg
 
-development:
+development: &development
   <<: *default
   compile: true
 
@@ -75,6 +75,8 @@ development:
     watch_options:
       ignored: '**/node_modules/**'
 
+que:
+  <<: *development
 
 test:
   <<: *default
