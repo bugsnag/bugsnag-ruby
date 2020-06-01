@@ -1,0 +1,13 @@
+{
+    "type": "request",
+    "name": "Controller started processing",
+    "timestamp": "^\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:[\\d\\.]+Z?$",
+    "metaData": {
+        "controller": "BreadcrumbsController",
+        "action": "handled",
+        "method": "GET",
+        "path": "/breadcrumbs/handled",
+        "event_name": "start_processing.action_controller",
+        "event_id": ".*"
+    }
+}

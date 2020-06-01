@@ -4,3 +4,21 @@
 require_relative 'config/application'
 
 Rails.application.load_tasks
+
+namespace :delayed_job_tests do
+  task :fail_with_args do
+    run_delayed_job_test('"TestModel.delay.fail_with_args(\"Test\")"')
+  end
+
+  task :notify_with_args do
+    run_delayed_job_test('"TestModel.delay.notify_with_args(\"Test\")"')
+  end
+end
+
+def run_delayed_job_test(command)
+  fork do
+    system("rake jobs:work")
+  end
+  system("rails runner #{command}")
+  Process.wait
+end

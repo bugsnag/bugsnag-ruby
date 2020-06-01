@@ -1,56 +1,23 @@
 require 'fileutils'
 
-Before do
-  find_default_docker_compose
-end
-
-def output_logs
-  $docker_services.each do |service|
-    logged_service = service[:service] == :all ? '' : service[:service]
-    command = "logs -t #{logged_service}"
-    begin
-      response = run_docker_compose_command(service[:file], command)
-    rescue => exception
-      response = "Couldn't retreive logs for #{service[:file]}:#{logged_service}"
-    end
-    STDOUT.puts response.is_a?(String) ? response : response.to_a
-  end
-end
-
 def install_fixture_gems
-  gem_dir = File.expand_path('../../../', __FILE__)
-  Dir.chdir(gem_dir) do
-    `rm bugsnag-*.gem` unless Dir.glob('bugsnag-*.gem').empty?
-    `gem build bugsnag.gemspec`
-    Dir.entries('features/fixtures').reject { |entry| ['.', '..'].include?(entry) }.each do |entry|
-      target_dir = "features/fixtures/#{entry}"
-      if File.directory?(target_dir)
-        `cp bugsnag-*.gem #{target_dir}`
-        `gem unpack #{target_dir}/bugsnag-*.gem --target #{target_dir}/temp-bugsnag-lib`
-      end
-    end
-    `rm bugsnag-*.gem`
-  end
-end
-
-# Added to ensure that multiple versions of Gems do not exist within the fixture folders,
-# which can be difficult to track down and clear up
-def remove_installed_gems
-  removal_targets = ['temp-bugsnag-lib', 'bugsnag-*.gem']
+  throw Error.new("Bugsnag.gem not found. Is this running in a docker-container?") unless File.exist?("/app/bugsnag.gem")
   Dir.entries('features/fixtures').reject { |entry| ['.', '..'].include?(entry) }.each do |entry|
     target_dir = "features/fixtures/#{entry}"
-    target_entries = []
-    removal_targets.each do |r_target|
-      target_entries += Dir.glob("#{target_dir}/#{r_target}")
-    end
-    target_entries.each do |d_target|
-      FileUtils.rm_rf(d_target)
+    if File.directory?(target_dir)
+      `cp /app/bugsnag.gem #{target_dir}`
+      `gem unpack #{target_dir}/bugsnag.gem --target #{target_dir}/temp-bugsnag-lib`
     end
   end
 end
 
-at_exit do
-  remove_installed_gems
+AfterConfiguration do |config|
+  install_fixture_gems
 end
 
-install_fixture_gems
+Before do
+  Docker.compose_project_name = "#{rand.to_s}:#{Time.new.strftime("%s")}"
+  Runner.environment.clear
+  Runner.environment["BUGSNAG_API_KEY"] = $api_key
+  Runner.environment["BUGSNAG_ENDPOINT"] = "http://maze-runner:#{MOCK_API_PORT}"
+end

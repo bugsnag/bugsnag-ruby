@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.6'
 services:
   # dep for job systems
   redis:
@@ -11,8 +11,7 @@ services:
     build:
       context: plain
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -38,12 +37,16 @@ services:
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
     restart: "no"
+    networks:
+      default:
+        aliases:
+          - plain
 
   delayed_job:
     build:
       context: delayed_job
       args:
-        RUBY_VERSION: 2.5
+        RUBY_TEST_VERSION: 2.5
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -73,29 +76,25 @@ services:
     build:
       context: rack1
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     environment:
       - endpoint
-    ports:
-      - "3001:3000"
     restart: "no"
+
   rack2:
     build:
       context: rack2
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     environment:
       - endpoint
-    ports:
-      - "3002:3000"
     restart: "no"
 
   rails3:
     build:
       context: rails3
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -122,17 +121,13 @@ services:
       - CALLBACK_INITIATOR
       - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
-    ports:
-      - target: 3000
-        published: 61283
     restart: "no"
 
   rails4:
     build:
       context: rails4
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     depends_on:
       - mongo
     environment:
@@ -161,17 +156,13 @@ services:
       - CALLBACK_INITIATOR
       - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
-    ports:
-      - target: 3000
-        published: 61284
     restart: "no"
 
   rails5:
     build:
       context: rails5
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     depends_on:
       - mongo
     environment:
@@ -200,17 +191,15 @@ services:
       - CALLBACK_INITIATOR
       - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
-    ports:
-      - target: 3000
-        published: 61285
     restart: "no"
 
   rails6:
     build:
       context: rails6
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
+    depends_on:
+      - mongo
     environment:
       - BUGSNAG_API_KEY
       - http_proxy
@@ -237,17 +226,17 @@ services:
       - CALLBACK_INITIATOR
       - SQL_ONLY_BREADCRUMBS
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
-    ports:
-      - target: 3000
-        published: 61286
     restart: "no"
+    networks:
+      default:
+        aliases:
+          - rails6
 
   resque:
     build:
       context: resque
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
     depends_on:
       - redis
     environment:
@@ -258,8 +247,7 @@ services:
     build:
       context: sidekiq
       args:
-        - RUBY_VERSION
-        - APP_PATH
+        - RUBY_TEST_VERSION
         - SIDEKIQ_VERSION
     depends_on:
       - redis
@@ -292,20 +280,20 @@ services:
     build:
       context: sinatra1
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     environment:
       - endpoint
-    ports:
-      - "3006:3000"
     restart: "no"
 
   sinatra2:
     build:
       context: sinatra2
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     environment:
       - endpoint
-    ports:
-      - "3007:3000"
     restart: "no"
+
+networks:
+  default:
+    name: ${NETWORK_NAME}

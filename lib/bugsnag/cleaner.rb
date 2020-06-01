@@ -2,7 +2,6 @@ require 'uri'
 
 module Bugsnag
   class Cleaner
-    ENCODING_OPTIONS = {:invalid => :replace, :undef => :replace}.freeze
     FILTERED = '[FILTERED]'.freeze
     RECURSION = '[RECURSION]'.freeze
     OBJECT = '[OBJECT]'.freeze
@@ -30,10 +29,19 @@ module Bugsnag
       when Hash
         clean_hash = {}
         obj.each do |k,v|
-          if filters_match_deeply?(k, scope)
-            clean_hash[k] = FILTERED
-          else
-            clean_hash[k] = traverse_object(v, seen, [scope, k].compact.join('.'))
+          begin
+            if filters_match_deeply?(k, scope)
+              clean_hash[k] = FILTERED
+            else
+              clean_hash[k] = traverse_object(v, seen, [scope, k].compact.join('.'))
+            end
+          # If we get an error here, we assume the key needs to be filtered
+          # to avoid leaking things we shouldn't. We also remove the key itself
+          # because it may cause issues later e.g. when being converted to JSON
+          rescue StandardError
+            clean_hash[RAISED] = FILTERED
+          rescue SystemStackError
+            clean_hash[RECURSION] = FILTERED
           end
         end
         clean_hash
@@ -44,7 +52,15 @@ module Bugsnag
       when String
         clean_string(obj)
       else
-        str = obj.to_s rescue RAISED
+        # guard against objects that raise or blow the stack when stringified
+        begin
+          str = obj.to_s
+        rescue StandardError
+          str = RAISED
+        rescue SystemStackError
+          str = RECURSION
+        end
+
         # avoid leaking potentially sensitive data from objects' #inspect output
         if str =~ /#<.*>/
           OBJECT
@@ -60,9 +76,9 @@ module Bugsnag
     def clean_string(str)
       if defined?(str.encoding) && defined?(Encoding::UTF_8)
         if str.encoding == Encoding::UTF_8
-          str.valid_encoding? ? str : str.encode('utf-16', ENCODING_OPTIONS).encode('utf-8')
+          str.valid_encoding? ? str : str.encode('utf-16', invalid: :replace, undef: :replace).encode('utf-8')
         else
-          str.encode('utf-8', ENCODING_OPTIONS)
+          str.encode('utf-8', invalid: :replace, undef: :replace)
         end
       elsif defined?(Iconv)
         Iconv.conv('UTF-8//IGNORE', 'UTF-8', str) || str

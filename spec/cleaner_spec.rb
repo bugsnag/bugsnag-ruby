@@ -6,10 +6,82 @@ describe Bugsnag::Cleaner do
   subject { described_class.new(nil) }
 
   describe "#clean_object" do
+    is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
+
     it "cleans up recursive hashes" do
       a = {:a => {}}
       a[:a][:b] = a
       expect(subject.clean_object(a)).to eq({:a => {:b => "[RECURSION]"}})
+    end
+
+    it "cleans up hashes when keys infinitely recurse in to_s" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      class RecursiveHashKey
+        def to_s
+          to_s
+        end
+      end
+
+      key = RecursiveHashKey.new
+
+      a = {}
+      a[key] = 1
+
+      expect(subject.clean_object(a)).to eq({ "[RECURSION]" => "[FILTERED]" })
+    end
+
+    it "cleans up hashes when a nested key infinitely recurse in to_s" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      class RecursiveHashKey
+        def to_s
+          to_s
+        end
+      end
+
+      key = RecursiveHashKey.new
+
+      a = {}
+      a[:b] = {}
+      a[:b][key] = 1
+
+      expected = { :b => { "[RECURSION]" => "[FILTERED]" } }
+
+      expect(subject.clean_object(a)).to eq(expected)
+    end
+
+    it "cleans up hashes when keys raise in to_s" do
+      class RaisingHashKey
+        def to_s
+          raise "hey!"
+        end
+      end
+
+      key = RaisingHashKey.new
+
+      a = {}
+      a[key] = 1
+
+      expect(subject.clean_object(a)).to eq({ "[RAISED]" => "[FILTERED]" })
+    end
+
+    it "cleans up hashes when nested keys raise in to_s" do
+      class RaisingHashKey
+        def to_s
+          raise "hey!"
+        end
+      end
+
+      key = RaisingHashKey.new
+
+      a = {}
+      a[:b] = {}
+      a[:b][key] = 1
+
+      expected = { :b => { "[RAISED]" => "[FILTERED]" } }
+
+      expect(subject.clean_object(a)).to eq(expected)
     end
 
     it "cleans up recursive arrays" do
@@ -46,6 +118,20 @@ describe Bugsnag::Cleaner do
       class Macaron; end
       a = Macaron.new
       expect(subject.clean_object(a)).to eq('[OBJECT]')
+    end
+
+    it "cleans custom objects when they infinitely recurse" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      class RecursiveObject
+        def to_s
+          to_s
+        end
+      end
+
+      object = RecursiveObject.new
+
+      expect(subject.clean_object(object)).to eq("[RECURSION]")
     end
 
     it "cleans up binary strings properly" do

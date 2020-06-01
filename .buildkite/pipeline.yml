@@ -1,0 +1,470 @@
+steps:
+  - label: ':docker: Build CI image'
+    plugins:
+      - docker-compose#v3.1.0:
+          build: ruby-maze-runner
+          image-repository: 855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby
+          cache-from: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
+      - docker-compose#v3.1.0:
+          push:
+            - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
+            - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby-latest
+
+  - wait
+
+  - label: ':ruby: Ruby 1.9.3 unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "1.9.3"
+
+  - label: ':ruby: Ruby 2.7 unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.7"
+      GEMSETS: "test sidekiq coverage"
+
+  - label: ':ruby: Ruby 2.7 linting'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.7"
+      GEMSETS: "test rubocop"
+    command: "bundle exec ./bin/rubocop lib/"
+
+  - label: ':ruby: Ruby 2.7 plain tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features/", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.7"
+
+  - label: ':rails: Rails 6 Ruby 2.7 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/",  "--tags", "@rails6 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.7"
+      RAILS_VERSION: "6"
+
+
+  - label: ':ruby: Delayed job tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/delayed_job.feature", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Sidekiq 5 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/sidekiq.feature", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      SIDEKIQ_VERSION: "~> 5"
+
+  - block: "Trigger full test suite"
+
+  - label: ':ruby: JRuby unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: jruby-unit-tests
+        use-aliases: true
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.0 unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.0"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.1 unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.1"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.2 unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.2"
+      GEMSETS: "test sidekiq"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.3 unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.3"
+      GEMSETS: "test sidekiq"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.4 unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.4"
+      GEMSETS: "test sidekiq"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.5 unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      GEMSETS: "test sidekiq"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.6 unit tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "2.6"
+      GEMSETS: "test sidekiq"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 1.9.3 plain tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "1.9.3"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.0 plain tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.0"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.1 plain tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.1"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.2 plain tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.2"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.3 plain tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.3"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.4 plain tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.4"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.5 plain tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Ruby 2.6 plain tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features/", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.6"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Sidekiq 2 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/sidekiq.feature", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      SIDEKIQ_VERSION: "~> 2"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Sidekiq 3 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/sidekiq.feature", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      SIDEKIQ_VERSION: "~> 3"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':ruby: Sidekiq 4 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/sidekiq.feature", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      SIDEKIQ_VERSION: "~> 4"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 3 Ruby 2.0 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.0"
+      RAILS_VERSION: "3"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 3 Ruby 2.1 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.1"
+      RAILS_VERSION: "3"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 3 Ruby 2.2 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.2"
+      RAILS_VERSION: "3"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 3 Ruby 2.3 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.3"
+      RAILS_VERSION: "3"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 3 Ruby 2.4 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.4"
+      RAILS_VERSION: "3"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 3 Ruby 2.5 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      RAILS_VERSION: "3"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 4 Ruby 2.2 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails4 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.2"
+      RAILS_VERSION: "4"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 4 Ruby 2.3 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails4 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.3"
+      RAILS_VERSION: "4"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 5 Ruby 2.2 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails5 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.2"
+      RAILS_VERSION: "5"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 5 Ruby 2.3 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails5 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.3"
+      RAILS_VERSION: "5"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 5 Ruby 2.4 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails5 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.4"
+      RAILS_VERSION: "5"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 5 Ruby 2.5 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails5 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      RAILS_VERSION: "5"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 5 Ruby 2.6 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails5 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.6"
+      RAILS_VERSION: "5"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 6 Ruby 2.5 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails6 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      RAILS_VERSION: "6"
+    concurrency: 8
+    concurrency_group: 'rails-tests'
+
+  - label: ':rails: Rails 6 Ruby 2.6 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails6 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.6"
+      RAILS_VERSION: "6"
+    concurrency: 8
+    concurrency_group: 'rails-tests'

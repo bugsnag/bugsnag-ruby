@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+gem 'rake', '~> 12.3.0'
+
 gem 'rails', '3.2.22.5'
 
 gem 'nokogiri', '1.6.8'
@@ -9,5 +11,7 @@ gem 'sqlite3', '< 1.4'
 gem 'jquery-rails'
 
 gem 'bugsnag', path: '/bugsnag'
+
+gem 'rack-cache', '~> 1.9.0'
 
 gem "warden"

@@ -58,7 +58,7 @@ describe "Bugsnag Rake integration" do
       ENV['BUGSNAG_TEST_SERVER_PORT'] = server.config[:Port].to_s
       task_fixtures_path = File.join(File.dirname(__FILE__), '../fixtures', 'tasks')
       Dir.chdir(task_fixtures_path) do
-        system("bundle exec rake test:crash > /dev/null 2>&1")
+        system("../../../bin/rake test:crash")
       end
 
       result = request()

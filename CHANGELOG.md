@@ -1,6 +1,37 @@
 Changelog
 =========
 
+## 6.13.1 (11 May 2020)
+
+### Fixes
+
+* Only call custom diagnostic data methods once
+  | [#586](https://github.com/bugsnag/bugsnag-ruby/pull/586)
+  | [stoivo](https://github.com/stoivo)
+* Guard against exceptions in to_s when cleaning objects
+  | [#591](https://github.com/bugsnag/bugsnag-ruby/pull/591)
+
+## 6.13.0 (30 Jan 2020)
+
+### Enhancements
+
+* Add configurable `vendor_path` to configure which file paths are out of project stacktrace.
+  | [#544](https://github.com/bugsnag/bugsnag-ruby/pull/544)
+
+### Fixes
+
+* Resolve Ruby deprecation warning for keyword parameters
+  | [#580](https://github.com/bugsnag/bugsnag-ruby/pull/582)
+
+## 6.12.2 (24 Oct 2019)
+
+### Fixes
+
+* Handle change in capitalisation of framework version constant for Que in v1.x
+  | [#570](https://github.com/bugsnag/bugsnag-ruby/pull/570)
+  | [#572](https://github.com/bugsnag/bugsnag-ruby/pull/572)
+  | [tommeier](https://github.com/tommeier)
+
 ## 6.12.1 (05 Sep 2019)
 
 ### Fixes
