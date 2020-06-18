@@ -39,6 +39,8 @@ group :sidekiq, optional: true do
   gem 'sidekiq', '~> 5.2.7'
   # redis 4.1.2 dropped support for Ruby 2.2
   gem 'redis', ruby_version < Gem::Version.new('2.3.0') ? '4.1.1' : '>= 4.1.2'
+  # rack 2.2.0 dropped support for Ruby 2.2
+  gem 'rack', ruby_version < Gem::Version.new('2.3.0') ? '< 2.2.0' : '~> 2.2'
 end
 
 group :doc, optional: true do
