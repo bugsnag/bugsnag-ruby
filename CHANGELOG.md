@@ -8,6 +8,9 @@ Changelog
 * Add configurable `discard_classes` option to allow filtering errors using either a `String` or `Regexp` matched against the error's class name
   | [#597](https://github.com/bugsnag/bugsnag-ruby/pull/597)
 
+* The Breadcrumb name limit of 30 characters has been removed
+  | [#600](https://github.com/bugsnag/bugsnag-ruby/pull/600)
+
 ### Deprecated
 * The `ignore_classes` configuration option has been deprecated in favour of `discard_classes`. `ignore_classes` will be removed in the next major release
 
