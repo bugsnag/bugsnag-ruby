@@ -592,7 +592,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are set in default meta_data_filters" do
-
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({
         :request => {
@@ -638,7 +637,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are added to meta_data_filters" do
-
     Bugsnag.configuration.meta_data_filters << "other_data"
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
@@ -656,7 +654,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are added to meta_data_filters as regex" do
-
     Bugsnag.configuration.meta_data_filters << /other_data/
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
@@ -674,7 +671,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are added to meta_data_filters as partial regex" do
-
     Bugsnag.configuration.meta_data_filters << /r_data/
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
@@ -702,6 +698,33 @@ describe Bugsnag::Report do
       expect(event["metaData"]["request"]).not_to be_nil
       expect(event["metaData"]["request"]["params"]).not_to be_nil
       expect(event["metaData"]["request"]["params"]).to have_key("nil_param")
+    }
+  end
+
+  it "does not apply filters outside of report.meta_data" do
+    Bugsnag.configuration.meta_data_filters << "data"
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data = {
+        xyz: "abc",
+        data: "123456"
+      }
+
+      report.user = {
+        id: 123,
+        data: "hello"
+      }
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+
+      expect(event["metaData"]).not_to be_nil
+      expect(event["metaData"]["xyz"]).to eq("abc")
+      expect(event["metaData"]["data"]).to eq("[FILTERED]")
+
+      expect(event["user"]).not_to be_nil
+      expect(event["user"]["data"]).to eq("hello")
     }
   end
 

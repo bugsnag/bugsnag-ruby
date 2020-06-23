@@ -97,6 +97,7 @@ module Bugsnag
           releaseStage: release_stage,
           type: app_type
         },
+        breadcrumbs: breadcrumbs.map(&:to_h),
         context: context,
         device: {
           hostname: hostname,
@@ -104,6 +105,7 @@ module Bugsnag
         },
         exceptions: exceptions,
         groupingHash: grouping_hash,
+        metaData: meta_data,
         session: session,
         severity: severity,
         severityReason: severity_reason,
@@ -111,19 +113,7 @@ module Bugsnag
         user: user
       }
 
-      # cleanup character encodings
-      payload_event = Bugsnag::Cleaner.clean_object_encoding(payload_event)
-
-      # filter out sensitive values in (and cleanup encodings) metaData
-      filter_cleaner = Bugsnag::Cleaner.new(configuration.meta_data_filters)
-      payload_event[:metaData] = filter_cleaner.clean_object(meta_data)
-      payload_event[:breadcrumbs] = breadcrumbs.map do |breadcrumb|
-        breadcrumb_hash = breadcrumb.to_h
-        breadcrumb_hash[:metaData] = filter_cleaner.clean_object(breadcrumb_hash[:metaData])
-        breadcrumb_hash
-      end
-
-      payload_event.reject! {|k,v| v.nil? }
+      payload_event.reject! {|k, v| v.nil? }
 
       # return the payload hash
       {

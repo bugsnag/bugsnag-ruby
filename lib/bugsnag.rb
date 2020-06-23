@@ -114,7 +114,14 @@ module Bugsnag
         # Deliver
         configuration.info("Notifying #{configuration.notify_endpoint} of #{report.exceptions.last[:errorClass]}")
         options = {:headers => report.headers}
-        payload = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
+
+        cleaner = Cleaner.new(configuration.meta_data_filters)
+
+        cleaned = cleaner.clean_object(report.as_json)
+        trimmed = Bugsnag::Helpers.trim_if_needed(cleaned)
+
+        payload = ::JSON.dump(trimmed)
+
         Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.notify_endpoint, payload, configuration, options)
         report_summary = report.summary
         leave_breadcrumb(report_summary[:error_class], report_summary, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)

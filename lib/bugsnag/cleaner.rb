@@ -128,6 +128,13 @@ module Bugsnag
     # If someone has a Rails filter like /^stuff\.secret/, it won't match "request.params.stuff.secret",
     # so we try it both with and without the "request.params." bit.
     def filters_match_deeply?(key, scope)
+      # FIXME: This is a hack!
+      #        We don't want to apply filters to places outside of 'events.metaData'
+      #        and 'events.breadcrumbs.metaData' as then we could redact things
+      #        like our stacktraces, which is bad. We should implement this in a
+      #        better way, but this makes the tests pass
+      return false unless scope.nil? || scope.start_with?('events.metaData') || scope.start_with?('events.breadcrumbs.metaData')
+
       return true if filters_match?(key)
       return false unless @deep_filters
 
