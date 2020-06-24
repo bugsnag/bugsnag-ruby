@@ -17,20 +17,19 @@ module Bugsnag
       backtrace = caller if !backtrace || backtrace.empty?
 
       @processed_backtrace = backtrace.map do |trace|
+        # Parse the stacktrace line
         if trace.match(BACKTRACE_LINE_REGEX)
           file, line_str, method = [$1, $2, $3]
         elsif trace.match(JAVA_BACKTRACE_REGEX)
           method, file, line_str = [$1, $2, $3]
         end
 
-        # Parse the stacktrace line
-
         next(nil) if file.nil?
 
         # Expand relative paths
         p = Pathname.new(file)
         if p.relative?
-          file = p.realpath.to_s rescue file
+          file = File.realpath(file) rescue file
         end
 
         # Generate the stacktrace line hash
