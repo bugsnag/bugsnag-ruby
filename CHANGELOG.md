@@ -11,7 +11,11 @@ Changelog
 * The Breadcrumb name limit of 30 characters has been removed
   | [#600](https://github.com/bugsnag/bugsnag-ruby/pull/600)
 
+* Improve performance of payload cleaning
+  | [#601](https://github.com/bugsnag/bugsnag-ruby/pull/601)
+
 ### Deprecated
+
 * The `ignore_classes` configuration option has been deprecated in favour of `discard_classes`. `ignore_classes` will be removed in the next major release
 
 ## 6.13.1 (11 May 2020)
