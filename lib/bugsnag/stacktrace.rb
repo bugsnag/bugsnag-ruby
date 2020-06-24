@@ -9,6 +9,8 @@ module Bugsnag
 
     ##
     # Process a backtrace and the configuration into a parsed stacktrace.
+    #
+    # rubocop:todo Metrics/CyclomaticComplexity
     def initialize(backtrace, configuration)
       @configuration = configuration
 
@@ -64,6 +66,7 @@ module Bugsnag
         end
       end.compact
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     ##
     # Returns the processed backtrace

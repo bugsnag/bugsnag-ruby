@@ -33,6 +33,7 @@ require "bugsnag/breadcrumbs/validator"
 require "bugsnag/breadcrumbs/breadcrumb"
 require "bugsnag/breadcrumbs/breadcrumbs"
 
+# rubocop:todo Metrics/ModuleLength
 module Bugsnag
   LOCK = Mutex.new
   INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que, :mongo]
@@ -319,5 +320,6 @@ module Bugsnag
     end
   end
 end
+# rubocop:enable Metrics/ModuleLength
 
 Bugsnag.load_integrations unless ENV["BUGSNAG_DISABLE_AUTOCONFIGURE"]
