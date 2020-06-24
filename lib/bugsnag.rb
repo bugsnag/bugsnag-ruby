@@ -38,6 +38,7 @@ module Bugsnag
   INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que, :mongo]
 
   NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
+  SCOPES_TO_FILTER = ['events.metaData', 'events.breadcrumbs.metaData'].freeze
 
   class << self
     ##
@@ -306,7 +307,10 @@ module Bugsnag
     # @param report [Report]
     # @return string
     def report_to_json(report)
-      cleaner = Cleaner.new(configuration.meta_data_filters)
+      cleaner = Cleaner.new(
+        configuration.meta_data_filters,
+        SCOPES_TO_FILTER
+      )
 
       cleaned = cleaner.clean_object(report.as_json)
       trimmed = Bugsnag::Helpers.trim_if_needed(cleaned)

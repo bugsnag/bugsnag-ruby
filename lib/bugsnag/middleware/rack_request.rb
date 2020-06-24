@@ -28,7 +28,7 @@ module Bugsnag::Middleware
         url = "#{request.scheme}://#{request.host}"
         url << ":#{request.port}" unless [80, 443].include?(request.port)
 
-        cleaner = Bugsnag::Cleaner.new(report.configuration.meta_data_filters)
+        cleaner = Bugsnag::Cleaner.new(report.configuration.meta_data_filters, [])
 
         # If app is passed a bad URL, this code will crash attempting to clean it
         begin

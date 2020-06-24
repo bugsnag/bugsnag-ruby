@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Bugsnag::Cleaner do
-  subject { described_class.new(nil) }
+  subject { described_class.new(Set.new, []) }
 
   describe "#clean_object" do
     is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
@@ -156,25 +156,71 @@ describe Bugsnag::Cleaner do
     end
 
     it "filters by string inclusion" do
-      expect(described_class.new(['f']).clean_object({ :foo => 'bar' })).to eq({ :foo => '[FILTERED]' })
-      expect(described_class.new(['b']).clean_object({ :foo => 'bar' })).to eq({ :foo => 'bar' })
+      object = { foo: 'bar' }
+
+      cleaner = Bugsnag::Cleaner.new(Set.new(['f']), ['foo'])
+      expect(cleaner.clean_object(object)).to eq({ foo: '[FILTERED]' })
+
+      cleaner = Bugsnag::Cleaner.new(Set.new(['b']), ['foo'])
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
     end
 
     it "filters by regular expression" do
-      expect(described_class.new([/fb?/]).clean_object({ :foo => 'bar' })).to eq({ :foo => '[FILTERED]' })
-      expect(described_class.new([/fb+/]).clean_object({ :foo => 'bar' })).to eq({ :foo => 'bar' })
+      object = { foo: 'bar' }
+
+      cleaner = Bugsnag::Cleaner.new(Set.new([/fb?/]), ['foo'])
+      expect(cleaner.clean_object(object)).to eq({ foo: '[FILTERED]' })
+
+      cleaner = Bugsnag::Cleaner.new(Set.new([/fb+/]), ['foo'])
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
     end
 
     it "filters deeply nested keys" do
-      skip "this will not work until we implement scopes to filter"
-      params = {:foo => {:bar => "baz"}}
-      expect(described_class.new([/^foo\.bar/]).clean_object(params)).to eq({:foo => {:bar => '[FILTERED]'}})
+      params = { foo: { bar: 'baz' } }
+      cleaner = Bugsnag::Cleaner.new(Set.new([/^foo\.bar/]), ['foo'])
+
+      expect(cleaner.clean_object(params)).to eq({ foo: { bar: '[FILTERED]' } })
     end
 
     it "filters deeply nested request parameters" do
-      skip "this will not work until we implement scopes to filter"
-      params = {:request => {:params => {:foo => {:bar => "baz"}}}}
-      expect(described_class.new([/^foo\.bar/]).clean_object(params)).to eq({:request => {:params => {:foo => {:bar => '[FILTERED]'}}}})
+      params = { request: { params: { foo: { bar: 'baz' } } } }
+      cleaner = Bugsnag::Cleaner.new(Set.new([/^foo\.bar/]), ['request'])
+
+      expect(cleaner.clean_object(params)).to eq({ request: { params: { foo: { bar: '[FILTERED]' } } } })
+    end
+
+    it "doesn't filter by string inclusion when the scope is not in 'scopes_to_filter'" do
+      object = { foo: 'bar' }
+
+      cleaner = Bugsnag::Cleaner.new(Set.new(['f']), ['bar'])
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+
+      cleaner = Bugsnag::Cleaner.new(Set.new(['b']), ['bar'])
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+    end
+
+    it "doesn't filter by regular expression when the scope is not in 'scopes_to_filter'" do
+      object = { foo: 'bar' }
+
+      cleaner = Bugsnag::Cleaner.new(Set.new([/fb?/]), ['bar'])
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+
+      cleaner = Bugsnag::Cleaner.new(Set.new([/fb+/]), ['bar'])
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+    end
+
+    it "doesn't filter deeply nested keys when the scope is not in 'scopes_to_filter'" do
+      params = { foo: { bar: 'baz' } }
+      cleaner = Bugsnag::Cleaner.new(Set.new([/^foo\.bar/]), ['baz'])
+
+      expect(cleaner.clean_object(params)).to eq({ foo: { bar: 'baz' } })
+    end
+
+    it "doesn't filter deeply nested request parameters when the scope is not in 'scopes_to_filter'" do
+      params = { request: { params: { foo: { bar: 'baz' } } } }
+      cleaner = Bugsnag::Cleaner.new(Set.new([/^foo\.bar/]), ['baz'])
+
+      expect(cleaner.clean_object(params)).to eq({ request: { params: { foo: { bar: 'baz' } } } })
     end
 
     it "filters objects which can't be stringified" do
@@ -188,8 +234,8 @@ describe Bugsnag::Cleaner do
   end
 
   describe "#clean_url" do
-    let(:filters) { [] }
-    subject { described_class.new(filters).clean_url(url) }
+    let(:filters) { Set.new }
+    subject { described_class.new(filters, []).clean_url(url) }
 
     context "with no filters configured" do
       let(:url) { "/dir/page?param1=value1&param2=value2" }

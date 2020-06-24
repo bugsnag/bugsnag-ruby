@@ -7,9 +7,13 @@ module Bugsnag
     OBJECT = '[OBJECT]'.freeze
     RAISED = '[RAISED]'.freeze
 
-    def initialize(filters)
+    ##
+    # @param filters [Set<String, Regexp>]
+    # @param scopes_to_filter [Array<String>]
+    def initialize(filters, scopes_to_filter)
       @filters = Array(filters)
       @deep_filters = @filters.any? {|f| f.kind_of?(Regexp) && f.to_s.include?("\\.".freeze) }
+      @scopes_to_filter = scopes_to_filter
     end
 
     def clean_object(obj)
@@ -28,12 +32,14 @@ module Bugsnag
       value = case obj
       when Hash
         clean_hash = {}
-        obj.each do |k,v|
+        obj.each do |k, v|
           begin
-            if filters_match_deeply?(k, scope)
+            current_scope = [scope, k].compact.join('.')
+
+            if filters_match_deeply?(k, current_scope)
               clean_hash[k] = FILTERED
             else
-              clean_hash[k] = traverse_object(v, seen, [scope, k].compact.join('.'))
+              clean_hash[k] = traverse_object(v, seen, current_scope)
             end
           # If we get an error here, we assume the key needs to be filtered
           # to avoid leaking things we shouldn't. We also remove the key itself
@@ -88,7 +94,7 @@ module Bugsnag
     end
 
     def self.clean_object_encoding(obj)
-      new(nil).clean_object(obj)
+      new(Set.new, []).clean_object(obj)
     end
 
     def clean_url(url)
@@ -112,6 +118,9 @@ module Bugsnag
 
     private
 
+    ##
+    # @param key [String, #to_s]
+    # @return [Boolean]
     def filters_match?(key)
       str = key.to_s
 
@@ -125,22 +134,30 @@ module Bugsnag
       end
     end
 
+    ##
     # If someone has a Rails filter like /^stuff\.secret/, it won't match "request.params.stuff.secret",
     # so we try it both with and without the "request.params." bit.
+    #
+    # @param key [String, #to_s]
+    # @param scope [String]
+    # @return [Boolean]
     def filters_match_deeply?(key, scope)
-      # FIXME: This is a hack!
-      #        We don't want to apply filters to places outside of 'events.metaData'
-      #        and 'events.breadcrumbs.metaData' as then we could redact things
-      #        like our stacktraces, which is bad. We should implement this in a
-      #        better way, but this makes the tests pass
-      return false unless scope.nil? || scope.start_with?('events.metaData') || scope.start_with?('events.breadcrumbs.metaData')
+      return false unless scope_should_be_filtered?(scope)
 
       return true if filters_match?(key)
       return false unless @deep_filters
 
-      long = [scope, key].compact.join('.')
-      short = long.sub(/^request\.params\./, '')
-      filters_match?(long) || filters_match?(short)
+      short = scope.sub(/^request\.params\./, '')
+      filters_match?(scope) || filters_match?(short)
+    end
+
+    ##
+    # Should the given scope be filtered according to our 'scopes_to_filter'?
+    #
+    # @param scope [String]
+    # @return [Boolean]
+    def scope_should_be_filtered?(scope)
+      @scopes_to_filter.any? {|scope_to_filter| scope.start_with?(scope_to_filter) }
     end
   end
 end
