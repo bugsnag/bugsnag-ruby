@@ -24,10 +24,25 @@ Lint/RaiseException:
 Lint/StructNewOverride:
   Enabled: true
 
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
+Style/RedundantFetchBlock:
+  Enabled: true
+
 Style/ExponentialNotation:
   Enabled: false
 
 Style/HashEachMethods:
+  Enabled: true
+
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
   Enabled: true
 
 # These require newer version of Ruby than our minimum supported version, so
