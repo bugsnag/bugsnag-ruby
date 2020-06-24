@@ -9,7 +9,7 @@ Install dependencies
 bundle install
 ```
 
-Install local binaries (if needed):
+Install local binaries
 
 ```shell
 bundle exec rake app:update:bin
@@ -23,10 +23,11 @@ There are two methods of configuring Bugsnag within a Rails application:
 
 1. Your `API_KEY` can be exported as an environment variable `BUGSNAG_API_KEY`.
 
-2. Generate a bugsnag configuration file at ```config/initializers/bugsnag.rb``` which can be populated with the [available configuration options](https://docs.bugsnag.com/platforms/ruby/rails/configuration-options/) by running the rails command:
-  ```shell
-  bundle exec bin/rails generate bugsnag YOUR_API_KEY_HERE
-  ```
+2. Generate a bugsnag configuration file at `config/initializers/bugsnag.rb` which can be populated with the [available configuration options](https://docs.bugsnag.com/platforms/ruby/rails/configuration-options/) by running the rails command:
+
+    ```shell
+    bundle exec bin/rails generate bugsnag YOUR_API_KEY_HERE
+    ```
 
 This is sufficient to start reporting unhandled exceptions to Bugsnag.
 
