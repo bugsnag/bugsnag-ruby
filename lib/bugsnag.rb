@@ -208,27 +208,27 @@ module Bugsnag
       validator.validate(breadcrumb)
 
       # Skip if it's already invalid
-      unless breadcrumb.ignore?
-        # Run callbacks
-        configuration.before_breadcrumb_callbacks.each do |c|
-          c.arity > 0 ? c.call(breadcrumb) : c.call
-          break if breadcrumb.ignore?
-        end
+      return if breadcrumb.ignore?
 
-        # Return early if ignored
-        return if breadcrumb.ignore?
-
-        # Validate again in case of callback alteration
-        validator.validate(breadcrumb)
-
-        # Add to breadcrumbs buffer if still valid
-        configuration.breadcrumbs << breadcrumb unless breadcrumb.ignore?
+      # Run callbacks
+      configuration.before_breadcrumb_callbacks.each do |c|
+        c.arity > 0 ? c.call(breadcrumb) : c.call
+        break if breadcrumb.ignore?
       end
+
+      # Return early if ignored
+      return if breadcrumb.ignore?
+
+      # Validate again in case of callback alteration
+      validator.validate(breadcrumb)
+
+      # Add to breadcrumbs buffer if still valid
+      configuration.breadcrumbs << breadcrumb unless breadcrumb.ignore?
     end
 
     private
 
-    def deliver_notification?(exception, auto_notify)
+    def should_deliver_notification?(exception, auto_notify)
       reason = abort_reason(exception, auto_notify)
       configuration.debug(reason) unless reason.nil?
       reason.nil?
