@@ -4,24 +4,7 @@ require 'spec_helper'
 require 'set'
 
 describe Bugsnag::Helpers do
-
   describe "trim_if_needed" do
-
-    it "breaks recursion" do
-      skip "TODO reimplement elsewhere (report_spec?)"
-      a = [1, 2, 3]
-      b = [2, a]
-      a << b
-      value = Bugsnag::Helpers.trim_if_needed(a)
-      expect(value).to eq([1, 2, 3, [2, "[RECURSION]"]])
-    end
-
-    it "does not break equal objects without recursion" do
-      data = [1, [1, 2], [1, 2], "a"]
-      value = Bugsnag::Helpers.trim_if_needed(data)
-      expect(value).to eq data
-    end
-
     it "preserves bool types" do
       value = Bugsnag::Helpers.trim_if_needed([1, 3, true, "NO", "2", false])
       expect(value[2]).to be_a(TrueClass)
@@ -38,80 +21,6 @@ describe Bugsnag::Helpers do
       value = Bugsnag::Helpers.trim_if_needed([1, 3, true, "NO", "2", false])
       expect(value[3]).to be_a(String)
       expect(value[4]).to be_a(String)
-    end
-
-    context "an object will throw if `to_s` is called" do
-      class StringRaiser
-        def to_s
-          raise 'Oh no you do not!'
-        end
-      end
-
-      it "uses the string '[RAISED]' instead" do
-        skip "TODO reimplement elsewhere (report_spec?)"
-        value = Bugsnag::Helpers.trim_if_needed([1, 3, StringRaiser.new])
-        expect(value[2]).to eq "[RAISED]"
-      end
-
-      it "replaces hash key with '[RAISED]'" do
-        skip "TODO reimplement elsewhere (report_spec?)"
-        a = {}
-        a[StringRaiser.new] = 1
-
-        value = Bugsnag::Helpers.trim_if_needed(a)
-        expect(value).to eq({ "[RAISED]" => "[FILTERED]" })
-      end
-
-      it "uses a single '[RAISED]'key when multiple keys raise" do
-        skip "TODO reimplement elsewhere (report_spec?)"
-        a = {}
-        a[StringRaiser.new] = 1
-        a[StringRaiser.new] = 2
-
-        value = Bugsnag::Helpers.trim_if_needed(a)
-        expect(value).to eq({ "[RAISED]" => "[FILTERED]" })
-      end
-    end
-
-    context "an object will infinitely recurse if `to_s` is called" do
-      is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
-
-      class StringRecurser
-        def to_s
-          to_s
-        end
-      end
-
-      it "uses the string '[RECURSION]' instead" do
-        skip "TODO reimplement elsewhere (report_spec?)"
-        skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
-
-        value = Bugsnag::Helpers.trim_if_needed([1, 3, StringRecurser.new])
-        expect(value[2]).to eq "[RECURSION]"
-      end
-
-      it "replaces hash key with '[RECURSION]'" do
-        skip "TODO reimplement elsewhere (report_spec?)"
-        skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
-
-        a = {}
-        a[StringRecurser.new] = 1
-
-        value = Bugsnag::Helpers.trim_if_needed(a)
-        expect(value).to eq({ "[RECURSION]" => "[FILTERED]" })
-      end
-
-      it "uses a single '[RECURSION]'key when multiple keys recurse" do
-        skip "TODO reimplement elsewhere (report_spec?)"
-        skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
-
-        a = {}
-        a[StringRecurser.new] = 1
-        a[StringRecurser.new] = 2
-
-        value = Bugsnag::Helpers.trim_if_needed(a)
-        expect(value).to eq({ "[RECURSION]" => "[FILTERED]" })
-      end
     end
 
     context "payload length is less than allowed" do
