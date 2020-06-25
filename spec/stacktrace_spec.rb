@@ -123,6 +123,7 @@ describe Bugsnag::Stacktrace do
         "./foo/bar/baz.rb:1:in `something'",
         "../foo.rb:1:in `to_s'",
         "../xyz.rb:1:in `to_s'",
+        "abc.rb:1:in `defg'",
       ]
 
       stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration).to_a
@@ -131,6 +132,7 @@ describe Bugsnag::Stacktrace do
         { code: nil, file: "./foo/bar/baz.rb", lineNumber: 1, method: "something" },
         { code: nil, file: "../foo.rb", lineNumber: 1, method: "to_s" },
         { code: nil, file: "../xyz.rb", lineNumber: 1, method: "to_s" },
+        { code: nil, file: "abc.rb", lineNumber: 1, method: "defg" },
       ])
     end
 
@@ -141,6 +143,7 @@ describe Bugsnag::Stacktrace do
       backtrace = [
         "./spec/spec_helper.rb:1:in `something'",
         "./lib/bugsnag/breadcrumbs/../configuration.rb:100:in `to_s'",
+        "lib/bugsnag.rb:20:in `notify'",
       ]
 
       stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration).to_a
@@ -150,6 +153,7 @@ describe Bugsnag::Stacktrace do
       expect(stacktrace).to eq([
         { file: "#{dir}/spec_helper.rb", lineNumber: 1, method: "something" },
         { file: "#{File.dirname(dir)}/lib/bugsnag/configuration.rb", lineNumber: 100, method: "to_s" },
+        { file: "#{File.dirname(dir)}/lib/bugsnag.rb", lineNumber: 20, method: "notify" },
       ])
     end
   end
