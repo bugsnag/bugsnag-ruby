@@ -83,6 +83,71 @@ describe Bugsnag::Stacktrace do
         }.to_a)
       }
     end
+
+    it 'should send code for each line in the stacktrace' do
+      load 'spec/fixtures/crashes/functions.rb' rescue Bugsnag.notify $!
+
+      expected_code = [
+        # The topmost frame is centered on where the exception was raised
+        {
+          "11" => "end",
+          "12" => "",
+          "13" => "def xyz",
+          "14" => "  raise 'uh oh'",
+          "15" => "end",
+          "16" => "",
+          "17" => "def abc"
+        },
+        # then we get 'baz' which is where 'xyz' was called
+        {
+          "7" => "end",
+          "8" => "",
+          "9" => "def baz",
+          "10" => "  xyz",
+          "11" => "end",
+          "12" => "",
+          "13" => "def xyz"
+        },
+        # then we get 'bar' which is where 'baz' was called
+        {
+          "3" => "end",
+          "4" => "",
+          "5" => "def bar",
+          "6" => "  baz",
+          "7" => "end",
+          "8" => "",
+          "9" => "def baz"
+        },
+        # then we get 'foo' which is where 'bar' was called - this is the first
+        # 7 lines because the call to 'bar' is on line 2
+        {
+          "1" => "def foo",
+          "2" => "  bar",
+          "3" => "end",
+          "4" => "",
+          "5" => "def bar",
+          "6" => "  baz",
+          "7" => "end"
+        },
+        # finally we get the call to 'foo' - this is the last 7 lines because
+        # the call is on the last line of the file
+        {
+          "23" => "end",
+          "24" => "",
+          "25" => "def abcdefghi",
+          "26" => "  puts 'abcdefghi'",
+          "27" => "end",
+          "28" => "",
+          "29" => "foo"
+        }
+      ]
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        (0...expected_code.size).each do |index|
+          expect(get_code_from_payload(payload, index).to_a).to eq(expected_code[index].to_a)
+        end
+      }
+    end
   end
 
   context "file paths" do
