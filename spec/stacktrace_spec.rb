@@ -148,6 +148,82 @@ describe Bugsnag::Stacktrace do
         end
       }
     end
+
+    it 'should send code for each line in the stacktrace when split over multiple files' do
+      load 'spec/fixtures/crashes/file1.rb' rescue Bugsnag.notify $!
+
+      expected_code = [
+        {
+          "8" => "  end",
+          "9" => "",
+          "10" => "  def self.baz2",
+          "11" => "    raise 'uh oh'",
+          "12" => "  end",
+          "13" => "",
+          "14" => "  def self.abc2"
+        },
+        {
+          "10" => "  end",
+          "11" => "",
+          "12" => "  def self.baz1",
+          "13" => "    File2.baz2",
+          "14" => "  end",
+          "15" => "",
+          "16" => "  def self.abc1"
+        },
+        {
+          "4" => "  end",
+          "5" => "",
+          "6" => "  def self.bar2",
+          "7" => "    File1.baz1",
+          "8" => "  end",
+          "9" => "",
+          "10" => "  def self.baz2"
+        },
+        {
+          "6" => "  end",
+          "7" => "",
+          "8" => "  def self.bar1",
+          "9" => "    File2.bar2",
+          "10" => "  end",
+          "11" => "",
+          "12" => "  def self.baz1",
+        },
+        {
+          "1" => "module File2",
+          "2" => "  def self.foo2",
+          "3" => "    File1.bar1",
+          "4" => "  end",
+          "5" => "",
+          "6" => "  def self.bar2",
+          "7" => "    File1.baz1"
+        },
+        {
+          "2" => "",
+          "3" => "module File1",
+          "4" => "  def self.foo1",
+          "5" => "    File2.foo2",
+          "6" => "  end",
+          "7" => "",
+          "8" => "  def self.bar1"
+        },
+        {
+          "23" => "",
+          "24" => "  def self.abcdefghi1",
+          "25" => "    puts 'abcdefghi1'",
+          "26" => "  end",
+          "27" => "end",
+          "28" => "",
+          "29" => "File1.foo1"
+        }
+      ]
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        (0...expected_code.size).each do |index|
+          expect(get_code_from_payload(payload, index).to_a).to eq(expected_code[index].to_a)
+        end
+      }
+    end
   end
 
   context "file paths" do
