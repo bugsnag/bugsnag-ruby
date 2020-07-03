@@ -60,7 +60,7 @@ module Bugsnag
         # Add a method if we have it
         trace_hash[:method] = method if method && (method =~ /^__bind/).nil?
 
-        # TODO test this
+        # TODO: test this
         return nil unless trace_hash[:file] && !trace_hash[:file].empty?
 
         # If we're going to send code then record the raw file path and the

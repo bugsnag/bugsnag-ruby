@@ -15,8 +15,8 @@ module Bugsnag
     def add_file(path, trace)
       # If the file doesn't exist we don't care about it. For BC with the old
       # method of extraction, set :code to nil
-      # TODO is this necessary? I don't think the API cares if code is 'null' or
-      #      missing entirely in the JSON as code sending is optional
+      # TODO: is this necessary? I don't think the API cares if code is 'null' or
+      #       missing entirely in the JSON as code sending is optional
       unless File.exist?(path)
         trace[:code] = nil
 
@@ -36,13 +36,13 @@ module Bugsnag
     ##
     # Add the code to the hashes that were given in #add_file
     #
-    # TODO the old method has a rescue around the entire extraction process
-    #      is this needed (presumably is)? Can we add tests that raise?
-    #      We will need to handle exceptions differently in each stage; e.g.
-    #      if we fail while reading the file then every trace that needs that
-    #      file will not have code attached. However if we fail while attaching
-    #      the code to a trace, we can skip to the next trace and try that one
-    #      (though I don't know why we would fail anywhere other than File IO)
+    # TODO: the old method has a rescue around the entire extraction process
+    #       is this needed (presumably is)? Can we add tests that raise?
+    #       We will need to handle exceptions differently in each stage; e.g.
+    #       if we fail while reading the file then every trace that needs that
+    #       file will not have code attached. However if we fail while attaching
+    #       the code to a trace, we can skip to the next trace and try that one
+    #       (though I don't know why we would fail anywhere other than File IO)
     #
     # @return [void]
     def extract!
@@ -72,7 +72,7 @@ module Bugsnag
 
           next unless line_numbers.include?(current_line_number)
 
-          # TODO test for 200 character limit
+          # TODO: test for 200 character limit
           code[current_line_number] = line[0...200].rstrip
         end
       end
