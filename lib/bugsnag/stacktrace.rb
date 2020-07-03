@@ -1,6 +1,7 @@
-module Bugsnag
-  class Stacktrace
+require_relative 'code_extractor'
 
+module Bugsnag
+  module Stacktrace
     # e.g. "org/jruby/RubyKernel.java:1264:in `catch'"
     BACKTRACE_LINE_REGEX = /^((?:[a-zA-Z]:)?[^:]+):(\d+)(?::in `([^']+)')?$/
 
@@ -10,18 +11,17 @@ module Bugsnag
     ##
     # Process a backtrace and the configuration into a parsed stacktrace.
     #
+    # @param [Array, nil] backtrace
+    # @param [Configuration] configuration
+    # @return [Array]
+    #
     # rubocop:todo Metrics/CyclomaticComplexity
-    def initialize(backtrace, configuration)
-      @configuration = configuration
-
-      if configuration.send_code
-        require_relative 'code_extractor'
-        code_extractor = CodeExtractor.new
-      end
+    def self.process(backtrace, configuration)
+      code_extractor = CodeExtractor.new
 
       backtrace = caller if !backtrace || backtrace.empty?
 
-      @processed_backtrace = backtrace.map do |trace|
+      processed_backtrace = backtrace.map do |trace|
         # Parse the stacktrace line
         if trace.match(BACKTRACE_LINE_REGEX)
           file, line_str, method = [$1, $2, $3]
@@ -43,13 +43,14 @@ module Bugsnag
         raw_file_path = file
 
         # Clean up the file path in the stacktrace
-        if defined?(@configuration.project_root) && @configuration.project_root.to_s != ''
-          trace_hash[:inProject] = true if file.start_with?(@configuration.project_root.to_s)
-          file.sub!(/#{@configuration.project_root}\//, "")
-          trace_hash.delete(:inProject) if file.match(@configuration.vendor_path)
+        if defined?(configuration.project_root) && configuration.project_root.to_s != ''
+          trace_hash[:inProject] = true if file.start_with?(configuration.project_root.to_s)
+          file.sub!(/#{configuration.project_root}\//, "")
+          trace_hash.delete(:inProject) if file.match(configuration.vendor_path)
         end
 
         # Strip common gem path prefixes
+        # TODO test this
         if defined?(Gem)
           file = Gem.path.inject(file) {|line, path| line.sub(/#{path}\//, "") }
         end
@@ -59,25 +60,20 @@ module Bugsnag
         # Add a method if we have it
         trace_hash[:method] = method if method && (method =~ /^__bind/).nil?
 
-        if trace_hash[:file] && !trace_hash[:file].empty?
-          # If we're going to send code then record the raw file path and the
-          # trace_hash, so we can extract from it later
-          code_extractor.add_file(raw_file_path, trace_hash) if configuration.send_code
+        # TODO test this
+        return nil unless trace_hash[:file] && !trace_hash[:file].empty?
 
-          trace_hash
-        else
-          nil
-        end
+        # If we're going to send code then record the raw file path and the
+        # trace_hash, so we can extract from it later
+        code_extractor.add_file(raw_file_path, trace_hash) if configuration.send_code
+
+        trace_hash
       end.compact
 
       code_extractor.extract! if configuration.send_code
+
+      processed_backtrace
     end
     # rubocop:enable Metrics/CyclomaticComplexity
-
-    ##
-    # Returns the processed backtrace
-    def to_a
-      @processed_backtrace
-    end
   end
 end

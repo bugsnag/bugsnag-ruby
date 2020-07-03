@@ -238,7 +238,7 @@ describe Bugsnag::Stacktrace do
         "/foo/bar/.bundle/lib/ignore_me.rb:4:in `to_s'",
       ]
 
-      stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
 
       expect(stacktrace).to eq([
         { file: "/foo/bar/app/models/user.rb", lineNumber: 1, method: "something" },
@@ -258,7 +258,7 @@ describe Bugsnag::Stacktrace do
         "abc.rb:1:in `defg'",
       ]
 
-      stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
 
       expect(stacktrace).to eq([
         { code: nil, file: "./foo/bar/baz.rb", lineNumber: 1, method: "something" },
@@ -281,7 +281,7 @@ describe Bugsnag::Stacktrace do
         "#{dir}/../spec/stacktrace_spec.rb:5:in `something_else'",
       ]
 
-      stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
 
       expect(stacktrace).to eq([
         { file: "#{dir}/spec_helper.rb", lineNumber: 1, method: "something" },
@@ -309,13 +309,13 @@ describe Bugsnag::Stacktrace do
     end
 
     def out_project_trace(stacktrace)
-      stacktrace.to_a.map do |trace_line|
-        trace_line[:file] if !trace_line[:inProject]
+      stacktrace.map do |trace_line|
+        trace_line[:file] unless trace_line[:inProject]
       end.compact
     end
 
     it "marks vendor/ and .bundle/ as out-project by default" do
-      stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration)
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
       expect(out_project_trace(stacktrace)).to eq([
         "vendor/lib/ignore_me.rb",
@@ -325,7 +325,7 @@ describe Bugsnag::Stacktrace do
 
     it "allows vendor_path to be configured and filters out backtrace file paths" do
       configuration.vendor_path = /other_vendor\//
-      stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration)
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
       expect(out_project_trace(stacktrace)).to eq(["other_vendor/lib/dont.rb"])
     end
