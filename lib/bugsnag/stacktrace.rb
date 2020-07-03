@@ -14,6 +14,11 @@ module Bugsnag
     def initialize(backtrace, configuration)
       @configuration = configuration
 
+      if configuration.send_code
+        require_relative 'code_extractor'
+        code_extractor = CodeExtractor.new
+      end
+
       backtrace = caller if !backtrace || backtrace.empty?
 
       @processed_backtrace = backtrace.map do |trace|
@@ -30,12 +35,12 @@ module Bugsnag
         file = File.realpath(file) rescue file
 
         # Generate the stacktrace line hash
-        trace_hash = {}
-        trace_hash[:lineNumber] = line_str.to_i
+        trace_hash = { lineNumber: line_str.to_i }
 
-        if configuration.send_code
-          trace_hash[:code] = code(file, trace_hash[:lineNumber])
-        end
+        # Save a copy of the file path as we're about to modify it but need the
+        # raw version when extracting code (otherwise we can't open the file)
+        # TODO we need a test to cover this (or it may be unnecessary!)
+        raw_file_path = file
 
         # Clean up the file path in the stacktrace
         if defined?(@configuration.project_root) && @configuration.project_root.to_s != ''
@@ -43,7 +48,6 @@ module Bugsnag
           file.sub!(/#{@configuration.project_root}\//, "")
           trace_hash.delete(:inProject) if file.match(@configuration.vendor_path)
         end
-
 
         # Strip common gem path prefixes
         if defined?(Gem)
@@ -56,11 +60,17 @@ module Bugsnag
         trace_hash[:method] = method if method && (method =~ /^__bind/).nil?
 
         if trace_hash[:file] && !trace_hash[:file].empty?
+          # If we're going to send code then record the raw file path and the
+          # trace_hash, so we can extract from it later
+          code_extractor.add_file(raw_file_path, trace_hash) if configuration.send_code
+
           trace_hash
         else
           nil
         end
       end.compact
+
+      code_extractor.extract! if configuration.send_code
     end
     # rubocop:enable Metrics/CyclomaticComplexity
 
@@ -68,47 +78,6 @@ module Bugsnag
     # Returns the processed backtrace
     def to_a
       @processed_backtrace
-    end
-
-    private
-
-    def code(file, line_number, num_lines = 7)
-      code_hash = {}
-
-      from_line = [line_number - num_lines, 1].max
-
-      # don't try and open '(irb)' or '-e'
-      return unless File.exist?(file)
-
-      # Populate code hash with line numbers and code lines
-      File.open(file) do |f|
-        current_line_number = 0
-        f.each_line do |line|
-          current_line_number += 1
-
-          next if current_line_number < from_line
-
-          code_hash[current_line_number] = line[0...200].rstrip
-
-          break if code_hash.length >= ( num_lines * 1.5 ).ceil
-        end
-      end
-
-      while code_hash.length > num_lines
-        last_line = code_hash.keys.max
-        first_line = code_hash.keys.min
-
-        if (last_line - line_number) > (line_number - first_line)
-          code_hash.delete(last_line)
-        else
-          code_hash.delete(first_line)
-        end
-      end
-
-      code_hash
-    rescue
-      @configuration.warn("Error fetching code: #{$!.inspect}")
-      nil
     end
   end
 end
