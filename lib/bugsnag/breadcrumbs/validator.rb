@@ -15,12 +15,6 @@ module Bugsnag::Breadcrumbs
     #
     # @param breadcrumb [Bugsnag::Breadcrumbs::Breadcrumb] the breadcrumb to be validated
     def validate(breadcrumb)
-      # Check name length
-      if breadcrumb.name.size > Bugsnag::Breadcrumbs::MAX_NAME_LENGTH
-        @configuration.debug("Breadcrumb name trimmed to length #{Bugsnag::Breadcrumbs::MAX_NAME_LENGTH}.  Original name: #{breadcrumb.name}")
-        breadcrumb.name = breadcrumb.name.slice(0...Bugsnag::Breadcrumbs::MAX_NAME_LENGTH)
-      end
-
       # Check meta_data hash doesn't contain complex values
       breadcrumb.meta_data = breadcrumb.meta_data.select do |k, v|
         if valid_meta_data_type?(v)

@@ -1,6 +1,4 @@
 module Bugsnag::Breadcrumbs
-  MAX_NAME_LENGTH = 30
-
   VALID_BREADCRUMB_TYPES = [
     ERROR_BREADCRUMB_TYPE = "error",
     MANUAL_BREADCRUMB_TYPE = "manual",

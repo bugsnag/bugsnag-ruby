@@ -31,31 +31,6 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
       validator.validate(breadcrumb)
     end
 
-    it "trims long messages to length and warns" do
-      config = instance_double(Bugsnag::Configuration)
-      allow(config).to receive(:enabled_automatic_breadcrumb_types).and_return(enabled_automatic_breadcrumb_types)
-      validator = Bugsnag::Breadcrumbs::Validator.new(config)
-
-      name = "1234567890123456789012345678901234567890"
-
-      breadcrumb = instance_double(Bugsnag::Breadcrumbs::Breadcrumb, {
-        :auto => auto,
-        :name => name,
-        :type => type,
-        :meta_data => meta_data,
-        :meta_data= => nil
-      })
-
-      expect(breadcrumb).to_not receive(:ignore!)
-      expect(breadcrumb).to receive(:name=).with("123456789012345678901234567890")
-      expected_string = "Breadcrumb name trimmed to length 30.  Original name: #{name}"
-      expect(config).to receive(:debug).with(expected_string)
-
-      validator.validate(breadcrumb)
-      # Check the original message has not been modified
-      expect(name).to eq("1234567890123456789012345678901234567890")
-    end
-
     describe "tests meta_data types" do
       it "accepts Strings, Numerics, Booleans, & nil" do
         config = instance_double(Bugsnag::Configuration)
