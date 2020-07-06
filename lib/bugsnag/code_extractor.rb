@@ -1,7 +1,5 @@
 module Bugsnag
   class CodeExtractor
-    NUMBER_OF_LINES_TO_FETCH = 11
-    HALF_NUMBER_OF_LINES_TO_FETCH = (NUMBER_OF_LINES_TO_FETCH / 2).ceil + 1
     MAXIMUM_LINES_TO_KEEP = 7
 
     def initialize
@@ -25,10 +23,12 @@ module Bugsnag
       @files[path].push(trace)
 
       # Record the line numbers we want to fetch for this trace
-      first_line_number = trace[:lineNumber] - HALF_NUMBER_OF_LINES_TO_FETCH
+      # We grab extra lines so that we can compensate if the error is on the
+      # first or last line of a file
+      first_line_number = trace[:lineNumber] - MAXIMUM_LINES_TO_KEEP
 
       trace[:first_line_number] = first_line_number < 1 ? 1 : first_line_number
-      trace[:last_line_number] = trace[:lineNumber] + HALF_NUMBER_OF_LINES_TO_FETCH
+      trace[:last_line_number] = trace[:lineNumber] + MAXIMUM_LINES_TO_KEEP
     end
 
     ##
