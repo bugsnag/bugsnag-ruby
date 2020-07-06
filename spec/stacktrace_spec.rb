@@ -376,6 +376,30 @@ describe Bugsnag::Stacktrace do
         { file: "/abc/xyz.rb", lineNumber: 4, method: "to_s" },
       ])
     end
+
+    it "trims Gem prefix from paths" do
+      gem_path = Gem.path.first
+
+      # Sanity check that we have a gem path to strip
+      expect(gem_path).not_to be_empty
+
+      configuration = Bugsnag::Configuration.new
+      configuration.send_code = false
+
+      backtrace = [
+        "/foo/bar/baz.rb:2:in `to_s'",
+        "#{gem_path}/abc/xyz.rb:4:in `to_s'",
+        "/not/gem/path/but/has/gem.rb:6:in `to_s'"
+      ]
+
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+
+      expect(stacktrace).to eq([
+        { file: "/foo/bar/baz.rb", lineNumber: 2, method: "to_s" },
+        { file: "abc/xyz.rb", lineNumber: 4, method: "to_s" },
+        { file: "/not/gem/path/but/has/gem.rb", lineNumber: 6, method: "to_s" },
+      ])
+    end
   end
 
   context "with configurable vendor_path" do

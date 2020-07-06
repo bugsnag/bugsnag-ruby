@@ -49,7 +49,6 @@ module Bugsnag
         end
 
         # Strip common gem path prefixes
-        # TODO test this
         if defined?(Gem)
           file = Gem.path.inject(file) {|line, path| line.sub(/#{path}\//, "") }
         end
