@@ -73,7 +73,6 @@ module Bugsnag
 
           next unless line_numbers.include?(current_line_number)
 
-          # TODO: test for 200 character limit
           code[current_line_number] = line[0...200].rstrip
         end
       end
