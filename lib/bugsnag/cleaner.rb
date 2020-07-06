@@ -93,10 +93,6 @@ module Bugsnag
       end
     end
 
-    def self.clean_object_encoding(obj)
-      new(Set.new, []).clean_object(obj)
-    end
-
     def clean_url(url)
       return url if @filters.empty?
 
