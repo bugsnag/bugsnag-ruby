@@ -358,6 +358,24 @@ describe Bugsnag::Stacktrace do
         { file: "#{dir}/stacktrace_spec.rb", lineNumber: 5, method: "something_else" },
       ])
     end
+
+    it "ignores lines in backtrace that it can't parse" do
+      configuration = Bugsnag::Configuration.new
+      configuration.send_code = false
+
+      backtrace = [
+        "/foo/bar/baz.rb:2:in `to_s'",
+        "this is not formatted correctly :O",
+        "/abc/xyz.rb:4:in `to_s'",
+      ]
+
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+
+      expect(stacktrace).to eq([
+        { file: "/foo/bar/baz.rb", lineNumber: 2, method: "to_s" },
+        { file: "/abc/xyz.rb", lineNumber: 4, method: "to_s" },
+      ])
+    end
   end
 
   context "with configurable vendor_path" do

@@ -29,7 +29,7 @@ module Bugsnag
           method, file, line_str = [$1, $2, $3]
         end
 
-        next(nil) if file.nil?
+        next if file.nil?
 
         # Expand relative paths
         file = File.realpath(file) rescue file
