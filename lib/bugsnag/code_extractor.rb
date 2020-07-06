@@ -35,28 +35,33 @@ module Bugsnag
     end
 
     ##
-    # Add the code to the hashes that were given in #add_file
-    #
-    # TODO: the old method has a rescue around the entire extraction process
-    #       is this needed (presumably is)? Can we add tests that raise?
-    #       We will need to handle exceptions differently in each stage; e.g.
-    #       if we fail while reading the file then every trace that needs that
-    #       file will not have code attached. However if we fail while attaching
-    #       the code to a trace, we can skip to the next trace and try that one
-    #       (though I don't know why we would fail anywhere other than File IO)
+    # Add the code to the hashes that were given in #add_file by modifying them
+    # in-place. They will have a new ':code' key containing a hash of line
+    # number => string of code for that line
     #
     # @return [void]
     def extract!
       @files.each do |path, traces|
-        line_numbers = Set.new
+        begin
+          line_numbers = Set.new
 
-        traces.each do |trace|
-          trace[:first_line_number].upto(trace[:last_line_number]) do |line_number|
-            line_numbers << line_number
+          traces.each do |trace|
+            trace[:first_line_number].upto(trace[:last_line_number]) do |line_number|
+              line_numbers << line_number
+            end
           end
-        end
 
-        extract_from(path, traces, line_numbers)
+          extract_from(path, traces, line_numbers)
+        rescue StandardError => e
+          # Clean up after ourselves
+          traces.each do |trace|
+            trace[:code] ||= nil
+            trace.delete(:first_line_number)
+            trace.delete(:last_line_number)
+          end
+
+          @configuration.warn("Error extracting code: #{e.inspect}")
+        end
       end
     end
 
@@ -85,7 +90,7 @@ module Bugsnag
         trace[:code] = {}
 
         code.each do |line_number, line|
-          # If we've gone past the last line we care about we can stop iteration
+          # If we've gone past the last line we care about, we can stop iterating
           break if line_number > trace[:last_line_number]
 
           # Skip lines that aren't in the range we want

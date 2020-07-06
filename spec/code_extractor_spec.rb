@@ -98,4 +98,32 @@ describe Bugsnag::CodeExtractor do
     })
     # rubocop:enable Layout/LineLength
   end
+
+  it "rescues exceptions raised in extract!" do
+    file1_hash = { lineNumber: 1 }
+    file2_hash = { lineNumber: 25 }
+
+    code_extractor = Bugsnag::CodeExtractor.new(Bugsnag::Configuration.new)
+    code_extractor.add_file("spec/fixtures/crashes/file1.rb", file1_hash)
+    code_extractor.add_file("spec/fixtures/crashes/file2.rb", file2_hash)
+
+    file1_hash[:first_line_number] = nil
+
+    code_extractor.extract!
+
+    expect(file1_hash).to eq({ lineNumber: 1, code: nil })
+
+    expect(file2_hash).to eq({
+      lineNumber: 25,
+      code: {
+        19 => "    puts 'abcdef2'",
+        20 => "  end",
+        21 => "",
+        22 => "  def self.abcdefghi2",
+        23 => "    puts 'abcdefghi2'",
+        24 => "  end",
+        25 => "end"
+      }
+    })
+  end
 end
