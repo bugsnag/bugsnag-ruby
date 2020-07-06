@@ -13,10 +13,8 @@ module Bugsnag
     # @param [Hash] trace
     # @return [void]
     def add_file(path, trace)
-      # If the file doesn't exist we don't care about it. For BC with the old
-      # method of extraction, set :code to nil
-      # TODO: is this necessary? I don't think the API cares if code is 'null' or
-      #       missing entirely in the JSON as code sending is optional
+      # If the file doesn't exist we can't extract code from it, so we can skip
+      # this file entirely
       unless File.exist?(path)
         trace[:code] = nil
 
