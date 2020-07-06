@@ -39,8 +39,7 @@ module Bugsnag
 
         # Save a copy of the file path as we're about to modify it but need the
         # raw version when extracting code (otherwise we can't open the file)
-        # TODO we need a test to cover this (or it may be unnecessary!)
-        raw_file_path = file
+        raw_file_path = file.dup
 
         # Clean up the file path in the stacktrace
         if defined?(configuration.project_root) && configuration.project_root.to_s != ''

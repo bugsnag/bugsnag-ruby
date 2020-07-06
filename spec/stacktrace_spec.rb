@@ -224,6 +224,74 @@ describe Bugsnag::Stacktrace do
         end
       }
     end
+
+    it "can extract code from paths that will be mangled by the project root" do
+      # Set the project root to a nested directory, which will then be stripped
+      # from the file paths in the API call. This ensures that we read the files
+      # based off of the original path, rather than the final file path, e.g.
+      # "spec/fixtures/crashes/file1.rb" will be "file1.rb" in the API call, which
+      # isn't a path that's possible to read
+      project_root = "#{File.dirname(File.dirname(__FILE__))}/spec/fixtures/crashes"
+
+      configuration = Bugsnag::Configuration.new
+      configuration.project_root = project_root
+
+      backtrace = [
+        "spec/fixtures/crashes/file1.rb:13:in `baz1'",
+        "./spec/fixtures/crashes/functions.rb:17:in `abc'",
+        "#{project_root}/file2.rb:19:in `abcdef2'",
+      ]
+
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+
+      expect(stacktrace).to eq([
+        {
+          file: "file1.rb",
+          lineNumber: 13,
+          method: "baz1",
+          inProject: true,
+          code: {
+            10 => "  end",
+            11 => "",
+            12 => "  def self.baz1",
+            13 => "    File2.baz2",
+            14 => "  end",
+            15 => "",
+            16 => "  def self.abc1"
+          }
+        },
+        {
+          file: "functions.rb",
+          lineNumber: 17,
+          method: "abc",
+          inProject: true,
+          code: {
+            14 => "  raise 'uh oh'",
+            15 => "end",
+            16 => "",
+            17 => "def abc",
+            18 => "  puts 'abc'",
+            19 => "end",
+            20 => ""
+          },
+        },
+        {
+          file: "file2.rb",
+          lineNumber: 19,
+          method: "abcdef2",
+          inProject: true,
+          code: {
+            16 => "  end",
+            17 => "",
+            18 => "  def self.abcdef2",
+            19 => "    puts 'abcdef2'",
+            20 => "  end",
+            21 => "",
+            22 => "  def self.abcdefghi2"
+          },
+        },
+      ])
+    end
   end
 
   context "file paths" do
