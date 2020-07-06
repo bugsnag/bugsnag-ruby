@@ -17,7 +17,7 @@ module Bugsnag
     #
     # rubocop:todo Metrics/CyclomaticComplexity
     def self.process(backtrace, configuration)
-      code_extractor = CodeExtractor.new
+      code_extractor = CodeExtractor.new(configuration)
 
       backtrace = caller if !backtrace || backtrace.empty?
 

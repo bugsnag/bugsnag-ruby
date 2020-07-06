@@ -2,8 +2,11 @@ module Bugsnag
   class CodeExtractor
     MAXIMUM_LINES_TO_KEEP = 7
 
-    def initialize
+    ##
+    # @param [Configuration] configuration
+    def initialize(configuration)
       @files = {}
+      @configuration = configuration
     end
 
     ##
