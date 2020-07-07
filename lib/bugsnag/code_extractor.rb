@@ -1,17 +1,20 @@
 module Bugsnag
+  # @api private
   class CodeExtractor
     MAXIMUM_LINES_TO_KEEP = 7
 
     ##
-    # @param [Configuration] configuration
+    # @param configuration [Configuration]
     def initialize(configuration)
       @files = {}
       @configuration = configuration
     end
 
     ##
-    # @param [String] path
-    # @param [Hash] trace
+    # Add a file and its corresponding trace hash to be processed.
+    #
+    # @param path [String] The full path to the file
+    # @param trace [Hash]
     # @return [void]
     def add_file(path, trace)
       # If the file doesn't exist we can't extract code from it, so we can skip
@@ -35,8 +38,8 @@ module Bugsnag
     end
 
     ##
-    # Add the code to the hashes that were given in #add_file by modifying them
-    # in-place. They will have a new ':code' key containing a hash of line
+    # Add the code to the hashes that were given in {#add_file} by modifying
+    # them in-place. They will have a new ':code' key containing a hash of line
     # number => string of code for that line
     #
     # @return [void]
@@ -67,6 +70,11 @@ module Bugsnag
 
     private
 
+    ##
+    # @param path [String]
+    # @param traces [Array<Hash>]
+    # @param line_numbers [Set<Integer>]
+    # @return [void]
     def extract_from(path, traces, line_numbers)
       code = {}
 
@@ -85,6 +93,10 @@ module Bugsnag
       associate_code_with_trace(code, traces)
     end
 
+    ##
+    # @param code [Hash{Integer => String}]
+    # @param traces [Array<Hash>]
+    # @return [void]
     def associate_code_with_trace(code, traces)
       traces.each do |trace|
         trace[:code] = {}
@@ -105,6 +117,10 @@ module Bugsnag
       end
     end
 
+    ##
+    # @param code [Hash{Integer => String}]
+    # @param line_number [Integer]
+    # @return [void]
     def trim_excess_lines(code, line_number)
       while code.length > MAXIMUM_LINES_TO_KEEP
         last_line = code.keys.max

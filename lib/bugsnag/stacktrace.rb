@@ -11,12 +11,10 @@ module Bugsnag
     ##
     # Process a backtrace and the configuration into a parsed stacktrace.
     #
-    # @param [Array, nil] backtrace
-    # @param [Configuration] configuration
+    # @param backtrace [Array, nil] If nil, 'caller' will be used instead
+    # @param configuration [Configuration]
     # @return [Array]
-    #
-    # rubocop:todo Metrics/CyclomaticComplexity
-    def self.process(backtrace, configuration)
+    def self.process(backtrace, configuration) # rubocop:todo Metrics/CyclomaticComplexity
       code_extractor = CodeExtractor.new(configuration)
 
       backtrace = caller if !backtrace || backtrace.empty?
@@ -71,6 +69,5 @@ module Bugsnag
 
       processed_backtrace
     end
-    # rubocop:enable Metrics/CyclomaticComplexity
   end
 end
