@@ -72,6 +72,10 @@ module Bugsnag
     # @return [Regexp] matching file paths out of project
     attr_accessor :vendor_path
 
+    ##
+    # @return [Array]
+    attr_reader :scopes_to_filter
+
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -93,6 +97,8 @@ module Bugsnag
     # Path to vendored code. Used to mark file paths as out of project.
     DEFAULT_VENDOR_PATH = %r{^(vendor/|\.bundle/)}
 
+    DEFAULT_SCOPES_TO_FILTER = ['events.metaData', 'events.breadcrumbs.metaData'].freeze
+
     alias :track_sessions :auto_capture_sessions
     alias :track_sessions= :auto_capture_sessions=
 
@@ -104,6 +110,7 @@ module Bugsnag
       self.send_environment = false
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
+      self.scopes_to_filter = DEFAULT_SCOPES_TO_FILTER
       self.hostname = default_hostname
       self.runtime_versions = {}
       self.runtime_versions["ruby"] = RUBY_VERSION
@@ -312,6 +319,8 @@ module Bugsnag
     end
 
     private
+
+    attr_writer :scopes_to_filter
 
     PROG_NAME = "[Bugsnag]"
 

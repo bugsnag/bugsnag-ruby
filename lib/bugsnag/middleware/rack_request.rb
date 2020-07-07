@@ -28,18 +28,16 @@ module Bugsnag::Middleware
         url = "#{request.scheme}://#{request.host}"
         url << ":#{request.port}" unless [80, 443].include?(request.port)
 
-        cleaner = Bugsnag::Cleaner.new(report.configuration.meta_data_filters, [])
-
         # If app is passed a bad URL, this code will crash attempting to clean it
         begin
-          url << cleaner.clean_url(request.fullpath)
+          url << Bugsnag.cleaner.clean_url(request.fullpath)
         rescue StandardError => stde
           Bugsnag.configuration.warn "RackRequest - Rescued error while cleaning request.fullpath: #{stde}"
         end
 
         referer = nil
         begin
-          referer = cleaner.clean_url(request.referer) if request.referer
+          referer = Bugsnag.cleaner.clean_url(request.referer) if request.referer
         rescue StandardError => stde
           Bugsnag.configuration.warn "RackRequest - Rescued error while cleaning request.referer: #{stde}"
         end

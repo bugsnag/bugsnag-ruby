@@ -39,7 +39,6 @@ module Bugsnag
   INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que, :mongo]
 
   NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
-  SCOPES_TO_FILTER = ['events.metaData', 'events.breadcrumbs.metaData'].freeze
 
   class << self
     ##
@@ -228,6 +227,19 @@ module Bugsnag
       configuration.breadcrumbs << breadcrumb unless breadcrumb.ignore?
     end
 
+    ##
+    # Returns the client's Cleaner object, or creates one if not yet created.
+    #
+    # @api private
+    #
+    # @return [Cleaner]
+    def cleaner
+      @cleaner = nil unless defined?(@cleaner)
+      @cleaner || LOCK.synchronize do
+        @cleaner ||= Bugsnag::Cleaner.new(configuration)
+      end
+    end
+
     private
 
     def should_deliver_notification?(exception, auto_notify)
@@ -308,11 +320,6 @@ module Bugsnag
     # @param report [Report]
     # @return string
     def report_to_json(report)
-      cleaner = Cleaner.new(
-        configuration.meta_data_filters,
-        SCOPES_TO_FILTER
-      )
-
       cleaned = cleaner.clean_object(report.as_json)
       trimmed = Bugsnag::Helpers.trim_if_needed(cleaned)
 
