@@ -17,12 +17,10 @@ module Bugsnag
     def self.trim_if_needed(value)
       value = "" if value.nil?
 
-      # Sanitize object
-      sanitized_value = Bugsnag::Cleaner.clean_object_encoding(value)
-      return sanitized_value unless payload_too_long?(sanitized_value)
+      return value unless payload_too_long?(value)
 
       # Trim metadata
-      reduced_value = trim_metadata(sanitized_value)
+      reduced_value = trim_metadata(value)
       return reduced_value unless payload_too_long?(reduced_value)
 
       # Trim code from stacktrace
