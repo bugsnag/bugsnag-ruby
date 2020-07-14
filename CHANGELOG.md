@@ -14,6 +14,9 @@ Changelog
 * Improve performance of payload cleaning
   | [#601](https://github.com/bugsnag/bugsnag-ruby/pull/601)
 
+* Improve performance when processing stacktraces
+  | [#602](https://github.com/bugsnag/bugsnag-ruby/pull/602)
+
 ### Deprecated
 
 * The `ignore_classes` configuration option has been deprecated in favour of `discard_classes`. `ignore_classes` will be removed in the next major release
