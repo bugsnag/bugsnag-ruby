@@ -10,6 +10,7 @@ end
 
 require 'bugsnag'
 
+require 'tmpdir'
 require 'webmock/rspec'
 require 'rspec/expectations'
 require 'rspec/mocks'
@@ -43,12 +44,16 @@ end
 
 RSpec.configure do |config|
   config.order = "random"
+  config.example_status_persistence_file_path = "#{Dir.tmpdir}/rspec_status"
 
   config.before(:each) do
     WebMock.stub_request(:post, "https://notify.bugsnag.com/")
     WebMock.stub_request(:post, "https://sessions.bugsnag.com/")
 
     Bugsnag.instance_variable_set(:@configuration, Bugsnag::Configuration.new)
+    Bugsnag.instance_variable_set(:@session_tracker, Bugsnag::SessionTracker.new)
+    Bugsnag.instance_variable_set(:@cleaner, Bugsnag::Cleaner.new(Bugsnag.configuration))
+
     Bugsnag.configure do |bugsnag|
       bugsnag.api_key = "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
       bugsnag.release_stage = "production"

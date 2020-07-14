@@ -11,6 +11,7 @@ Bugsnag.configure do |config|
   config.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] if ENV.include? "BUGSNAG_RELEASE_STAGE"
   config.send_code = ENV["BUGSNAG_SEND_CODE"] != "false"
   config.send_environment = ENV["BUGSNAG_SEND_ENVIRONMENT"] == "true"
+  config.meta_data_filters << 'filtered_parameter'
 
   if ENV["SQL_ONLY_BREADCRUMBS"] == "true"
     config.before_breadcrumb_callbacks << Proc.new do |breadcrumb|

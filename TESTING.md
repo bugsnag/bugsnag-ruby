@@ -42,7 +42,7 @@ aws configure --profile=opensource
 Subsequently you'll need to run the following commmand to authenticate with the registry:
 
 ```
-$(aws ecr get-login --profile=opensource --no-include-email)
+aws ecr get-login-password --profile=opensource | docker login --username AWS --password-stdin 855461928731.dkr.ecr.us-west-1.amazonaws.com
 ```
 
 __Your session will periodically expire__, so you'll need to run this command to re-authenticate when that happens.
@@ -64,7 +64,7 @@ Configure the tests to be run in the following way:
 When running the end-to-end tests, you'll want to restrict the feature files run to the specific test features for the platform.  This is done using the Cucumber CLI syntax at the end of the `docker-compose run ruby-maze-runner` command, i.e:
 
 ```
-RUBY_TEST_VERSION=2.6 RAILS_VERSION=6 docker-compose run ruby-maze-runner features/rails_features --tags "@rails6"
+RUBY_TEST_VERSION=2.6 RAILS_VERSION=6 docker-compose run --use-aliases ruby-maze-runner features/rails_features --tags "@rails6"
 ```
 
 - Plain ruby tests should target `features/plain_features`
@@ -75,7 +75,7 @@ RUBY_TEST_VERSION=2.6 RAILS_VERSION=6 docker-compose run ruby-maze-runner featur
 In order to target specific features the exact `.feature` file can be specified, i.e:
 
 ```
-RUBY_TEST_VERSION=2.6 RAILS_VERSION=6 docker-compose run ruby-maze-runner features/rails_features/app_version.feature --tags "@rails6"
+RUBY_TEST_VERSION=2.6 RAILS_VERSION=6 docker-compose run --use-aliases ruby-maze-runner features/rails_features/app_version.feature --tags "@rails6"
 ```
 
 In order to avoid running flakey or unfinished tests, the tag `"not @wip"` can be added to the tags option. This is recommended for all CI runs. If a tag is already specified, this should be added using the `and` keyword, e.g. `--tags "@rails6 and not @wip"`

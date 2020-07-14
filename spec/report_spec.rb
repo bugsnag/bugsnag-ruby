@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'spec_helper'
+require_relative './spec_helper'
 require 'securerandom'
 require 'ostruct'
 
@@ -592,7 +592,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are set in default meta_data_filters" do
-
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({
         :request => {
@@ -638,7 +637,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are added to meta_data_filters" do
-
     Bugsnag.configuration.meta_data_filters << "other_data"
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
@@ -656,7 +654,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are added to meta_data_filters as regex" do
-
     Bugsnag.configuration.meta_data_filters << /other_data/
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
@@ -674,7 +671,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are added to meta_data_filters as partial regex" do
-
     Bugsnag.configuration.meta_data_filters << /r_data/
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
@@ -702,6 +698,33 @@ describe Bugsnag::Report do
       expect(event["metaData"]["request"]).not_to be_nil
       expect(event["metaData"]["request"]["params"]).not_to be_nil
       expect(event["metaData"]["request"]["params"]).to have_key("nil_param")
+    }
+  end
+
+  it "does not apply filters outside of report.meta_data" do
+    Bugsnag.configuration.meta_data_filters << "data"
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data = {
+        xyz: "abc",
+        data: "123456"
+      }
+
+      report.user = {
+        id: 123,
+        data: "hello"
+      }
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+
+      expect(event["metaData"]).not_to be_nil
+      expect(event["metaData"]["xyz"]).to eq("abc")
+      expect(event["metaData"]["data"]).to eq("[FILTERED]")
+
+      expect(event["user"]).not_to be_nil
+      expect(event["user"]["data"]).to eq("hello")
     }
   end
 
@@ -1106,6 +1129,161 @@ describe Bugsnag::Report do
         expect(payload.to_json).to match(/foobar/)
       end
     }
+  end
+
+  it "should handle recursive metadata" do
+    a = [1, 2, 3]
+    b = [2, a]
+    a << b
+    c = [1, 2, 3]
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_tab(:some_tab, {
+        a: a,
+        b: b,
+        c: c
+      })
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]["some_tab"]).to eq({
+        "a" => [1, 2, 3, [2, "[RECURSION]"]],
+        "b" => [2, "[RECURSION]"],
+        "c" => [1, 2, 3]
+      })
+    }
+  end
+
+  it "does not detect two equal objects as recursion" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_tab(:some_tab, {
+        data: [1, [1, 2], [1, 2], "a"]
+      })
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]["some_tab"]).to eq({
+        "data" => [1, [1, 2], [1, 2], "a"]
+      })
+    }
+  end
+
+  context "an object that throws if `to_s` is called" do
+    class StringRaiser
+      def to_s
+        raise 'Oh no you do not!'
+      end
+    end
+
+    it "uses the string '[RAISED]' instead" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          data: [1, 2, StringRaiser.new]
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "data" => [1, 2, "[RAISED]"]
+        })
+      }
+    end
+
+    it "replaces hash key with '[RAISED]'" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          StringRaiser.new => 1
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "[RAISED]" => "[FILTERED]"
+        })
+      }
+    end
+
+    it "uses a single '[RAISED]'key when multiple keys raise" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          StringRaiser.new => 1,
+          StringRaiser.new => 2
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "[RAISED]" => "[FILTERED]"
+        })
+      }
+    end
+  end
+
+  context "an object that infinitely recurse if `to_s` is called" do
+    is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
+
+    class StringRecurser
+      def to_s
+        to_s
+      end
+    end
+
+    it "uses the string '[RECURSION]' instead" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          data: [1, 2, StringRecurser.new]
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "data" => [1, 2, "[RECURSION]"]
+        })
+      }
+    end
+
+    it "replaces hash key with '[RECURSION]'" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          StringRecurser.new => 1
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "[RECURSION]" => "[FILTERED]"
+        })
+      }
+    end
+
+    it "uses a single '[RECURSION]'key when multiple keys recurse" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          StringRecurser.new => 1,
+          StringRecurser.new => 2
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "[RECURSION]" => "[FILTERED]"
+        })
+      }
+    end
   end
 
   it 'should handle exceptions with empty backtrace' do
