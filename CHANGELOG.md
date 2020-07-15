@@ -16,6 +16,7 @@ Changelog
 
 * Improve performance when processing stacktraces
   | [#602](https://github.com/bugsnag/bugsnag-ruby/pull/602)
+  | [#603](https://github.com/bugsnag/bugsnag-ruby/pull/603)
 
 ### Deprecated
 

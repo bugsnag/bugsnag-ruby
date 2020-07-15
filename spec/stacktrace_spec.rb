@@ -95,14 +95,11 @@ describe Bugsnag::Stacktrace do
       configuration = Bugsnag::Configuration.new
       configuration.send_code = false
 
-      dir = File.dirname(__FILE__)
-
       backtrace = [
         "/foo/bar/app/models/user.rb:1:in `something'",
         "/foo/bar/other_vendor/lib/dont.rb:2:in `to_s'",
         "/foo/bar/vendor/lib/ignore_me.rb:3:in `to_s'",
         "/foo/bar/.bundle/lib/ignore_me.rb:4:in `to_s'",
-        "#{dir}/../spec/stacktrace_spec.rb:5:in `something_else'",
       ]
 
       stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration).to_a
@@ -112,7 +109,6 @@ describe Bugsnag::Stacktrace do
         { file: "/foo/bar/other_vendor/lib/dont.rb", lineNumber: 2, method: "to_s" },
         { file: "/foo/bar/vendor/lib/ignore_me.rb", lineNumber: 3, method: "to_s" },
         { file: "/foo/bar/.bundle/lib/ignore_me.rb", lineNumber: 4, method: "to_s" },
-        { file: "#{dir}/../spec/stacktrace_spec.rb", lineNumber: 5, method: "something_else" },
       ])
     end
 
@@ -140,20 +136,22 @@ describe Bugsnag::Stacktrace do
       configuration = Bugsnag::Configuration.new
       configuration.send_code = false
 
+      dir = File.dirname(__FILE__)
+
       backtrace = [
         "./spec/spec_helper.rb:1:in `something'",
         "./lib/bugsnag/breadcrumbs/../configuration.rb:100:in `to_s'",
         "lib/bugsnag.rb:20:in `notify'",
+        "#{dir}/../spec/stacktrace_spec.rb:5:in `something_else'",
       ]
 
       stacktrace = Bugsnag::Stacktrace.new(backtrace, configuration).to_a
-
-      dir = File.dirname(__FILE__)
 
       expect(stacktrace).to eq([
         { file: "#{dir}/spec_helper.rb", lineNumber: 1, method: "something" },
         { file: "#{File.dirname(dir)}/lib/bugsnag/configuration.rb", lineNumber: 100, method: "to_s" },
         { file: "#{File.dirname(dir)}/lib/bugsnag.rb", lineNumber: 20, method: "notify" },
+        { file: "#{dir}/stacktrace_spec.rb", lineNumber: 5, method: "something_else" },
       ])
     end
   end
