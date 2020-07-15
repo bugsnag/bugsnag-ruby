@@ -7,7 +7,7 @@ module Bugsnag
     RECURSION = '[RECURSION]'.freeze
     OBJECT = '[OBJECT]'.freeze
     RAISED = '[RAISED]'.freeze
-    OBJECT_WITH_ID_AND_CLASS = '[OBJECT]: [Class]: %{class_name} [ID]: %{id}'.freeze
+    OBJECT_WITH_ID_AND_CLASS = '[OBJECT]: [Class]: %<class_name>s [ID]: %<id>d'.freeze
 
     ##
     # @param configuration [Configuration]
@@ -124,7 +124,7 @@ module Bugsnag
         if str =~ /#<.*>/
           # Use id of the object if available
           if obj.respond_to?(:id)
-            OBJECT_WITH_ID_AND_CLASS % { class_name: obj.class, id: obj.id }
+            format(OBJECT_WITH_ID_AND_CLASS, class_name: obj.class, id: obj.id)
           else
             OBJECT
           end
