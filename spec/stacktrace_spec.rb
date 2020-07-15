@@ -242,7 +242,7 @@ describe Bugsnag::Stacktrace do
         "#{project_root}/file2.rb:19:in `abcdef2'",
       ]
 
-      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
       expect(stacktrace).to eq([
         {
@@ -306,7 +306,7 @@ describe Bugsnag::Stacktrace do
         "/foo/bar/.bundle/lib/ignore_me.rb:4:in `to_s'",
       ]
 
-      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
       expect(stacktrace).to eq([
         { file: "/foo/bar/app/models/user.rb", lineNumber: 1, method: "something" },
@@ -326,7 +326,7 @@ describe Bugsnag::Stacktrace do
         "abc.rb:1:in `defg'",
       ]
 
-      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
       expect(stacktrace).to eq([
         { code: nil, file: "./foo/bar/baz.rb", lineNumber: 1, method: "something" },
@@ -349,7 +349,7 @@ describe Bugsnag::Stacktrace do
         "#{dir}/../spec/stacktrace_spec.rb:5:in `something_else'",
       ]
 
-      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
       expect(stacktrace).to eq([
         { file: "#{dir}/spec_helper.rb", lineNumber: 1, method: "something" },
@@ -369,7 +369,7 @@ describe Bugsnag::Stacktrace do
         "/abc/xyz.rb:4:in `to_s'",
       ]
 
-      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
       expect(stacktrace).to eq([
         { file: "/foo/bar/baz.rb", lineNumber: 2, method: "to_s" },
@@ -392,7 +392,7 @@ describe Bugsnag::Stacktrace do
         "/not/gem/path/but/has/gem.rb:6:in `to_s'"
       ]
 
-      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
       expect(stacktrace).to eq([
         { file: "/foo/bar/baz.rb", lineNumber: 2, method: "to_s" },
@@ -415,7 +415,7 @@ describe Bugsnag::Stacktrace do
         "/baz/bar/foo.rb:6:in `to_s'",
       ]
 
-      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration).to_a
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
       expect(stacktrace).to eq([
         { file: "/foo/bar/baz.rb", lineNumber: 2, method: "to_s" },
