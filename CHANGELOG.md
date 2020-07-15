@@ -18,6 +18,10 @@ Changelog
   | [#602](https://github.com/bugsnag/bugsnag-ruby/pull/602)
   | [#603](https://github.com/bugsnag/bugsnag-ruby/pull/603)
 
+* If a custom object responds to `id` method, show the id and class in error reports
+  | [#531](https://github.com/bugsnag/bugsnag-ruby/pull/531)
+  | [manojmj92](https://github.com/manojmj92)
+
 ### Deprecated
 
 * The `ignore_classes` configuration option has been deprecated in favour of `discard_classes`. `ignore_classes` will be removed in the next major release
