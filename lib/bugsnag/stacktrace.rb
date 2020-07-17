@@ -14,7 +14,7 @@ module Bugsnag
     # @param backtrace [Array, nil] If nil, 'caller' will be used instead
     # @param configuration [Configuration]
     # @return [Array]
-    def self.process(backtrace, configuration) # rubocop:todo Metrics/CyclomaticComplexity
+    def self.process(backtrace, configuration)
       code_extractor = CodeExtractor.new(configuration)
 
       backtrace = caller if !backtrace || backtrace.empty?
