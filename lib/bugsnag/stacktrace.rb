@@ -51,8 +51,6 @@ module Bugsnag
           file = Gem.path.inject(file) {|line, path| line.sub(/#{path}\//, "") }
         end
 
-        next if !file || file.empty?
-
         trace_hash[:file] = file
 
         # Add a method if we have it

@@ -400,28 +400,6 @@ describe Bugsnag::Stacktrace do
         { file: "/not/gem/path/but/has/gem.rb", lineNumber: 6, method: "to_s" },
       ])
     end
-
-    it "ignores files that end up with empty paths" do
-      # I'm not sure how to trigger this naturally, but we can force an empty
-      # path by setting the entire file path as the project_root. This works
-      # because we'll remove 'project_root/', which leaves us with an empty path
-      configuration = Bugsnag::Configuration.new
-      configuration.project_root = '/abc/xyz'
-      configuration.send_code = false
-
-      backtrace = [
-        "/foo/bar/baz.rb:2:in `to_s'",
-        "/abc/xyz/:4:in `to_s'",
-        "/baz/bar/foo.rb:6:in `to_s'",
-      ]
-
-      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
-
-      expect(stacktrace).to eq([
-        { file: "/foo/bar/baz.rb", lineNumber: 2, method: "to_s" },
-        { file: "/baz/bar/foo.rb", lineNumber: 6, method: "to_s" },
-      ])
-    end
   end
 
   context "with configurable vendor_path" do
