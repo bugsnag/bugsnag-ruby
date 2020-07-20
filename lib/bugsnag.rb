@@ -33,6 +33,7 @@ require "bugsnag/breadcrumbs/validator"
 require "bugsnag/breadcrumbs/breadcrumb"
 require "bugsnag/breadcrumbs/breadcrumbs"
 
+# rubocop:todo Metrics/ModuleLength
 module Bugsnag
   LOCK = Mutex.new
   INTEGRATIONS = [:resque, :sidekiq, :mailman, :delayed_job, :shoryuken, :que, :mongo]
@@ -63,7 +64,7 @@ module Bugsnag
         auto_notify = false
       end
 
-      return unless deliver_notification?(exception, auto_notify)
+      return unless should_deliver_notification?(exception, auto_notify)
 
       exception = NIL_EXCEPTION_DESCRIPTION if exception.nil?
 
@@ -71,6 +72,7 @@ module Bugsnag
 
       # If this is an auto_notify we yield the block before the any middleware is run
       yield(report) if block_given? && auto_notify
+
       if report.ignore?
         configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in auto_notify block")
         return
@@ -97,6 +99,7 @@ module Bugsnag
         # If this is not an auto_notify then the block was provided by the user. This should be the last
         # block that is run as it is the users "most specific" block.
         yield(report) if block_given? && !auto_notify
+
         if report.ignore?
           configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided block")
           return
@@ -111,13 +114,7 @@ module Bugsnag
           report.severity_reason = initial_reason
         end
 
-        # Deliver
-        configuration.info("Notifying #{configuration.notify_endpoint} of #{report.exceptions.last[:errorClass]}")
-        options = {:headers => report.headers}
-        payload = ::JSON.dump(Bugsnag::Helpers.trim_if_needed(report.as_json))
-        Bugsnag::Delivery[configuration.delivery_method].deliver(configuration.notify_endpoint, payload, configuration, options)
-        report_summary = report.summary
-        leave_breadcrumb(report_summary[:error_class], report_summary, Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE, :auto)
+        deliver_notification(report)
       end
     end
 
@@ -147,6 +144,7 @@ module Bugsnag
     # Configuration getters
     ##
     # Returns the client's Configuration object, or creates one if not yet created.
+    # @return [Configuration]
     def configuration
       @configuration = nil unless defined?(@configuration)
       @configuration || LOCK.synchronize { @configuration ||= Bugsnag::Configuration.new }
@@ -211,27 +209,40 @@ module Bugsnag
       validator.validate(breadcrumb)
 
       # Skip if it's already invalid
-      unless breadcrumb.ignore?
-        # Run callbacks
-        configuration.before_breadcrumb_callbacks.each do |c|
-          c.arity > 0 ? c.call(breadcrumb) : c.call
-          break if breadcrumb.ignore?
-        end
+      return if breadcrumb.ignore?
 
-        # Return early if ignored
-        return if breadcrumb.ignore?
+      # Run callbacks
+      configuration.before_breadcrumb_callbacks.each do |c|
+        c.arity > 0 ? c.call(breadcrumb) : c.call
+        break if breadcrumb.ignore?
+      end
 
-        # Validate again in case of callback alteration
-        validator.validate(breadcrumb)
+      # Return early if ignored
+      return if breadcrumb.ignore?
 
-        # Add to breadcrumbs buffer if still valid
-        configuration.breadcrumbs << breadcrumb unless breadcrumb.ignore?
+      # Validate again in case of callback alteration
+      validator.validate(breadcrumb)
+
+      # Add to breadcrumbs buffer if still valid
+      configuration.breadcrumbs << breadcrumb unless breadcrumb.ignore?
+    end
+
+    ##
+    # Returns the client's Cleaner object, or creates one if not yet created.
+    #
+    # @api private
+    #
+    # @return [Cleaner]
+    def cleaner
+      @cleaner = nil unless defined?(@cleaner)
+      @cleaner || LOCK.synchronize do
+        @cleaner ||= Bugsnag::Cleaner.new(configuration)
       end
     end
 
     private
 
-    def deliver_notification?(exception, auto_notify)
+    def should_deliver_notification?(exception, auto_notify)
       reason = abort_reason(exception, auto_notify)
       configuration.debug(reason) unless reason.nil?
       reason.nil?
@@ -247,6 +258,32 @@ module Bugsnag
       elsif exception.respond_to?(:skip_bugsnag) && exception.skip_bugsnag
         "Not notifying due to skip_bugsnag flag"
       end
+    end
+
+    ##
+    # Deliver the notification to Bugsnag
+    #
+    # @param report [Report]
+    # @return void
+    def deliver_notification(report)
+      configuration.info("Notifying #{configuration.notify_endpoint} of #{report.exceptions.last[:errorClass]}")
+
+      payload = report_to_json(report)
+      options = {:headers => report.headers}
+
+      Bugsnag::Delivery[configuration.delivery_method].deliver(
+        configuration.notify_endpoint,
+        payload,
+        configuration,
+        options
+      )
+
+      leave_breadcrumb(
+        report.summary[:error_class],
+        report.summary,
+        Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE,
+        :auto
+      )
     end
 
     # Check if the API key is valid and warn (once) if it is not
@@ -273,7 +310,23 @@ module Bugsnag
         raise ArgumentError, "The session endpoint cannot be modified without the notify endpoint"
       end
     end
+
+    ##
+    # Convert the Report object to JSON
+    #
+    # We ensure the report is safe to send by removing recursion, fixing
+    # encoding errors and redacting metadata according to "meta_data_filters"
+    #
+    # @param report [Report]
+    # @return string
+    def report_to_json(report)
+      cleaned = cleaner.clean_object(report.as_json)
+      trimmed = Bugsnag::Helpers.trim_if_needed(cleaned)
+
+      ::JSON.dump(trimmed)
+    end
   end
 end
+# rubocop:enable Metrics/ModuleLength
 
 Bugsnag.load_integrations unless ENV["BUGSNAG_DISABLE_AUTOCONFIGURE"]

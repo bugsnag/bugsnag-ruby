@@ -1,5 +1,5 @@
 # encoding: utf-8
-require 'spec_helper'
+require_relative './spec_helper'
 require 'securerandom'
 require 'ostruct'
 
@@ -27,6 +27,7 @@ class JRubyException
   end
 end
 
+# rubocop:disable Metrics/BlockLength
 describe Bugsnag::Report do
   it "should contain an api_key if one is set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
@@ -149,10 +150,12 @@ describe Bugsnag::Report do
     original_ignore_classes = Bugsnag.configuration.ignore_classes
 
     begin
-      # The default ignore_classes includes SignalException, so we need to
+      # The default ignore classes includes SignalException, so we need to
       # temporarily set it to something else.
       Bugsnag.configuration.ignore_classes = Set[SystemExit]
+
       Bugsnag.notify(SignalException.new("TERM"))
+
       expect(Bugsnag).to have_sent_notification{ |payload, headers|
         event = get_event_from_payload(payload)
         expect(event["unhandled"]).to be false
@@ -589,7 +592,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are set in default meta_data_filters" do
-
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({
         :request => {
@@ -635,7 +637,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are added to meta_data_filters" do
-
     Bugsnag.configuration.meta_data_filters << "other_data"
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
@@ -653,7 +654,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are added to meta_data_filters as regex" do
-
     Bugsnag.configuration.meta_data_filters << /other_data/
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
@@ -671,7 +671,6 @@ describe Bugsnag::Report do
   end
 
   it "filters params from all payload hashes if they are added to meta_data_filters as partial regex" do
-
     Bugsnag.configuration.meta_data_filters << /r_data/
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
@@ -702,6 +701,33 @@ describe Bugsnag::Report do
     }
   end
 
+  it "does not apply filters outside of report.meta_data" do
+    Bugsnag.configuration.meta_data_filters << "data"
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.meta_data = {
+        xyz: "abc",
+        data: "123456"
+      }
+
+      report.user = {
+        id: 123,
+        data: "hello"
+      }
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+
+      expect(event["metaData"]).not_to be_nil
+      expect(event["metaData"]["xyz"]).to eq("abc")
+      expect(event["metaData"]["data"]).to eq("[FILTERED]")
+
+      expect(event["user"]).not_to be_nil
+      expect(event["user"]["data"]).to eq("hello")
+    }
+  end
+
   it "does not notify if report ignored" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.ignore!
@@ -710,38 +736,154 @@ describe Bugsnag::Report do
     expect(Bugsnag).not_to have_sent_notification
   end
 
-  it "does not notify if the exception class is in the default ignore_classes list" do
-    Bugsnag.configuration.ignore_classes << ActiveRecord::RecordNotFound
-    Bugsnag.notify(ActiveRecord::RecordNotFound.new("It crashed"))
+  context "ignore_classes" do
+    context "as a constant" do
+      it "ignores exception when its class is ignored" do
+        Bugsnag.configuration.ignore_classes << BugsnagTestException
 
-    expect(Bugsnag).not_to have_sent_notification
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "ignores exception when its ancestor is ignored" do
+        Bugsnag.configuration.ignore_classes << BugsnagTestException
+
+        Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "ignores exception when the original exception is ignored" do
+        Bugsnag.configuration.ignore_classes << BugsnagTestException
+
+        ex = NestedException.new("Self-referential exception")
+        ex.original_exception = BugsnagTestException.new("It crashed")
+
+        Bugsnag.notify(ex)
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+    end
+
+    context "as a proc" do
+      it "ignores exception when the proc returns true" do
+        Bugsnag.configuration.ignore_classes << ->(exception) { true }
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "does not ignore exception when proc returns false" do
+        Bugsnag.configuration.ignore_classes << ->(exception) { false }
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+    end
   end
 
-  it "does not notify if the non-default exception class is added to the ignore_classes" do
-    Bugsnag.configuration.ignore_classes << BugsnagTestException
+  context "discard_classes" do
+    context "as a string" do
+      it "discards exception when its class should be discarded" do
+        Bugsnag.configuration.discard_classes << "BugsnagTestException"
 
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).not_to have_sent_notification
-  end
+        expect(Bugsnag).not_to have_sent_notification
+      end
 
-  it "does not notify if exception's ancestor is an ignored class" do
-    Bugsnag.configuration.ignore_classes << BugsnagTestException
+      it "discards exception when the original exception should be discarded" do
+        Bugsnag.configuration.discard_classes << "BugsnagTestException"
 
-    Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+        ex = NestedException.new("Self-referential exception")
+        ex.original_exception = BugsnagTestException.new("It crashed")
 
-    expect(Bugsnag).not_to have_sent_notification
-  end
+        Bugsnag.notify(ex)
 
-  it "does not notify if any caused exception is an ignored class" do
-    Bugsnag.configuration.ignore_classes << NestedException
+        expect(Bugsnag).not_to have_sent_notification
+      end
 
-    ex = NestedException.new("Self-referential exception")
-    ex.original_exception = BugsnagTestException.new("It crashed")
+      it "does not discard exception with a typo" do
+        Bugsnag.configuration.discard_classes << "BugsnagToastException"
 
-    Bugsnag.notify(ex)
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).not_to have_sent_notification
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+
+      it "does not discard exception when its ancestor is discarded" do
+        Bugsnag.configuration.discard_classes << "BugsnagTestException"
+
+        Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagSubclassTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+    end
+
+    context "as a regexp" do
+      it "discards exception when its class should be discarded" do
+        Bugsnag.configuration.discard_classes << /^BugsnagTest.*/
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "discards exception when the original exception should be discarded" do
+        Bugsnag.configuration.discard_classes << /^BugsnagTest.*/
+
+        ex = NestedException.new("Self-referential exception")
+        ex.original_exception = BugsnagTestException.new("It crashed")
+
+        Bugsnag.notify(ex)
+
+        expect(Bugsnag).not_to have_sent_notification
+      end
+
+      it "does not discard exception when regexp does not match" do
+        Bugsnag.configuration.discard_classes << /^NotBugsnag.*/
+
+        Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+
+      it "does not discard exception when its ancestor is discarded" do
+        Bugsnag.configuration.discard_classes << /^BugsnagTest.*/
+
+        Bugsnag.notify(BugsnagSubclassTestException.new("It crashed"))
+
+        expect(Bugsnag).to have_sent_notification { |payload, headers|
+          exception = get_exception_from_payload(payload)
+
+          expect(exception["errorClass"]).to eq("BugsnagSubclassTestException")
+          expect(exception["message"]).to eq("It crashed")
+        }
+      end
+    end
   end
 
   it "sends the cause of the exception" do
@@ -987,6 +1129,161 @@ describe Bugsnag::Report do
         expect(payload.to_json).to match(/foobar/)
       end
     }
+  end
+
+  it "should handle recursive metadata" do
+    a = [1, 2, 3]
+    b = [2, a]
+    a << b
+    c = [1, 2, 3]
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_tab(:some_tab, {
+        a: a,
+        b: b,
+        c: c
+      })
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]["some_tab"]).to eq({
+        "a" => [1, 2, 3, [2, "[RECURSION]"]],
+        "b" => [2, "[RECURSION]"],
+        "c" => [1, 2, 3]
+      })
+    }
+  end
+
+  it "does not detect two equal objects as recursion" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_tab(:some_tab, {
+        data: [1, [1, 2], [1, 2], "a"]
+      })
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]["some_tab"]).to eq({
+        "data" => [1, [1, 2], [1, 2], "a"]
+      })
+    }
+  end
+
+  context "an object that throws if `to_s` is called" do
+    class StringRaiser
+      def to_s
+        raise 'Oh no you do not!'
+      end
+    end
+
+    it "uses the string '[RAISED]' instead" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          data: [1, 2, StringRaiser.new]
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "data" => [1, 2, "[RAISED]"]
+        })
+      }
+    end
+
+    it "replaces hash key with '[RAISED]'" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          StringRaiser.new => 1
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "[RAISED]" => "[FILTERED]"
+        })
+      }
+    end
+
+    it "uses a single '[RAISED]'key when multiple keys raise" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          StringRaiser.new => 1,
+          StringRaiser.new => 2
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "[RAISED]" => "[FILTERED]"
+        })
+      }
+    end
+  end
+
+  context "an object that infinitely recurse if `to_s` is called" do
+    is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
+
+    class StringRecurser
+      def to_s
+        to_s
+      end
+    end
+
+    it "uses the string '[RECURSION]' instead" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          data: [1, 2, StringRecurser.new]
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "data" => [1, 2, "[RECURSION]"]
+        })
+      }
+    end
+
+    it "replaces hash key with '[RECURSION]'" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          StringRecurser.new => 1
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "[RECURSION]" => "[FILTERED]"
+        })
+      }
+    end
+
+    it "uses a single '[RECURSION]'key when multiple keys recurse" do
+      skip "JRuby doesn't allow recovery from SystemStackErrors" if is_jruby
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.add_tab(:some_tab, {
+          StringRecurser.new => 1,
+          StringRecurser.new => 2
+        })
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["metaData"]["some_tab"]).to eq({
+          "[RECURSION]" => "[FILTERED]"
+        })
+      }
+    end
   end
 
   it 'should handle exceptions with empty backtrace' do
@@ -1280,3 +1577,4 @@ describe Bugsnag::Report do
     }
   end
 end
+# rubocop:enable Metrics/BlockLength

@@ -9,27 +9,25 @@ module Bugsnag
 
     ##
     # Process a backtrace and the configuration into a parsed stacktrace.
+    #
+    # rubocop:todo Metrics/CyclomaticComplexity
     def initialize(backtrace, configuration)
       @configuration = configuration
 
       backtrace = caller if !backtrace || backtrace.empty?
 
       @processed_backtrace = backtrace.map do |trace|
+        # Parse the stacktrace line
         if trace.match(BACKTRACE_LINE_REGEX)
           file, line_str, method = [$1, $2, $3]
         elsif trace.match(JAVA_BACKTRACE_REGEX)
           method, file, line_str = [$1, $2, $3]
         end
 
-        # Parse the stacktrace line
-
         next(nil) if file.nil?
 
         # Expand relative paths
-        p = Pathname.new(file)
-        if p.relative?
-          file = p.realpath.to_s rescue file
-        end
+        file = File.realpath(file) rescue file
 
         # Generate the stacktrace line hash
         trace_hash = {}
@@ -64,6 +62,7 @@ module Bugsnag
         end
       end.compact
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     ##
     # Returns the processed backtrace

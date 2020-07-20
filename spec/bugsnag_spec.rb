@@ -268,7 +268,7 @@ describe Bugsnag do
       )
       expect(breadcrumbs.to_a.size).to eq(1)
       expect(breadcrumbs.first.to_h).to match({
-        :name => "123123123123123123123123123123",
+        :name => "123123123123123123123123123123456456456456456456456456456456",
         :type => Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE,
         :metaData => {
           :a => 1
@@ -311,7 +311,7 @@ describe Bugsnag do
       Bugsnag.leave_breadcrumb("TestName")
       expect(breadcrumbs.to_a.size).to eq(1)
       expect(breadcrumbs.first.to_h).to match({
-        :name => "123123123123123123123123123123",
+        :name => "123123123123123123123123123123456456456456456",
         :type => Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE,
         :metaData => {
           :int => 1

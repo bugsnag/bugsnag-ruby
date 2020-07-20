@@ -1,6 +1,31 @@
 Changelog
 =========
 
+## 6.14.0 (20 July 2020)
+
+### Enhancements
+
+* Add configurable `discard_classes` option to allow filtering errors using either a `String` or `Regexp` matched against the error's class name
+  | [#597](https://github.com/bugsnag/bugsnag-ruby/pull/597)
+
+* The Breadcrumb name limit of 30 characters has been removed
+  | [#600](https://github.com/bugsnag/bugsnag-ruby/pull/600)
+
+* Improve performance of payload cleaning
+  | [#601](https://github.com/bugsnag/bugsnag-ruby/pull/601)
+
+* Improve performance when processing stacktraces
+  | [#602](https://github.com/bugsnag/bugsnag-ruby/pull/602)
+  | [#603](https://github.com/bugsnag/bugsnag-ruby/pull/603)
+
+* If a custom object responds to `id` method, show the id and class in error reports
+  | [#531](https://github.com/bugsnag/bugsnag-ruby/pull/531)
+  | [manojmj92](https://github.com/manojmj92)
+
+### Deprecated
+
+* The `ignore_classes` configuration option has been deprecated in favour of `discard_classes`. `ignore_classes` will be removed in the next major release
+
 ## 6.13.1 (11 May 2020)
 
 ### Fixes

@@ -127,9 +127,10 @@ describe Bugsnag::Rack do
       expect(report).to receive(:context=).with("TEST /TEST_PATH")
       expect(report).to receive(:user).and_return({})
 
-      config = double
-      allow(config).to receive(:send_environment).and_return(true)
-      allow(config).to receive(:meta_data_filters).and_return(['email'])
+      config = Bugsnag.configuration
+      config.send_environment = true
+      config.meta_data_filters = ['email']
+
       allow(report).to receive(:configuration).and_return(config)
       expect(report).to receive(:add_tab).once.with(:request, {
         :url => "http://test_host/TEST_PATH?email=[FILTERED]&another_param=thing",
@@ -187,9 +188,10 @@ describe Bugsnag::Rack do
       expect(report).to receive(:context=).with("TEST /TEST_PATH")
       expect(report).to receive(:user).and_return({})
 
-      config = double
-      allow(config).to receive(:send_environment).and_return(true)
-      allow(config).to receive(:meta_data_filters).and_return(nil)
+      config = Bugsnag.configuration
+      config.send_environment = true
+      config.meta_data_filters = []
+
       allow(report).to receive(:configuration).and_return(config)
       expect(report).to receive(:add_tab).once.with(:environment, rack_env)
       expect(report).to receive(:add_tab).once.with(:request, {

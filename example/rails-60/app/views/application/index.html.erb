@@ -1,0 +1,70 @@
+<p>This application demonstrates the use of Bugsnag with the Rails web framework.</p>
+
+<p>For other examples within this application see the following pages:</p>
+
+<ul>
+    <li><a href="/sidekiq">Sidekiq</a></li>
+    <li><a href="/resque">Resque</a></li>
+    <li><a href="/que">Que</a></li>
+</ul>
+
+<p>
+    While testing the examples open
+    <a href="https://app.bugsnag.com">your Bugsnag dashboard</a>
+    in order to see the example errors and exceptions being received.
+</p>
+
+<ol>
+    <li>
+        <p><a href="/crash">Crash</a></p>
+        <p>
+            Raises an error within the framework, generating a report in the
+            Bugsnag dashboard.
+        </p>
+    </li>
+
+    <li>
+        <p><a href="/crash_with_callback">Crash and use callbacks</a></p>
+        <p>
+            Raises an exception within the framework, but with additional data
+            attached to the report.  By registering a callback before the error
+            occurs useful data can be attached as a tab in the Bugsnag dashboard.
+        </p>
+    </li>
+
+    <li>
+        <p><a href="/notify">Notify</a></p>
+        <p>
+            Sends Bugsnag a report on demand using <code>bugsnag.notify</code>.
+            Allows details of handled errors or information to be sent to the
+            Bugsnag dashboard without crashing your code.
+        </p>
+    </li>
+
+    <li>
+        <p><a href="/notify_data">Notify with data</a></p>
+        <p>
+            Same as <code>notify</code> but allows you to attach additional data
+            within a <code>block</code>, similar to the
+            <code>before_notify_callbacks</code> example above.
+        </p>
+        <p>
+            In this case we're adding information about the user to go into the
+            <code>user</code> tab, and additional diagnostics as a
+            <code>diagnostics</code> tab.
+        </p>
+    </li>
+
+    <li>
+        <p><a href="/notify_severity">Set the severity</a></p>
+        <p>
+            This uses the same mechanism as adding meta-data, but allows you to
+            set the <code>severity</code> when notifying Bugsnag of the error.
+        </p>
+        <p>
+            Valid severities are <code>error</code>, <code>warning</code>, and
+            <code>info</code>. Have a look on the dashboard to see the
+            difference in these severities.
+        </li>
+    </li>
+</ol>

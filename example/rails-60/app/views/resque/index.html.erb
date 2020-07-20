@@ -1,0 +1,64 @@
+<h2>Rescue</h2>
+
+<p>This route demonstrates how to use Bugsnag with Rescue.</p>
+
+<p>
+    While testing the examples open
+    <a href="https://app.bugsnag.com">your Bugsnag dashboard</a>
+    in order to see the example errors and exceptions being received.
+</p>
+
+<p>
+    Make sure you have a Redis instance running that your test application can
+    connect to before running these examples.
+</p>
+
+<p>
+    While each queue can be run individually, to run Resque so that it
+    automatically executes each task, use:
+</p>
+
+<pre class="shell">QUEUE=crash,callback,metadata bundle exec rake resque:work</pre>
+
+<ol>
+    <li>
+        <p><a href="/resque/crash">Crash</a></p>
+
+        <p>
+            Raises an error within the framework, generating a report in the
+            Bugsnag dashboard.
+        </p>
+    </li>
+
+    <li>
+        <p><a href="/resque/crash_with_callback">Crash and use callbacks</a></p>
+
+        <p>
+            Raises an exception within the framework, but with additional data
+            attached to the report.
+        </p>
+
+        <p>
+            By registering a callback before the error occurs useful data can
+            be attached as a tab in the Bugsnag dashboard.
+        </p>
+    </li>
+
+    <li>
+        <p><a href="/resque/notify_data">Notify with data</a></p>
+
+        <p>
+            Same as <code>notify</code> but allows you to attach additional data
+            within a <code>block</code>, similar to the
+            "crash and use callbacks" example above.
+        </p>
+
+        <p>
+            In this case we're adding information about the queue to go into the
+            <code>queue</code> tab, and additional diagnostics as a
+            <code>diagnostics</code> tab.
+        </p>
+    </li>
+</ol>
+
+<p><a href="/">&larr; return home</a></p>

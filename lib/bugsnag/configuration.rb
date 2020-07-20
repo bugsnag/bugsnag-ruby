@@ -3,6 +3,7 @@ require "socket"
 require "logger"
 require "bugsnag/middleware_stack"
 require "bugsnag/middleware/callbacks"
+require "bugsnag/middleware/discard_error_class"
 require "bugsnag/middleware/exception_meta_data"
 require "bugsnag/middleware/ignore_error_class"
 require "bugsnag/middleware/suggestion_data"
@@ -35,8 +36,12 @@ module Bugsnag
     attr_accessor :timeout
     attr_accessor :hostname
     attr_accessor :runtime_versions
-    attr_accessor :ignore_classes
+    attr_accessor :discard_classes
     attr_accessor :auto_capture_sessions
+
+    ##
+    # @deprecated Use {#discard_classes} instead
+    attr_accessor :ignore_classes
 
     ##
     # @return [String] URL error notifications will be delivered to
@@ -67,6 +72,10 @@ module Bugsnag
     # @return [Regexp] matching file paths out of project
     attr_accessor :vendor_path
 
+    ##
+    # @return [Array]
+    attr_reader :scopes_to_filter
+
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -86,7 +95,9 @@ module Bugsnag
     DEFAULT_MAX_BREADCRUMBS = 25
 
     # Path to vendored code. Used to mark file paths as out of project.
-    DEFAULT_VENDOR_PATH = %r{^(vendor\/|\.bundle\/)}
+    DEFAULT_VENDOR_PATH = %r{^(vendor/|\.bundle/)}
+
+    DEFAULT_SCOPES_TO_FILTER = ['events.metaData', 'events.breadcrumbs.metaData'].freeze
 
     alias :track_sessions :auto_capture_sessions
     alias :track_sessions= :auto_capture_sessions=
@@ -99,6 +110,7 @@ module Bugsnag
       self.send_environment = false
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
+      self.scopes_to_filter = DEFAULT_SCOPES_TO_FILTER
       self.hostname = default_hostname
       self.runtime_versions = {}
       self.runtime_versions["ruby"] = RUBY_VERSION
@@ -122,7 +134,10 @@ module Bugsnag
 
       # SystemExit and SignalException are common Exception types seen with
       # successful exits and are not automatically reported to Bugsnag
+      # TODO move these defaults into `discard_classes` when `ignore_classes`
+      #      is removed
       self.ignore_classes = Set.new([SystemExit, SignalException])
+      self.discard_classes = Set.new([])
 
       # Read the API key from the environment
       self.api_key = ENV["BUGSNAG_API_KEY"]
@@ -147,6 +162,7 @@ module Bugsnag
       # Configure the bugsnag middleware stack
       self.internal_middleware = Bugsnag::MiddlewareStack.new
       self.internal_middleware.use Bugsnag::Middleware::ExceptionMetaData
+      self.internal_middleware.use Bugsnag::Middleware::DiscardErrorClass
       self.internal_middleware.use Bugsnag::Middleware::IgnoreErrorClass
       self.internal_middleware.use Bugsnag::Middleware::SuggestionData
       self.internal_middleware.use Bugsnag::Middleware::ClassifyError
@@ -303,6 +319,8 @@ module Bugsnag
     end
 
     private
+
+    attr_writer :scopes_to_filter
 
     PROG_NAME = "[Bugsnag]"
 

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Bugsnag::Cleaner do
-  subject { described_class.new(nil) }
+  subject { Bugsnag::Cleaner.new(Bugsnag::Configuration.new) }
 
   describe "#clean_object" do
     is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
@@ -134,6 +134,17 @@ describe Bugsnag::Cleaner do
       expect(subject.clean_object(object)).to eq("[RECURSION]")
     end
 
+    it "cleans custom objects to show the id of the object if object responds to id method" do
+      class MacaronWithId
+        def id
+          10
+        end
+      end
+
+      a = MacaronWithId.new
+      expect(subject.clean_object(a)).to eq("[OBJECT]: [Class]: #{a.class.name} [ID]: #{a.id}")
+    end
+
     it "cleans up binary strings properly" do
       if RUBY_VERSION > "1.9"
         obj = "Andr\xc7\xff"
@@ -156,23 +167,113 @@ describe Bugsnag::Cleaner do
     end
 
     it "filters by string inclusion" do
-      expect(described_class.new(['f']).clean_object({ :foo => 'bar' })).to eq({ :foo => '[FILTERED]' })
-      expect(described_class.new(['b']).clean_object({ :foo => 'bar' })).to eq({ :foo => 'bar' })
+      object = { events: { metaData: { foo: 'bar' } } }
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = ['f']
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+      expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: '[FILTERED]' } } })
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = ['b']
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+      expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: 'bar' } } })
     end
 
     it "filters by regular expression" do
-      expect(described_class.new([/fb?/]).clean_object({ :foo => 'bar' })).to eq({ :foo => '[FILTERED]' })
-      expect(described_class.new([/fb+/]).clean_object({ :foo => 'bar' })).to eq({ :foo => 'bar' })
+      object = { events: { metaData: { foo: 'bar' } } }
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = [/fb?/]
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+      expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: '[FILTERED]' } } })
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = [/fb+/]
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+      expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: 'bar' } } })
     end
 
     it "filters deeply nested keys" do
-      params = {:foo => {:bar => "baz"}}
-      expect(described_class.new([/^foo\.bar/]).clean_object(params)).to eq({:foo => {:bar => '[FILTERED]'}})
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = [/^foo\.bar/]
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+
+      params = { events: { metaData: { foo: { bar: 'baz' } } } }
+      expect(cleaner.clean_object(params)).to eq({ events: { metaData: { foo: { bar: '[FILTERED]' } } } })
     end
 
     it "filters deeply nested request parameters" do
-      params = {:request => {:params => {:foo => {:bar => "baz"}}}}
-      expect(described_class.new([/^foo\.bar/]).clean_object(params)).to eq({:request => {:params => {:foo => {:bar => '[FILTERED]'}}}})
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = [/^foo\.bar/]
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+
+      params = { events: { metaData: { request: { params: { foo: { bar: 'baz' } } } } } }
+      expect(cleaner.clean_object(params)).to eq({ events: { metaData: { request: { params: { foo: { bar: '[FILTERED]' } } } } } })
+    end
+
+    it "doesn't filter by string inclusion when the scope is not in 'scopes_to_filter'" do
+      object = { foo: 'bar' }
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = ['f']
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = ['b']
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+    end
+
+    it "doesn't filter by regular expression when the scope is not in 'scopes_to_filter'" do
+      object = { foo: 'bar' }
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = [/fb?/]
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = [/fb+/]
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+
+      expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+    end
+
+    it "doesn't filter deeply nested keys when the scope is not in 'scopes_to_filter'" do
+      params = { foo: { bar: 'baz' } }
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = [/^foo\.bar/]
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+
+      expect(cleaner.clean_object(params)).to eq({ foo: { bar: 'baz' } })
+    end
+
+    it "doesn't filter deeply nested request parameters when the scope is not in 'scopes_to_filter'" do
+      params = { request: { params: { foo: { bar: 'baz' } } } }
+
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = [/^foo\.bar/]
+
+      cleaner = Bugsnag::Cleaner.new(configuration)
+
+      expect(cleaner.clean_object(params)).to eq({ request: { params: { foo: { bar: 'baz' } } } })
     end
 
     it "filters objects which can't be stringified" do
@@ -187,7 +288,12 @@ describe Bugsnag::Cleaner do
 
   describe "#clean_url" do
     let(:filters) { [] }
-    subject { described_class.new(filters).clean_url(url) }
+
+    subject do
+      configuration = Bugsnag::Configuration.new
+      configuration.meta_data_filters = filters
+      described_class.new(configuration).clean_url(url)
+    end
 
     context "with no filters configured" do
       let(:url) { "/dir/page?param1=value1&param2=value2" }
