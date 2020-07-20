@@ -13,3 +13,5 @@ Scenario Outline: A reports severity can be modified
   | handled_before_notify   |
   | handled_block           |
   | unhandled_before_notify |
+  | handled_on_error        |
+  | unhandled_on_error      |

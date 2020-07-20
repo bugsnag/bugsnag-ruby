@@ -12,6 +12,8 @@ Scenario Outline: Stack frames can be removed
   | initiator               | lineNumber |
   | handled_before_notify   | 20         |
   | unhandled_before_notify | 21         |
+  | handled_on_error        | 20         |
+  | unhandled_on_error      | 21         |
 
 Scenario: Stack frames can be removed from a notified string
   Given I set environment variable "CALLBACK_INITIATOR" to "handled_block"
@@ -36,6 +38,8 @@ Scenario Outline: Stack frames can be marked as in project
   | initiator               |
   | handled_before_notify   |
   | unhandled_before_notify |
+  | handled_on_error        |
+  | unhandled_on_error      |
 
 Scenario: Stack frames can be marked as in project with a handled string
   Given I set environment variable "CALLBACK_INITIATOR" to "handled_block"
