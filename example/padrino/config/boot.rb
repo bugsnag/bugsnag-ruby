@@ -38,6 +38,14 @@ Bundler.require(:default, RACK_ENV)
 Padrino.before_load do
   Bugsnag.configure do |config|
     config.api_key = 'YOUR_API_KEY'
+
+    config.add_on_error(proc do |report|
+      report.add_tab(:user, {
+        username: 'bob-hoskins',
+        email: 'bugsnag@bugsnag.com',
+        registered_user: true
+      })
+    end)
   end
 end
 

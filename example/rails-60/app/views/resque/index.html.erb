@@ -18,7 +18,7 @@
     automatically executes each task, use:
 </p>
 
-<pre class="shell">QUEUE=crash,callback,metadata bundle exec rake resque:work</pre>
+<pre class="shell">QUEUE=crash,metadata bundle exec rake resque:work</pre>
 
 <ol>
     <li>
@@ -31,26 +31,11 @@
     </li>
 
     <li>
-        <p><a href="/resque/crash_with_callback">Crash and use callbacks</a></p>
-
-        <p>
-            Raises an exception within the framework, but with additional data
-            attached to the report.
-        </p>
-
-        <p>
-            By registering a callback before the error occurs useful data can
-            be attached as a tab in the Bugsnag dashboard.
-        </p>
-    </li>
-
-    <li>
         <p><a href="/resque/notify_data">Notify with data</a></p>
 
         <p>
             Same as <code>notify</code> but allows you to attach additional data
-            within a <code>block</code>, similar to the
-            "crash and use callbacks" example above.
+            within a <code>block</code>.
         </p>
 
         <p>

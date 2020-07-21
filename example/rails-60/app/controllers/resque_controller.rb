@@ -8,8 +8,4 @@ class ResqueController < ActionController::Base
   def metadata
     Resque.enqueue(ResqueWorkers::Metadata)
   end
-
-  def callbacks
-    Resque.enqueue(ResqueWorkers::Callback)
-  end
 end

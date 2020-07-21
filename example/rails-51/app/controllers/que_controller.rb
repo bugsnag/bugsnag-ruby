@@ -11,9 +11,4 @@ class QueController < ActionController::Base
     QueCrash.enqueue
     @text = "Que has queued the crash task"
   end
-
-  def callbacks
-    QueCallback.enqueue
-    @text = "Que has queued the callbacks task"
-  end
 end
