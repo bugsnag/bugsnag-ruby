@@ -14,6 +14,8 @@ Scenario Outline: A report can have a user name, email, and id set
   | handled_before_notify   |
   | handled_block           |
   | unhandled_before_notify |
+  | handled_on_error        |
+  | unhandled_on_error      |
 
 Scenario Outline: A report can have custom info set
   Given I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
@@ -30,6 +32,8 @@ Scenario Outline: A report can have custom info set
   | handled_before_notify   |
   | handled_block           |
   | unhandled_before_notify |
+  | handled_on_error        |
+  | unhandled_on_error      |
 
 Scenario Outline: A report can have its user info removed
   Given I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
@@ -43,3 +47,5 @@ Scenario Outline: A report can have its user info removed
   | handled_before_notify   |
   | handled_block           |
   | unhandled_before_notify |
+  | handled_on_error        |
+  | unhandled_on_error      |

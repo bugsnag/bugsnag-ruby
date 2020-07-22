@@ -15,6 +15,8 @@ Scenario Outline: Metadata can be added to a report using add_tab
   | handled_before_notify   |
   | handled_block           |
   | unhandled_before_notify |
+  | handled_on_error        |
+  | unhandled_on_error      |
 
 Scenario Outline: Metadata can be added to an existing tab using add_tab
   Given I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
@@ -33,6 +35,8 @@ Scenario Outline: Metadata can be added to an existing tab using add_tab
   | handled_before_notify   |
   | handled_block           |
   | unhandled_before_notify |
+  | handled_on_error        |
+  | unhandled_on_error      |
 
 Scenario Outline: Metadata can be overwritten using add_tab
   Given I set environment variable "CALLBACK_INITIATOR" to "<initiator>"
@@ -47,3 +51,5 @@ Scenario Outline: Metadata can be overwritten using add_tab
   | handled_before_notify   |
   | handled_block           |
   | unhandled_before_notify |
+  | handled_on_error        |
+  | unhandled_on_error      |
