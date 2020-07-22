@@ -24,15 +24,6 @@
     </li>
 
     <li>
-        <p><a href="/crash_with_callback">Crash and use callbacks</a></p>
-        <p>
-            Raises an exception within the framework, but with additional data
-            attached to the report.  By registering a callback before the error
-            occurs useful data can be attached as a tab in the Bugsnag dashboard.
-        </p>
-    </li>
-
-    <li>
         <p><a href="/notify">Notify</a></p>
         <p>
             Sends Bugsnag a report on demand using <code>bugsnag.notify</code>.
@@ -45,12 +36,10 @@
         <p><a href="/notify_data">Notify with data</a></p>
         <p>
             Same as <code>notify</code> but allows you to attach additional data
-            within a <code>block</code>, similar to the
-            <code>before_notify_callbacks</code> example above.
+            within a <code>block</code>.
         </p>
         <p>
-            In this case we're adding information about the user to go into the
-            <code>user</code> tab, and additional diagnostics as a
+            In this case we're adding additional diagnostics as a
             <code>diagnostics</code> tab.
         </p>
     </li>

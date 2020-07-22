@@ -133,5 +133,5 @@ Navigate to the `/resque` page and queue any of the examples using links provide
 To process the queues, run the `resque:work` task as stated in the example webpage. In order to process any of the queues on a single thread start the resque worker using the command:
 
 ```shell
-QUEUE=crash,callback,metadata bundle exec rake resque:work
+QUEUE=crash,metadata bundle exec rake resque:work
 ```

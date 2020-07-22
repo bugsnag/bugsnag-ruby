@@ -21,22 +21,11 @@
     </li>
 
     <li>
-        <p><a href="/sidekiq/crash_with_callback">Crash and use callbacks</a></p>
-
-        <p>
-            Raises an exception within the framework, but with additional data
-            attached to the report. By registering a callback before the error
-            occurs useful data can be attached as a tab in the Bugsnag dashboard.
-        </p>
-    </li>
-
-    <li>
         <p><a href="/sidekiq/notify_data">Notify with data</a></p>
 
         <p>
             Sends Bugsnag a report on demand using <code>bugsnag.notify</code>
-            and attaches additional data within a <code>block</code>, similar to
-            the "Crash and use callbacks" example above. In this case we're
+            and attaches additional data within a <code>block</code>. In this case we're
             adding information about the function being called to go into the
             <code class="upper">function</code> tab, and additional diagnostics
             as a <code class="upper">diagnostics</code> tab.

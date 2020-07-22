@@ -10,8 +10,4 @@ class SidekiqController < ActionController::Base
   def metadata
     SidekiqWorkers::MetadataWorker.perform_async
   end
-
-  def callbacks
-    SidekiqWorkers::CallbackWorker.perform_async
-  end
 end

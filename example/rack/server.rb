@@ -5,9 +5,16 @@ require 'rack/response'
 require 'bugsnag'
 require 'redcarpet'
 
-
 Bugsnag.configure do |config|
   config.api_key = 'YOUR_API_KEY'
+
+  config.add_on_error(proc do |report|
+    report.add_tab(:user, {
+      username: 'bob-hoskins',
+      email: 'bugsnag@bugsnag.com',
+      registered_user: true
+    })
+  end)
 end
 
 class BugsnagDemo
@@ -18,19 +25,6 @@ class BugsnagDemo
     when '/crash'
       raise RuntimeError.new('Bugsnag Rack demo says: It crashed! Go check ' +
         'bugsnag.com for a new notification!')
-    when '/crash_with_callback'
-      Bugsnag.before_notify_callbacks << proc { |report|
-        new_tab = {
-          message: 'Rack demo says: Everything is great',
-          code: 200
-        }
-        report.add_tab(:diagnostics, new_tab)
-      }
-
-      msg = 'Bugsnag Rack demo says: It crashed! But, due to the attached callback' +
-        ' the exception has meta information. Go check' +
-        ' bugsnag.com for a new notification (see the Diagnostics tab)!'
-      raise RuntimeError.new(msg)
     when '/notify'
       Bugsnag.notify(RuntimeError.new("Bugsnag Rack demo says: False alarm, your application didn't crash"))
 
@@ -39,21 +33,16 @@ class BugsnagDemo
         ' for a new notification.'
     when '/notify_data'
       error = RuntimeError.new("Bugsnag Rack demo says: False alarm, your application didn't crash")
-      Bugsnag.notify error do |report|
-        report.add_tab(:user, {
-          :username => "bob-hoskins",
-          :email => 'bugsnag@bugsnag.com',
-          :registered_user => true
-        })
+      Bugsnag.notify(error) do |report|
         report.add_tab(:diagnostics, {
-          :message => 'Rack demo says: Everything is great',
-          :code => 200
+          message: 'Padrino demo says: Everything is great',
+          code: 200
         })
       end
 
       text = "Bugsnag Rack demo says: It didn't crash! " +
         'But still go check <a href="https://bugsnag.com">https://bugsnag.com</a>' +
-        ' for a new notification. Check out the User tab for the meta data'
+        ' for a new notification. Check out the Diagnostics tab for the meta data'
     when '/notify_severity'
       msg = "Bugsnag Rack demo says: Look at the circle on the right side. It's different"
       error = RuntimeError.new(msg)

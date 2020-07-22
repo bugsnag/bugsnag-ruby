@@ -10,10 +10,6 @@ Make sure you have a Redis instance running that your test application can conne
 <br/>
     Raises an error within the framework, generating a report in the Bugsnag dashboard.
 
-2. [Crash and use callbacks](/sidekiq/crash_with_callback)
+2. [Notify with data](/sidekiq/notify_data)
 <br/>
-    Raises an exception within the framework, but with additional data attached to the report.  By registering a callback before the error occurs useful data can be attached as a tab in the Bugsnag dashboard.
-
-3. [Notify with data](/sidekiq/notify_data)
-<br/>
-    Same as `notify` but allows you to attach additional data within a `block`, similar to the `before_notify_callbacks` example above.  In this case we're adding information about the function being called to go into the `function` tab, and additional diagnostics as a `diagnostics` tab.
+    Same as `notify` but allows you to attach additional data within a `block`.  In this case we're adding information about the function being called to go into the `function` tab, and additional diagnostics as a `diagnostics` tab.

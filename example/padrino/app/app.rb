@@ -75,21 +75,6 @@ module BugsnagPadrino
         'bugsnag.com for a new notification!')
     end
 
-    get '/crash_with_callback' do
-      Bugsnag.before_notify_callbacks << proc { |report|
-        new_tab = {
-          message: 'Padrino demo says: Everything is great',
-          code: 200
-        }
-        report.add_tab(:diagnostics, new_tab)
-      }
-
-      msg = 'Bugsnag Padrino demo says: It crashed! But, due to the attached callback' +
-        ' the exception has meta information. Go check' +
-        ' bugsnag.com for a new notification (see the Diagnostics tab)!'
-      raise RuntimeError.new(msg)
-    end
-
     get '/notify' do
       Bugsnag.notify(RuntimeError.new("Bugsnag Padrino demo says: False alarm, your application didn't crash"))
 
@@ -100,21 +85,16 @@ module BugsnagPadrino
 
     get '/notify_data' do
       error = RuntimeError.new("Bugsnag Padrino demo says: False alarm, your application didn't crash")
-      Bugsnag.notify error do |report|
-        report.add_tab(:user, {
-          :username => "bob-hoskins",
-          :email => 'bugsnag@bugsnag.com',
-          :registered_user => true
-        })
+      Bugsnag.notify(error) do |report|
         report.add_tab(:diagnostics, {
-          :message => 'Padrino demo says: Everything is great',
-          :code => 200
+          message: 'Padrino demo says: Everything is great',
+          code: 200
         })
       end
 
       "Bugsnag Padrino demo says: It didn't crash! " +
         'But still go check <a href="https://bugsnag.com">https://bugsnag.com</a>' +
-        ' for a new notification. Check out the User tab for the meta data'
+        ' for a new notification. Check out the Diagnostics tab for the meta data'
     end
 
     get '/notify_severity' do
