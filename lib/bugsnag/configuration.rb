@@ -318,6 +318,33 @@ module Bugsnag
       @enable_sessions = false
     end
 
+    ##
+    # Add the given callback to the list of on_error callbacks
+    #
+    # The on_error callbacks will be called when an error is captured or reported
+    # and are passed a {Bugsnag::Report} object
+    #
+    # Returning false from an on_error callback will cause the error to be ignored
+    # and will prevent any remaining callbacks from being called
+    #
+    # @param callback [Proc]
+    # @return [void]
+    def add_on_error(callback)
+      middleware.use(callback)
+    end
+
+    ##
+    # Remove the given callback from the list of on_error callbacks
+    #
+    # Note that this must be the same Proc instance that was passed to
+    # {#add_on_error}, otherwise it will not be removed
+    #
+    # @param callback [Proc]
+    # @return [void]
+    def remove_on_error(callback)
+      middleware.remove(callback)
+    end
+
     private
 
     attr_writer :scopes_to_filter

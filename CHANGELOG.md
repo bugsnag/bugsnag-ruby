@@ -1,6 +1,17 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Add `on_error` callbacks to replace `before_notify_callbacks`
+  | [#608](https://github.com/bugsnag/bugsnag-ruby/pull/608)
+
+### Deprecated
+
+* `before_notify_callbacks` have been deprecated in favour of `on_error` and will be removed in the next major release
+
 ## 6.14.0 (20 July 2020)
 
 ### Enhancements
