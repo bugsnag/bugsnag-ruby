@@ -1,11 +1,9 @@
 require 'thread'
 require 'time'
 require 'securerandom'
-require 'concurrent'
 
 module Bugsnag
   class SessionTracker
-
     THREAD_SESSION = "bugsnag_session"
     SESSION_PAYLOAD_VERSION = "1.0"
     MUTEX = Mutex.new
@@ -27,6 +25,8 @@ module Bugsnag
     ##
     # Initializes the session tracker.
     def initialize
+      require 'concurrent'
+
       @session_counts = Concurrent::Hash.new(0)
     end
 

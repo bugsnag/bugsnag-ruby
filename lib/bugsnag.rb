@@ -48,6 +48,12 @@ module Bugsnag
     def configure(validate_api_key=true)
       yield(configuration) if block_given?
 
+      # Create the session tracker if sessions are enabled to avoid the overhead
+      # of creating it on the first request. We skip this if we're not validating
+      # the API key as we use this internally before the user's configure block
+      # has run, so we don't know if sessions are enabled yet.
+      session_tracker if validate_api_key && configuration.auto_capture_sessions
+
       check_key_valid if validate_api_key
       check_endpoint_setup
 
