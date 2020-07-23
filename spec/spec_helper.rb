@@ -30,6 +30,14 @@ def get_exception_from_payload(payload)
   event["exceptions"].last
 end
 
+def get_code_from_payload(payload, index = 0)
+  exception = get_exception_from_payload(payload)
+
+  expect(exception["stacktrace"].size).to be > index
+
+  exception["stacktrace"][index]["code"]
+end
+
 def notify_test_exception(*args)
   Bugsnag.notify(RuntimeError.new("test message"), *args)
 end

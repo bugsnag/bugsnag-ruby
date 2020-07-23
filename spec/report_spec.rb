@@ -1373,27 +1373,30 @@ describe Bugsnag::Report do
     notify_test_exception
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       exception = get_exception_from_payload(payload)
+
       bugsnag_count = 0
+
       exception["stacktrace"].each do |frame|
         if /.*lib\/bugsnag.*\.rb/.match(frame["file"])
           bugsnag_count += 1
           expect(frame["inProject"]).to be_nil
         end
       end
-      # 7 is used here as the called bugsnag frames for a `notify` call should be:
+
+      # 6 is used here as the called bugsnag frames for a `notify` call should be:
       # - Bugsnag.notify
       # - Report.new
       # - Report.initialize
       # - Report.generate_exceptions_list
       # - Report.generate_exceptions_list | raw_exceptions.map
       # - Report.generate_exceptions_list | raw_exceptions.map | block
-      # - Report.generate_exceptions_list | raw_exceptions.map | block | Stacktrace.new
-      # However, JRUBY does not include the two `new` frames, resulting in 5 bugsnag frames
+      # However, JRUBY does not include the `Report.new` frame, resulting in 5 bugsnag frames
       if defined?(JRUBY_VERSION)
         frame_count = 5
       else
-        frame_count = 7
+        frame_count = 6
       end
+
       expect(bugsnag_count).to equal frame_count
     }
   end
