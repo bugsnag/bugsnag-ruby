@@ -24,6 +24,21 @@ describe Bugsnag::Configuration do
     end
   end
 
+  describe "release_stage" do
+    after(:each) do
+      ENV["BUGSNAG_RELEASE_STAGE"] = nil
+    end
+
+    it "has no default value" do
+      expect(subject.release_stage).to be_nil
+    end
+
+    it "uses the 'BUGSNAG_RELEASE_STAGE' environment variable if set" do
+      ENV["BUGSNAG_RELEASE_STAGE"] = "foobar"
+      expect(subject.release_stage).to eq("foobar")
+    end
+  end
+
   describe "#notify_endpoint" do
     it "defaults to DEFAULT_NOTIFY_ENDPOINT" do
       expect(subject.notify_endpoint).to eq(Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT)

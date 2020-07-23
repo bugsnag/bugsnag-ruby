@@ -116,6 +116,7 @@ module Bugsnag
       self.runtime_versions["ruby"] = RUBY_VERSION
       self.runtime_versions["jruby"] = JRUBY_VERSION if defined?(JRUBY_VERSION)
       self.timeout = 15
+      self.release_stage = ENV['BUGSNAG_RELEASE_STAGE']
       self.notify_release_stages = nil
       self.auto_capture_sessions = true
 
