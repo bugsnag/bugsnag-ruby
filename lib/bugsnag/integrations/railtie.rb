@@ -63,9 +63,19 @@ module Bugsnag
 
     initializer "bugsnag.use_rack_middleware" do |app|
       begin
-        app.config.middleware.insert_after ActionDispatch::DebugExceptions, Bugsnag::Rack
-      rescue
-        app.config.middleware.use Bugsnag::Rack
+        begin
+          app.config.middleware.insert_after ActionDispatch::DebugExceptions, Bugsnag::Rack
+        rescue
+          app.config.middleware.use Bugsnag::Rack
+        end
+      rescue FrozenError
+        # This can happen when running RSpec if there is a crash after Rails has
+        # started booting but before we've added our middleware. If we don't ignore
+        # this error then the stacktrace blames Bugsnag, which isn't accurate as
+        # the middleware will only be frozen if an earlier error occurs
+        # See this comment for more info:
+        # https://github.com/thoughtbot/factory_bot_rails/issues/303#issuecomment-434560625
+        Bugsnag.configuration.warn("Unable to add Bugsnag::Rack middleware as the middleware stack is frozen")
       end
     end
 
