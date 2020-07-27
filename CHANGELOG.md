@@ -9,6 +9,9 @@ Changelog
   | [#499](https://github.com/bugsnag/bugsnag-ruby/pull/499)
   | [Mike Stewart](https://github.com/mike-stewart)
 
+* The `BUGSNAG_RELEASE_STAGE` environment variable can now be used to set the release stage. Previously this was only used in Rails applications
+  | [#613](https://github.com/bugsnag/bugsnag-ruby/pull/613)
+
 ## 6.15.0 (27 July 2020)
 
 ### Enhancements
