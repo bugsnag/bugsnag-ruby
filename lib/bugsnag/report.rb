@@ -182,7 +182,7 @@ module Bugsnag
         {
           errorClass: error_class(exception),
           message: exception.message,
-          stacktrace: Stacktrace.new(exception.backtrace, configuration).to_a
+          stacktrace: Stacktrace.process(exception.backtrace, configuration)
         }
       end
     end

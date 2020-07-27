@@ -1,6 +1,23 @@
 Changelog
 =========
 
+## 6.15.0 (27 July 2020)
+
+### Enhancements
+
+* Add `on_error` callbacks to replace `before_notify_callbacks`
+  | [#608](https://github.com/bugsnag/bugsnag-ruby/pull/608)
+
+* Improve performance when extracting code from files in stacktraces
+  | [#604](https://github.com/bugsnag/bugsnag-ruby/pull/604)
+
+* Reduce memory use when session tracking is disabled
+  | [#606](https://github.com/bugsnag/bugsnag-ruby/pull/606)
+
+### Deprecated
+
+* `before_notify_callbacks` have been deprecated in favour of `on_error` and will be removed in the next major release
+
 ## 6.14.0 (20 July 2020)
 
 ### Enhancements

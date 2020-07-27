@@ -1,3 +1,5 @@
+require "bugsnag/on_error_callbacks"
+
 module Bugsnag
   class MiddlewareStack
     ##
@@ -65,11 +67,26 @@ module Bugsnag
       end
     end
 
+    ##
+    # Disable the given middleware. This removes them from the list of
+    # middleware and ensures they cannot be added again
+    #
+    # See also {#remove}
     def disable(*middlewares)
       @mutex.synchronize do
         @disabled_middleware += middlewares
 
-        @middlewares.delete_if {|m| @disabled_middleware.include?(m)}
+        @middlewares.delete_if {|m| @disabled_middleware.include?(m) }
+      end
+    end
+
+    ##
+    # Remove the given middleware from the list of middleware
+    #
+    # This is like {#disable} but allows the middleware to be added again
+    def remove(*middlewares)
+      @mutex.synchronize do
+        @middlewares.delete_if {|m| middlewares.include?(m) }
       end
     end
 
@@ -91,7 +108,7 @@ module Bugsnag
 
       begin
         # We reverse them, so we can call "call" on the first middleware
-        middleware_procs.reverse.inject(notify_lambda) { |n,e| e.call(n) }.call(report)
+        middleware_procs.reverse.inject(notify_lambda) {|n, e| e.call(n) }.call(report)
       rescue StandardError => e
         # KLUDGE: Since we don't re-raise middleware exceptions, this breaks rspec
         raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
@@ -107,10 +124,28 @@ module Bugsnag
     end
 
     private
+
+    ##
     # Generates a list of middleware procs that are ready to be run
     # Pass each one a reference to the next in the queue
+    #
+    # @return [Array<Proc>]
     def middleware_procs
-      @middlewares.map{|middleware| proc { |next_middleware| middleware.new(next_middleware) } }
+      # Split the middleware into separate lists of Procs and Classes
+      procs, classes = @middlewares.partition {|middleware| middleware.is_a?(Proc) }
+
+      # Wrap the classes in a proc that, when called, news up the middleware and
+      # passes the next middleware in the queue
+      middleware_instances = classes.map do |middleware|
+        proc {|next_middleware| middleware.new(next_middleware) }
+      end
+
+      # Wrap the list of procs in a proc that, when called, wraps them in an
+      # 'OnErrorCallbacks' instance that also has a reference to the next middleware
+      wrapped_procs = proc {|next_middleware| OnErrorCallbacks.new(next_middleware, procs) }
+
+      # Return the combined middleware and wrapped procs
+      middleware_instances.push(wrapped_procs)
     end
   end
 end

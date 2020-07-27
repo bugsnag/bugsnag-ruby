@@ -18,4 +18,12 @@ Bugsnag.configure do |config|
       breadcrumb.ignore! unless breadcrumb.meta_data[:event_name] == "sql.active_record" && breadcrumb.meta_data[:name] == "User Load"
     end
   end
+
+  if ENV["ADD_ON_ERROR"] == "true"
+    config.add_on_error(proc do |report|
+      report.add_tab(:on_error, {
+        source: report.unhandled ? 'on_error unhandled' : 'on_error handled'
+      })
+    end)
+  end
 end

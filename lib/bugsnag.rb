@@ -48,6 +48,12 @@ module Bugsnag
     def configure(validate_api_key=true)
       yield(configuration) if block_given?
 
+      # Create the session tracker if sessions are enabled to avoid the overhead
+      # of creating it on the first request. We skip this if we're not validating
+      # the API key as we use this internally before the user's configure block
+      # has run, so we don't know if sessions are enabled yet.
+      session_tracker if validate_api_key && configuration.auto_capture_sessions
+
       check_key_valid if validate_api_key
       check_endpoint_setup
 
@@ -169,6 +175,8 @@ module Bugsnag
     # Allow access to "before notify" callbacks as an array.
     #
     # These callbacks will be called whenever an error notification is being made.
+    #
+    # @deprecated Use {Bugsnag#add_on_error} instead
     def before_notify_callbacks
       Bugsnag.configuration.request_data[:before_callbacks] ||= []
     end
@@ -225,6 +233,33 @@ module Bugsnag
 
       # Add to breadcrumbs buffer if still valid
       configuration.breadcrumbs << breadcrumb unless breadcrumb.ignore?
+    end
+
+    ##
+    # Add the given callback to the list of on_error callbacks
+    #
+    # The on_error callbacks will be called when an error is captured or reported
+    # and are passed a {Bugsnag::Report} object
+    #
+    # Returning false from an on_error callback will cause the error to be ignored
+    # and will prevent any remaining callbacks from being called
+    #
+    # @param callback [Proc]
+    # @return [void]
+    def add_on_error(callback)
+      configuration.add_on_error(callback)
+    end
+
+    ##
+    # Remove the given callback from the list of on_error callbacks
+    #
+    # Note that this must be the same Proc instance that was passed to
+    # {Bugsnag#add_on_error}, otherwise it will not be removed
+    #
+    # @param callback [Proc]
+    # @return [void]
+    def remove_on_error(callback)
+      configuration.remove_on_error(callback)
     end
 
     ##

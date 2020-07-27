@@ -1,6 +1,7 @@
-module Bugsnag
-  class Stacktrace
+require_relative 'code_extractor'
 
+module Bugsnag
+  module Stacktrace
     # e.g. "org/jruby/RubyKernel.java:1264:in `catch'"
     BACKTRACE_LINE_REGEX = /^((?:[a-zA-Z]:)?[^:]+):(\d+)(?::in `([^']+)')?$/
 
@@ -10,13 +11,15 @@ module Bugsnag
     ##
     # Process a backtrace and the configuration into a parsed stacktrace.
     #
-    # rubocop:todo Metrics/CyclomaticComplexity
-    def initialize(backtrace, configuration)
-      @configuration = configuration
+    # @param backtrace [Array, nil] If nil, 'caller' will be used instead
+    # @param configuration [Configuration]
+    # @return [Array]
+    def self.process(backtrace, configuration)
+      code_extractor = CodeExtractor.new(configuration)
 
       backtrace = caller if !backtrace || backtrace.empty?
 
-      @processed_backtrace = backtrace.map do |trace|
+      processed_backtrace = backtrace.map do |trace|
         # Parse the stacktrace line
         if trace.match(BACKTRACE_LINE_REGEX)
           file, line_str, method = [$1, $2, $3]
@@ -24,26 +27,24 @@ module Bugsnag
           method, file, line_str = [$1, $2, $3]
         end
 
-        next(nil) if file.nil?
+        next if file.nil?
 
         # Expand relative paths
         file = File.realpath(file) rescue file
 
         # Generate the stacktrace line hash
-        trace_hash = {}
-        trace_hash[:lineNumber] = line_str.to_i
+        trace_hash = { lineNumber: line_str.to_i }
 
-        if configuration.send_code
-          trace_hash[:code] = code(file, trace_hash[:lineNumber])
-        end
+        # Save a copy of the file path as we're about to modify it but need the
+        # raw version when extracting code (otherwise we can't open the file)
+        raw_file_path = file.dup
 
         # Clean up the file path in the stacktrace
-        if defined?(@configuration.project_root) && @configuration.project_root.to_s != ''
-          trace_hash[:inProject] = true if file.start_with?(@configuration.project_root.to_s)
-          file.sub!(/#{@configuration.project_root}\//, "")
-          trace_hash.delete(:inProject) if file.match(@configuration.vendor_path)
+        if defined?(configuration.project_root) && configuration.project_root.to_s != ''
+          trace_hash[:inProject] = true if file.start_with?(configuration.project_root.to_s)
+          file.sub!(/#{configuration.project_root}\//, "")
+          trace_hash.delete(:inProject) if file.match(configuration.vendor_path)
         end
-
 
         # Strip common gem path prefixes
         if defined?(Gem)
@@ -55,60 +56,16 @@ module Bugsnag
         # Add a method if we have it
         trace_hash[:method] = method if method && (method =~ /^__bind/).nil?
 
-        if trace_hash[:file] && !trace_hash[:file].empty?
-          trace_hash
-        else
-          nil
-        end
+        # If we're going to send code then record the raw file path and the
+        # trace_hash, so we can extract from it later
+        code_extractor.add_file(raw_file_path, trace_hash) if configuration.send_code
+
+        trace_hash
       end.compact
-    end
-    # rubocop:enable Metrics/CyclomaticComplexity
 
-    ##
-    # Returns the processed backtrace
-    def to_a
-      @processed_backtrace
-    end
+      code_extractor.extract! if configuration.send_code
 
-    private
-
-    def code(file, line_number, num_lines = 7)
-      code_hash = {}
-
-      from_line = [line_number - num_lines, 1].max
-
-      # don't try and open '(irb)' or '-e'
-      return unless File.exist?(file)
-
-      # Populate code hash with line numbers and code lines
-      File.open(file) do |f|
-        current_line_number = 0
-        f.each_line do |line|
-          current_line_number += 1
-
-          next if current_line_number < from_line
-
-          code_hash[current_line_number] = line[0...200].rstrip
-
-          break if code_hash.length >= ( num_lines * 1.5 ).ceil
-        end
-      end
-
-      while code_hash.length > num_lines
-        last_line = code_hash.keys.max
-        first_line = code_hash.keys.min
-
-        if (last_line - line_number) > (line_number - first_line)
-          code_hash.delete(last_line)
-        else
-          code_hash.delete(first_line)
-        end
-      end
-
-      code_hash
-    rescue
-      @configuration.warn("Error fetching code: #{$!.inspect}")
-      nil
+      processed_backtrace
     end
   end
 end

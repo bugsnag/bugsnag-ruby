@@ -16,9 +16,4 @@ class ResqueController < ActionController::Base
     Resque.enqueue(ResqueWorkers::Metadata)
     @text = "The metadata task has been queued.  This can be run using the `QUEUE=metadata bundle exec rake resque:work` command"
   end
-
-  def callbacks
-    Resque.enqueue(ResqueWorkers::Callback)
-    @text = "The callback task has been queued.  This can be run using the `QUEUE=callback bundle exec rake resque:work` command"
-  end
 end

@@ -1,20 +1,4 @@
 module SidekiqWorkers
-  class CallbackWorker
-    include Sidekiq::Worker
-    sidekiq_options :retry => false
-
-    def perform
-      Bugsnag.before_notify_callbacks << proc { |report|
-        new_tab = {
-          message: 'Sidekiq demo says: Everything is great',
-          code: 200
-        }
-        report.add_tab(:diagnostics, new_tab)
-      }
-      raise Exception.new "Sidekiq crashed, but the callback added metadata - Check your Bugsnag dashboard"
-    end
-  end
-
   class CrashWorker
     include Sidekiq::Worker
     sidekiq_options :retry => false
