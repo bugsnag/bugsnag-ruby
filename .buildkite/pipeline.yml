@@ -170,8 +170,8 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "1.9.3"
-    concurrency: 4
-    concurrency_group: 'ruby/maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.0 plain tests'
     plugins:
@@ -181,8 +181,8 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.0"
-    concurrency: 4
-    concurrency_group: 'ruby/maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.1 plain tests'
     plugins:
@@ -192,8 +192,8 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.1"
-    concurrency: 4
-    concurrency_group: 'ruby/maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.2 plain tests'
     plugins:
@@ -203,8 +203,8 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.2"
-    concurrency: 4
-    concurrency_group: 'ruby/maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.3 plain tests'
     plugins:
@@ -214,8 +214,8 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.3"
-    concurrency: 4
-    concurrency_group: 'ruby/maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.4 plain tests'
     plugins:
@@ -225,8 +225,8 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.4"
-    concurrency: 4
-    concurrency_group: 'ruby/maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.5 plain tests'
     plugins:
@@ -236,8 +236,8 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
-    concurrency: 4
-    concurrency_group: 'ruby/maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.6 plain tests'
     plugins:
@@ -247,8 +247,8 @@ steps:
         command: ["features/plain_features/", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.6"
-    concurrency: 4
-    concurrency_group: 'ruby/maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':sidekiq: Sidekiq 2 tests'
     plugins:
@@ -295,8 +295,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.0"
       RAILS_VERSION: "3"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.1 tests'
     plugins:
@@ -307,8 +307,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.1"
       RAILS_VERSION: "3"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.2 tests'
     plugins:
@@ -319,8 +319,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.2"
       RAILS_VERSION: "3"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.3 tests'
     plugins:
@@ -331,8 +331,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.3"
       RAILS_VERSION: "3"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.4 tests'
     plugins:
@@ -343,8 +343,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.4"
       RAILS_VERSION: "3"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.5 tests'
     plugins:
@@ -355,8 +355,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.5"
       RAILS_VERSION: "3"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 4 Ruby 2.2 tests'
     plugins:
@@ -367,8 +367,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.2"
       RAILS_VERSION: "4"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 4 Ruby 2.3 tests'
     plugins:
@@ -379,8 +379,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.3"
       RAILS_VERSION: "4"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.2 tests'
     plugins:
@@ -391,8 +391,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.2"
       RAILS_VERSION: "5"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.3 tests'
     plugins:
@@ -403,8 +403,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.3"
       RAILS_VERSION: "5"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.4 tests'
     plugins:
@@ -415,8 +415,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.4"
       RAILS_VERSION: "5"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.5 tests'
     plugins:
@@ -427,8 +427,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.5"
       RAILS_VERSION: "5"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.6 tests'
     plugins:
@@ -439,8 +439,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.6"
       RAILS_VERSION: "5"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 6 Ruby 2.5 tests'
     plugins:
@@ -451,8 +451,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.5"
       RAILS_VERSION: "6"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 6 Ruby 2.6 tests'
     plugins:
@@ -463,8 +463,8 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.6"
       RAILS_VERSION: "6"
-    concurrency: 4
-    concurrency_group: 'ruby/rails-maze-runner-tests'
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 1.9 tests'
     plugins:
