@@ -2,4 +2,4 @@ source 'https://rubygems.org'
 
 gem 'bugsnag', path: '/bugsnag'
 
-gem 'rake', RUBY_VERSION <= '2.0.0' ? '12.2.1': '>12.2.1'
+gem 'rake', RUBY_VERSION <= '2.0.0' ? '12.2.1' : '>12.2.1'
