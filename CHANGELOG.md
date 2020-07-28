@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Set default Delayed Job error context to job class
+  | [#499](https://github.com/bugsnag/bugsnag-ruby/pull/499)
+  | [Mike Stewart](https://github.com/mike-stewart)
+
 ## 6.15.0 (27 July 2020)
 
 ### Enhancements

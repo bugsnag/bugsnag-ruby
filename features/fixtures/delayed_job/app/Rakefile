@@ -13,6 +13,10 @@ namespace :delayed_job_tests do
   task :notify_with_args do
     run_delayed_job_test('"TestModel.delay.notify_with_args(\"Test\")"')
   end
+
+  task :report_context do
+    run_delayed_job_test('"Delayed::Job.enqueue TestReportContextJob.new"')
+  end
 end
 
 def run_delayed_job_test(command)

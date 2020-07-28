@@ -24,6 +24,7 @@ module Bugsnag::Middleware
           job_data[:active_job] = job.payload_object.job_data if job.payload_object.respond_to?(:job_data)
           payload_data = construct_job_payload(job.payload_object)
           report.context = payload_data[:display_name] if payload_data.include?(:display_name)
+          report.context ||= payload_data[:class] if payload_data.include?(:class)
           job_data[:payload] = payload_data
         end
 
