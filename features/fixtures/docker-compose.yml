@@ -85,8 +85,6 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
-    ports:
-      - "3001:3000"
     restart: "no"
 
   rack2:
@@ -97,8 +95,6 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
-    ports:
-      - "3002:3000"
     restart: "no"
 
   rails3:
