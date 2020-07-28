@@ -22,7 +22,6 @@ def configure_using_environment
     conf.proxy_password = ENV["BUGSNAG_PROXY_PASSWORD"] if ENV.include? "BUGSNAG_PROXY_PASSWORD"
     conf.proxy_port = ENV["BUGSNAG_PROXY_PORT"] if ENV.include? "BUGSNAG_PROXY_PORT"
     conf.proxy_user = ENV["BUGSNAG_PROXY_USER"] if ENV.include? "BUGSNAG_PROXY_USER"
-    conf.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] if ENV.include? "BUGSNAG_RELEASE_STAGE"
     conf.send_environment = ENV["BUGSNAG_SEND_ENVIRONMENT"] != "false"
     conf.send_code = ENV["BUGSNAG_SEND_CODE"] != "false"
     conf.timeout = ENV["BUGSNAG_TIMEOUT"] if ENV.include? "BUGSNAG_TIMEOUT"
