@@ -79,7 +79,7 @@ steps:
       RUBY_TEST_VERSION: "2.5"
       SIDEKIQ_VERSION: "~> 5"
 
-  - block: "Trigger full test suite"
+  - wait
 
   - label: ':ruby: JRuby unit tests'
     plugins:
