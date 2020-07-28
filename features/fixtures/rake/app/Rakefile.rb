@@ -8,13 +8,13 @@ Bugsnag.configure do |config|
 end
 
 task :unhandled do
-  raise RuntimeError.new('Unhandled error')
+  raise 'Unhandled error'
 end
 
 task :handled do
   begin
-    raise RuntimeError.new('Handled error')
-  rescue => exception
-    Bugsnag.notify(exception)
+    raise 'Handled error'
+  rescue StandardError => e
+    Bugsnag.notify(e)
   end
 end
