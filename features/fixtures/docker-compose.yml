@@ -243,17 +243,6 @@ services:
         aliases:
           - rails6
 
-  resque:
-    build:
-      context: resque
-      args:
-        - RUBY_TEST_VERSION
-    depends_on:
-      - redis
-    environment:
-      - endpoint
-    restart: "no"
-
   sidekiq:
     build:
       context: sidekiq
@@ -285,24 +274,6 @@ services:
       - BUGSNAG_SESSION_ENDPOINT
       - BUGSNAG_TIMEOUT
       - CALLBACK_INITIATOR
-    restart: "no"
-
-  sinatra1:
-    build:
-      context: sinatra1
-      args:
-        - RUBY_TEST_VERSION
-    environment:
-      - endpoint
-    restart: "no"
-
-  sinatra2:
-    build:
-      context: sinatra2
-      args:
-        - RUBY_TEST_VERSION
-    environment:
-      - endpoint
     restart: "no"
 
   mailman:
