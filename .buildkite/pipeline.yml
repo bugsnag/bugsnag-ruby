@@ -467,3 +467,117 @@ steps:
       RAILS_VERSION: "6"
     concurrency: 8
     concurrency_group: 'rails-tests'
+
+  - label: ':clipboard: Rake Ruby 1.9 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/rake.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '1.9.3'
+    concurrency: 8
+    concurrency_group: 'rake-tests'
+
+  - label: ':clipboard: Rake Ruby 2.7 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/rake.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.7'
+    concurrency: 8
+    concurrency_group: 'rake-tests'
+
+  - label: ':postbox: Mailman Ruby 2.0 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/mailman.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.0'
+    concurrency: 8
+    concurrency_group: 'mailman-tests'
+
+  - label: ':postbox: Mailman Ruby 2.7 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/mailman.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.7'
+    concurrency: 8
+    concurrency_group: 'mailman-tests'
+
+  - label: ':key: Que Ruby 2.0 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/que.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.0'
+    concurrency: 8
+    concurrency_group: 'que-tests'
+
+  - label: ':key: Que Ruby 2.7 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/que.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.7'
+    concurrency: 8
+    concurrency_group: 'que-tests'
+
+  - label: ':bed: Rack 1 Ruby 1.9 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/rack.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '1.9.3'
+      RACK_VERSION: '1'
+    concurrency: 8
+    concurrency_group: 'rack-tests'
+
+  - label: ':bed: Rack 1 Ruby 2.7 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/rack.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.7'
+      RACK_VERSION: '1'
+    concurrency: 8
+    concurrency_group: 'rack-tests'
+
+  - label: ':bed: Rack 2 Ruby 2.2 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/rack.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.2'
+      RACK_VERSION: '2'
+    concurrency: 8
+    concurrency_group: 'rack-tests'
+
+  - label: ':bed: Rack 2 Ruby 2.7 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/rack.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.7'
+      RACK_VERSION: '2'
+    concurrency: 8
+    concurrency_group: 'rack-tests'
