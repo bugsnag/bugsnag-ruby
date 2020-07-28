@@ -26,17 +26,17 @@ Scenario: Changing app_type after initializer works
 @rails3 @rails4 @rails5 @rails6
 Scenario: Should default to "rails" for handled errors
   Given I start the rails service
-  When I navigate to the route "/app_type/default_handled" on the rails app
+  When I navigate to the route "/app_type/handled" on the rails app
   And I wait to receive a request
   Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
-  And the event "metaData.request.url" ends with "/app_type/default_handled"
+  And the event "metaData.request.url" ends with "/app_type/handled"
   And the event "app.type" equals "rails"
 
 @rails3 @rails4 @rails5 @rails6
 Scenario: Should default to "rails" for unhandled errors
   Given I start the rails service
-  When I navigate to the route "/app_type/default_unhandled" on the rails app
+  When I navigate to the route "/app_type/unhandled" on the rails app
   And I wait to receive a request
   Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
-  And the event "metaData.request.url" ends with "/app_type/default_unhandled"
+  And the event "metaData.request.url" ends with "/app_type/unhandled"
   And the event "app.type" equals "rails"
