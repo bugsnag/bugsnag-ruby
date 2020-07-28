@@ -58,8 +58,7 @@ steps:
       RUBY_TEST_VERSION: "2.7"
       RAILS_VERSION: "6"
 
-
-  - label: ':ruby: Delayed job tests'
+  - label: ':construction: Delayed job tests'
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -70,7 +69,7 @@ steps:
     concurrency: 8
     concurrency_group: 'rails-tests'
 
-  - label: ':ruby: Sidekiq 5 tests'
+  - label: ':sidekiq: Sidekiq 5 tests'
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -253,7 +252,7 @@ steps:
     concurrency: 8
     concurrency_group: 'rails-tests'
 
-  - label: ':ruby: Sidekiq 2 tests'
+  - label: ':sidekiq: Sidekiq 2 tests'
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -265,7 +264,7 @@ steps:
     concurrency: 8
     concurrency_group: 'rails-tests'
 
-  - label: ':ruby: Sidekiq 3 tests'
+  - label: ':sidekiq: Sidekiq 3 tests'
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -277,7 +276,7 @@ steps:
     concurrency: 8
     concurrency_group: 'rails-tests'
 
-  - label: ':ruby: Sidekiq 4 tests'
+  - label: ':sidekiq: Sidekiq 4 tests'
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
