@@ -12,7 +12,7 @@ steps:
 
   - wait
 
-  - label: ':ruby: Ruby 1.9.3 unit tests'
+  - label: ':ruby: Ruby 1.9 unit tests'
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -87,7 +87,7 @@ steps:
         run: jruby-unit-tests
         use-aliases: true
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'unit-tests'
 
   - label: ':ruby: Ruby 2.0 unit tests'
     plugins:
@@ -97,7 +97,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.0"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'unit-tests'
 
   - label: ':ruby: Ruby 2.1 unit tests'
     plugins:
@@ -107,7 +107,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.1"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'unit-tests'
 
   - label: ':ruby: Ruby 2.2 unit tests'
     plugins:
@@ -118,7 +118,7 @@ steps:
       RUBY_TEST_VERSION: "2.2"
       GEMSETS: "test sidekiq"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'unit-tests'
 
   - label: ':ruby: Ruby 2.3 unit tests'
     plugins:
@@ -129,7 +129,7 @@ steps:
       RUBY_TEST_VERSION: "2.3"
       GEMSETS: "test sidekiq"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'unit-tests'
 
   - label: ':ruby: Ruby 2.4 unit tests'
     plugins:
@@ -140,7 +140,7 @@ steps:
       RUBY_TEST_VERSION: "2.4"
       GEMSETS: "test sidekiq"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'unit-tests'
 
   - label: ':ruby: Ruby 2.5 unit tests'
     plugins:
@@ -151,7 +151,7 @@ steps:
       RUBY_TEST_VERSION: "2.5"
       GEMSETS: "test sidekiq"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'unit-tests'
 
   - label: ':ruby: Ruby 2.6 unit tests'
     plugins:
@@ -162,9 +162,9 @@ steps:
       RUBY_TEST_VERSION: "2.6"
       GEMSETS: "test sidekiq"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'unit-tests'
 
-  - label: ':ruby: Ruby 1.9.3 plain tests'
+  - label: ':ruby: Ruby 1.9 plain tests'
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -173,7 +173,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "1.9.3"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'plain-tests'
 
   - label: ':ruby: Ruby 2.0 plain tests'
     plugins:
@@ -184,7 +184,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.0"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'plain-tests'
 
   - label: ':ruby: Ruby 2.1 plain tests'
     plugins:
@@ -195,7 +195,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.1"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'plain-tests'
 
   - label: ':ruby: Ruby 2.2 plain tests'
     plugins:
@@ -206,7 +206,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.2"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'plain-tests'
 
   - label: ':ruby: Ruby 2.3 plain tests'
     plugins:
@@ -217,7 +217,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.3"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'plain-tests'
 
   - label: ':ruby: Ruby 2.4 plain tests'
     plugins:
@@ -228,7 +228,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.4"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'plain-tests'
 
   - label: ':ruby: Ruby 2.5 plain tests'
     plugins:
@@ -239,7 +239,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.5"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'plain-tests'
 
   - label: ':ruby: Ruby 2.6 plain tests'
     plugins:
@@ -250,7 +250,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.6"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'plain-tests'
 
   - label: ':sidekiq: Sidekiq 2 tests'
     plugins:
@@ -262,7 +262,7 @@ steps:
       RUBY_TEST_VERSION: "2.5"
       SIDEKIQ_VERSION: "~> 2"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'sidekiq-tests'
 
   - label: ':sidekiq: Sidekiq 3 tests'
     plugins:
@@ -274,7 +274,7 @@ steps:
       RUBY_TEST_VERSION: "2.5"
       SIDEKIQ_VERSION: "~> 3"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'sidekiq-tests'
 
   - label: ':sidekiq: Sidekiq 4 tests'
     plugins:
@@ -286,7 +286,7 @@ steps:
       RUBY_TEST_VERSION: "2.5"
       SIDEKIQ_VERSION: "~> 4"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'sidekiq-tests'
 
   - label: ':rails: Rails 3 Ruby 2.0 tests'
     plugins:
@@ -298,7 +298,7 @@ steps:
       RUBY_TEST_VERSION: "2.0"
       RAILS_VERSION: "3"
     concurrency: 8
-    concurrency_group: 'rails-tests'
+    concurrency_group: 'sidekiq-tests'
 
   - label: ':rails: Rails 3 Ruby 2.1 tests'
     plugins:
