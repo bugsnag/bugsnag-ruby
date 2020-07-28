@@ -296,7 +296,7 @@ steps:
       RUBY_TEST_VERSION: "2.0"
       RAILS_VERSION: "3"
     concurrency: 4
-    concurrency_group: 'ruby/integrations-maze-runner-tests'
+    concurrency_group: 'ruby/rails-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.1 tests'
     plugins:
