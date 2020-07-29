@@ -1,24 +1,25 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## DelayedJob
 
-Things you may want to cover:
+- Queue a job with `bin/rails runner 'User.new.delay.raise_the_roof'`
+- Run the job queue using `bundle exec rake jobs:workoff`
 
-* Ruby version
+## Que
 
-* System dependencies
+- Queue a job with `bin/rails runner 'QueJob.enqueue'`
+- Run the job queue with `bundle exec que ./config/environment.rb`
 
-* Configuration
+## Rake
 
-* Database creation
+- Run a failing Rake task with `bin/rails rake_task:raise`
 
-* Database initialization
+## Resque
 
-* How to run the test suite
+- Queue a job with `bin/rails runner 'Resque.enqueue(ResqueWorker)'`
+- Run the job queue with `QUEUE=* bundle exec rake resque:work`
 
-* Services (job queues, cache servers, search engines, etc.)
+## Sidekiq
 
-* Deployment instructions
-
-* ...
+- Queue a job with `bin/rails runner 'SidekiqWorker.perform_async'`
+- Run the job queue with `bundle exec sidekiq` (add `-d` to run as a daemon)
