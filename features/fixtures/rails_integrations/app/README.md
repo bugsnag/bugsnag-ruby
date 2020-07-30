@@ -5,6 +5,10 @@
 - Queue a job with `bin/rails runner 'User.new.delay.raise_the_roof'`
 - Run the job queue using `bundle exec rake jobs:workoff`
 
+## Mailman
+
+- Run Mailman with the `run_mailman` script
+
 ## Que
 
 - Queue a job with `bin/rails runner 'QueJob.enqueue'`
