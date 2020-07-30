@@ -11,6 +11,8 @@ RUN apt-get install -y nodejs yarn
 WORKDIR /bugsnag
 COPY temp-bugsnag-lib ./
 
+ENV BUGSNAG_GEM_PATH /bugsnag
+
 WORKDIR /usr/src/app
 COPY app/Gemfile /usr/src/app/
 RUN bundle install
