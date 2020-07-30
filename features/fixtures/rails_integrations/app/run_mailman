@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+cat example.eml | bundle exec ruby mailman.rb
