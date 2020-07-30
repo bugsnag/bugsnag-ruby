@@ -26,6 +26,20 @@ Scenario: Delayed job
   And the event "metaData.job.payload.method_name" equals "raise_the_roof"
 
 @rails_integrations
+Scenario: Mailman
+  When I run "./run_mailman" in the rails app
+  And I wait to receive a request
+  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And the event "unhandled" is true
+  And the event "context" is null
+  And the event "severity" equals "error"
+  And the event "severityReason.type" equals "unhandledExceptionMiddleware"
+  And the event "severityReason.attributes.framework" equals "Mailman"
+  And the event "app.type" equals "mailman"
+  And the exception "errorClass" equals "RuntimeError"
+  And the event "metaData.mailman.message" starts with "Date: Mon, 04 Feb 2019 17:54:01 +0000"
+
+@rails_integrations
 Scenario: Que
   When I run "bundle exec que ./config/environment.rb" in the rails app
   And I run "QueJob.enqueue" with the rails runner
