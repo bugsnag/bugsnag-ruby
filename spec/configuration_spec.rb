@@ -24,6 +24,28 @@ describe Bugsnag::Configuration do
     end
   end
 
+  describe "app_type" do
+    it "should default to nil" do
+      expect(subject.app_type).to be_nil
+    end
+
+    it "should be settable directly" do
+      subject.app_type = :test
+      expect(subject.app_type).to eq(:test)
+    end
+
+    it "should allow a detected app_type to be set" do
+      subject.detected_app_type = :test
+      expect(subject.app_type).to eq(:test)
+    end
+
+    it "should allow the app_type to be set over a default" do
+      subject.detected_app_type = :test
+      subject.app_type = :wow
+      expect(subject.app_type).to eq(:wow)
+    end
+  end
+
   describe "#notify_endpoint" do
     it "defaults to DEFAULT_NOTIFY_ENDPOINT" do
       expect(subject.notify_endpoint).to eq(Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT)

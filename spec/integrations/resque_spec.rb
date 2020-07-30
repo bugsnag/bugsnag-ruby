@@ -44,7 +44,7 @@ describe 'Bugsnag::Resque', :order => :defined do
     expect(::Resque::Worker).to receive(:new).with(:bugsnag_fork_check).and_return(fork_check)
     expect(fork_check).to receive(:fork_per_job?).and_return(true)
     expect(::Resque).to receive(:after_fork).and_yield
-    expect(Bugsnag.configuration).to receive(:app_type=).with("resque")
+    expect(Bugsnag.configuration).to receive(:detected_app_type=).with("resque")
     runtime = {}
     expect(Bugsnag.configuration).to receive(:runtime_versions).and_return(runtime)
     expect(Bugsnag.configuration).to receive(:default_delivery_method=).with(:synchronous)

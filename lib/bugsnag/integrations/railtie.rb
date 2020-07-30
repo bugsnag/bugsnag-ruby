@@ -43,7 +43,9 @@ module Bugsnag
 
       Bugsnag::Rails::DEFAULT_RAILS_BREADCRUMBS.each { |event| event_subscription(event) }
 
-      Bugsnag.configuration.app_type = "rails"
+      # Make sure we don't overwrite the value set by another integration because
+      # Rails is a less specific app_type (e.g. Que sets this earlier than us)
+      Bugsnag.configuration.detected_app_type ||= "rails"
     end
 
     # Configure meta_data_filters after initialization, so that rails initializers
