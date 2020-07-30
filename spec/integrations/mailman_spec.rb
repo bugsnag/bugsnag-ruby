@@ -33,7 +33,7 @@ describe 'Bugsnag::Mailman', :order => :defined do
     int_middleware = double('internal_middleware')
     expect(config).to receive(:internal_middleware).and_return(int_middleware)
     expect(int_middleware).to receive(:use).with(Bugsnag::Middleware::Mailman)
-    expect(config).to receive(:app_type=).with("mailman")
+    expect(config).to receive(:detected_app_type=).with("mailman")
 
     integration = Bugsnag::Mailman.new
 

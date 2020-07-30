@@ -52,8 +52,7 @@ describe 'Bugsnag::Que', :order => :defined do
     allow(Que).to receive(:respond_to?).with(:error_notifier=).and_return(true)
     config = double('config')
     allow(Bugsnag).to receive(:configuration).and_return(config)
-    expect(config).to receive(:app_type)
-    expect(config).to receive(:app_type=).with('que')
+    expect(config).to receive(:detected_app_type=).with('que')
     runtime = {}
     expect(config).to receive(:runtime_versions).and_return(runtime)
     allow(config).to receive(:clear_request_data)
@@ -63,7 +62,7 @@ describe 'Bugsnag::Que', :order => :defined do
 
     #Kick off
     load './lib/bugsnag/integrations/que.rb'
-    
+
     expect(runtime).to eq("que" => "9.9.9")
   end
 

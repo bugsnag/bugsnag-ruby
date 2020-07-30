@@ -13,7 +13,7 @@ module Delayed
       callbacks do |lifecycle|
         lifecycle.around(:invoke_job) do |job, *args, &block|
           begin
-            ::Bugsnag.configuration.app_type = 'delayed_job'
+            ::Bugsnag.configuration.detected_app_type = 'delayed_job'
             ::Bugsnag.configuration.set_request_data(:delayed_job, job)
             block.call(job, *args)
           rescue Exception => exception

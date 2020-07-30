@@ -30,7 +30,9 @@ module Bugsnag
         config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::ClearanceUser) if defined?(Clearance)
 
         # Set environment data for payload
-        config.app_type ||= "rack"
+        # Note we only set the detected app_type if it's not already set. This
+        # ensures we don't overwrite the value set by the Railtie
+        config.detected_app_type ||= "rack"
         config.runtime_versions["rack"] = ::Rack.release if defined?(::Rack)
         config.runtime_versions["sinatra"] = ::Sinatra::VERSION if defined?(::Sinatra)
       end

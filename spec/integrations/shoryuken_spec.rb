@@ -28,9 +28,8 @@ describe 'Bugsnag::Shoryuken', :order => :defined do
 
   it "calls configure when initialised" do
     config = double("config")
-    
-    expect(config).to receive(:app_type).and_return(nil)
-    expect(config).to receive(:app_type=).with("shoryuken")
+
+    expect(config).to receive(:detected_app_type=).with("shoryuken")
     expect(config).to receive(:default_delivery_method=).with(:synchronous)
     expect(Bugsnag).to receive(:configure).and_yield(config)
     Bugsnag::Shoryuken.new
@@ -50,8 +49,7 @@ describe 'Bugsnag::Shoryuken', :order => :defined do
       func.call(report)
     end
     config = double('config')
-    allow(config).to receive(:app_type).and_return(nil)
-    allow(config).to receive(:app_type=).with("shoryuken")
+    allow(config).to receive(:detected_app_type=).with("shoryuken")
     allow(config).to receive(:default_delivery_method=).with(:synchronous)
     allow(config).to receive(:clear_request_data)
     expect(Bugsnag).to receive(:before_notify_callbacks).and_return(callbacks)
