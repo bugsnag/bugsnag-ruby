@@ -49,8 +49,7 @@ Scenario: Que
   And the event "severity" equals "error"
   And the event "severityReason.type" equals "unhandledExceptionMiddleware"
   And the event "severityReason.attributes.framework" equals "Que"
-  # TODO this is currently wrong and equals "rails"!
-  # And the event "app.type" equals "que"
+  And the event "app.type" equals "que"
   And the exception "errorClass" equals "RuntimeError"
   And the event "metaData.job.job_id" equals 1
   And the event "metaData.job.job_class" equals "QueJob"
@@ -64,8 +63,7 @@ Scenario: Rake
   And the event "severity" equals "error"
   And the event "severityReason.type" equals "unhandledExceptionMiddleware"
   And the event "severityReason.attributes.framework" equals "Rake"
-  # TODO this is currently wrong and equals "rails"!
-  # And the event "app.type" equals "rake"
+  And the event "app.type" equals "rake"
   And the exception "errorClass" equals "RuntimeError"
   And the event "metaData.rake_task.name" equals "rake_task:raise"
   And the event "metaData.rake_task.description" is null
