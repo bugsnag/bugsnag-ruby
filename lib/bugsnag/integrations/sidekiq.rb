@@ -13,7 +13,7 @@ module Bugsnag
 
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Sidekiq)
-      Bugsnag.configuration.app_type = "sidekiq"
+      Bugsnag.configuration.detected_app_type = "sidekiq"
       Bugsnag.configuration.default_delivery_method = :synchronous
       Bugsnag.configuration.runtime_versions["sidekiq"] = ::Sidekiq::VERSION
     end

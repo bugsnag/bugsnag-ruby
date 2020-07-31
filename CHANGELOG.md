@@ -12,6 +12,11 @@ Changelog
 * The `BUGSNAG_RELEASE_STAGE` environment variable can now be used to set the release stage. Previously this was only used in Rails applications
   | [#613](https://github.com/bugsnag/bugsnag-ruby/pull/613)
 
+## Fixes
+
+* The `app_type` configuration option should no longer be overwritten by Bugsnag and integrations should set this more consistently
+  | [#619](https://github.com/bugsnag/bugsnag-ruby/pull/619)
+
 ## 6.15.0 (27 July 2020)
 
 ### Enhancements
