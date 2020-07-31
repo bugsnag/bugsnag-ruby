@@ -5,6 +5,7 @@ describe 'Bugsnag::Mailman', :order => :defined do
     unless defined?(::Mailman)
       @mocked_mailman = true
       class Mailman
+        VERSION = '9.8.7'
       end
       module Kernel
         alias_method :old_require, :require
@@ -19,38 +20,42 @@ describe 'Bugsnag::Mailman', :order => :defined do
     config = double('mailman-config')
     allow(Mailman).to receive(:config).and_return(config)
     expect(config).to receive(:respond_to?).with(:middleware).and_return(true)
-    middleware = double('mailman-config-middleware')
+    middleware = spy('mailman-config-middleware')
     expect(config).to receive(:middleware).and_return(middleware)
-    expect(middleware).to receive(:add).with(any_args)
 
-    #Kick off
+    # Kick off
     require './lib/bugsnag/integrations/mailman'
+
+    expect(middleware).to have_received(:add).with(Bugsnag::Mailman)
   end
 
   it "can be called" do
-    config = double('config')
-    allow(Bugsnag).to receive(:configuration).and_return(config)
-    int_middleware = double('internal_middleware')
-    expect(config).to receive(:internal_middleware).and_return(int_middleware)
-    expect(int_middleware).to receive(:use).with(Bugsnag::Middleware::Mailman)
-    expect(config).to receive(:detected_app_type=).with("mailman")
-
     integration = Bugsnag::Mailman.new
 
-    mail = double('mail')
-    expect(config).to receive(:set_request_data).with(:mailman_msg, mail)
-    expect(mail).to receive(:to_s).and_return(mail)
-    allow(config).to receive(:clear_request_data)
+    # Initialising the middleware should set some config options
+    expect(Bugsnag.configuration.internal_middleware.last).to eq(Bugsnag::Middleware::Mailman)
+    expect(Bugsnag.configuration.app_type).to eq('mailman')
+    expect(Bugsnag.configuration.runtime_versions['mailman']).to eq(Mailman::VERSION)
 
+    mail = 'To: My Friend; From: Your Pal; Subject: Hello!'
     exception = RuntimeError.new('oops')
-    report = double('report')
-    expect(Bugsnag).to receive(:notify).with(exception, true).and_yield(report)
-    expect(report).to receive(:severity=).with('error')
-    expect(report).to receive(:severity_reason=).with({
-      :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
-      :attributes => Bugsnag::Mailman::FRAMEWORK_ATTRIBUTES
-    })
-    expect{integration.call(mail) {raise exception}}.to raise_error(exception)
+
+    expect { integration.call(mail) { raise exception } }.to raise_error(exception)
+
+    expect(Bugsnag).to have_sent_notification { |payload, headers|
+      event = get_event_from_payload(payload)
+
+      expect(event['unhandled']).to be(true)
+      expect(event['severity']).to eq('error')
+      expect(event['app']['type']).to eq('mailman')
+      expect(event['device']['runtimeVersions']['mailman']).to eq(Mailman::VERSION)
+      expect(event['metaData']['mailman']).to eq({ 'message' => mail })
+
+      expect(event['severityReason']).to eq({
+        'type' => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+        'attributes' => { 'framework' => 'Mailman' }
+      })
+    }
   end
 
   after do

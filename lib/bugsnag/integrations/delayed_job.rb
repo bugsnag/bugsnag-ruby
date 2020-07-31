@@ -10,11 +10,23 @@ end
 module Delayed
   module Plugins
     class Bugsnag < ::Delayed::Plugin
+      ##
+      # DelayedJob doesn't have an easy way to fetch its version, but we can use
+      # Gem.loaded_specs to get the version instead
+      def self.delayed_job_version
+        ::Gem.loaded_specs['delayed_job'].version.to_s
+      rescue StandardError
+        # Explicitly return nil to prevent Rubocop complaining of a suppressed exception
+        nil
+      end
+
       callbacks do |lifecycle|
         lifecycle.around(:invoke_job) do |job, *args, &block|
           begin
             ::Bugsnag.configuration.detected_app_type = 'delayed_job'
+            ::Bugsnag.configuration.runtime_versions['delayed_job'] = delayed_job_version if defined?(::Gem)
             ::Bugsnag.configuration.set_request_data(:delayed_job, job)
+
             block.call(job, *args)
           rescue Exception => exception
             ::Bugsnag.notify(exception, true) do |report|
