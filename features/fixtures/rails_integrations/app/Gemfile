@@ -9,6 +9,11 @@ gem 'que', '~> 0.14.3'
 gem 'resque', '~> 2.0.0'
 gem 'sidekiq', '~> 6.1.0'
 
+# Required for Shoryuken
+gem 'activejob', '~> 6.0'
+gem 'aws-sdk-sqs', '~> 1.30'
+gem 'shoryuken', '~> 5.0'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.3', '>= 6.0.3.2'
 # Use postgresql as the database for Active Record

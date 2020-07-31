@@ -1,0 +1,26 @@
+require 'shoryuken'
+require_relative 'config/environment.rb'
+
+aws_region = ENV.fetch('AWS_REGION', 'foo')
+aws_access_key_id = ENV.fetch('AWS_ACCESS_KEY_ID', 'bar')
+aws_secret_access_key = ENV.fetch('AWS_SECRET_ACCESS_KEY', 'baz')
+
+Shoryuken.configure_client do |config|
+  config.sqs_client = Aws::SQS::Client.new(
+    region: aws_region,
+    access_key_id: aws_access_key_id,
+    secret_access_key: aws_secret_access_key,
+    endpoint: 'http://localhost:4576',
+    verify_checksums: false
+  )
+end
+
+Shoryuken.configure_server do |config|
+  config.sqs_client = Aws::SQS::Client.new(
+    region: aws_region,
+    access_key_id: aws_access_key_id,
+    secret_access_key: aws_secret_access_key,
+    endpoint: 'http://localhost:4576',
+    verify_checksums: false
+  )
+end
