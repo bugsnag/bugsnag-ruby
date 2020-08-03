@@ -15,6 +15,10 @@ Changelog
 * Add support for runtime versions to Delayed Job, Mailman and Shoryuken integrations
   | [#620](https://github.com/bugsnag/bugsnag-ruby/pull/620)
 
+* Reduce the size of the bundled gem
+  | [#571](https://github.com/bugsnag/bugsnag-ruby/pull/571)
+  | [t-richards](https://github.com/t-richards)
+
 ## Fixes
 
 * The `app_type` configuration option should no longer be overwritten by Bugsnag and integrations should set this more consistently
