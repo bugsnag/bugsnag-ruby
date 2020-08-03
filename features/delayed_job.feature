@@ -17,6 +17,7 @@ Scenario: An unhandled RuntimeError sends a report with arguments
   And the event "metaData.job.payload.display_name" equals "TestModel.fail_with_args"
   And the event "metaData.job.payload.method_name" equals "fail_with_args"
   And the payload field "events.0.metaData.job.payload.args.0" equals "Test"
+  And the event "device.runtimeVersions.delayed_job" equals "4.1.8"
 
 Scenario: A handled exception sends a report
   Given I run the service "delayed_job" with the command "bundle exec rake delayed_job_tests:notify_with_args"
@@ -34,6 +35,7 @@ Scenario: A handled exception sends a report
   And the event "metaData.job.payload.display_name" equals "TestModel.notify_with_args"
   And the event "metaData.job.payload.method_name" equals "notify_with_args"
   And the payload field "events.0.metaData.job.payload.args.0" equals "Test"
+  And the event "device.runtimeVersions.delayed_job" equals "4.1.8"
 
 Scenario: The report context uses the class name if no display name is available
   Given I run the service "delayed_job" with the command "bundle exec rake delayed_job_tests:report_context"
@@ -51,3 +53,4 @@ Scenario: The report context uses the class name if no display name is available
   And the event "metaData.job.max_attempts" equals 1
   And the event "metaData.job.payload.display_name" is null
   And the event "metaData.job.payload.method_name" is null
+  And the event "device.runtimeVersions.delayed_job" equals "4.1.8"

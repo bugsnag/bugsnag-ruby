@@ -12,6 +12,7 @@ module Bugsnag
     def initialize
       Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::Mailman)
       Bugsnag.configuration.detected_app_type = "mailman"
+      Bugsnag.configuration.runtime_versions["mailman"] = ::Mailman::VERSION
     end
 
     ##

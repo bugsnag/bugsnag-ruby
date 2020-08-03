@@ -12,6 +12,9 @@ Changelog
 * The `BUGSNAG_RELEASE_STAGE` environment variable can now be used to set the release stage. Previously this was only used in Rails applications
   | [#613](https://github.com/bugsnag/bugsnag-ruby/pull/613)
 
+* Add support for runtime versions to Delayed Job, Mailman and Shoryuken integrations
+  | [#620](https://github.com/bugsnag/bugsnag-ruby/pull/620)
+
 ## Fixes
 
 * The `app_type` configuration option should no longer be overwritten by Bugsnag and integrations should set this more consistently
