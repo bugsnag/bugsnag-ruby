@@ -19,6 +19,9 @@ Changelog
   | [#571](https://github.com/bugsnag/bugsnag-ruby/pull/571)
   | [t-richards](https://github.com/t-richards)
 
+* Move serialization of Reports onto the background thread when using the thread_queue delivery method
+  | [#623](https://github.com/bugsnag/bugsnag-ruby/pull/623)
+
 ## Fixes
 
 * The `app_type` configuration option should no longer be overwritten by Bugsnag and integrations should set this more consistently
