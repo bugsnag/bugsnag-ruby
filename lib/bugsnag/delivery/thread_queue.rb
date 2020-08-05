@@ -9,8 +9,14 @@ module Bugsnag
 
       class << self
         ##
-        # Queues a given payload to be delivered asynchronously.
-        def deliver(url, body, configuration, options={})
+        # Queues a given payload to be delivered asynchronously
+        #
+        # @param url [String]
+        # @param get_payload [Proc] A Proc that will return the payload.
+        # @param configuration [Bugsnag::Configuration]
+        # @param options [Hash]
+        # @return [void]
+        def serialize_and_deliver(url, get_payload, configuration, options={})
           @configuration = configuration
 
           start_once!
@@ -21,7 +27,16 @@ module Bugsnag
           end
 
           # Add delivery to the worker thread
-          @queue.push proc { super(url, body, configuration, options) }
+          @queue.push(proc do
+            begin
+              payload = get_payload.call
+            rescue StandardError => e
+              configuration.warn("Notification to #{url} failed, #{e.inspect}")
+              configuration.warn(e.backtrace)
+            end
+
+            Synchronous.deliver(url, payload, configuration, options) unless payload.nil?
+          end)
         end
 
         private

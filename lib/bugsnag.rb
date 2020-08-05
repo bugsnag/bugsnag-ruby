@@ -303,15 +303,25 @@ module Bugsnag
     def deliver_notification(report)
       configuration.info("Notifying #{configuration.notify_endpoint} of #{report.exceptions.last[:errorClass]}")
 
-      payload = report_to_json(report)
-      options = {:headers => report.headers}
+      options = { headers: report.headers }
 
-      Bugsnag::Delivery[configuration.delivery_method].deliver(
-        configuration.notify_endpoint,
-        payload,
-        configuration,
-        options
-      )
+      delivery_method = Bugsnag::Delivery[configuration.delivery_method]
+
+      if delivery_method.respond_to?(:serialize_and_deliver)
+        delivery_method.serialize_and_deliver(
+          configuration.notify_endpoint,
+          proc { report_to_json(report) },
+          configuration,
+          options
+        )
+      else
+        delivery_method.deliver(
+          configuration.notify_endpoint,
+          report_to_json(report),
+          configuration,
+          options
+        )
+      end
 
       leave_breadcrumb(
         report.summary[:error_class],
@@ -353,7 +363,7 @@ module Bugsnag
     # encoding errors and redacting metadata according to "meta_data_filters"
     #
     # @param report [Report]
-    # @return string
+    # @return [String]
     def report_to_json(report)
       cleaned = cleaner.clean_object(report.as_json)
       trimmed = Bugsnag::Helpers.trim_if_needed(cleaned)
