@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 6.16.0 (12 August 2020)
 
 ### Enhancements
 
