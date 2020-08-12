@@ -1,6 +1,32 @@
 Changelog
 =========
 
+## 6.16.0 (12 August 2020)
+
+### Enhancements
+
+* Set default Delayed Job error context to job class
+  | [#499](https://github.com/bugsnag/bugsnag-ruby/pull/499)
+  | [Mike Stewart](https://github.com/mike-stewart)
+
+* The `BUGSNAG_RELEASE_STAGE` environment variable can now be used to set the release stage. Previously this was only used in Rails applications
+  | [#613](https://github.com/bugsnag/bugsnag-ruby/pull/613)
+
+* Add support for runtime versions to Delayed Job, Mailman and Shoryuken integrations
+  | [#620](https://github.com/bugsnag/bugsnag-ruby/pull/620)
+
+* Reduce the size of the bundled gem
+  | [#571](https://github.com/bugsnag/bugsnag-ruby/pull/571)
+  | [t-richards](https://github.com/t-richards)
+
+* Move serialization of Reports onto the background thread when using the thread_queue delivery method
+  | [#623](https://github.com/bugsnag/bugsnag-ruby/pull/623)
+
+## Fixes
+
+* The `app_type` configuration option should no longer be overwritten by Bugsnag and integrations should set this more consistently
+  | [#619](https://github.com/bugsnag/bugsnag-ruby/pull/619)
+
 ## 6.15.0 (27 July 2020)
 
 ### Enhancements

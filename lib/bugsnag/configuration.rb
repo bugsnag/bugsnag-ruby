@@ -24,7 +24,6 @@ module Bugsnag
     attr_accessor :send_code
     attr_accessor :project_root
     attr_accessor :app_version
-    attr_accessor :app_type
     attr_accessor :meta_data_filters
     attr_accessor :logger
     attr_accessor :middleware
@@ -116,6 +115,7 @@ module Bugsnag
       self.runtime_versions["ruby"] = RUBY_VERSION
       self.runtime_versions["jruby"] = JRUBY_VERSION if defined?(JRUBY_VERSION)
       self.timeout = 15
+      self.release_stage = ENV['BUGSNAG_RELEASE_STAGE']
       self.notify_release_stages = nil
       self.auto_capture_sessions = true
 
@@ -195,6 +195,54 @@ module Bugsnag
     #
     def default_delivery_method=(delivery_method)
       @default_delivery_method = delivery_method
+    end
+
+    ##
+    # Get the type of application executing the current code
+    #
+    # This is usually used to represent if you are running in a Rails server,
+    # Sidekiq job, Rake task etc... Bugsnag will automatically detect most
+    # application types for you
+    #
+    # @return [String, nil]
+    def app_type
+      @app_type || @detected_app_type
+    end
+
+    ##
+    # Set the type of application executing the current code
+    #
+    # If an app_type is set, this will be used instead of the automatically
+    # detected app_type that Bugsnag would otherwise use
+    #
+    # @param app_type [String]
+    # @return [void]
+    def app_type=(app_type)
+      @app_type = app_type
+    end
+
+    ##
+    # Get the detected app_type, which is used when one isn't set explicitly
+    #
+    # @api private
+    #
+    # @return [String, nil]
+    def detected_app_type
+      @detected_app_type
+    end
+
+    ##
+    # Set the detected app_type, which is used when one isn't set explicitly
+    #
+    # This allows Bugsnag's integrations to say 'this is a Rails app' while
+    # allowing the user to overwrite this if they wish
+    #
+    # @api private
+    #
+    # @param app_type [String]
+    # @return [void]
+    def detected_app_type=(app_type)
+      @detected_app_type = app_type
     end
 
     ##

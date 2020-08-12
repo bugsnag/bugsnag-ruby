@@ -25,7 +25,7 @@ module Bugsnag
       # initializer. If not, the key will be validated in after_initialize.
       Bugsnag.configure(false) do |config|
         config.logger = ::Rails.logger
-        config.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] || ::Rails.env.to_s
+        config.release_stage ||= ::Rails.env.to_s
         config.project_root = ::Rails.root.to_s
         config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
         config.runtime_versions["rails"] = ::Rails::VERSION::STRING
@@ -43,7 +43,9 @@ module Bugsnag
 
       Bugsnag::Rails::DEFAULT_RAILS_BREADCRUMBS.each { |event| event_subscription(event) }
 
-      Bugsnag.configuration.app_type = "rails"
+      # Make sure we don't overwrite the value set by another integration because
+      # Rails is a less specific app_type (e.g. Que sets this earlier than us)
+      Bugsnag.configuration.detected_app_type ||= "rails"
     end
 
     # Configure meta_data_filters after initialization, so that rails initializers
@@ -63,9 +65,19 @@ module Bugsnag
 
     initializer "bugsnag.use_rack_middleware" do |app|
       begin
-        app.config.middleware.insert_after ActionDispatch::DebugExceptions, Bugsnag::Rack
-      rescue
-        app.config.middleware.use Bugsnag::Rack
+        begin
+          app.config.middleware.insert_after ActionDispatch::DebugExceptions, Bugsnag::Rack
+        rescue
+          app.config.middleware.use Bugsnag::Rack
+        end
+      rescue FrozenError
+        # This can happen when running RSpec if there is a crash after Rails has
+        # started booting but before we've added our middleware. If we don't ignore
+        # this error then the stacktrace blames Bugsnag, which isn't accurate as
+        # the middleware will only be frozen if an earlier error occurs
+        # See this comment for more info:
+        # https://github.com/thoughtbot/factory_bot_rails/issues/303#issuecomment-434560625
+        Bugsnag.configuration.warn("Unable to add Bugsnag::Rack middleware as the middleware stack is frozen")
       end
     end
 

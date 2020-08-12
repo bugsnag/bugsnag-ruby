@@ -8,7 +8,6 @@ Bugsnag.configure do |config|
   config.project_root = ENV["BUGSNAG_PROJECT_ROOT"] if ENV.include? "BUGSNAG_PROJECT_ROOT"
   config.ignore_classes << lambda { |ex| ex.class.to_s == ENV["BUGSNAG_IGNORE_CLASS"] } if ENV.include? "BUGSNAG_IGNORE_CLASS"
   config.auto_capture_sessions = ENV["BUGSNAG_AUTO_CAPTURE_SESSIONS"] == "true"
-  config.release_stage = ENV["BUGSNAG_RELEASE_STAGE"] if ENV.include? "BUGSNAG_RELEASE_STAGE"
   config.send_code = ENV["BUGSNAG_SEND_CODE"] != "false"
   config.send_environment = ENV["BUGSNAG_SEND_ENVIRONMENT"] == "true"
 end

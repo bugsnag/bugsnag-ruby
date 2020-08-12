@@ -37,7 +37,8 @@ if defined?(::Que)
     end
   end
 
-  Bugsnag.configuration.app_type ||= "que"
+  Bugsnag.configuration.detected_app_type = "que"
+
   if defined?(::Que::Version)
     Bugsnag.configuration.runtime_versions["que"] = ::Que::Version
   elsif defined?(::Que::VERSION)
