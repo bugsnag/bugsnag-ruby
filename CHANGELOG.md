@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Sidekiq now uses `thread_queue` delivery by default
+  | [#626](https://github.com/bugsnag/bugsnag-ruby/pull/626)
+
 ## 6.16.0 (12 August 2020)
 
 ### Enhancements
