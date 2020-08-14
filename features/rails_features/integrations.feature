@@ -70,7 +70,7 @@ Scenario: Rake
   And the event "metaData.rake_task.arguments" is null
 
 @rails_integrations
-Scenario: Resque
+Scenario: Resque (no on_exit hooks)
   When I run "bundle exec rake resque:work" in the rails app
   And I run "Resque.enqueue(ResqueWorker)" with the rails runner
   And I wait to receive a request
@@ -82,6 +82,28 @@ Scenario: Resque
   And the event "severityReason.attributes.framework" equals "Resque"
   And the event "app.type" equals "resque"
   And the exception "errorClass" equals "RuntimeError"
+  And the event "metaData.config.delivery_method" equals "synchronous"
+  And the event "metaData.context" equals "ResqueWorker@crash"
+  And the event "metaData.payload.class" equals "ResqueWorker"
+  And the event "metaData.rake_task.name" equals "resque:work"
+  And the event "metaData.rake_task.description" equals "Start a Resque worker"
+  And the event "metaData.rake_task.arguments" is null
+
+@rails_integrations
+Scenario: Resque (with on_exit hooks)
+  Given I set environment variable "RUN_AT_EXIT_HOOKS" to "1"
+  When I run "bundle exec rake resque:work" in the rails app
+  And I run "Resque.enqueue(ResqueWorker)" with the rails runner
+  And I wait to receive a request
+  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And the event "unhandled" is true
+  And the event "context" equals "ResqueWorker@crash"
+  And the event "severity" equals "error"
+  And the event "severityReason.type" equals "unhandledExceptionMiddleware"
+  And the event "severityReason.attributes.framework" equals "Resque"
+  And the event "app.type" equals "resque"
+  And the exception "errorClass" equals "RuntimeError"
+  And the event "metaData.config.delivery_method" equals "thread_queue"
   And the event "metaData.context" equals "ResqueWorker@crash"
   And the event "metaData.payload.class" equals "ResqueWorker"
   And the event "metaData.rake_task.name" equals "resque:work"
