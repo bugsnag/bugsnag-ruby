@@ -58,6 +58,16 @@ steps:
       RUBY_TEST_VERSION: "2.7"
       RAILS_VERSION: "6"
 
+  - label: ':rails: Rails integrations Ruby 2.7 tests'
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails_integrations"]
+    env:
+      RUBY_TEST_VERSION: "2.7"
+      RAILS_VERSION: "_integrations"
+
   - label: ':construction: Delayed job tests'
     plugins:
       docker-compose#v3.1.0:

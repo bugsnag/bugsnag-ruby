@@ -243,6 +243,23 @@ services:
         aliases:
           - rails6
 
+  rails_integrations:
+    build:
+      context: rails_integrations
+      args:
+        - RUBY_TEST_VERSION
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=test_password
+      - DB_HOST=postgres
+      - REDIS_URL=redis://redis:6379
+    restart: "no"
+
   sidekiq:
     build:
       context: sidekiq

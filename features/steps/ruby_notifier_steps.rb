@@ -52,6 +52,24 @@ When("I navigate to the route {string} on the rails app") do |route|
   }
 end
 
+When("I run {string} in the rails app") do |command|
+  steps %Q{
+    When I run the service "rails#{ENV['RAILS_VERSION']}" with the command "#{command}"
+  }
+end
+
+When("I run the {string} rake task in the rails app") do |task|
+  steps %Q{
+    When I run "bundle exec rake #{task}" in the rails app
+  }
+end
+
+When("I run {string} with the rails runner") do |code|
+  steps %Q{
+    When I run "bundle exec rails runner '#{code}'" in the rails app
+  }
+end
+
 Given("I start the rack service") do
   rack_version = ENV["RACK_VERSION"]
   steps %Q{
