@@ -1,2 +1,4 @@
+# Ignore the lock file as we dynamically pick a Sidekiq version based on the
+# environment, in order to run the same tests against multiple Sidekiq versions
 Gemfile.lock
 payloads/

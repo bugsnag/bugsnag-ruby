@@ -1,7 +1,8 @@
 source 'https://rubygems.org'
 
 gem 'bugsnag', path: '/bugsnag'
-gem 'sidekiq', ENV['SIDEKIQ_VERSION']
-gem 'timers', '~> 4.1.1'
-gem 'redis', '~> 3.3.5'
+gem 'hitimes', '~> 1.2.6'
 gem 'rake', '~> 12.3.0'
+gem 'redis', '~> 3.3.5'
+gem 'sidekiq', ENV['SIDEKIQ_VERSION']
+gem 'timers', '~> 4.1.2'

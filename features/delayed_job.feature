@@ -9,6 +9,7 @@ Scenario: An unhandled RuntimeError sends a report with arguments
   And the event "context" equals "TestModel.fail_with_args"
   And the event "severityReason.type" equals "unhandledExceptionMiddleware"
   And the event "severityReason.attributes.framework" equals "DelayedJob"
+  And the event "app.type" equals "delayed_job"
   And the exception "errorClass" equals "RuntimeError"
   And the event "metaData.job.class" equals "Delayed::Backend::ActiveRecord::Job"
   And the event "metaData.job.id" is not null
@@ -27,6 +28,7 @@ Scenario: A handled exception sends a report
   And the event "severity" equals "warning"
   And the event "context" equals "TestModel.notify_with_args"
   And the event "severityReason.type" equals "handledException"
+  And the event "app.type" equals "delayed_job"
   And the exception "errorClass" equals "RuntimeError"
   And the event "metaData.job.class" equals "Delayed::Backend::ActiveRecord::Job"
   And the event "metaData.job.id" is not null

@@ -52,6 +52,39 @@ When("I navigate to the route {string} on the rails app") do |route|
   }
 end
 
+When("I run {string} in the rails app") do |command|
+  steps %Q{
+    When I run the service "rails#{ENV['RAILS_VERSION']}" with the command "#{command}"
+  }
+end
+
+When("I run the {string} rake task in the rails app") do |task|
+  steps %Q{
+    When I run "bundle exec rake #{task}" in the rails app
+  }
+end
+
+When("I run {string} with the rails runner") do |code|
+  steps %Q{
+    When I run "bundle exec rails runner '#{code}'" in the rails app
+  }
+end
+
+Given("I start the rack service") do
+  rack_version = ENV["RACK_VERSION"]
+  steps %Q{
+    When I start the service "rack#{rack_version}"
+    And I wait for the host "rack#{rack_version}" to open port "3000"
+  }
+end
+
+When("I navigate to the route {string} on the rack app") do |route|
+  rack_version = ENV["RACK_VERSION"]
+  steps %Q{
+    When I open the URL "http://rack#{rack_version}:3000#{route}"
+  }
+end
+
 Then("the payload field {string} matches the appropriate Sidekiq handled payload") do |field|
   if ENV["SIDEKIQ_VERSION"] == "~> 2"
     created_at_present = "false"

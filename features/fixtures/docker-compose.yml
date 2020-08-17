@@ -4,6 +4,11 @@ services:
   redis:
     image: redis
 
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=test_password
+
   mongo:
     image: mongo
 
@@ -78,7 +83,8 @@ services:
       args:
         - RUBY_TEST_VERSION
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
     restart: "no"
 
   rack2:
@@ -87,7 +93,8 @@ services:
       args:
         - RUBY_TEST_VERSION
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
     restart: "no"
 
   rails3:
@@ -236,15 +243,21 @@ services:
         aliases:
           - rails6
 
-  resque:
+  rails_integrations:
     build:
-      context: resque
+      context: rails_integrations
       args:
         - RUBY_TEST_VERSION
     depends_on:
+      - postgres
       - redis
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=test_password
+      - DB_HOST=postgres
+      - REDIS_URL=redis://redis:6379
     restart: "no"
 
   sidekiq:
@@ -281,23 +294,41 @@ services:
       - CALLBACK_INITIATOR
     restart: "no"
 
-  sinatra1:
+  mailman:
     build:
-      context: sinatra1
+      context: mailman
       args:
-        - RUBY_TEST_VERSION
+        - RUBY_VERSION
+        - APP_PATH
     environment:
-      - endpoint
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+      - TARGET_EMAIL
+    ports:
+      - "6245:6245"
     restart: "no"
 
-  sinatra2:
+  rake:
     build:
-      context: sinatra2
+      context: rake
       args:
-        - RUBY_TEST_VERSION
+        - RUBY_VERSION
     environment:
-      - endpoint
-    restart: "no"
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+    restart: 'no'
+
+  que:
+    build:
+      context: que
+      args:
+        - RUBY_VERSION
+    depends_on:
+      - postgres
+    environment:
+      - BUGSNAG_API_KEY
+      - BUGSNAG_ENDPOINT
+    restart: 'no'
 
 networks:
   default:
