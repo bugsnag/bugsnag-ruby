@@ -258,6 +258,7 @@ services:
       - DB_PASSWORD=test_password
       - DB_HOST=postgres
       - REDIS_URL=redis://redis:6379
+      - RUN_AT_EXIT_HOOKS
     restart: "no"
 
   sidekiq:

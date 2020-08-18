@@ -8,6 +8,9 @@ Changelog
 * Sidekiq now uses `thread_queue` delivery by default
   | [#626](https://github.com/bugsnag/bugsnag-ruby/pull/626)
 
+* Rescue now uses `thread_queue` delivery when `at_exit` hooks are enabled
+  | [#629](https://github.com/bugsnag/bugsnag-ruby/pull/629)
+
 ## 6.16.0 (12 August 2020)
 
 ### Enhancements
