@@ -19,7 +19,7 @@ module Bugsnag
 
     CURRENT_PAYLOAD_VERSION = "4.0"
 
-    attr_reader   :unhandled
+    attr_accessor :unhandled
     attr_accessor :api_key
     attr_accessor :app_type
     attr_accessor :app_version
@@ -43,7 +43,7 @@ module Bugsnag
     # Initializes a new report from an exception.
     def initialize(exception, passed_configuration, auto_notify=false)
       @should_ignore = false
-      @unhandled = auto_notify
+      self.unhandled = auto_notify
 
       self.configuration = passed_configuration
 
@@ -109,7 +109,7 @@ module Bugsnag
         session: session,
         severity: severity,
         severityReason: severity_reason,
-        unhandled: @unhandled,
+        unhandled: unhandled,
         user: user
       }
 
