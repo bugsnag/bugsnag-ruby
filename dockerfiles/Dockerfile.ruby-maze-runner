@@ -8,7 +8,7 @@ COPY bugsnag.gemspec Gemfile VERSION ./
 
 RUN bundle install
 
-COPY  CHANGELOG.md CONTRIBUTING.md TESTING.md LICENSE.txt Rakefile README.md UPGRADING.md .gitignore .rdoc_options .rspec .rubocop.yml .rubocop_todo.yml docker-compose.yml ./
+COPY  CHANGELOG.md CONTRIBUTING.md TESTING.md LICENSE.txt Rakefile README.md UPGRADING.md .gitignore .rspec .rubocop.yml .rubocop_todo.yml docker-compose.yml ./
 COPY .buildkite ./.buildkite
 COPY .git ./.git
 COPY .github ./.github
