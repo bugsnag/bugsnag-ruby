@@ -314,7 +314,7 @@ module Bugsnag
     ##
     # Sets the maximum allowable amount of breadcrumbs
     #
-    # @param [Integer] the new maximum breadcrumb limit
+    # @param new_max_breadcrumbs [Integer] the new maximum breadcrumb limit
     def max_breadcrumbs=(new_max_breadcrumbs)
       @max_breadcrumbs = new_max_breadcrumbs
       breadcrumbs.max_items = new_max_breadcrumbs

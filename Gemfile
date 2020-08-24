@@ -6,7 +6,7 @@ group :test, optional: true do
   gem 'rake', ruby_version <= Gem::Version.new('1.9.3') ? '~> 11.3.0' : '~> 12.3.0'
   gem 'rspec'
   gem 'rspec-mocks'
-  gem 'rdoc', ruby_version < Gem::Version.new('2.2.0') ? '4.3.0' : '~> 5.1.0'
+  gem 'yard', '~> 0.9.25'
   gem 'pry'
   gem 'addressable', '~> 2.3.8'
   if ruby_version >= Gem::Version.new('2.2.2')
@@ -41,10 +41,6 @@ group :sidekiq, optional: true do
   gem 'redis', ruby_version < Gem::Version.new('2.3.0') ? '4.1.1' : '>= 4.1.2'
   # rack 2.2.0 dropped support for Ruby 2.2
   gem 'rack', ruby_version < Gem::Version.new('2.3.0') ? '< 2.2.0' : '~> 2.2'
-end
-
-group :doc, optional: true do
-  gem 'hanna-nouveau'
 end
 
 gemspec
