@@ -19,24 +19,87 @@ module Bugsnag
 
     CURRENT_PAYLOAD_VERSION = "4.0"
 
-    attr_reader   :unhandled
+    # Whether this report is for a handled or unhandled error
+    # @return [Boolean]
+    attr_reader :unhandled
+
+    # Your Integration API Key
+    # @see Configuration#api_key
+    # @return [String, nil]
     attr_accessor :api_key
+
+    # The type of application executing the current code
+    # @see Configuration#app_type
+    # @return [String, nil]
     attr_accessor :app_type
+
+    # The current version of your application
+    # @return [String, nil]
     attr_accessor :app_version
+
+    # The list of breadcrumbs attached to this report
+    # @return [Array<Breadcrumb>]
     attr_accessor :breadcrumbs
+
+    # @api private
+    # @return [Configuration]
     attr_accessor :configuration
+
+    # Additional context for this report
+    # @return [String, nil]
     attr_accessor :context
+
+    # The delivery method that will be used for this report
+    # @see Configuration#delivery_method
+    # @return [Symbol]
     attr_accessor :delivery_method
+
+    # The list of exceptions in this report
+    # @return [Array<Hash>]
     attr_accessor :exceptions
+
+    # @see Configuration#hostname
+    # @return [String]
     attr_accessor :hostname
+
+    # @api private
+    # @see Configuration#runtime_versions
+    # @return [Hash{String => String}]
     attr_accessor :runtime_versions
+
+    # All errors with the same grouping hash will be grouped in the Bugsnag app
+    # @return [String]
     attr_accessor :grouping_hash
+
+    # Arbitrary metadata attached to this report
+    # @return [Hash]
     attr_accessor :meta_data
+
+    # The raw Exception instances for this report
+    # @see #exceptions
+    # @return [Array<Exception>]
     attr_accessor :raw_exceptions
+
+    # The current stage of the release process, e.g. 'development', production'
+    # @see Configuration#release_stage
+    # @return [String, nil]
     attr_accessor :release_stage
+
+    # The session that active when this report was generated
+    # @see SessionTracker#get_current_session
+    # @return [Hash]
     attr_accessor :session
+
+    # The severity of this report, e.g. 'error', 'warning'
+    # @return [String]
     attr_accessor :severity
+
+    # @api private
+    # @return [Hash]
     attr_accessor :severity_reason
+
+    # The current user when this report was generated
+    # @return [Hash]
     attr_accessor :user
 
     ##
@@ -66,6 +129,12 @@ module Bugsnag
 
     ##
     # Add a new metadata tab to this notification.
+    #
+    # @param name [String, #to_s] The name of the tab to add
+    # @param value [Hash, Object] The value to add to the tab. If the tab already
+    #   exists, this will be merged with the existing values. If a Hash is not
+    #   given, the value will be placed into the 'custom' tab
+    # @return [void]
     def add_tab(name, value)
       return if name.nil?
 
@@ -81,6 +150,9 @@ module Bugsnag
 
     ##
     # Removes a metadata tab from this notification.
+    #
+    # @param name [String]
+    # @return [void]
     def remove_tab(name)
       return if name.nil?
 
@@ -89,6 +161,8 @@ module Bugsnag
 
     ##
     # Builds and returns the exception payload for this notification.
+    #
+    # @return [Hash]
     def as_json
       # Build the payload's exception event
       payload_event = {
@@ -129,6 +203,8 @@ module Bugsnag
 
     ##
     # Returns the headers required for the notification.
+    #
+    # @return [Hash{String => String}]
     def headers
       {
         "Bugsnag-Api-Key" => api_key,
@@ -139,18 +215,24 @@ module Bugsnag
 
     ##
     # Whether this report should be ignored and not sent.
+    #
+    # @return [Boolean]
     def ignore?
       @should_ignore
     end
 
     ##
     # Data set on the configuration to be attached to every error notification.
+    #
+    # @return [Hash]
     def request_data
       configuration.request_data
     end
 
     ##
     # Tells the client this report should not be sent.
+    #
+    # @return [void]
     def ignore!
       @should_ignore = true
     end

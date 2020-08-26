@@ -44,7 +44,10 @@ module Bugsnag
     ##
     # Configure the Bugsnag notifier application-wide settings.
     #
-    # Yields a configuration object to use to set application settings.
+    # Yields a {Configuration} object to use to set application settings.
+    #
+    # @yieldparam configuration [Configuration]
+    # @return [void]
     def configure(validate_api_key=true)
       yield(configuration) if block_given?
 
@@ -125,7 +128,9 @@ module Bugsnag
     end
 
     ##
-    # Registers an at_exit function to automatically catch errors on exit
+    # Registers an at_exit function to automatically catch errors on exit.
+    #
+    # @return [void]
     def register_at_exit
       return if at_exit_handler_installed?
       @exit_handler_added = true
@@ -142,14 +147,19 @@ module Bugsnag
     end
 
     ##
-    # Checks if an at_exit handler has been added
+    # Checks if an at_exit handler has been added.
+    #
+    # The {Bugsnag#configure} method will add this automatically, but it can be
+    # added manually using {Bugsnag#register_at_exit}.
+    #
+    # @return [Boolean]
     def at_exit_handler_installed?
       @exit_handler_added ||= false
     end
 
-    # Configuration getters
     ##
     # Returns the client's Configuration object, or creates one if not yet created.
+    #
     # @return [Configuration]
     def configuration
       @configuration = nil unless defined?(@configuration)
@@ -158,6 +168,8 @@ module Bugsnag
 
     ##
     # Returns the client's SessionTracker object, or creates one if not yet created.
+    #
+    # @return [SessionTracker]
     def session_tracker
       @session_tracker = nil unless defined?(@session_tracker)
       @session_tracker || LOCK.synchronize { @session_tracker ||= Bugsnag::SessionTracker.new}
@@ -181,7 +193,10 @@ module Bugsnag
       Bugsnag.configuration.request_data[:before_callbacks] ||= []
     end
 
-    # Attempts to load all integrations through auto-discovery
+    ##
+    # Attempts to load all integrations through auto-discovery.
+    #
+    # @return [void]
     def load_integrations
       require "bugsnag/integrations/railtie" if defined?(Rails::Railtie)
       INTEGRATIONS.each do |integration|
@@ -192,7 +207,11 @@ module Bugsnag
       end
     end
 
-    # Load a specific integration
+    ##
+    # Load a specific integration.
+    #
+    # @param integration [Symbol] One of the integrations in {INTEGRATIONS}
+    # @return [void]
     def load_integration(integration)
       integration = :railtie if integration == :rails
       if INTEGRATIONS.include?(integration) || integration == :railtie
@@ -209,6 +228,7 @@ module Bugsnag
     # @param meta_data [Hash] String, Numeric, or Boolean meta data to attach
     # @param type [String] the breadcrumb type, from Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
     # @param auto [Symbol] set to :auto if the breadcrumb is automatically created
+    # @return [void]
     def leave_breadcrumb(name, meta_data={}, type=Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE, auto=:manual)
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(name, type, meta_data, auto)
       validator = Bugsnag::Breadcrumbs::Validator.new(configuration)
