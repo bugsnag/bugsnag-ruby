@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 6.17.0 (27 August 2020)
 
 ### Enhancements
 
