@@ -258,6 +258,7 @@ services:
       - DB_PASSWORD=test_password
       - DB_HOST=postgres
       - REDIS_URL=redis://redis:6379
+      - RUN_AT_EXIT_HOOKS
     restart: "no"
 
   sidekiq:
@@ -275,6 +276,7 @@ services:
       - BUGSNAG_APP_VERSION
       - BUGSNAG_AUTO_CAPTURE_SESSIONS
       - BUGSNAG_AUTO_NOTIFY
+      - BUGSNAG_DELIVERY_METHOD
       - BUGSNAG_ENDPOINT
       - BUGSNAG_IGNORE_CLASS
       - BUGSNAG_IGNORE_MESSAGE

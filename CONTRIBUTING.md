@@ -10,23 +10,29 @@ Thank you!
 
 ### Getting started
 
--   [Fork](https://help.github.com/articles/fork-a-repo) the [library on github](https://github.com/bugsnag/bugsnag-ruby)
--   Commit and push until you are happy with your contribution
+* [Fork](https://help.github.com/articles/fork-a-repo) the [library on github](https://github.com/bugsnag/bugsnag-ruby)
+* Commit and push until you are happy with your contribution
 
 ### Polish
 
--   Run the tests with and make sure they all pass
-
+* Run the tests with and make sure they all pass
     ```
     bundle exec rake spec
     ```
--   Further information on installing and running the tests can be found in [the testing guide](TESTING.md)
+* Further information on installing and running the tests can be found in [the testing guide](TESTING.md)
 
+### Document
+
+* Write API docs for your contributions using [YARD](https://yardoc.org/)
+* Generate the API documentation locally
+    ```
+    bundle exec rake yard
+    ```
+* Review your changes by opening `doc/index.html`
 
 ### Ship it!
 
--   [Make a pull request](https://help.github.com/articles/using-pull-requests)
-
+* [Make a pull request](https://help.github.com/articles/using-pull-requests)
 
 ## How to release
 
