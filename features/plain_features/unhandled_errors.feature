@@ -36,8 +36,10 @@ Scenario Outline: An unhandled error doesn't send a report
   Then I should receive no requests
 
   Examples:
-  | file          | command          |
-  | interrupt     | bundle exec      |
-  | system_exit   | bundle exec      |
-  | interrupt     | bundle exec ruby |
-  | system_exit   | bundle exec ruby |
+  | file                 | command          |
+  | interrupt            | bundle exec      |
+  | system_exit          | bundle exec      |
+  | exit_after_exception | bundle exec      |
+  | interrupt            | bundle exec ruby |
+  | system_exit          | bundle exec ruby |
+  | exit_after_exception | bundle exec ruby |
