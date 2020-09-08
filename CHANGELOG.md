@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Bugsnag should now report uncaught exceptions inside Bundler's 'friendly errors'
+  | [#634](https://github.com/bugsnag/bugsnag-ruby/pull/634)
+
 ## 6.17.0 (27 August 2020)
 
 ### Enhancements
