@@ -41,9 +41,26 @@ describe Bugsnag::Helpers do
     end
 
     context "payload length is greater than allowed" do
+      it "trims exception messages" do
+        payload = {
+          :events => [{
+            :exceptions => [{
+              :message => 50000.times.map {|i| "should truncate" }.join(""),
+              :preserved => "Foo"
+            }]
+          }]
+        }
+        expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+        expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+        expect(trimmed[:events][0][:exceptions][0][:message].length).to be <= Bugsnag::Helpers::MAX_STRING_LENGTH
+        expect(trimmed[:events][0][:exceptions][0][:preserved]).to eq("Foo")
+      end
+
       it "trims metadata strings" do
         payload = {
           :events => [{
+            :exceptions => [],
             :metaData => 50000.times.map {|i| "should truncate" }.join(""),
             :preserved => "Foo"
           }]
@@ -58,6 +75,7 @@ describe Bugsnag::Helpers do
       it "truncates metadata arrays" do
         payload = {
           :events => [{
+            :exceptions => [],
             :metaData => 50000.times.map {|i| "should truncate" },
             :preserved => "Foo"
           }]
