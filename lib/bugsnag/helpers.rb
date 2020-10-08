@@ -19,8 +19,12 @@ module Bugsnag
 
       return value unless payload_too_long?(value)
 
+      # Truncate exception messages
+      reduced_value = truncate_exception_messages(value)
+      return reduced_value unless payload_too_long?(reduced_value)
+
       # Trim metadata
-      reduced_value = trim_metadata(value)
+      reduced_value = trim_metadata(reduced_value)
       return reduced_value unless payload_too_long?(reduced_value)
 
       # Trim code from stacktrace
@@ -72,6 +76,15 @@ module Bugsnag
     TRUNCATION_INFO = '[TRUNCATED]'
 
     ##
+    # Truncate exception messages
+    def self.truncate_exception_messages(payload)
+      extract_exception(payload) do |exception|
+        exception[:message] = trim_as_string(exception[:message])
+      end
+      payload
+    end
+
+    ##
     # Remove all code from stacktraces
     def self.trim_stacktrace_code(payload)
       extract_exception(payload) do |exception|
@@ -98,7 +111,7 @@ module Bugsnag
       valid_payload = payload.is_a?(Hash) && payload[:events].respond_to?(:map)
       return unless valid_payload && block_given?
       payload[:events].each do |event|
-        event[:exceptions].each { |exception| yield exception }
+        event.fetch(:exceptions, []).each { |exception| yield exception }
       end
     end
 
