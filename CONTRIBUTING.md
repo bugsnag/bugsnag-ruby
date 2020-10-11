@@ -19,6 +19,9 @@ Thank you!
     ```
     bundle exec rake spec
     ```
+    
+    _NOTE: You may need to install the bundle with the `test` group first by running `bundle install --with test`. Otherwise, you will get `can't find executable rake for gem rake` error._
+    
 * Further information on installing and running the tests can be found in [the testing guide](TESTING.md)
 
 ### Document
