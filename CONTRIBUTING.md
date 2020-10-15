@@ -22,7 +22,7 @@ Thank you!
 
 * Run the tests with and make sure they all pass
     ```
-    bundle exec rake spec
+    bundle exec rake
     ```
     
 * Further information on installing and running the tests can be found in [the testing guide](TESTING.md)
