@@ -74,20 +74,26 @@ RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
 
   describe "#to_h" do
     it "outputs as a hash" do
-      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", "test type", {:a => 1, :b => 2}, :manual)
-      output = breadcrumb.to_h
+      fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
+      expect(Time).to receive(:now).and_return(fake_now)
 
-      timestamp_regex = /^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:[\d\.]+Z$/
-
-      expect(output).to match(
-        :name => "my message",
-        :type => "test type",
-        :metaData => {
-          :a => 1,
-          :b => 2
-        },
-        :timestamp => eq(breadcrumb.timestamp.iso8601)
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(
+        "my message",
+        "test type",
+        { a: 1, b: 2 },
+        :manual
       )
+
+      expect(breadcrumb.to_h).to eq({
+        name: "my message",
+        type: "test type",
+        metaData: {
+          a: 1,
+          b: 2
+        },
+        # This matches the time we stubbed earlier (fake_now)
+        timestamp: "2020-01-02T03:04:05.123Z"
+      })
     end
   end
 end
