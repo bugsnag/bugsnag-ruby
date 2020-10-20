@@ -209,7 +209,7 @@ module Bugsnag
       {
         "Bugsnag-Api-Key" => api_key,
         "Bugsnag-Payload-Version" => CURRENT_PAYLOAD_VERSION,
-        "Bugsnag-Sent-At" => Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
+        "Bugsnag-Sent-At" => Time.now.utc.iso8601(3)
       }
     end
 
