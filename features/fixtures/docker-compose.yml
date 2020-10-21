@@ -299,7 +299,7 @@ services:
     build:
       context: mailman
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
         - APP_PATH
     environment:
       - BUGSNAG_API_KEY
@@ -313,7 +313,7 @@ services:
     build:
       context: rake
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
@@ -323,7 +323,7 @@ services:
     build:
       context: que
       args:
-        - RUBY_VERSION
+        - RUBY_TEST_VERSION
     depends_on:
       - postgres
     environment:
