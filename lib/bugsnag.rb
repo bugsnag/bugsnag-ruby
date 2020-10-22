@@ -25,7 +25,6 @@ require "bugsnag/middleware/rails3_request"
 require "bugsnag/middleware/sidekiq"
 require "bugsnag/middleware/mailman"
 require "bugsnag/middleware/rake"
-require "bugsnag/middleware/callbacks"
 require "bugsnag/middleware/classify_error"
 require "bugsnag/middleware/delayed_job"
 

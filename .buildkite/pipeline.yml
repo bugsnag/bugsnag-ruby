@@ -585,6 +585,8 @@ steps:
       RUBY_TEST_VERSION: '2.0'
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
+    soft_fail:
+      - exit_status: "*"
 
   - label: ':postbox: Mailman Ruby 2.1 tests'
     plugins:
@@ -673,6 +675,8 @@ steps:
       RUBY_TEST_VERSION: '2.0'
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
+    soft_fail:
+      - exit_status: "*"
 
   - label: ':key: Que Ruby 2.1 tests'
     plugins:

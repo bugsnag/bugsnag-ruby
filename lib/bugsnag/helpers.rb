@@ -94,11 +94,11 @@ module Bugsnag
 
     ##
     # Wrapper for trimming stacktraces
-    def self.extract_exception(payload)
+    def self.extract_exception(payload, &block)
       valid_payload = payload.is_a?(Hash) && payload[:events].respond_to?(:map)
       return unless valid_payload && block_given?
       payload[:events].each do |event|
-        event[:exceptions].each { |exception| yield exception }
+        event[:exceptions].each(&block)
       end
     end
 

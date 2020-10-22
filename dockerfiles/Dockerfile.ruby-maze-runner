@@ -20,7 +20,7 @@ COPY spec ./spec
 RUN gem build bugsnag.gemspec
 
 # The maze-runner node tests
-FROM 855461928731.dkr.ecr.us-west-1.amazonaws.com/maze-runner:latest-cli as ruby-maze-runner
+FROM 855461928731.dkr.ecr.us-west-1.amazonaws.com/maze-runner-releases:v3.0.2-cli as ruby-maze-runner
 WORKDIR /app/
 COPY features ./features
 COPY --from=ruby-package-builder /app/bugsnag-*.gem bugsnag.gem
