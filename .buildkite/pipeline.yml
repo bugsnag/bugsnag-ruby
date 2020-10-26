@@ -1,5 +1,6 @@
 steps:
   - label: ':docker: Build CI image'
+    timeout_in_minutes: 30
     plugins:
       - docker-compose#v3.1.0:
           build: ruby-maze-runner
@@ -13,6 +14,7 @@ steps:
   - wait
 
   - label: ':ruby: Ruby 1.9 unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -21,6 +23,7 @@ steps:
       RUBY_TEST_VERSION: "1.9.3"
 
   - label: ':ruby: Ruby 2.7 unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -30,6 +33,7 @@ steps:
       GEMSETS: "test sidekiq coverage"
 
   - label: ':ruby: Ruby 2.7 linting'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -40,6 +44,7 @@ steps:
     command: "bundle exec ./bin/rubocop lib/"
 
   - label: ':ruby: Ruby 2.7 plain tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -49,6 +54,7 @@ steps:
       RUBY_TEST_VERSION: "2.7"
 
   - label: ':rails: Rails 6 Ruby 2.7 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -59,6 +65,7 @@ steps:
       RAILS_VERSION: "6"
 
   - label: ':rails: Rails integrations Ruby 2.7 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -69,6 +76,7 @@ steps:
       RAILS_VERSION: "_integrations"
 
   - label: ':construction: Delayed job tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -78,6 +86,7 @@ steps:
       RUBY_TEST_VERSION: "2.5"
 
   - label: ':sidekiq: Sidekiq 5 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -90,6 +99,7 @@ steps:
   - wait
 
   - label: ':ruby: JRuby unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: jruby-unit-tests
@@ -98,6 +108,7 @@ steps:
     concurrency_group: 'ruby/unit-tests'
 
   - label: ':ruby: Ruby 2.0 unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -108,6 +119,7 @@ steps:
     concurrency_group: 'ruby/unit-tests'
 
   - label: ':ruby: Ruby 2.1 unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -118,6 +130,7 @@ steps:
     concurrency_group: 'ruby/unit-tests'
 
   - label: ':ruby: Ruby 2.2 unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -129,6 +142,7 @@ steps:
     concurrency_group: 'ruby/unit-tests'
 
   - label: ':ruby: Ruby 2.3 unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -140,6 +154,7 @@ steps:
     concurrency_group: 'ruby/unit-tests'
 
   - label: ':ruby: Ruby 2.4 unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -151,6 +166,7 @@ steps:
     concurrency_group: 'ruby/unit-tests'
 
   - label: ':ruby: Ruby 2.5 unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -162,6 +178,7 @@ steps:
     concurrency_group: 'ruby/unit-tests'
 
   - label: ':ruby: Ruby 2.6 unit tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
@@ -173,6 +190,7 @@ steps:
     concurrency_group: 'ruby/unit-tests'
 
   - label: ':ruby: Ruby 1.9 plain tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -184,6 +202,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.0 plain tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -195,6 +214,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.1 plain tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -206,6 +226,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.2 plain tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -217,6 +238,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.3 plain tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -228,6 +250,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.4 plain tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -239,6 +262,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.5 plain tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -250,6 +274,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':ruby: Ruby 2.6 plain tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -261,6 +286,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':sidekiq: Sidekiq 2 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -273,6 +299,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':sidekiq: Sidekiq 3 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -285,6 +312,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':sidekiq: Sidekiq 4 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -297,6 +325,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.0 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -309,6 +338,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.1 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -321,6 +351,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.2 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -333,6 +364,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.3 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -345,6 +377,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.4 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -357,6 +390,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 3 Ruby 2.5 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -369,6 +403,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 4 Ruby 2.2 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -381,6 +416,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 4 Ruby 2.3 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -393,6 +429,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.2 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -405,6 +442,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.3 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -417,6 +455,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.4 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -429,6 +468,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.5 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -441,6 +481,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 5 Ruby 2.6 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -453,6 +494,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 6 Ruby 2.5 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -465,6 +507,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 6 Ruby 2.6 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -477,6 +520,7 @@ steps:
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 1.9 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -488,6 +532,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 2.0 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -499,6 +544,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 2.1 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -510,6 +556,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 2.2 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -521,6 +568,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 2.3 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -532,6 +580,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 2.4 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -543,6 +592,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 2.5 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -554,6 +604,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 2.6 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -565,6 +616,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':clipboard: Rake Ruby 2.7 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -576,6 +628,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':postbox: Mailman Ruby 2.0 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -589,6 +642,7 @@ steps:
       - exit_status: "*"
 
   - label: ':postbox: Mailman Ruby 2.1 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -600,6 +654,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':postbox: Mailman Ruby 2.2 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -611,6 +666,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':postbox: Mailman Ruby 2.3 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -622,6 +678,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':postbox: Mailman Ruby 2.4 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -633,6 +690,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':postbox: Mailman Ruby 2.5 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -644,6 +702,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':postbox: Mailman Ruby 2.6 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -655,6 +714,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':postbox: Mailman Ruby 2.7 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -666,6 +726,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':key: Que Ruby 2.0 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -679,6 +740,7 @@ steps:
       - exit_status: "*"
 
   - label: ':key: Que Ruby 2.1 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -690,6 +752,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':key: Que Ruby 2.2 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -701,6 +764,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':key: Que Ruby 2.3 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -712,6 +776,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':key: Que Ruby 2.4 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -723,6 +788,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':key: Que Ruby 2.5 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -734,6 +800,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':key: Que Ruby 2.6 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -745,6 +812,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':key: Que Ruby 2.7 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -756,6 +824,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 1 Ruby 1.9 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -768,6 +837,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 1 Ruby 2.0 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -780,6 +850,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 1 Ruby 2.1 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -792,6 +863,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 1 Ruby 2.2 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -804,6 +876,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 1 Ruby 2.3 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -816,6 +889,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 1 Ruby 2.4 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -828,6 +902,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 1 Ruby 2.5 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -840,6 +915,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 1 Ruby 2.6 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -852,6 +928,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 1 Ruby 2.7 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -864,6 +941,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 2 Ruby 2.2 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -876,6 +954,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 2 Ruby 2.3 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -888,6 +967,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 2 Ruby 2.4 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -900,6 +980,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 2 Ruby 2.5 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -912,6 +993,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 2 Ruby 2.6 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
@@ -924,6 +1006,7 @@ steps:
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
   - label: ':bed: Rack 2 Ruby 2.7 tests'
+    timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
