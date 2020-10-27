@@ -58,7 +58,7 @@ module Bugsnag
         def default_headers
           {
             "Content-Type" => "application/json",
-            "Bugsnag-Sent-At" =>  Time.now().utc().strftime('%Y-%m-%dT%H:%M:%S')
+            "Bugsnag-Sent-At" => Time.now.utc.iso8601(3)
           }
         end
       end

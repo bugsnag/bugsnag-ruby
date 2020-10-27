@@ -363,4 +363,18 @@ describe Bugsnag do
       Bugsnag.leave_breadcrumb("TestName")
     end
   end
+
+  describe "request headers" do
+    it "Bugsnag-Sent-At should use the current time" do
+      fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
+      expect(Time).to receive(:now).at_most(5).times.and_return(fake_now)
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        # This matches the time we stubbed earlier (fake_now)
+        expect(headers["Bugsnag-Sent-At"]).to eq("2020-01-02T03:04:05.123Z")
+      }
+    end
+  end
 end

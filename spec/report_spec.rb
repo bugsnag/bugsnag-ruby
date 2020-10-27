@@ -92,6 +92,23 @@ describe Bugsnag::Report do
     }
   end
 
+  it "#headers should return the correct request headers" do
+    fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
+    expect(Time).to receive(:now).and_return(fake_now)
+
+    report = Bugsnag::Report.new(
+      BugsnagTestException.new("It crashed"),
+      Bugsnag.configuration
+    )
+
+    expect(report.headers).to eq({
+      "Bugsnag-Api-Key" => "c9d60ae4c7e70c4b6c4ebd3e8056d2b8",
+      "Bugsnag-Payload-Version" => "4.0",
+      # This matches the time we stubbed earlier (fake_now)
+      "Bugsnag-Sent-At" => "2020-01-02T03:04:05.123Z"
+    })
+  end
+
   it "has the right exception class" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 

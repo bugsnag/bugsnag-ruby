@@ -1,7 +1,7 @@
 Feature: Plain unhandled errors
 
 Scenario Outline: An unhandled error sends a report
-  Given I run the service "plain-ruby" with the command "bundle exec ruby unhandled/<file>.rb"
+  Given I run the service "plain-ruby" with the command "<command> unhandled/<file>.rb"
   And I wait to receive a request
   Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
   And the event "unhandled" is true
@@ -12,22 +12,34 @@ Scenario Outline: An unhandled error sends a report
   And the "lineNumber" of stack frame 0 equals <lineNumber>
 
   Examples:
-  | file              | error          | lineNumber |
-  | runtime_error     | RuntimeError   | 6          |
-  | load_error        | LoadError      | 6          |
-  | syntax_error      | SyntaxError    | 6          |
-  | local_jump_error  | LocalJumpError | 7          |
-  | name_error        | NameError      | 6          |
-  | no_method_error   | NoMethodError  | 6          |
-  | system_call_error | Errno::ENOENT  | 6          |
-  | custom_error      | CustomError    | 9          |
+  | file              | error          | lineNumber | command          |
+  | runtime_error     | RuntimeError   | 6          | bundle exec      |
+  | load_error        | LoadError      | 6          | bundle exec      |
+  | syntax_error      | SyntaxError    | 6          | bundle exec      |
+  | local_jump_error  | LocalJumpError | 7          | bundle exec      |
+  | name_error        | NameError      | 6          | bundle exec      |
+  | no_method_error   | NoMethodError  | 6          | bundle exec      |
+  | system_call_error | Errno::ENOENT  | 6          | bundle exec      |
+  | custom_error      | CustomError    | 9          | bundle exec      |
+  | runtime_error     | RuntimeError   | 6          | bundle exec ruby |
+  | load_error        | LoadError      | 6          | bundle exec ruby |
+  | syntax_error      | SyntaxError    | 6          | bundle exec ruby |
+  | local_jump_error  | LocalJumpError | 7          | bundle exec ruby |
+  | name_error        | NameError      | 6          | bundle exec ruby |
+  | no_method_error   | NoMethodError  | 6          | bundle exec ruby |
+  | system_call_error | Errno::ENOENT  | 6          | bundle exec ruby |
+  | custom_error      | CustomError    | 9          | bundle exec ruby |
 
 Scenario Outline: An unhandled error doesn't send a report
-  When I run the service "plain-ruby" with the command "bundle exec ruby unhandled/<file>.rb"
+  When I run the service "plain-ruby" with the command "<command> unhandled/<file>.rb"
   And I wait for 1 second
   Then I should receive no requests
 
   Examples:
-  | file          |
-  | interrupt     |
-  | system_exit   |
+  | file                 | command          |
+  | interrupt            | bundle exec      |
+  | system_exit          | bundle exec      |
+  | exit_after_exception | bundle exec      |
+  | interrupt            | bundle exec ruby |
+  | system_exit          | bundle exec ruby |
+  | exit_after_exception | bundle exec ruby |

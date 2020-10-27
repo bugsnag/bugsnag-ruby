@@ -69,7 +69,7 @@ module Bugsnag::Breadcrumbs
         :name => @name,
         :type => @type,
         :metaData => @meta_data,
-        :timestamp => @timestamp.iso8601
+        :timestamp => @timestamp.iso8601(3)
       }
     end
   end

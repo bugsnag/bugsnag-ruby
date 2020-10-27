@@ -1,6 +1,16 @@
 Changelog
 =========
 
+## 6.18.0 (27 October 2020)
+
+### Enhancements
+
+* Bugsnag should now report uncaught exceptions inside Bundler's 'friendly errors'
+  | [#634](https://github.com/bugsnag/bugsnag-ruby/pull/634)
+
+* Improve the display of breadrumbs in the Bugsnag app by including milliseconds in timestamps
+  | [#639](https://github.com/bugsnag/bugsnag-ruby/pull/639)
+
 ## 6.17.0 (27 August 2020)
 
 ### Enhancements
