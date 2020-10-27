@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 6.18.0 (27 October 2020)
 
 ### Enhancements
 
