@@ -1,3 +1,4 @@
+
 # Bugsnag error monitoring & exception reporter for Ruby
 [![build status](https://travis-ci.com/bugsnag/bugsnag-ruby.svg?branch=master)](https://travis-ci.com/bugsnag/bugsnag-ruby)
 
