@@ -24,6 +24,7 @@ Scenario: A notified string sends a report
 
 Scenario: A handled error doesn't send a report when the :skip_bugsnag flag is set
   When I run the service "plain-ruby" with the command "bundle exec ruby handled/ignore_exception.rb"
+  And I wait for 1 second
   Then I should receive no requests
 
 Scenario: A handled error can attach metadata in a block
