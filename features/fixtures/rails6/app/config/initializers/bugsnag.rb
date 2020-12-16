@@ -12,6 +12,20 @@ Bugsnag.configure do |config|
   config.send_environment = ENV["BUGSNAG_SEND_ENVIRONMENT"] == "true"
   config.meta_data_filters << 'filtered_parameter'
 
+  if RUBY_VERSION >= '3.0.0'
+    # In Ruby 3 NameError & NoMethodError messages are no longer truncated
+    # This can lead to us dropping metadata in order to reduce the payload size,
+    # if the message is long enough
+    # TODO(PLAT-5635) fix this in the notifier
+    config.add_on_error(proc do |report|
+      exception_class = report.exceptions.first[:errorClass]
+
+      next unless exception_class == 'NameError' || exception_class == 'NoMethodError'
+
+      report.exceptions.first[:message] = report.exceptions.first[:message][0...300]
+    end)
+  end
+
   if ENV["SQL_ONLY_BREADCRUMBS"] == "true"
     config.before_breadcrumb_callbacks << Proc.new do |breadcrumb|
       breadcrumb.ignore! unless breadcrumb.meta_data[:event_name] == "sql.active_record" && breadcrumb.meta_data[:name] == "User Load"
