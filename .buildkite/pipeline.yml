@@ -1017,3 +1017,49 @@ steps:
       RACK_VERSION: '2'
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+  - wait
+
+  - label: ':ruby: Ruby 3.0 unit tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env:
+      RUBY_TEST_VERSION: "3.0.0-preview2"
+
+  - label: ':ruby: Ruby 3.0 plain tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/plain_features/", "--tags", "not @wip"]
+    env:
+      DEBUG: true
+      RUBY_TEST_VERSION: "3.0.0-preview2"
+
+  - label: ':rails: Rails 6 Ruby 3.0 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/",  "--tags", "@rails6 and not @wip"]
+    env:
+      DEBUG: true
+      RUBY_TEST_VERSION: "3.0.0-preview2"
+      RAILS_VERSION: "6"
+
+  - label: ':rails: Rails integrations Ruby 3.0 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails_integrations"]
+    env:
+      DEBUG: true
+      RUBY_TEST_VERSION: "3.0.0-preview2"
+      RAILS_VERSION: "_integrations"
