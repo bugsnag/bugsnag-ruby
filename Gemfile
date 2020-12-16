@@ -5,6 +5,7 @@ ruby_version = Gem::Version.new(RUBY_VERSION.dup)
 group :test, optional: true do
   gem 'rake', ruby_version <= Gem::Version.new('1.9.3') ? '~> 11.3.0' : '~> 12.3.0'
   gem 'rspec'
+  gem 'rexml'
   gem 'rspec-mocks'
   gem 'yard', '~> 0.9.25'
   gem 'pry'
