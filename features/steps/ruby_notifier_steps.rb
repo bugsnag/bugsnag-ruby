@@ -46,10 +46,9 @@ Given("I start the rails service") do
 end
 
 When("I navigate to the route {string} on the rails app") do |route|
-  rails_version = ENV["RAILS_VERSION"]
-  steps %Q{
-    When I open the URL "http://rails#{rails_version}:3000#{route}"
-  }
+  URI.open("http://rails#{ENV["RAILS_VERSION"]}:3000#{route}", &:read)
+rescue => e
+  $logger.debug(e.inspect)
 end
 
 When("I run {string} in the rails app") do |command|
