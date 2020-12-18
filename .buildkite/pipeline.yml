@@ -21,6 +21,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "1.9.3"
+      BUNDLE_VERSION: "1.12.0"
 
   - label: ':ruby: Ruby 2.7 unit tests'
     timeout_in_minutes: 30
@@ -115,6 +116,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.0"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 4
     concurrency_group: 'ruby/unit-tests'
 
@@ -126,6 +128,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.1"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 4
     concurrency_group: 'ruby/unit-tests'
 
@@ -137,6 +140,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.2"
+      BUNDLE_VERSION: "1.12.0"
       GEMSETS: "test sidekiq"
     concurrency: 4
     concurrency_group: 'ruby/unit-tests'
@@ -198,6 +202,7 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "1.9.3"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
@@ -210,6 +215,7 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.0"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
@@ -222,6 +228,7 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.1"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
@@ -234,6 +241,7 @@ steps:
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.2"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
@@ -334,6 +342,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.0"
       RAILS_VERSION: "3"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
@@ -347,6 +356,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.1"
       RAILS_VERSION: "3"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
@@ -360,6 +370,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.2"
       RAILS_VERSION: "3"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
@@ -412,6 +423,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.2"
       RAILS_VERSION: "4"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
@@ -438,6 +450,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.2"
       RAILS_VERSION: "5"
+      BUNDLE_VERSION: "1.12.0"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
