@@ -43,7 +43,7 @@ def notify_test_exception(*args)
 end
 
 def ruby_version_greater_equal?(target_version)
-  Gem::Version.new(RUBY_VERSION) >= Gem::Version.new(target_version)
+  Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new(target_version)
 end
 
 RSpec.configure do |config|
