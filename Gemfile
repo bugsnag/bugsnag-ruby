@@ -5,7 +5,6 @@ ruby_version = Gem::Version.new(RUBY_VERSION.dup)
 group :test, optional: true do
   gem 'rake', ruby_version <= Gem::Version.new('1.9.3') ? '~> 11.3.0' : '~> 12.3.0'
   gem 'rspec'
-  gem 'rexml'
   gem 'rspec-mocks'
   gem 'yard', '~> 0.9.25'
   gem 'pry'
@@ -24,6 +23,10 @@ group :test, optional: true do
     gem 'did_you_mean', '~> 1.1.0'
   elsif ruby_version >= Gem::Version.new('2.3.0')
     gem 'did_you_mean', '~> 1.0.4'
+  end
+
+  if ruby_version >= Gem::Version.new('3.0.0')
+    gem 'rexml'
   end
 end
 
