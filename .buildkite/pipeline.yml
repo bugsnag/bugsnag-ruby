@@ -153,6 +153,7 @@ steps:
         use-aliases: true
     env:
       RUBY_TEST_VERSION: "2.3"
+      BUNDLE_VERSION: "1.12.0"
       GEMSETS: "test sidekiq"
     concurrency: 4
     concurrency_group: 'ruby/unit-tests'
