@@ -42,33 +42,53 @@ describe Bugsnag::Helpers do
 
     context "payload length is greater than allowed" do
       it "trims exception messages" do
+        long_message = "should truncate" * 50000
+
         payload = {
           :events => [{
             :exceptions => [{
-              :message => 50000.times.map {|i| "should truncate" }.join(""),
+              :message => long_message,
               :preserved => "Foo"
             }]
           }]
         }
+
         expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+
         trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+
         expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-        expect(trimmed[:events][0][:exceptions][0][:message].length).to be <= Bugsnag::Helpers::MAX_STRING_LENGTH
+
+        truncation_info = "[TRUNCATED]"
+        expected_length = Bugsnag::Helpers::MAX_STRING_LENGTH - truncation_info.length
+        expected_truncation = long_message[0...expected_length] + truncation_info
+
+        expect(trimmed[:events][0][:exceptions][0][:message]).to eq(expected_truncation)
         expect(trimmed[:events][0][:exceptions][0][:preserved]).to eq("Foo")
       end
 
       it "trims metadata strings" do
+        long_message = "should truncate" * 50000
+
         payload = {
           :events => [{
             :exceptions => [],
-            :metaData => 50000.times.map {|i| "should truncate" }.join(""),
+            :metaData => long_message,
             :preserved => "Foo"
           }]
         }
+
         expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+
         trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+
         expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-        expect(trimmed[:events][0][:metaData].length).to be <= Bugsnag::Helpers::MAX_STRING_LENGTH
+
+        truncation_info = "[TRUNCATED]"
+        expected_length = Bugsnag::Helpers::MAX_STRING_LENGTH - truncation_info.length
+        expected_truncation = long_message[0...expected_length] + truncation_info
+
+        expect(trimmed[:events][0][:metaData]).to eq(expected_truncation)
         expect(trimmed[:events][0][:preserved]).to eq("Foo")
       end
 
@@ -80,10 +100,16 @@ describe Bugsnag::Helpers do
             :preserved => "Foo"
           }]
         }
+
         expect(::JSON.dump(payload).length).to be > Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
+
         trimmed = Bugsnag::Helpers.trim_if_needed(payload)
+
         expect(::JSON.dump(trimmed).length).to be <= Bugsnag::Helpers::MAX_PAYLOAD_LENGTH
-        expect(trimmed[:events][0][:metaData].length).to be <= Bugsnag::Helpers::MAX_ARRAY_LENGTH
+
+        expected_meta_data = payload[:events][0][:metaData].take(Bugsnag::Helpers::MAX_ARRAY_LENGTH)
+
+        expect(trimmed[:events][0][:metaData]).to eq(expected_meta_data)
         expect(trimmed[:events][0][:preserved]).to eq("Foo")
       end
 
