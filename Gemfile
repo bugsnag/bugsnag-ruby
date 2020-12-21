@@ -24,6 +24,9 @@ group :test, optional: true do
   elsif ruby_version >= Gem::Version.new('2.3.0')
     gem 'did_you_mean', '~> 1.0.4'
   end
+
+  # WEBrick is no longer in the stdlib in Ruby 3.0
+  gem 'webrick' if ruby_version >= Gem::Version.new('3.0.0')
 end
 
 group :coverage, optional: true do
