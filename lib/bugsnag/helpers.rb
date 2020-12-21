@@ -4,7 +4,7 @@ require 'json'
 
 
 module Bugsnag
-  module Helpers
+  module Helpers # rubocop:todo Metrics/ModuleLength
     MAX_STRING_LENGTH = 3072
     MAX_PAYLOAD_LENGTH = 512000
     MAX_ARRAY_LENGTH = 80
@@ -19,8 +19,12 @@ module Bugsnag
 
       return value unless payload_too_long?(value)
 
+      # Truncate exception messages
+      reduced_value = truncate_exception_messages(value)
+      return reduced_value unless payload_too_long?(reduced_value)
+
       # Trim metadata
-      reduced_value = trim_metadata(value)
+      reduced_value = trim_metadata(reduced_value)
       return reduced_value unless payload_too_long?(reduced_value)
 
       # Trim code from stacktrace
@@ -70,6 +74,15 @@ module Bugsnag
     private
 
     TRUNCATION_INFO = '[TRUNCATED]'
+
+    ##
+    # Truncate exception messages
+    def self.truncate_exception_messages(payload)
+      extract_exception(payload) do |exception|
+        exception[:message] = trim_as_string(exception[:message])
+      end
+      payload
+    end
 
     ##
     # Remove all code from stacktraces
