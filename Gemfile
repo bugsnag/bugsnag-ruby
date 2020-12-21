@@ -27,6 +27,7 @@ group :test, optional: true do
 
   if ruby_version >= Gem::Version.new('3.0.0')
     gem 'rexml'
+    gem 'webrick'
   end
 end
 
