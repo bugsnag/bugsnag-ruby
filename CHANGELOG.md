@@ -9,6 +9,9 @@ Changelog
   | [#636](https://github.com/bugsnag/bugsnag-ruby/pull/636)
   | [joshuapinter](https://github.com/joshuapinter)
 
+* Breadcrumb metadata can now contain any type
+  | [#648](https://github.com/bugsnag/bugsnag-ruby/pull/648)
+
 ## 6.18.0 (27 October 2020)
 
 ### Enhancements
