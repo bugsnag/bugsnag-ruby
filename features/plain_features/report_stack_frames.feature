@@ -6,14 +6,14 @@ Scenario Outline: Stack frames can be removed
   And I wait to receive a request
   Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
   And the "file" of the top non-bugsnag stackframe equals "/usr/src/app/stack_frame_modification/initiators/<initiator>.rb"
-  And the "lineNumber" of stack frame 0 equals <lineNumber>
+  And the "lineNumber" of stack frame 0 equals 20
 
   Examples:
-  | initiator               | lineNumber |
-  | handled_before_notify   | 20         |
-  | unhandled_before_notify | 21         |
-  | handled_on_error        | 20         |
-  | unhandled_on_error      | 21         |
+  | initiator               |
+  | handled_before_notify   |
+  | unhandled_before_notify |
+  | handled_on_error        |
+  | unhandled_on_error      |
 
 Scenario: Stack frames can be removed from a notified string
   Given I set environment variable "CALLBACK_INITIATOR" to "handled_block"

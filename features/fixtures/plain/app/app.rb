@@ -27,11 +27,3 @@ def configure_using_environment
     conf.timeout = ENV["BUGSNAG_TIMEOUT"] if ENV.include? "BUGSNAG_TIMEOUT"
   end
 end
-
-def add_at_exit
-  at_exit do
-    if $!
-      Bugsnag.notify($!, true)
-    end
-  end
-end

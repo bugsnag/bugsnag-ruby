@@ -60,6 +60,9 @@ module Bugsnag
               @configuration.warn("Waiting for #{@queue.length} outstanding request(s)") unless @queue.empty?
               @queue.push STOP
               worker_thread.join
+
+              # Allow the worker to be started again if an error occurs later
+              @started = nil
             end
           end
         end

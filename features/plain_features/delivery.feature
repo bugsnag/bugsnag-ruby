@@ -18,3 +18,15 @@ Scenario: When the delivery_method is set to :thread_queue in a fork
   Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
   And the exception "errorClass" equals "RuntimeError"
   And the event "metaData.config" matches the JSON fixture in "features/fixtures/plain/json/delivery_fork.json"
+
+Scenario: thread_queue delivery can restart if an error occurs after it exits
+  When I run the service "plain-ruby" with the command "bundle exec ruby delivery/thread_queue_can_restart.rb"
+  And I wait to receive 2 requests
+  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And event 0 is handled
+  And the exception "message" equals "this was handled"
+  And the event "metaData.thread_info.number_of_threads" equals "1"
+  And I discard the oldest request
+  And event 0 is unhandled
+  And the exception "message" equals "this was unhandled"
+  And the event "metaData.thread_info.number_of_threads" equals "2"
