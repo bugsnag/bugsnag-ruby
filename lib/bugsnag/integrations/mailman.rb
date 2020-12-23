@@ -21,15 +21,25 @@ module Bugsnag
       begin
         Bugsnag.configuration.set_request_data :mailman_msg, mail.to_s
         yield
-      rescue Exception => ex
-        Bugsnag.notify(ex, true) do |report|
+      rescue Exception => exception
+        Bugsnag.notify(exception, true) do |report|
           report.severity = "error"
           report.severity_reason = {
             :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
             :attributes => FRAMEWORK_ATTRIBUTES
           }
         end
-        raise
+
+        # Skip this exception in future notify calls; Mailman doesn't rescue
+        # uncaught exception and so this exception may end up being double
+        # reported by our 'on_exit' hook
+        exception.instance_eval do
+          def skip_bugsnag
+            true
+          end
+        end
+
+        raise exception
       ensure
         Bugsnag.configuration.clear_request_data
       end
