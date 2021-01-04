@@ -9,13 +9,20 @@ group :test, optional: true do
   gem 'yard', '~> 0.9.25'
   gem 'pry'
   gem 'addressable', '~> 2.3.8'
+
   if ruby_version >= Gem::Version.new('2.2.2')
     gem 'delayed_job', ruby_version < Gem::Version.new('2.5.0') ? '4.1.7': '>4.1.7'
     gem 'i18n', ruby_version <= Gem::Version.new('2.3.0') ? '1.4.0' : '>1.4.0'
   end
+
   gem 'webmock', ruby_version <= Gem::Version.new('1.9.3') ? '2.3.2': '>2.3.2'
+  gem 'crack', '< 0.4.5' if ruby_version <= Gem::Version.new('1.9.3')
+
   gem 'hashdiff', ruby_version <= Gem::Version.new('1.9.3') ? '0.3.8': '>0.3.8'
-  if ruby_version >= Gem::Version.new('2.7.0')
+
+  if ruby_version >= Gem::Version.new('3.0.0')
+    gem 'did_you_mean', '~> 1.5.0'
+  elsif ruby_version >= Gem::Version.new('2.7.0')
     gem 'did_you_mean', '~> 1.4.0'
   elsif ruby_version >= Gem::Version.new('2.5.0')
     gem 'did_you_mean', '~> 1.3.1'
@@ -24,6 +31,9 @@ group :test, optional: true do
   elsif ruby_version >= Gem::Version.new('2.3.0')
     gem 'did_you_mean', '~> 1.0.4'
   end
+
+  # WEBrick is no longer in the stdlib in Ruby 3.0
+  gem 'webrick' if ruby_version >= Gem::Version.new('3.0.0')
 end
 
 group :coverage, optional: true do
