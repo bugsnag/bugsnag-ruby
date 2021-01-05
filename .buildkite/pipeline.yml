@@ -95,7 +95,7 @@ steps:
         command: ["features/sidekiq.feature", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
-      SIDEKIQ_VERSION: "~> 5"
+      SIDEKIQ_VERSION: "5"
 
   - wait
 
@@ -326,7 +326,7 @@ steps:
         command: ["features/sidekiq.feature", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
-      SIDEKIQ_VERSION: "~> 2"
+      SIDEKIQ_VERSION: "2"
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
@@ -339,7 +339,7 @@ steps:
         command: ["features/sidekiq.feature", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
-      SIDEKIQ_VERSION: "~> 3"
+      SIDEKIQ_VERSION: "3"
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
@@ -352,7 +352,7 @@ steps:
         command: ["features/sidekiq.feature", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
-      SIDEKIQ_VERSION: "~> 4"
+      SIDEKIQ_VERSION: "4"
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
