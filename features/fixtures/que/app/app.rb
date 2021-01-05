@@ -1,5 +1,6 @@
 require 'pg'
 require 'que'
+require 'socket'
 require 'bugsnag'
 require 'active_record'
 
@@ -9,6 +10,23 @@ Bugsnag.configure do |config|
   puts "Configuring `endpoint` to #{ENV['BUGSNAG_ENDPOINT']}"
   config.endpoint = ENV['BUGSNAG_ENDPOINT']
 end
+
+postgres_ready = false
+attempts = 0
+MAX_ATTEMPTS = 10
+
+until postgres_ready || attempts >= MAX_ATTEMPTS
+  begin
+    Timeout::timeout(5) { TCPSocket.new('postgres', 5432).close }
+
+    postgres_ready = true
+  rescue Exception
+    attempts += 1
+    sleep 1
+  end
+end
+
+raise 'postgres was not ready in time!' unless postgres_ready
 
 ActiveRecord::Base.establish_connection(
   adapter: 'postgresql',
