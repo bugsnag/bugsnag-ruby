@@ -8,3 +8,6 @@ gem 'rb-inotify', '0.9.8'
 gem 'maildir', '~> 2.1.0'
 gem 'activesupport', '~> 3.2'
 gem 'rack', '~> 1.6.11'
+
+# Install a compatible FFI version on Ruby <2.3
+gem 'ffi', '< 1.13.0' if RUBY_VERSION < '2.3.0'
