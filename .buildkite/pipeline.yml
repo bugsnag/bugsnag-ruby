@@ -86,7 +86,7 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.5"
 
-  - label: ':sidekiq: Sidekiq 5 tests'
+  - label: ':sidekiq: Sidekiq 6 tests'
     timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
@@ -95,7 +95,7 @@ steps:
         command: ["features/sidekiq.feature", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
-      SIDEKIQ_VERSION: "~> 5"
+      SIDEKIQ_VERSION: "6"
 
   - wait
 
@@ -326,7 +326,7 @@ steps:
         command: ["features/sidekiq.feature", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
-      SIDEKIQ_VERSION: "~> 2"
+      SIDEKIQ_VERSION: "2"
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
@@ -339,7 +339,7 @@ steps:
         command: ["features/sidekiq.feature", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
-      SIDEKIQ_VERSION: "~> 3"
+      SIDEKIQ_VERSION: "3"
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
@@ -352,9 +352,20 @@ steps:
         command: ["features/sidekiq.feature", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
-      SIDEKIQ_VERSION: "~> 4"
+      SIDEKIQ_VERSION: "4"
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+  - label: ':sidekiq: Sidekiq 5 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/sidekiq.feature", "--tags", "not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      SIDEKIQ_VERSION: "5"
 
   - label: ':rails: Rails 3 Ruby 2.0 tests'
     timeout_in_minutes: 30

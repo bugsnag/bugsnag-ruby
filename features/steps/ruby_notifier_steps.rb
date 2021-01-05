@@ -92,22 +92,18 @@ When("I navigate to the route {string} on the rack app") do |route|
 end
 
 Then("the payload field {string} matches the appropriate Sidekiq handled payload") do |field|
-  if ENV["SIDEKIQ_VERSION"] == "~> 2"
-    created_at_present = "false"
-  else
-    created_at_present = "true"
-  end
+  # Sidekiq 2 doesn't include the "created_at" field
+  created_at_present = ENV["SIDEKIQ_VERSION"] > "2"
+
   steps %Q{
     And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/handled_metadata_ca_#{created_at_present}.json"
   }
 end
 
 Then("the payload field {string} matches the appropriate Sidekiq unhandled payload") do |field|
-  if ENV["SIDEKIQ_VERSION"] == "~> 2"
-    created_at_present = "false"
-  else
-    created_at_present = "true"
-  end
+  # Sidekiq 2 doesn't include the "created_at" field
+  created_at_present = ENV["SIDEKIQ_VERSION"] > "2"
+
   steps %Q{
     And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_#{created_at_present}.json"
   }

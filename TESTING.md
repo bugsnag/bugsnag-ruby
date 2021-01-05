@@ -59,7 +59,7 @@ Configure the tests to be run in the following way:
 
 - Determine the Ruby version to be tested using the environment variable `RUBY_TEST_VERSION` e.g. `RUBY_TEST_VERSION=2.6`
 - If testing rails, set the rails version to be tested using the environment variable `RAILS_VERSION` e.g. `RAILS_VERSION=3`
-- If testing sidekiq, set the version to be tested using the environment variable `SIDEKIQ_VERSION` as the bundler version,  e.g. `SIDEKIQ_VERSION="~> 2"`
+- If testing sidekiq, set the version to be tested using the environment variable `SIDEKIQ_VERSION`,  e.g. `SIDEKIQ_VERSION=2`
 
 When running the end-to-end tests, you'll want to restrict the feature files run to the specific test features for the platform.  This is done using the Cucumber CLI syntax at the end of the `docker-compose run ruby-maze-runner` command, i.e:
 
