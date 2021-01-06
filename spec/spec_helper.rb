@@ -42,12 +42,8 @@ def notify_test_exception(*args)
   Bugsnag.notify(RuntimeError.new("test message"), *args)
 end
 
-def ruby_version_greater_equal?(version)
-  current_version = RUBY_VERSION.split "."
-  target_version = version.split "."
-  (Integer(current_version[0]) >= Integer(target_version[0])) &&
-    (Integer(current_version[1]) >= Integer(target_version[1])) &&
-    (Integer(current_version[2]) >= Integer(target_version[2]))
+def ruby_version_greater_equal?(target_version)
+  Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new(target_version)
 end
 
 RSpec.configure do |config|

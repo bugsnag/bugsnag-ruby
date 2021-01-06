@@ -266,12 +266,18 @@ describe Bugsnag do
         },
         "Not a real type"
       )
+
       expect(breadcrumbs.to_a.size).to eq(1)
       expect(breadcrumbs.first.to_h).to match({
         :name => "123123123123123123123123123123456456456456456456456456456456",
         :type => Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE,
         :metaData => {
-          :a => 1
+          :a => 1,
+          :b => [1, 2, 3, 4],
+          :c => {
+            :test => true,
+            :test2 => false
+          }
         },
         :timestamp => match(timestamp_regex)
       })
@@ -308,13 +314,20 @@ describe Bugsnag do
         breadcrumb.type = "Not a real type"
         breadcrumb.name = "123123123123123123123123123123456456456456456"
       end
+
       Bugsnag.leave_breadcrumb("TestName")
+
       expect(breadcrumbs.to_a.size).to eq(1)
       expect(breadcrumbs.first.to_h).to match({
         :name => "123123123123123123123123123123456456456456456",
         :type => Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE,
         :metaData => {
-          :int => 1
+          :int => 1,
+          :array => [1, 2, 3],
+          :hash => {
+            :a => 1,
+            :b => 2
+          }
         },
         :timestamp => match(timestamp_regex)
       })

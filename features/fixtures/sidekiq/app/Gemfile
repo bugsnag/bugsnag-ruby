@@ -1,8 +1,13 @@
 source 'https://rubygems.org'
 
+sidekiq_version = ENV.fetch('SIDEKIQ_VERSION')
+
 gem 'bugsnag', path: '/bugsnag'
-gem 'hitimes', '~> 1.2.6'
 gem 'rake', '~> 12.3.0'
-gem 'redis', '~> 3.3.5'
-gem 'sidekiq', ENV['SIDEKIQ_VERSION']
-gem 'timers', '~> 4.1.2'
+gem 'sidekiq', "~> #{sidekiq_version}"
+
+if sidekiq_version == '2'
+  gem 'hitimes', '~> 1.2.6'
+  gem 'redis', '~> 3.3.5'
+  gem 'timers', '~> 4.1.2'
+end

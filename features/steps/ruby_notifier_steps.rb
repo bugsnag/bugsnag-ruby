@@ -45,11 +45,17 @@ Given("I start the rails service") do
   }
 end
 
+# When running tests against Rails on Ruby 3, the base Maze Runner step
+# "I open the url {string}" commonly flakes due to a "Errno::ECONNREFUSED"
+# error, which MR doesn't rescue. The notifier request is still fired so the
+# test passes when these errors are rescued and there's no risk of swallowing an
+# actual failure because any assertion steps will fail if the notifier request
+# isn't fired. This may become unnecessary in future, when running Rails on
+# Ruby 3 is more stable
 When("I navigate to the route {string} on the rails app") do |route|
-  rails_version = ENV["RAILS_VERSION"]
-  steps %Q{
-    When I open the URL "http://rails#{rails_version}:3000#{route}"
-  }
+  URI.open("http://rails#{ENV["RAILS_VERSION"]}:3000#{route}", &:read)
+rescue => e
+  $logger.debug(e.inspect)
 end
 
 When("I run {string} in the rails app") do |command|
@@ -86,22 +92,18 @@ When("I navigate to the route {string} on the rack app") do |route|
 end
 
 Then("the payload field {string} matches the appropriate Sidekiq handled payload") do |field|
-  if ENV["SIDEKIQ_VERSION"] == "~> 2"
-    created_at_present = "false"
-  else
-    created_at_present = "true"
-  end
+  # Sidekiq 2 doesn't include the "created_at" field
+  created_at_present = ENV["SIDEKIQ_VERSION"] > "2"
+
   steps %Q{
     And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/handled_metadata_ca_#{created_at_present}.json"
   }
 end
 
 Then("the payload field {string} matches the appropriate Sidekiq unhandled payload") do |field|
-  if ENV["SIDEKIQ_VERSION"] == "~> 2"
-    created_at_present = "false"
-  else
-    created_at_present = "true"
-  end
+  # Sidekiq 2 doesn't include the "created_at" field
+  created_at_present = ENV["SIDEKIQ_VERSION"] > "2"
+
   steps %Q{
     And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_#{created_at_present}.json"
   }

@@ -6,6 +6,14 @@ gem 'bugsnag', path: ENV.fetch('BUGSNAG_GEM_PATH', '../../../../')
 gem 'delayed_job_active_record'
 gem 'mailman', '~> 0.7.3'
 gem 'que', '~> 0.14.3'
+
+# Ensure we get a version of 'redis-namespace' that's compatible with Ruby 3
+# There isn't a tag for this yet, so we fetch a commit that's known to work
+# TODO remove this when a new version is released
+if RUBY_VERSION >= '3.0.0'
+  gem 'redis-namespace', github: 'resque/redis-namespace', ref: 'c31e63dc3cd5e59ef5ea394d4d46ac60d1e6f82e'
+end
+
 gem 'resque', '~> 2.0.0'
 gem 'sidekiq', '~> 6.1.0'
 
