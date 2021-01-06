@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 6.19.0 (6 January 2021)
 
 ### Enhancements
 
