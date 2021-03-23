@@ -9,6 +9,7 @@ module Bugsnag::Middleware
         "ActionController::UnknownAction",
         "ActionController::UnknownFormat",
         "ActionController::UnknownHttpMethod",
+        "ActionDispatch::Http::MimeNegotiation::InvalidType",
         "ActiveRecord::RecordNotFound",
         "CGI::Session::CookieStore::TamperedWithCookie",
         "Mongoid::Errors::DocumentNotFound",
