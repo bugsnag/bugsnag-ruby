@@ -1,6 +1,11 @@
 Changelog
 =========
 
+### Enhancements
+
+* Classify `ActionDispatch::Http::MimeNegotiation::InvalidType` as info severity level
+  | [#654](https://github.com/bugsnag/bugsnag-ruby/pull/654)
+
 ## 6.19.0 (6 January 2021)
 
 ### Enhancements
