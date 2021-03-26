@@ -1,10 +1,17 @@
 Changelog
 =========
 
+## TBD
+
 ### Enhancements
 
 * Classify `ActionDispatch::Http::MimeNegotiation::InvalidType` as info severity level
   | [#654](https://github.com/bugsnag/bugsnag-ruby/pull/654)
+
+### Fixes
+
+* Include `connection_id` in ActiveRecord breadcrumb metadata on new versons of Rails
+  | [#655](https://github.com/bugsnag/bugsnag-ruby/pull/655)
 
 ## 6.19.0 (6 January 2021)
 

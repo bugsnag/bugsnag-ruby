@@ -91,10 +91,21 @@ module Bugsnag
         filtered_data = data.slice(*event[:allowed_data])
         filtered_data[:event_name] = event[:id]
         filtered_data[:event_id] = event_id
-        if event[:id] == "sql.active_record" && data.key?(:binds)
-          binds = data[:binds].each_with_object({}) { |bind, output| output[bind.name] = '?' if defined?(bind.name) }
-          filtered_data[:binds] = JSON.dump(binds) unless binds.empty?
+
+        if event[:id] == "sql.active_record"
+          if data.key?(:binds)
+            binds = data[:binds].each_with_object({}) { |bind, output| output[bind.name] = '?' if defined?(bind.name) }
+            filtered_data[:binds] = JSON.dump(binds) unless binds.empty?
+          end
+
+          # Rails < 6.1 included connection_id in the event data, but now
+          # includes the connection object instead
+          if data.key?(:connection) && !data.key?(:connection_id)
+            # the connection ID is the object_id of the connection object
+            filtered_data[:connection_id] = data[:connection].object_id
+          end
         end
+
         Bugsnag.leave_breadcrumb(
           event[:message],
           filtered_data,
