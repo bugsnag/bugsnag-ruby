@@ -127,6 +127,8 @@ module Bugsnag
   end
 end
 
-##
-# Add the subscriber to the global Mongo monitoring object
-Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, Bugsnag::MongoBreadcrumbSubscriber.new)
+if defined?(Mongo::Monitoring)
+  ##
+  # Add the subscriber to the global Mongo monitoring object
+  Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, Bugsnag::MongoBreadcrumbSubscriber.new)
+end
