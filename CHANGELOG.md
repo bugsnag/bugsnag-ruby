@@ -12,6 +12,9 @@ Changelog
 
 * Include `connection_id` in ActiveRecord breadcrumb metadata on new versons of Rails
   | [#655](https://github.com/bugsnag/bugsnag-ruby/pull/655)
+* Avoid crash when Mongo 1.12 or earlier is used
+  | [#652](https://github.com/bugsnag/bugsnag-ruby/pull/652)
+  | [isabanin](https://github.com/isabanin)
 
 ## 6.19.0 (6 January 2021)
 
