@@ -38,6 +38,8 @@ module Bugsnag::Rails
       :type => Bugsnag::Breadcrumbs::PROCESS_BREADCRUMB_TYPE,
       :allowed_data => [
         :name,
+        # :connection_id is no longer provided in Rails 6.1+ but we can get it
+        # from the :connection key of the event instead
         :connection_id,
         :cached
       ]
