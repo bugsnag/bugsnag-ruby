@@ -11,12 +11,6 @@ steps:
             - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
             - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby-latest
 
-  - name: ':copyright: License Audit'
-    plugins:
-      docker-compose#v3.7.0:
-        run: license_finder
-    command: /bin/bash -lc '/scan/scripts/license_finder.sh'
-
   - wait
 
   - label: ':ruby: Ruby 1.9 unit tests'
@@ -1155,3 +1149,9 @@ steps:
       RACK_VERSION: '2'
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+  - name: ':copyright: License Audit'
+    plugins:
+      docker-compose#v3.7.0:
+        run: license_finder
+    command: /bin/bash -lc '/scan/scripts/license_finder.sh'
