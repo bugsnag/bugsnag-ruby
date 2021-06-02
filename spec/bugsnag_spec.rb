@@ -56,6 +56,16 @@ describe Bugsnag do
       })
       expect(breadcrumb.timestamp).to be_within(1).of(sent_time)
     end
+
+    it 'is also be delivered when an error raised in the block argument' do
+      Bugsnag.notify('It crashed') do |report|
+        repor.context = 'test'
+      end
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event['metaData']['custom']['report_error']).to match(/Failed to report block \(NameError\): undefined local variable or method/)
+      }
+    end
   end
 
   describe '#configure' do

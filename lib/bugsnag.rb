@@ -106,7 +106,11 @@ module Bugsnag
 
         # If this is not an auto_notify then the block was provided by the user. This should be the last
         # block that is run as it is the users "most specific" block.
-        yield(report) if block_given? && !auto_notify
+        begin
+          yield(report) if block_given? && !auto_notify
+        rescue => e
+          report.add_tab(:report_error, "Failed to report block (#{e.class}): #{e.message} \n#{e.backtrace[0..9].join("\n")}")
+        end
 
         if report.ignore?
           configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided block")
