@@ -329,4 +329,43 @@ describe "on_error callbacks" do
       end)
     end
   end
+
+  describe "using methods as callbacks" do
+    it "runs callbacks on notify" do
+      def callback(report)
+        report.add_tab(:important, { hello: "world" })
+      end
+
+      Bugsnag.add_on_error(method(:callback))
+
+      Bugsnag.notify(RuntimeError.new("Oh no!"))
+
+      expect(Bugsnag).to(have_sent_notification do |payload, _headers|
+        event = get_event_from_payload(payload)
+
+        expect(event["metaData"]["important"]).to eq({ "hello" => "world" })
+      end)
+    ensure
+      undef :callback
+    end
+
+    it "can remove an already registered callback" do
+      def callback(report)
+        report.add_tab(:important, { hello: "world" })
+      end
+
+      Bugsnag.add_on_error(method(:callback))
+      Bugsnag.remove_on_error(method(:callback))
+
+      Bugsnag.notify(RuntimeError.new("Oh no!"))
+
+      expect(Bugsnag).to(have_sent_notification do |payload, _headers|
+        event = get_event_from_payload(payload)
+
+        expect(event["metaData"]["important"]).to be_nil
+      end)
+    ensure
+      undef :callback
+    end
+  end
 end
