@@ -57,13 +57,23 @@ describe Bugsnag do
       expect(breadcrumb.timestamp).to be_within(1).of(sent_time)
     end
 
-    it 'is also be delivered when an error raised in the block argument' do
-      Bugsnag.notify('It crashed') do |report|
-        repor.context = 'test'
+    it 'can deliver when an error raised in the block argument' do
+      Bugsnag.notify(RuntimeError.new('Manual notify notified even though it raised')) do |report|
+        raise 'This is the error message'
       end
+
+      expected_messages = [
+        /^Error in notify block: This is the error message$/,
+        /^Error in notify block stacktrace: \[/
+      ].each
+
+      expect(Bugsnag.configuration.logger).to have_received(:warn).with('[Bugsnag]').twice do |&block|
+        expect(block.call).to match(expected_messages.next)
+      end
+
       expect(Bugsnag).to have_sent_notification{ |payload, headers|
         event = get_event_from_payload(payload)
-        expect(event['metaData']['custom']['report_error']).to match(/Failed to report block \(NameError\): undefined local variable or method/)
+        expect(event['exceptions'].first['message']).to eq('Manual notify notified even though it raised')
       }
     end
   end

@@ -109,7 +109,8 @@ module Bugsnag
         begin
           yield(report) if block_given? && !auto_notify
         rescue => e
-          report.add_tab(:report_error, "Failed to report block (#{e.class}): #{e.message} \n#{e.backtrace[0..9].join("\n")}")
+          configuration.warn("Error in notify block: #{e}")
+          configuration.warn("Error in notify block stacktrace: #{e.backtrace.inspect}")
         end
 
         if report.ignore?
