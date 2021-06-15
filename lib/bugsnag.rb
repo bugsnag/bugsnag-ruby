@@ -79,7 +79,12 @@ module Bugsnag
       report = Report.new(exception, configuration, auto_notify)
 
       # If this is an auto_notify we yield the block before the any middleware is run
-      yield(report) if block_given? && auto_notify
+      begin
+        yield(report) if block_given? && auto_notify
+      rescue => e
+        configuration.warn("Error in internal notify block: #{e}")
+        configuration.warn("Error in internal notify block stacktrace: #{e.backtrace.inspect}")
+      end
 
       if report.ignore?
         configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in auto_notify block")

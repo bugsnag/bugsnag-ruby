@@ -76,6 +76,26 @@ describe Bugsnag do
         expect(event['exceptions'].first['message']).to eq('Manual notify notified even though it raised')
       }
     end
+
+    it 'can deliver when an error raised in the block argument and auto_notify is true' do
+      Bugsnag.notify(RuntimeError.new('Auto notify notified even though it raised'), true) do |report|
+        raise 'This is an auto_notify error'
+      end
+
+      expected_messages = [
+        /^Error in internal notify block: This is an auto_notify error$/,
+        /^Error in internal notify block stacktrace: \[/
+      ].each
+
+      expect(Bugsnag.configuration.logger).to have_received(:warn).with('[Bugsnag]').twice do |&block|
+        expect(block.call).to match(expected_messages.next)
+      end
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event['exceptions'].first['message']).to eq('Auto notify notified even though it raised')
+      }
+    end
   end
 
   describe '#configure' do
