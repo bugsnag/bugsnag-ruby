@@ -81,7 +81,7 @@ module Bugsnag
       # If this is an auto_notify we yield the block before the any middleware is run
       begin
         yield(report) if block_given? && auto_notify
-      rescue => e
+      rescue StandardError => e
         configuration.warn("Error in internal notify block: #{e}")
         configuration.warn("Error in internal notify block stacktrace: #{e.backtrace.inspect}")
       end
@@ -113,7 +113,7 @@ module Bugsnag
         # block that is run as it is the users "most specific" block.
         begin
           yield(report) if block_given? && !auto_notify
-        rescue => e
+        rescue StandardError => e
           configuration.warn("Error in notify block: #{e}")
           configuration.warn("Error in notify block stacktrace: #{e.backtrace.inspect}")
         end
