@@ -1,12 +1,13 @@
 Changelog
 =========
 
-## Unreleased
+## TBC
 
 ### Enhancements
 
 * Allow a `Method` or any object responding to `#call` to be used as a callback or middleware
   | [#662](https://github.com/bugsnag/bugsnag-ruby/pull/662)
+  | [odlp](https://github.com/odlp)
 
 ## v6.20.0 (29 March 2021)
 
