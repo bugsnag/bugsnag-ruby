@@ -370,4 +370,45 @@ describe "on_error callbacks" do
       end)
     end
   end
+
+  describe "using an object that responds to #call" do
+    it "runs callbacks on notify" do
+      class RespondsToCall
+        def call(report)
+          report.add_tab(:important, { hi: "earth" })
+        end
+      end
+
+      Bugsnag.add_on_error(RespondsToCall.new)
+
+      Bugsnag.notify(RuntimeError.new("Oh no!"))
+
+      expect(Bugsnag).to(have_sent_notification do |payload, _headers|
+        event = get_event_from_payload(payload)
+
+        expect(event["metaData"]["important"]).to eq({ "hi" => "earth" })
+      end)
+    end
+
+    it "can remove an already registered callback" do
+      class RespondsToCall
+        def callback(report)
+          report.add_tab(:important, { hi: "earth" })
+        end
+      end
+
+      instance = RespondsToCall.new
+
+      Bugsnag.add_on_error(instance)
+      Bugsnag.remove_on_error(instance)
+
+      Bugsnag.notify(RuntimeError.new("Oh no!"))
+
+      expect(Bugsnag).to(have_sent_notification do |payload, _headers|
+        event = get_event_from_payload(payload)
+
+        expect(event["metaData"]["important"]).to be_nil
+      end)
+    end
+  end
 end
