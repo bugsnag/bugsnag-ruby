@@ -1149,3 +1149,9 @@ steps:
       RACK_VERSION: '2'
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+  - name: ':copyright: License Audit'
+    plugins:
+      docker-compose#v3.7.0:
+        run: license_finder
+    command: /bin/bash -lc '/scan/scripts/license_finder.sh'
