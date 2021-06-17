@@ -9,6 +9,12 @@ Changelog
   | [#662](https://github.com/bugsnag/bugsnag-ruby/pull/662)
   | [odlp](https://github.com/odlp)
 
+### Fixes
+
+* Deliver when an error is raised in the block argument to `notify`
+  | [#660](https://github.com/bugsnag/bugsnag-ruby/pull/660)
+  | [aki77](https://github.com/aki77)
+
 ## v6.20.0 (29 March 2021)
 
 ### Enhancements

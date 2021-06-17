@@ -79,7 +79,12 @@ module Bugsnag
       report = Report.new(exception, configuration, auto_notify)
 
       # If this is an auto_notify we yield the block before the any middleware is run
-      yield(report) if block_given? && auto_notify
+      begin
+        yield(report) if block_given? && auto_notify
+      rescue StandardError => e
+        configuration.warn("Error in internal notify block: #{e}")
+        configuration.warn("Error in internal notify block stacktrace: #{e.backtrace.inspect}")
+      end
 
       if report.ignore?
         configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in auto_notify block")
@@ -106,7 +111,12 @@ module Bugsnag
 
         # If this is not an auto_notify then the block was provided by the user. This should be the last
         # block that is run as it is the users "most specific" block.
-        yield(report) if block_given? && !auto_notify
+        begin
+          yield(report) if block_given? && !auto_notify
+        rescue StandardError => e
+          configuration.warn("Error in notify block: #{e}")
+          configuration.warn("Error in notify block stacktrace: #{e.backtrace.inspect}")
+        end
 
         if report.ignore?
           configuration.debug("Not notifying #{report.exceptions.last[:errorClass]} due to ignore being signified in user provided block")
