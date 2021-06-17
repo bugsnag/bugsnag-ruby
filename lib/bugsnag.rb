@@ -275,7 +275,7 @@ module Bugsnag
     # Returning false from an on_error callback will cause the error to be ignored
     # and will prevent any remaining callbacks from being called
     #
-    # @param callback [Proc]
+    # @param callback [Proc, Method, #call]
     # @return [void]
     def add_on_error(callback)
       configuration.add_on_error(callback)

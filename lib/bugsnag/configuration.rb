@@ -485,7 +485,7 @@ module Bugsnag
     # Returning false from an on_error callback will cause the error to be ignored
     # and will prevent any remaining callbacks from being called
     #
-    # @param callback [Proc]
+    # @param callback [Proc, Method, #call]
     # @return [void]
     def add_on_error(callback)
       middleware.use(callback)
@@ -494,10 +494,10 @@ module Bugsnag
     ##
     # Remove the given callback from the list of on_error callbacks
     #
-    # Note that this must be the same Proc instance that was passed to
+    # Note that this must be the same instance that was passed to
     # {#add_on_error}, otherwise it will not be removed
     #
-    # @param callback [Proc]
+    # @param callback [Proc, Method, #call]
     # @return [void]
     def remove_on_error(callback)
       middleware.remove(callback)

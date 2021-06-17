@@ -1,7 +1,13 @@
 Changelog
 =========
 
-## TBD
+## TBC
+
+### Enhancements
+
+* Allow a `Method` or any object responding to `#call` to be used as an `on_error` callback or middleware
+  | [#662](https://github.com/bugsnag/bugsnag-ruby/pull/662)
+  | [odlp](https://github.com/odlp)
 
 ### Fixes
 
