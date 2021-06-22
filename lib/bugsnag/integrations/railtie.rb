@@ -9,10 +9,43 @@ require "bugsnag/integrations/rails/rails_breadcrumbs"
 
 module Bugsnag
   class Railtie < ::Rails::Railtie
-
     FRAMEWORK_ATTRIBUTES = {
       :framework => "Rails"
     }
+
+    ##
+    # Subscribes to an ActiveSupport event, leaving a breadcrumb when it triggers
+    #
+    # @api private
+    # @param event [Hash] details of the event to subscribe to
+    def event_subscription(event)
+      ActiveSupport::Notifications.subscribe(event[:id]) do |*, event_id, data|
+        filtered_data = data.slice(*event[:allowed_data])
+        filtered_data[:event_name] = event[:id]
+        filtered_data[:event_id] = event_id
+
+        if event[:id] == "sql.active_record"
+          if data.key?(:binds)
+            binds = data[:binds].each_with_object({}) { |bind, output| output[bind.name] = '?' if defined?(bind.name) }
+            filtered_data[:binds] = JSON.dump(binds) unless binds.empty?
+          end
+
+          # Rails < 6.1 included connection_id in the event data, but now
+          # includes the connection object instead
+          if data.key?(:connection) && !data.key?(:connection_id)
+            # the connection ID is the object_id of the connection object
+            filtered_data[:connection_id] = data[:connection].object_id
+          end
+        end
+
+        Bugsnag.leave_breadcrumb(
+          event[:message],
+          filtered_data,
+          event[:type],
+          :auto
+        )
+      end
+    end
 
     rake_tasks do
       require "bugsnag/integrations/rake"
@@ -78,40 +111,6 @@ module Bugsnag
         # See this comment for more info:
         # https://github.com/thoughtbot/factory_bot_rails/issues/303#issuecomment-434560625
         Bugsnag.configuration.warn("Unable to add Bugsnag::Rack middleware as the middleware stack is frozen")
-      end
-    end
-
-    ##
-    # Subscribes to an ActiveSupport event, leaving a breadcrumb when it triggers
-    #
-    # @api private
-    # @param event [Hash] details of the event to subscribe to
-    def event_subscription(event)
-      ActiveSupport::Notifications.subscribe(event[:id]) do |*, event_id, data|
-        filtered_data = data.slice(*event[:allowed_data])
-        filtered_data[:event_name] = event[:id]
-        filtered_data[:event_id] = event_id
-
-        if event[:id] == "sql.active_record"
-          if data.key?(:binds)
-            binds = data[:binds].each_with_object({}) { |bind, output| output[bind.name] = '?' if defined?(bind.name) }
-            filtered_data[:binds] = JSON.dump(binds) unless binds.empty?
-          end
-
-          # Rails < 6.1 included connection_id in the event data, but now
-          # includes the connection object instead
-          if data.key?(:connection) && !data.key?(:connection_id)
-            # the connection ID is the object_id of the connection object
-            filtered_data[:connection_id] = data[:connection].object_id
-          end
-        end
-
-        Bugsnag.leave_breadcrumb(
-          event[:message],
-          filtered_data,
-          event[:type],
-          :auto
-        )
       end
     end
   end
