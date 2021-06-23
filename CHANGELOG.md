@@ -14,6 +14,8 @@ Changelog
 * Deliver when an error is raised in the block argument to `notify`
   | [#660](https://github.com/bugsnag/bugsnag-ruby/pull/660)
   | [aki77](https://github.com/aki77)
+* Fix potential `NoMethodError` in `Bugsnag::Railtie` when using `require: false` in a Gemfile
+  | [#666](https://github.com/bugsnag/bugsnag-ruby/pull/666)
 
 ## v6.20.0 (29 March 2021)
 
