@@ -131,8 +131,8 @@ module Bugsnag
     #
     # @return [Array<Proc>]
     def middleware_procs
-      # Split the middleware into separate lists of Procs and Classes
-      procs, classes = @middlewares.partition {|middleware| middleware.is_a?(Proc) }
+      # Split the middleware into separate lists of callables (e.g. Proc, Lambda, Method) and Classes
+      callables, classes = @middlewares.partition {|middleware| middleware.respond_to?(:call) }
 
       # Wrap the classes in a proc that, when called, news up the middleware and
       # passes the next middleware in the queue
@@ -140,12 +140,12 @@ module Bugsnag
         proc {|next_middleware| middleware.new(next_middleware) }
       end
 
-      # Wrap the list of procs in a proc that, when called, wraps them in an
+      # Wrap the list of callables in a proc that, when called, wraps them in an
       # 'OnErrorCallbacks' instance that also has a reference to the next middleware
-      wrapped_procs = proc {|next_middleware| OnErrorCallbacks.new(next_middleware, procs) }
+      wrapped_callables = proc {|next_middleware| OnErrorCallbacks.new(next_middleware, callables) }
 
-      # Return the combined middleware and wrapped procs
-      middleware_instances.push(wrapped_procs)
+      # Return the combined middleware and wrapped callables
+      middleware_instances.push(wrapped_callables)
     end
   end
 end
