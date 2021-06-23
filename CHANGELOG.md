@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBC
+## v6.21.0 (23 June 2021)
 
 ### Enhancements
 
