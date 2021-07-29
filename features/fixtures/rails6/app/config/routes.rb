@@ -61,4 +61,7 @@ Rails.application.routes.draw do
   get 'mongo/success_crash', to: 'mongo#success_crash'
   get 'mongo/get_crash', to: 'mongo#get_crash'
   get 'mongo/failure_crash', to: 'mongo#failure_crash'
+
+  get 'active_job/handled', to: 'active_job#handled'
+  get 'active_job/unhandled', to: 'active_job#unhandled'
 end
