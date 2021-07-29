@@ -1,6 +1,6 @@
 Feature: Active Job
 
-@rails4
+@rails4 @rails5
 Scenario: A handled error will be delivered
   Given I start the rails service
   When I navigate to the route "/active_job/handled" on the rails app
@@ -21,8 +21,10 @@ Scenario: A handled error will be delivered
   And the event "metaData.active_job.arguments.2.a" equals "a"
   And the event "metaData.active_job.arguments.2.b" equals "b"
   And the event "metaData.active_job.arguments.3.keyword" is true
+  And in Rails versions ">=" 5 the event "metaData.active_job.provider_job_id" matches "^[0-9a-f-]{36}$"
+  And in Rails versions ">=" 5 the event "metaData.active_job.executions" equals 1
 
-@rails4
+@rails4 @rails5
 Scenario: An unhandled error will be delivered
   Given I start the rails service
   When I navigate to the route "/active_job/unhandled" on the rails app
@@ -43,6 +45,8 @@ Scenario: An unhandled error will be delivered
   And the event "metaData.active_job.arguments.0" equals 123
   And the event "metaData.active_job.arguments.1.abc" equals "xyz"
   And the event "metaData.active_job.arguments.2" equals "abcxyz"
+  And in Rails versions ">=" 5 the event "metaData.active_job.provider_job_id" matches "^[0-9a-f-]{36}$"
+  And in Rails versions ">=" 5 the event "metaData.active_job.executions" equals 1
   When I discard the oldest request
   Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
   And the event "unhandled" is true
@@ -60,3 +64,5 @@ Scenario: An unhandled error will be delivered
   And the event "metaData.active_job.arguments.0" equals 123
   And the event "metaData.active_job.arguments.1.abc" equals "xyz"
   And the event "metaData.active_job.arguments.2" equals "abcxyz"
+  And in Rails versions ">=" 5 the event "metaData.active_job.provider_job_id" matches "^[0-9a-f-]{36}$"
+  And in Rails versions ">=" 5 the event "metaData.active_job.executions" equals 2

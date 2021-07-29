@@ -108,3 +108,57 @@ Then("the payload field {string} matches the appropriate Sidekiq unhandled paylo
     And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_#{created_at_present}.json"
   }
 end
+
+def rails_version_matches?(operator, version_to_compare)
+  # send the given operator as a method to the current rails version
+  # this will evaluate to e.g. '6.send(">=", 5)', which is the same as '6 >= 5'
+  ENV["RAILS_VERSION"].to_i.send(operator, version_to_compare)
+end
+
+Then("in Rails versions {string} {int} the event {string} equals {string}") do |operator, version, path, expected|
+  if rails_version_matches?(operator, version)
+    steps %Q{
+      And the event "#{path}" equals "#{expected}"
+    }
+  else
+    steps %Q{
+      And the event "#{path}" is null
+    }
+  end
+end
+
+Then("in Rails versions {string} {int} the event {string} equals {int}") do |operator, version, path, expected|
+  if rails_version_matches?(operator, version)
+    steps %Q{
+      And the event "#{path}" equals #{expected}
+    }
+  else
+    steps %Q{
+      And the event "#{path}" is null
+    }
+  end
+end
+
+Then("in Rails versions {string} {int} the event {string} matches {string}") do |operator, version, path, expected|
+  if rails_version_matches?(operator, version)
+    steps %Q{
+      And the event "#{path}" matches "#{expected}"
+    }
+  else
+    steps %Q{
+      And the event "#{path}" is null
+    }
+  end
+end
+
+Then("in Rails versions {string} {int} the event {string} is a timestamp") do |operator, version, path|
+  if rails_version_matches?(operator, version)
+    steps %Q{
+      And the event "#{path}" is a timestamp
+    }
+  else
+    steps %Q{
+      And the event "#{path}" is null
+    }
+  end
+end
