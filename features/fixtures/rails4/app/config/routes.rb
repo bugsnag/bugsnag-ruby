@@ -18,4 +18,5 @@ App::Application.routes.draw do
   get "/devise/(:action)", controller: 'devise'
   get "/breadcrumbs/(:action)", controller: 'breadcrumbs'
   get "/mongo/(:action)", controller: 'mongo'
+  get "/active_job/(:action)", controller: 'active_job'
 end
