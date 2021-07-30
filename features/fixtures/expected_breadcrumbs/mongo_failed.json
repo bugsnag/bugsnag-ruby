@@ -10,6 +10,6 @@
         "request_id": "NUMBER",
         "duration": "NUMBER",
         "collection": 1,
-        "message": "no such command: 'bogus' (59)"
+        "message": ".*no such command: 'bogus'.*"
     }
 }
