@@ -60,7 +60,7 @@ module Bugsnag
         config.logger = ::Rails.logger
         config.release_stage ||= ::Rails.env.to_s
         config.project_root = ::Rails.root.to_s
-        config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
+        config.internal_middleware.use(Bugsnag::Middleware::Rails3Request)
         config.runtime_versions["rails"] = ::Rails::VERSION::STRING
       end
 
