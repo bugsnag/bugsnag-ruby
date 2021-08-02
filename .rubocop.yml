@@ -11,6 +11,14 @@ Lint/RescueException:
   Exclude:
     - 'lib/bugsnag/integrations/**/*'
 
+Metrics/AbcSize:
+  Exclude:
+    - 'lib/bugsnag/configuration.rb'
+
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/bugsnag/configuration.rb'
+
 # We can't use ".freeze" on our constants in case users are monkey patching
 # them — this would be a BC break
 Style/MutableConstant:
