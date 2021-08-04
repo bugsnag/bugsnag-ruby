@@ -2,6 +2,11 @@ module Bugsnag::Middleware
   ##
   # Attaches delayed_job information to an error report
   class DelayedJob
+    # Active Job's queue adapter sets the "display_name" to this format. This
+    # breaks the event context as the ID and arguments are included, which will
+    # differ between executions of the same job
+    ACTIVE_JOB_DISPLAY_NAME = /^.* \[[0-9a-f-]+\] from DelayedJob\(.*\) with arguments: \[.*\]$/
+
     def initialize(bugsnag)
       @bugsnag = bugsnag
     end
@@ -23,8 +28,10 @@ module Bugsnag::Middleware
         if job.respond_to?(:payload_object)
           job_data[:active_job] = job.payload_object.job_data if job.payload_object.respond_to?(:job_data)
           payload_data = construct_job_payload(job.payload_object)
-          report.context = payload_data[:display_name] if payload_data.include?(:display_name)
-          report.context ||= payload_data[:class] if payload_data.include?(:class)
+
+          context = get_context(payload_data, job_data[:active_job])
+          report.context = context unless context.nil?
+
           job_data[:payload] = payload_data
         end
 
@@ -69,6 +76,18 @@ module Bugsnag::Middleware
         end
       end
       data
+    end
+
+    private
+
+    def get_context(payload_data, active_job_data)
+      if payload_data.include?(:display_name) && !ACTIVE_JOB_DISPLAY_NAME.match?(payload_data[:display_name])
+        payload_data[:display_name]
+      elsif active_job_data && active_job_data['job_class'] && active_job_data['queue_name']
+        "#{active_job_data['job_class']}@#{active_job_data['queue_name']}"
+      elsif payload_data.include?(:class)
+        payload_data[:class]
+      end
     end
   end
 end
