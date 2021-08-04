@@ -90,6 +90,34 @@ describe 'Bugsnag::Resque', :order => :defined do
     resque.save
   end
 
+  it "can unwrap the original class when using Active Job" do
+    resque = Bugsnag::Resque.new
+    exception = RuntimeError.new("hello")
+
+    allow(resque).to receive(:exception).and_return(exception)
+    allow(resque).to receive(:queue).and_return("queue")
+    allow(resque).to receive(:payload).and_return({
+      "class" => "ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper",
+      "args" => [{ "job_class" => "ResqueJob", "a" => 1, "b" => 2 }]
+    })
+
+    report = Bugsnag::Report.new(exception, Bugsnag.configuration)
+
+    resque.save
+
+    expect(Bugsnag).to have_sent_notification { |payload, headers|
+      event = get_event_from_payload(payload)
+
+      expect(event["context"]).to eq("ResqueJob@queue")
+      expect(event["metaData"]["context"]).to eq("ResqueJob@queue")
+      expect(event["metaData"]["payload"]).to eq({
+        "args" => [{ "job_class" => "ResqueJob", "a" => 1, "b" => 2 }],
+        "class" => "ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper",
+        "wrapped" => "ResqueJob"
+      })
+    }
+  end
+
   after do
     Object.send(:remove_const, :Resque) if @mocked_resque
     module Kernel
