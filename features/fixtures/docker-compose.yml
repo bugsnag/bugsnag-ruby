@@ -259,6 +259,7 @@ services:
       - DB_HOST=postgres
       - REDIS_URL=redis://redis:6379
       - RUN_AT_EXIT_HOOKS
+      - ACTIVE_JOB_QUEUE_ADAPTER
     restart: "no"
 
   sidekiq:
