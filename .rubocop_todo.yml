@@ -229,16 +229,6 @@ Lint/RedundantRequireStatement:
     - 'lib/bugsnag/delivery/thread_queue.rb'
     - 'lib/bugsnag/session_tracker.rb'
 
-# Offense count: 7
-Lint/RescueException:
-  Exclude:
-    - 'lib/bugsnag/integrations/delayed_job.rb'
-    - 'lib/bugsnag/integrations/mailman.rb'
-    - 'lib/bugsnag/integrations/rack.rb'
-    - 'lib/bugsnag/integrations/rake.rb'
-    - 'lib/bugsnag/integrations/shoryuken.rb'
-    - 'lib/bugsnag/integrations/sidekiq.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Lint/SendWithMixinArgument:

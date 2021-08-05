@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Add support for tracking exceptions and capturing metadata in Active Job, when not using an existing integration
+  | [#670](https://github.com/bugsnag/bugsnag-ruby/pull/670)
+
 ## v6.21.0 (23 June 2021)
 
 ### Enhancements

@@ -74,6 +74,14 @@ module Bugsnag
         include Bugsnag::Rails::ActiveRecordRescue
       end
 
+      ActiveSupport.on_load(:active_job) do
+        require "bugsnag/middleware/active_job"
+        Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::ActiveJob)
+
+        require "bugsnag/integrations/rails/active_job"
+        include Bugsnag::Rails::ActiveJob
+      end
+
       Bugsnag::Rails::DEFAULT_RAILS_BREADCRUMBS.each { |event| event_subscription(event) }
 
       # Make sure we don't overwrite the value set by another integration because
