@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## v6.22.1 (10 August 2021)
+
+### Enhancements
+
+* Fix possible `LocalJumpError` introduced in v6.22.0
+  | [#675](https://github.com/bugsnag/bugsnag-ruby/pull/675)
+
 ## v6.22.0 (10 August 2021)
 
 ### Enhancements
