@@ -60,7 +60,7 @@ module Bugsnag
         config.logger = ::Rails.logger
         config.release_stage ||= ::Rails.env.to_s
         config.project_root = ::Rails.root.to_s
-        config.middleware.insert_before Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::Rails3Request
+        config.internal_middleware.use(Bugsnag::Middleware::Rails3Request)
         config.runtime_versions["rails"] = ::Rails::VERSION::STRING
       end
 
@@ -72,6 +72,14 @@ module Bugsnag
       ActiveSupport.on_load(:active_record) do
         require "bugsnag/integrations/rails/active_record_rescue"
         include Bugsnag::Rails::ActiveRecordRescue
+      end
+
+      ActiveSupport.on_load(:active_job) do
+        require "bugsnag/middleware/active_job"
+        Bugsnag.configuration.internal_middleware.use(Bugsnag::Middleware::ActiveJob)
+
+        require "bugsnag/integrations/rails/active_job"
+        include Bugsnag::Rails::ActiveJob
       end
 
       Bugsnag::Rails::DEFAULT_RAILS_BREADCRUMBS.each { |event| event_subscription(event) }

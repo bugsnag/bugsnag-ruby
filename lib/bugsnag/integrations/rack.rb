@@ -25,9 +25,9 @@ module Bugsnag
         end
 
         # Hook up rack-based notification middlewares
-        config.middleware.insert_before([Bugsnag::Middleware::Rails3Request,Bugsnag::Middleware::Callbacks], Bugsnag::Middleware::RackRequest) if defined?(::Rack)
-        config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::WardenUser) if defined?(Warden)
-        config.middleware.insert_before(Bugsnag::Middleware::Callbacks, Bugsnag::Middleware::ClearanceUser) if defined?(Clearance)
+        config.internal_middleware.insert_before(Bugsnag::Middleware::Rails3Request, Bugsnag::Middleware::RackRequest) if defined?(::Rack)
+        config.internal_middleware.use(Bugsnag::Middleware::WardenUser) if defined?(Warden)
+        config.internal_middleware.use(Bugsnag::Middleware::ClearanceUser) if defined?(Clearance)
 
         # Set environment data for payload
         # Note we only set the detected app_type if it's not already set. This
