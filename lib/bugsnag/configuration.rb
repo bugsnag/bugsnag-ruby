@@ -125,7 +125,7 @@ module Bugsnag
     attr_reader :enable_sessions
 
     # A list of strings indicating allowable automatic breadcrumb types
-    # @see Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
+    # @see Bugsnag::BreadcrumbType
     # @return [Array<String>]
     attr_accessor :enabled_automatic_breadcrumb_types
 

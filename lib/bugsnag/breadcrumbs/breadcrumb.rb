@@ -23,7 +23,7 @@ module Bugsnag::Breadcrumbs
     # @api private
     #
     # @param name [String] the breadcrumb name
-    # @param type [String] the breadcrumb type from Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
+    # @param type [String] the breadcrumb type from Bugsnag::BreadcrumbType
     # @param meta_data [Hash, nil] a hash containing strings, numbers, or booleans, or nil
     # @param auto [Symbol] set to `:auto` if the breadcrumb is automatically generated
     def initialize(name, type, meta_data, auto)

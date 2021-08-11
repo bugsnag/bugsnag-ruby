@@ -1,4 +1,5 @@
 module Bugsnag::Breadcrumbs
+  # @deprecated Use {Bugsnag::BreadcrumbType} instead
   VALID_BREADCRUMB_TYPES = [
     ERROR_BREADCRUMB_TYPE = "error",
     MANUAL_BREADCRUMB_TYPE = "manual",

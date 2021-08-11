@@ -28,6 +28,7 @@ require "bugsnag/middleware/rake"
 require "bugsnag/middleware/classify_error"
 require "bugsnag/middleware/delayed_job"
 
+require "bugsnag/breadcrumb_type"
 require "bugsnag/breadcrumbs/validator"
 require "bugsnag/breadcrumbs/breadcrumb"
 require "bugsnag/breadcrumbs/breadcrumbs"
@@ -237,7 +238,7 @@ module Bugsnag
     #
     # @param name [String] the main breadcrumb name/message
     # @param meta_data [Hash] String, Numeric, or Boolean meta data to attach
-    # @param type [String] the breadcrumb type, from Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
+    # @param type [String] the breadcrumb type, see {Bugsnag::BreadcrumbType}
     # @param auto [Symbol] set to :auto if the breadcrumb is automatically created
     # @return [void]
     def leave_breadcrumb(name, meta_data={}, type=Bugsnag::Breadcrumbs::MANUAL_BREADCRUMB_TYPE, auto=:manual)
