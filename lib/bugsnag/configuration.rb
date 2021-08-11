@@ -24,6 +24,7 @@ module Bugsnag
     attr_accessor :release_stage
 
     # A list of which release stages should cause notifications to be sent
+    # @deprecated Use {#enabled_release_stages} instead
     # @return [Array<String>, nil]
     attr_accessor :notify_release_stages
 
@@ -501,6 +502,24 @@ module Bugsnag
     # @return [void]
     def remove_on_error(callback)
       middleware.remove(callback)
+    end
+
+    # TODO: "enabled_release_stages" can be a simple attr_accessor when it
+    #       replaces "notify_release_stages"
+    # NOTE: this is not an alias as YARD doesn't allow documenting the non-alias
+    #       as deprecated without also marking the alias as deprecated
+
+    # A list of which release stages should cause notifications to be sent
+    # @!attribute enabled_release_stages
+    # @return [Array<String>, nil]
+    def enabled_release_stages
+      @notify_release_stages
+    end
+
+    # @param release_stages [Array<String>, nil]
+    # @return [void]
+    def enabled_release_stages=(release_stages)
+      @notify_release_stages = release_stages
     end
 
     private

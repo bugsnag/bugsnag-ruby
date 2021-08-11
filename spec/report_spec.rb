@@ -504,6 +504,26 @@ describe Bugsnag::Report do
     }
   end
 
+  it "respects the enabled_release_stages setting by not sending in development" do
+    Bugsnag.configuration.enabled_release_stages = ["production"]
+    Bugsnag.configuration.release_stage = "development"
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).not_to have_sent_notification
+  end
+
+  it "respects the enabled_release_stages setting when set" do
+    Bugsnag.configuration.release_stage = "development"
+    Bugsnag.configuration.enabled_release_stages = ["development"]
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to(have_sent_notification { |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["exceptions"].length).to eq(1)
+    })
+  end
+
   it "respects the notify_release_stages setting by not sending in development" do
     Bugsnag.configuration.notify_release_stages = ["production"]
     Bugsnag.configuration.release_stage = "development"
