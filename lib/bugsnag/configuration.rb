@@ -126,6 +126,7 @@ module Bugsnag
     attr_reader :enable_sessions
 
     # A list of strings indicating allowable automatic breadcrumb types
+    # @deprecated Use {#enabled_breadcrumb_types} instead
     # @see Bugsnag::BreadcrumbType
     # @return [Array<String>]
     attr_accessor :enabled_automatic_breadcrumb_types
@@ -504,9 +505,9 @@ module Bugsnag
       middleware.remove(callback)
     end
 
-    # TODO: "enabled_release_stages" can be a simple attr_accessor when it
-    #       replaces "notify_release_stages"
-    # NOTE: this is not an alias as YARD doesn't allow documenting the non-alias
+    # TODO: These methods can be a simple attr_accessor when they replace the
+    #       methods they are aliasing
+    # NOTE: they are not aliases as YARD doesn't allow documenting the non-alias
     #       as deprecated without also marking the alias as deprecated
 
     # A list of which release stages should cause notifications to be sent
@@ -520,6 +521,20 @@ module Bugsnag
     # @return [void]
     def enabled_release_stages=(release_stages)
       @notify_release_stages = release_stages
+    end
+
+    # A list of breadcrumb types that Bugsnag will collect automatically
+    # @!attribute enabled_breadcrumb_types
+    # @see Bugsnag::BreadcrumbType
+    # @return [Array<String>]
+    def enabled_breadcrumb_types
+      @enabled_automatic_breadcrumb_types
+    end
+
+    # @param breadcrumb_types [Array<String>]
+    # @return [void]
+    def enabled_breadcrumb_types=(breadcrumb_types)
+      @enabled_automatic_breadcrumb_types = breadcrumb_types
     end
 
     private

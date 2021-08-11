@@ -443,6 +443,29 @@ describe Bugsnag::Configuration do
     end
   end
 
+  describe "#enabled_breadcrumb_types" do
+    it "defaults to Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES" do
+      expect(subject.enabled_breadcrumb_types).to eq(Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES)
+    end
+
+    it "is an editable array" do
+      subject.enabled_breadcrumb_types << "Some custom type"
+      expect(subject.enabled_breadcrumb_types).to include("Some custom type")
+    end
+
+    it "shares a backing array with 'enabled_automatic_breadcrumb_types'" do
+      expect(subject.enabled_breadcrumb_types).to be(subject.enabled_automatic_breadcrumb_types)
+
+      subject.enabled_breadcrumb_types = [1, 2, 3]
+      expect(subject.enabled_breadcrumb_types).to eq([1, 2, 3])
+      expect(subject.enabled_automatic_breadcrumb_types).to eq([1, 2, 3])
+
+      subject.enabled_automatic_breadcrumb_types = [4, 5, 6]
+      expect(subject.enabled_breadcrumb_types).to eq([4, 5, 6])
+      expect(subject.enabled_automatic_breadcrumb_types).to eq([4, 5, 6])
+    end
+  end
+
   describe "#before_breadcrumb_callbacks" do
     it "initially returns an empty array" do
       expect(subject.before_breadcrumb_callbacks).to eq([])
