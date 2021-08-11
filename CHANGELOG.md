@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## v6.22.1 (10 August 2021)
+## v6.22.1 (11 August 2021)
 
 ### Enhancements
 
