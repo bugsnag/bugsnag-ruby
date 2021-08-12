@@ -87,6 +87,22 @@ describe Bugsnag::Configuration do
     end
   end
 
+  describe "#auto_track_sessions" do
+    it "defaults to true" do
+      expect(subject.auto_track_sessions).to eq(true)
+    end
+
+    it "shares a backing boolean with 'auto_capture_sessions'" do
+      subject.auto_track_sessions = false
+      expect(subject.auto_track_sessions).to eq(false)
+      expect(subject.auto_capture_sessions).to eq(false)
+
+      subject.auto_capture_sessions = true
+      expect(subject.auto_track_sessions).to eq(true)
+      expect(subject.auto_capture_sessions).to eq(true)
+    end
+  end
+
   describe "#enable_sessions" do
     it "defaults to true" do
       expect(subject.enable_sessions).to eq(true)

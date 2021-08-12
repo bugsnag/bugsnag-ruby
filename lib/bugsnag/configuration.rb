@@ -105,6 +105,7 @@ module Bugsnag
     attr_accessor :discard_classes
 
     # Whether Bugsnag should automatically record sessions
+    # @deprecated Use {#auto_track_sessions} instead
     # @return [Boolean]
     attr_accessor :auto_capture_sessions
 
@@ -535,6 +536,19 @@ module Bugsnag
     # @return [void]
     def enabled_breadcrumb_types=(breadcrumb_types)
       @enabled_automatic_breadcrumb_types = breadcrumb_types
+    end
+
+    # Whether sessions should be tracked automatically
+    # @!attribute auto_track_sessions
+    # @return [Boolean]
+    def auto_track_sessions
+      @auto_capture_sessions
+    end
+
+    # @param track_sessions [Boolean]
+    # @return [void]
+    def auto_track_sessions=(track_sessions)
+      @auto_capture_sessions = track_sessions
     end
 
     private
