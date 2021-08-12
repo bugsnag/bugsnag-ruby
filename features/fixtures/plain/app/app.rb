@@ -16,7 +16,7 @@ def configure_using_environment
     conf.auto_notify = ENV["BUGSNAG_AUTO_NOTIFY"] != "false"
     conf.ignore_classes << lambda { |ex| ex.class.to_s == ENV["BUGSNAG_IGNORE_CLASS"] } if ENV.include? "BUGSNAG_IGNORE_CLASS"
     conf.meta_data_filters << ENV["BUGSNAG_META_DATA_FILTERS"] if ENV.include? "BUGSNAG_META_DATA_FILTERS"
-    conf.notify_release_stages = [ENV["BUGSNAG_NOTIFY_RELEASE_STAGE"]] if ENV.include? "BUGSNAG_NOTIFY_RELEASE_STAGE"
+    conf.enabled_release_stages = [ENV["BUGSNAG_NOTIFY_RELEASE_STAGE"]] if ENV.include? "BUGSNAG_NOTIFY_RELEASE_STAGE"
     conf.project_root = ENV["BUGSNAG_PROJECT_ROOT"] if ENV.include? "BUGSNAG_PROJECT_ROOT"
     conf.proxy_host = ENV["BUGSNAG_PROXY_HOST"] if ENV.include? "BUGSNAG_PROXY_HOST"
     conf.proxy_password = ENV["BUGSNAG_PROXY_PASSWORD"] if ENV.include? "BUGSNAG_PROXY_PASSWORD"
