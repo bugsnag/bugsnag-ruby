@@ -199,15 +199,27 @@ describe Bugsnag::Report do
           data: "also here"
         }
       })
+
+      report.metadata.merge!({
+        some_other_tab: {
+          info: true,
+          data: "very true"
+        }
+      })
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+    expect(Bugsnag).to(have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).to eq(
         "info" => "here",
         "data" => "also here"
       )
-    }
+
+      expect(event["metaData"]["some_other_tab"]).to eq(
+        "info" => true,
+        "data" => "very true"
+      )
+    })
   end
 
   it "accepts meta data from an exception that mixes in Bugsnag::MetaData" do
@@ -644,7 +656,8 @@ describe Bugsnag::Report do
           :user_secret => "key"
         }
       })
-      report.meta_data.merge!({
+
+      report.metadata.merge!({
         :session => {
           :"warden.user.user.key" => "1234",
           :"warden.user.foobar.key" => "1234",
@@ -693,7 +706,7 @@ describe Bugsnag::Report do
   it "filters params from all payload hashes if they are added to meta_data_filters as regex" do
     Bugsnag.configuration.meta_data_filters << /other_data/
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
-      report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+      report.metadata.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
     end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|

@@ -72,6 +72,7 @@ module Bugsnag
     attr_accessor :grouping_hash
 
     # Arbitrary metadata attached to this report
+    # @deprecated Use {#metadata} instead
     # @return [Hash]
     attr_accessor :meta_data
 
@@ -255,6 +256,19 @@ module Bugsnag
           :severity => severity
         }
       end
+    end
+
+    # A Hash containing arbitrary metadata
+    # @!attribute metadata
+    # @return [Hash]
+    def metadata
+      @meta_data
+    end
+
+    # @param metadata [Hash]
+    # @return [void]
+    def metadata=(metadata)
+      @meta_data = metadata
     end
 
     private
