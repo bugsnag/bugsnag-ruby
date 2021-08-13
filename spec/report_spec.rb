@@ -27,8 +27,111 @@ class JRubyException
   end
 end
 
+shared_examples "Report or Event tests" do |class_to_test|
+  it "#headers should return the correct request headers" do
+    fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
+    expect(Time).to receive(:now).and_return(fake_now)
+
+    report_or_event = class_to_test.new(
+      BugsnagTestException.new("It crashed"),
+      Bugsnag.configuration
+    )
+
+    expect(report_or_event.headers).to eq({
+      "Bugsnag-Api-Key" => "c9d60ae4c7e70c4b6c4ebd3e8056d2b8",
+      "Bugsnag-Payload-Version" => "4.0",
+      # This matches the time we stubbed earlier (fake_now)
+      "Bugsnag-Sent-At" => "2020-01-02T03:04:05.123Z"
+    })
+  end
+
+  describe "#summary" do
+    it "provides a hash of the name, message, and severity" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report_or_event = class_to_test.new(e, Bugsnag.configuration)
+
+        expect(report_or_event.summary).to eq({
+          :error_class => "ZeroDivisionError",
+          :message => "divided by 0",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles strings" do
+      report_or_event = class_to_test.new("test string", Bugsnag.configuration)
+
+      expect(report_or_event.summary).to eq({
+        :error_class => "RuntimeError",
+        :message => "test string",
+        :severity => "warning"
+      })
+    end
+
+    it "handles error edge cases" do
+      report_or_event = class_to_test.new(Timeout::Error, Bugsnag.configuration)
+
+      expect(report_or_event.summary).to eq({
+        :error_class => "Timeout::Error",
+        :message => "Timeout::Error",
+        :severity => "warning"
+      })
+    end
+
+    it "handles empty exceptions" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report_or_event = class_to_test.new(e, Bugsnag.configuration)
+
+        report_or_event.exceptions = []
+
+        expect(report_or_event.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles removed exceptions" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report_or_event = class_to_test.new(e, Bugsnag.configuration)
+
+        report_or_event.exceptions = nil
+
+        expect(report_or_event.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles exceptions being replaced" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report_or_event = class_to_test.new(e, Bugsnag.configuration)
+
+        report_or_event.exceptions = "no one should ever do this"
+
+        expect(report_or_event.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+  end
+end
+
 # rubocop:disable Metrics/BlockLength
 describe Bugsnag::Report do
+  include_examples("Report or Event tests", Bugsnag::Report)
+  include_examples("Report or Event tests", Bugsnag::Event)
+
   it "should contain an api_key if one is set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
@@ -90,23 +193,6 @@ describe Bugsnag::Report do
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       expect(headers["Bugsnag-Api-Key"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b9")
     }
-  end
-
-  it "#headers should return the correct request headers" do
-    fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
-    expect(Time).to receive(:now).and_return(fake_now)
-
-    report = Bugsnag::Report.new(
-      BugsnagTestException.new("It crashed"),
-      Bugsnag.configuration
-    )
-
-    expect(report.headers).to eq({
-      "Bugsnag-Api-Key" => "c9d60ae4c7e70c4b6c4ebd3e8056d2b8",
-      "Bugsnag-Payload-Version" => "4.0",
-      # This matches the time we stubbed earlier (fake_now)
-      "Bugsnag-Sent-At" => "2020-01-02T03:04:05.123Z"
-    })
   end
 
   it "has the right exception class" do
@@ -199,15 +285,27 @@ describe Bugsnag::Report do
           data: "also here"
         }
       })
+
+      report.metadata.merge!({
+        some_other_tab: {
+          info: true,
+          data: "very true"
+        }
+      })
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+    expect(Bugsnag).to(have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).to eq(
         "info" => "here",
         "data" => "also here"
       )
-    }
+
+      expect(event["metaData"]["some_other_tab"]).to eq(
+        "info" => true,
+        "data" => "very true"
+      )
+    })
   end
 
   it "accepts meta data from an exception that mixes in Bugsnag::MetaData" do
@@ -504,6 +602,26 @@ describe Bugsnag::Report do
     }
   end
 
+  it "respects the enabled_release_stages setting by not sending in development" do
+    Bugsnag.configuration.enabled_release_stages = ["production"]
+    Bugsnag.configuration.release_stage = "development"
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).not_to have_sent_notification
+  end
+
+  it "respects the enabled_release_stages setting when set" do
+    Bugsnag.configuration.release_stage = "development"
+    Bugsnag.configuration.enabled_release_stages = ["development"]
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to(have_sent_notification { |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["exceptions"].length).to eq(1)
+    })
+  end
+
   it "respects the notify_release_stages setting by not sending in development" do
     Bugsnag.configuration.notify_release_stages = ["production"]
     Bugsnag.configuration.release_stage = "development"
@@ -624,7 +742,8 @@ describe Bugsnag::Report do
           :user_secret => "key"
         }
       })
-      report.meta_data.merge!({
+
+      report.metadata.merge!({
         :session => {
           :"warden.user.user.key" => "1234",
           :"warden.user.foobar.key" => "1234",
@@ -673,7 +792,7 @@ describe Bugsnag::Report do
   it "filters params from all payload hashes if they are added to meta_data_filters as regex" do
     Bugsnag.configuration.meta_data_filters << /other_data/
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
-      report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+      report.metadata.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
     end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
@@ -1483,87 +1602,6 @@ describe Bugsnag::Report do
           "timestamp" => match(timestamp_regex)
         })
       }
-    end
-  end
-
-  describe "#summary" do
-    it "provides a hash of the name, message, and severity" do
-      begin
-        1/0
-      rescue ZeroDivisionError => e
-        report = Bugsnag::Report.new(e, Bugsnag.configuration)
-
-        expect(report.summary).to eq({
-          :error_class => "ZeroDivisionError",
-          :message => "divided by 0",
-          :severity => "warning"
-        })
-      end
-    end
-
-    it "handles strings" do
-      report = Bugsnag::Report.new("test string", Bugsnag.configuration)
-
-      expect(report.summary).to eq({
-        :error_class => "RuntimeError",
-        :message => "test string",
-        :severity => "warning"
-      })
-    end
-
-    it "handles error edge cases" do
-      report = Bugsnag::Report.new(Timeout::Error, Bugsnag.configuration)
-
-      expect(report.summary).to eq({
-        :error_class => "Timeout::Error",
-        :message => "Timeout::Error",
-        :severity => "warning"
-      })
-    end
-
-    it "handles empty exceptions" do
-      begin
-        1/0
-      rescue ZeroDivisionError => e
-        report = Bugsnag::Report.new(e, Bugsnag.configuration)
-
-        report.exceptions = []
-
-        expect(report.summary).to eq({
-          :error_class => "Unknown",
-          :severity => "warning"
-        })
-      end
-    end
-
-    it "handles removed exceptions" do
-      begin
-        1/0
-      rescue ZeroDivisionError => e
-        report = Bugsnag::Report.new(e, Bugsnag.configuration)
-
-        report.exceptions = nil
-
-        expect(report.summary).to eq({
-          :error_class => "Unknown",
-          :severity => "warning"
-        })
-      end
-    end
-
-    it "handles exceptions being replaced" do
-      begin
-        1/0
-      rescue ZeroDivisionError => e
-        report = Bugsnag::Report.new(e, Bugsnag.configuration)
-
-        report.exceptions = "no one should ever do this"
-
-        expect(report.summary).to eq({
-          :error_class => "Unknown",
-          :severity => "warning"
-        })
-      end
     end
   end
 

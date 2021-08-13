@@ -10,6 +10,19 @@ RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", nil, nil, nil)
 
       expect(breadcrumb.name).to eq("my message")
+      expect(breadcrumb.message).to eq("my message")
+    end
+
+    it "can be accessed as #message" do
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new("my message", nil, nil, nil)
+
+      breadcrumb.message = "my other message"
+      expect(breadcrumb.message).to eq("my other message")
+      expect(breadcrumb.name).to eq("my other message")
+
+      breadcrumb.name = "another message"
+      expect(breadcrumb.message).to eq("another message")
+      expect(breadcrumb.name).to eq("another message")
     end
   end
 
@@ -26,6 +39,19 @@ RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, {:a => 1, :b => 2}, nil)
 
       expect(breadcrumb.meta_data).to eq({:a => 1, :b => 2})
+      expect(breadcrumb.metadata).to eq({:a => 1, :b => 2})
+    end
+
+    it "can be accessed as #metadata" do
+      breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(nil, nil, { a: 1, b: 2 }, nil)
+
+      breadcrumb.metadata = { c: 3 }
+      expect(breadcrumb.meta_data).to eq({ c: 3 })
+      expect(breadcrumb.metadata).to eq({ c: 3 })
+
+      breadcrumb.meta_data = { d: 4 }
+      expect(breadcrumb.meta_data).to eq({ d: 4 })
+      expect(breadcrumb.metadata).to eq({ d: 4 })
     end
   end
 

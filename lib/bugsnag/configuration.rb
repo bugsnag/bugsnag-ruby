@@ -24,6 +24,7 @@ module Bugsnag
     attr_accessor :release_stage
 
     # A list of which release stages should cause notifications to be sent
+    # @deprecated Use {#enabled_release_stages} instead
     # @return [Array<String>, nil]
     attr_accessor :notify_release_stages
 
@@ -104,6 +105,7 @@ module Bugsnag
     attr_accessor :discard_classes
 
     # Whether Bugsnag should automatically record sessions
+    # @deprecated Use {#auto_track_sessions} instead
     # @return [Boolean]
     attr_accessor :auto_capture_sessions
 
@@ -125,7 +127,8 @@ module Bugsnag
     attr_reader :enable_sessions
 
     # A list of strings indicating allowable automatic breadcrumb types
-    # @see Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
+    # @deprecated Use {#enabled_breadcrumb_types} instead
+    # @see Bugsnag::BreadcrumbType
     # @return [Array<String>]
     attr_accessor :enabled_automatic_breadcrumb_types
 
@@ -501,6 +504,51 @@ module Bugsnag
     # @return [void]
     def remove_on_error(callback)
       middleware.remove(callback)
+    end
+
+    # TODO: These methods can be a simple attr_accessor when they replace the
+    #       methods they are aliasing
+    # NOTE: they are not aliases as YARD doesn't allow documenting the non-alias
+    #       as deprecated without also marking the alias as deprecated
+
+    # A list of which release stages should cause notifications to be sent
+    # @!attribute enabled_release_stages
+    # @return [Array<String>, nil]
+    def enabled_release_stages
+      @notify_release_stages
+    end
+
+    # @param release_stages [Array<String>, nil]
+    # @return [void]
+    def enabled_release_stages=(release_stages)
+      @notify_release_stages = release_stages
+    end
+
+    # A list of breadcrumb types that Bugsnag will collect automatically
+    # @!attribute enabled_breadcrumb_types
+    # @see Bugsnag::BreadcrumbType
+    # @return [Array<String>]
+    def enabled_breadcrumb_types
+      @enabled_automatic_breadcrumb_types
+    end
+
+    # @param breadcrumb_types [Array<String>]
+    # @return [void]
+    def enabled_breadcrumb_types=(breadcrumb_types)
+      @enabled_automatic_breadcrumb_types = breadcrumb_types
+    end
+
+    # Whether sessions should be tracked automatically
+    # @!attribute auto_track_sessions
+    # @return [Boolean]
+    def auto_track_sessions
+      @auto_capture_sessions
+    end
+
+    # @param track_sessions [Boolean]
+    # @return [void]
+    def auto_track_sessions=(track_sessions)
+      @auto_capture_sessions = track_sessions
     end
 
     private

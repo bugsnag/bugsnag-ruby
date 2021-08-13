@@ -1,6 +1,20 @@
 Changelog
 =========
 
+## TBD
+
+### Deprecated
+
+* For consistency with Bugsnag notifiers for other languages, a number of methods have been deprecated in this release. The old options will be removed in the next major version | [#676](https://github.com/bugsnag/bugsnag-ruby/pull/676)
+    * The `notify_release_stages` configuration option has been deprecated in favour of `enabled_release_stages`
+    * The `auto_capture_sessions` and `track_sessions` configuration options have been deprecated in favour of `auto_track_sessions`
+    * The `Report` class has been deprecated in favour of the `Event` class
+    * The `Report#meta_data` attribute has been deprecated in favour of `Event#metadata`
+    * The `Breadcrumb#meta_data` attribute has been deprecated in favour of `Breadcrumb#metadata`
+    * The `Breadcrumb#name` attribute has been deprecated in favour of `Breadcrumb#message`
+    * The breadcrumb type constants in the `Bugsnag::Breadcrumbs` module has been deprecated in favour of the constants available in the `Bugsnag::BreadcrumbType` module
+    For example, `Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE` is now available as `Bugsnag::BreadcrumbType::ERROR`
+
 ## v6.22.1 (11 August 2021)
 
 ### Fixes

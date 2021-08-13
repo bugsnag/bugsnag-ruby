@@ -87,6 +87,22 @@ describe Bugsnag::Configuration do
     end
   end
 
+  describe "#auto_track_sessions" do
+    it "defaults to true" do
+      expect(subject.auto_track_sessions).to eq(true)
+    end
+
+    it "shares a backing boolean with 'auto_capture_sessions'" do
+      subject.auto_track_sessions = false
+      expect(subject.auto_track_sessions).to eq(false)
+      expect(subject.auto_capture_sessions).to eq(false)
+
+      subject.auto_capture_sessions = true
+      expect(subject.auto_track_sessions).to eq(true)
+      expect(subject.auto_capture_sessions).to eq(true)
+    end
+  end
+
   describe "#enable_sessions" do
     it "defaults to true" do
       expect(subject.enable_sessions).to eq(true)
@@ -440,6 +456,29 @@ describe Bugsnag::Configuration do
     it "is an editable array" do
       subject.enabled_automatic_breadcrumb_types << "Some custom type"
       expect(subject.enabled_automatic_breadcrumb_types).to include("Some custom type")
+    end
+  end
+
+  describe "#enabled_breadcrumb_types" do
+    it "defaults to Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES" do
+      expect(subject.enabled_breadcrumb_types).to eq(Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES)
+    end
+
+    it "is an editable array" do
+      subject.enabled_breadcrumb_types << "Some custom type"
+      expect(subject.enabled_breadcrumb_types).to include("Some custom type")
+    end
+
+    it "shares a backing array with 'enabled_automatic_breadcrumb_types'" do
+      expect(subject.enabled_breadcrumb_types).to be(subject.enabled_automatic_breadcrumb_types)
+
+      subject.enabled_breadcrumb_types = [1, 2, 3]
+      expect(subject.enabled_breadcrumb_types).to eq([1, 2, 3])
+      expect(subject.enabled_automatic_breadcrumb_types).to eq([1, 2, 3])
+
+      subject.enabled_automatic_breadcrumb_types = [4, 5, 6]
+      expect(subject.enabled_breadcrumb_types).to eq([4, 5, 6])
+      expect(subject.enabled_automatic_breadcrumb_types).to eq([4, 5, 6])
     end
   end
 

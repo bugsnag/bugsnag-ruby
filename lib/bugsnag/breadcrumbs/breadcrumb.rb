@@ -1,11 +1,13 @@
 module Bugsnag::Breadcrumbs
   class Breadcrumb
+    # @deprecated Use {#message} instead
     # @return [String] the breadcrumb name
     attr_accessor :name
 
     # @return [String] the breadcrumb type
     attr_accessor :type
 
+    # @deprecated Use {#metadata} instead
     # @return [Hash, nil] metadata hash containing strings, numbers, or booleans, or nil
     attr_accessor :meta_data
 
@@ -23,7 +25,7 @@ module Bugsnag::Breadcrumbs
     # @api private
     #
     # @param name [String] the breadcrumb name
-    # @param type [String] the breadcrumb type from Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
+    # @param type [String] the breadcrumb type from Bugsnag::BreadcrumbType
     # @param meta_data [Hash, nil] a hash containing strings, numbers, or booleans, or nil
     # @param auto [Symbol] set to `:auto` if the breadcrumb is automatically generated
     def initialize(name, type, meta_data, auto)
@@ -71,6 +73,37 @@ module Bugsnag::Breadcrumbs
         :metaData => @meta_data,
         :timestamp => @timestamp.iso8601(3)
       }
+    end
+
+    # TODO: "message" and "metadata" can be simple attr_accessors when they
+    #       replace "name" and "meta_data"
+    # NOTE: these are not aliases as YARD doesn't allow documenting the non-alias
+    #       as deprecated without also marking the alias as deprecated
+
+    # The breadcrumb message
+    # @!attribute message
+    # @return [String]
+    def message
+      @name
+    end
+
+    # @param message [String]
+    # @return [void]
+    def message=(message)
+      @name = message
+    end
+
+    # A Hash containing arbitrary metadata associated with this breadcrumb
+    # @!attribute metadata
+    # @return [Hash, nil]
+    def metadata
+      @meta_data
+    end
+
+    # @param metadata [Hash, nil]
+    # @return [void]
+    def metadata=(metadata)
+      @meta_data = metadata
     end
   end
 end
