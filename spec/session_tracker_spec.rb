@@ -16,7 +16,7 @@ describe Bugsnag::SessionTracker do
       res.status = 202
       res.body = "OK\n"
     end
-    Thread.new{ server.start }
+    Thread.new { server.start }
   end
 
   before(:each) do
@@ -76,6 +76,26 @@ describe Bugsnag::SessionTracker do
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
     Bugsnag.start_session
     expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
+  end
+
+  it 'will not create sessions if the release stage is not enabled' do
+    Bugsnag.configure do |config|
+      config.enabled_release_stages = ['abc']
+      config.release_stage = 'xyz'
+    end
+
+    expect(Bugsnag.configuration.enable_sessions).to eq(true)
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
+
+    Bugsnag.start_session
+
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(0)
+
+    Bugsnag.configuration.release_stage = 'abc'
+
+    Bugsnag.start_session
+
+    expect(Bugsnag.session_tracker.session_counts.size).to eq(1)
   end
 
   it 'sends sessions when send_sessions is called' do

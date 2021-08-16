@@ -3,6 +3,11 @@ Changelog
 
 ## TBD
 
+### Fixes
+
+* Avoid starting session delivery thread when the current release stage is not enabled
+  | [#677](https://github.com/bugsnag/bugsnag-ruby/pull/677)
+
 ### Deprecated
 
 * For consistency with Bugsnag notifiers for other languages, a number of methods have been deprecated in this release. The old options will be removed in the next major version | [#676](https://github.com/bugsnag/bugsnag-ruby/pull/676)
