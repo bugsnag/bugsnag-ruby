@@ -17,6 +17,7 @@ module Bugsnag::Middleware
           case to_ignore
           when String then to_ignore == ex.class.name
           when Regexp then to_ignore =~ ex.class.name
+          when Proc then to_ignore.call(ex)
           else false
           end
         end
