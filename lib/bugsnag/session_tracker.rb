@@ -84,7 +84,7 @@ module Bugsnag
             end
           end
         end
-        @delivery_thread = Concurrent::TimerTask.execute(execution_interval: 30) do
+        @delivery_thread = Concurrent::TimerTask.execute(execution_interval: 10) do
           if @session_counts.size > 0
             send_sessions
           end
