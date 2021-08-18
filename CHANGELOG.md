@@ -3,6 +3,11 @@ Changelog
 
 ## TBD
 
+### Enhancements
+
+* Sessions will now be delivered every 10 seconds, instead of every 30 seconds
+  | [#680](https://github.com/bugsnag/bugsnag-ruby/pull/680)
+
 ### Fixes
 
 * Avoid starting session delivery thread when the current release stage is not enabled
