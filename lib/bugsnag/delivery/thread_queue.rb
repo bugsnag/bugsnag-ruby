@@ -31,8 +31,8 @@ module Bugsnag
             begin
               payload = get_payload.call
             rescue StandardError => e
-              configuration.warn("Notification to #{url} failed, #{e.inspect}")
-              configuration.warn(e.backtrace)
+              configuration.error("Unable to send information to Bugsnag (#{url}), #{e.inspect}")
+              configuration.error(e.backtrace)
             end
 
             Synchronous.deliver(url, payload, configuration, options) unless payload.nil?

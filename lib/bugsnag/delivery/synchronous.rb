@@ -18,8 +18,8 @@ module Bugsnag
             # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
             raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
 
-            configuration.warn("Notification to #{url} failed, #{e.inspect}")
-            configuration.warn(e.backtrace)
+            configuration.error("Unable to send information to Bugsnag (#{url}), #{e.inspect}")
+            configuration.error(e.backtrace)
           end
         end
 
