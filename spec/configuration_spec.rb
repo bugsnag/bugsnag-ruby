@@ -246,40 +246,21 @@ describe Bugsnag::Configuration do
   end
 
   describe "logger" do
-    class TestLogger
-      attr_accessor :logs
-
-      def initialize
-        @logs = []
+    before do
+      @output = StringIO.new
+      @formatter = proc do |severity, _datetime, progname, message|
+        "#{progname} #{severity}: #{message}"
       end
 
-      def log(level, name, &block)
-        message = block.call
-        @logs << {
-          :level => level,
-          :name => name,
-          :message => message
-        }
-      end
+      logger = Logger.new(@output)
+      logger.formatter = @formatter
 
-      def info(name, &block)
-        log('info', name, &block)
-      end
-
-      def warn(name, &block)
-        log('warning', name, &block)
-      end
-
-      def debug(name, &block)
-        log('debug', name, &block)
-      end
+      Bugsnag.configuration.logger = logger
     end
 
-    before do
-      @logger = TestLogger.new
-      Bugsnag.configure do |bugsnag|
-        bugsnag.logger = @logger
-      end
+    def output_lines
+      @output.rewind # always read from the start of output
+      @output.readlines.map(&:chomp) # old rubies don't support `readlines(chomp: true)`
     end
 
     context "using configure" do
@@ -287,35 +268,31 @@ describe Bugsnag::Configuration do
         Bugsnag.configuration.api_key = nil
         Bugsnag.instance_variable_set("@key_warning", nil)
         ENV['BUGSNAG_API_KEY'] = nil
-        expect(@logger.logs.size).to eq(0)
+        expect(output_lines).to be_empty
       end
 
       context "API key is not specified" do
         it "skips logging a warning if validate_api_key is false" do
           Bugsnag.configure(false)
-          expect(@logger.logs.size).to eq(0)
+          expect(output_lines).to be_empty
         end
 
         it "logs a warning by default" do
           Bugsnag.configure
-          expect(@logger.logs.size).to eq(1)
-          log = @logger.logs.first
-          expect(log).to eq({
-            :level => "warning",
-            :name => "[Bugsnag]",
-            :message => "No valid API key has been set, notifications will not be sent"
-          })
+
+          expect(output_lines.length).to be(1)
+          expect(output_lines.first).to eq(
+            '[Bugsnag] WARN: No valid API key has been set, notifications will not be sent'
+          )
         end
 
         it "logs a warning if validate_api_key is true" do
           Bugsnag.configure(true)
-          expect(@logger.logs.size).to eq(1)
-          log = @logger.logs.first
-          expect(log).to eq({
-            :level => "warning",
-            :name => "[Bugsnag]",
-            :message => "No valid API key has been set, notifications will not be sent"
-          })
+
+          expect(output_lines.length).to be(1)
+          expect(output_lines.first).to eq(
+            '[Bugsnag] WARN: No valid API key has been set, notifications will not be sent'
+          )
         end
       end
 
@@ -324,64 +301,57 @@ describe Bugsnag::Configuration do
           Bugsnag.configure do |config|
             config.api_key = 'd57a2472bd130ac0ab0f52715bbdc600'
           end
-          expect(@logger.logs.size).to eq(0)
+
+          expect(output_lines).to be_empty
         end
 
         it "logs a warning if the configured API key is invalid" do
           Bugsnag.configure do |config|
             config.api_key = 'WARNING: not a real key'
           end
-          expect(@logger.logs.size).to eq(1)
-          log = @logger.logs.first
-          expect(log).to eq({
-            :level => "warning",
-            :name => "[Bugsnag]",
-            :message => "No valid API key has been set, notifications will not be sent"
-          })
+
+          expect(output_lines.length).to be(1)
+          expect(output_lines.first).to eq(
+            '[Bugsnag] WARN: No valid API key has been set, notifications will not be sent'
+          )
         end
       end
     end
 
     it "should log info messages to the set logger" do
-      expect(@logger.logs.size).to eq(0)
+      expect(output_lines).to be_empty
+
       Bugsnag.configuration.info("Info message")
-      expect(@logger.logs.size).to eq(1)
-      log = @logger.logs.first
-      expect(log).to eq({
-        :level => "info",
-        :name => "[Bugsnag]",
-        :message => "Info message"
-      })
+
+      expect(output_lines.length).to be(1)
+      expect(output_lines.first).to eq('[Bugsnag] INFO: Info message')
     end
 
     it "should log warning messages to the set logger" do
-      expect(@logger.logs.size).to eq(0)
+      expect(output_lines).to be_empty
+
       Bugsnag.configuration.warn("Warning message")
-      expect(@logger.logs.size).to eq(1)
-      log = @logger.logs.first
-      expect(log).to eq({
-        :level => "warning",
-        :name => "[Bugsnag]",
-        :message => "Warning message"
-      })
+
+      expect(output_lines.length).to be(1)
+      expect(output_lines.first).to eq('[Bugsnag] WARN: Warning message')
+    end
+
+    it "should log error messages to the set logger" do
+      expect(output_lines).to be_empty
+
+      Bugsnag.configuration.error("Error message")
+
+      expect(output_lines.length).to be(1)
+      expect(output_lines.first).to eq('[Bugsnag] ERROR: Error message')
     end
 
     it "should log debug messages to the set logger" do
-      expect(@logger.logs.size).to eq(0)
-      Bugsnag.configuration.debug("Debug message")
-      expect(@logger.logs.size).to eq(1)
-      log = @logger.logs.first
-      expect(log).to eq({
-        :level => "debug",
-        :name => "[Bugsnag]",
-        :message => "Debug message"
-      })
-    end
+      expect(output_lines).to be_empty
 
-    after do
-      Bugsnag.configure do |bugsnag|
-        bugsnag.logger = Logger.new(StringIO.new)
-      end
+      Bugsnag.configuration.debug("Debug message")
+
+      expect(output_lines.length).to be(1)
+      expect(output_lines.first).to eq('[Bugsnag] DEBUG: Debug message')
     end
   end
 

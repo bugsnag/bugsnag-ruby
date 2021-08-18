@@ -7,6 +7,8 @@ Changelog
 
 * Sessions will now be delivered every 10 seconds, instead of every 30 seconds
   | [#680](https://github.com/bugsnag/bugsnag-ruby/pull/680)
+* Log errors that prevent delivery at `ERROR` level
+  | [#681](https://github.com/bugsnag/bugsnag-ruby/pull/681)
 
 ### Fixes
 
