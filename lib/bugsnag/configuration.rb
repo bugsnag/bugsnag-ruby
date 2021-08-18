@@ -392,15 +392,23 @@ module Bugsnag
     ##
     # Logs a warning level message
     #
-    # @param (see info)
+    # @param message [String, #to_s] The message to log
     def warn(message)
       logger.warn(PROG_NAME) { message }
     end
 
     ##
+    # Logs an error level message
+    #
+    # @param message [String, #to_s] The message to log
+    def error(message)
+      logger.error(PROG_NAME) { message }
+    end
+
+    ##
     # Logs a debug level message
     #
-    # @param (see info)
+    # @param message [String, #to_s] The message to log
     def debug(message)
       logger.debug(PROG_NAME) { message }
     end

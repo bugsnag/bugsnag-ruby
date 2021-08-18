@@ -336,6 +336,15 @@ describe Bugsnag::Configuration do
       expect(output_lines.first).to eq('[Bugsnag] WARN: Warning message')
     end
 
+    it "should log error messages to the set logger" do
+      expect(output_lines).to be_empty
+
+      Bugsnag.configuration.error("Error message")
+
+      expect(output_lines.length).to be(1)
+      expect(output_lines.first).to eq('[Bugsnag] ERROR: Error message')
+    end
+
     it "should log debug messages to the set logger" do
       expect(output_lines).to be_empty
 
