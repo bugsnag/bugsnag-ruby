@@ -128,7 +128,7 @@ Scenario: Sidekiq
   And the event "metaData.sidekiq.queue" equals "default"
 
 @rails_integrations
-Scenario: Using Sidekiq as the Active Job queue adapter
+Scenario: Using Sidekiq as the Active Job queue adapter for a job that raises
   When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "sidekiq"
   And I run "bundle exec sidekiq" in the rails app
   And I run "UnhandledJob.perform_later(1, yes: true)" with the rails runner
@@ -150,7 +150,7 @@ Scenario: Using Sidekiq as the Active Job queue adapter
   And the event "metaData.sidekiq.queue" equals "default"
 
 @rails_integrations
-Scenario: Using Rescue as the Active Job queue adapter
+Scenario: Using Rescue as the Active Job queue adapter for a job that raises
   When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "resque"
   And I run "bundle exec rake resque:work" in the rails app
   And I run "UnhandledJob.perform_later(1, yes: true)" with the rails runner
@@ -171,7 +171,7 @@ Scenario: Using Rescue as the Active Job queue adapter
   And the event "metaData.payload.args.0.queue_name" equals "default"
 
 @rails_integrations
-Scenario: Using Que as the Active Job queue adapter
+Scenario: Using Que as the Active Job queue adapter for a job that raises
   When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "que"
   And I run "bundle exec que -q default ./config/environment.rb" in the rails app
   And I run "UnhandledJob.perform_later(1, yes: true)" with the rails runner
@@ -192,7 +192,7 @@ Scenario: Using Que as the Active Job queue adapter
   And the event "metaData.job.queue" equals "default"
 
 @rails_integrations
-Scenario: Using Delayed Job as the Active Job queue adapter
+Scenario: Using Delayed Job as the Active Job queue adapter for a job that raises
   When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "delayed_job"
   And I run the "jobs:work" rake task in the rails app
   And I run "UnhandledJob.perform_later(1, yes: true)" with the rails runner
@@ -211,3 +211,35 @@ Scenario: Using Delayed Job as the Active Job queue adapter
   And the event "metaData.job.payload.arguments.0" equals 1
   And the event "metaData.job.payload.arguments.1.yes" is true
   And the event "metaData.job.queue" equals "default"
+
+@rails_integrations
+Scenario: Using Sidekiq as the Active Job queue adapter for a job that works
+  When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "sidekiq"
+  And I run "bundle exec sidekiq" in the rails app
+  And I run "WorkingJob.perform_later" with the rails runner
+  And I wait for 10 seconds
+  Then I should receive no requests
+
+@rails_integrations
+Scenario: Using Rescue as the Active Job queue adapter for a job that works
+  When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "resque"
+  And I run "bundle exec rake resque:work" in the rails app
+  And I run "WorkingJob.perform_later" with the rails runner
+  And I wait for 10 seconds
+  Then I should receive no requests
+
+@rails_integrations
+Scenario: Using Que as the Active Job queue adapter for a job that works
+  When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "que"
+  And I run "bundle exec que -q default ./config/environment.rb" in the rails app
+  And I run "WorkingJob.perform_later" with the rails runner
+  And I wait for 10 seconds
+  Then I should receive no requests
+
+@rails_integrations
+Scenario: Using Delayed Job as the Active Job queue adapter for a job that works
+  When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "delayed_job"
+  And I run the "jobs:work" rake task in the rails app
+  And I run "WorkingJob.perform_later" with the rails runner
+  And I wait for 10 seconds
+  Then I should receive no requests
