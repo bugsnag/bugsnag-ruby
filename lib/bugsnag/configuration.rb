@@ -12,6 +12,7 @@ require "bugsnag/middleware/session_data"
 require "bugsnag/middleware/breadcrumbs"
 require "bugsnag/utility/circular_buffer"
 require "bugsnag/breadcrumbs/breadcrumbs"
+require "bugsnag/breadcrumbs/on_breadcrumb_callback_list"
 
 module Bugsnag
   class Configuration
@@ -148,6 +149,11 @@ module Bugsnag
     # @return [Array<String>]
     attr_reader :scopes_to_filter
 
+    # Expose on_breadcrumb_callbacks internally for Bugsnag.leave_breadcrumb
+    # @api private
+    # @return [Breadcrumbs::OnBreadcrumbCallbackList]
+    attr_reader :on_breadcrumb_callbacks
+
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -196,6 +202,7 @@ module Bugsnag
       # All valid breadcrumb types should be allowable initially
       self.enabled_automatic_breadcrumb_types = Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.dup
       self.before_breadcrumb_callbacks = []
+      @on_breadcrumb_callbacks = Breadcrumbs::OnBreadcrumbCallbackList.new(self)
 
       # Store max_breadcrumbs here instead of outputting breadcrumbs.max_items
       # to avoid infinite recursion when creating breadcrumb buffer
@@ -504,6 +511,33 @@ module Bugsnag
     # @return [void]
     def remove_on_error(callback)
       middleware.remove(callback)
+    end
+
+    ##
+    # Add the given callback to the list of on_breadcrumb callbacks
+    #
+    # The on_breadcrumb callbacks will be called when a breadcrumb is left and
+    # are passed the {Breadcrumbs::Breadcrumb Breadcrumb} object
+    #
+    # Returning false from an on_breadcrumb callback will cause the breadcrumb
+    # to be ignored and will prevent any remaining callbacks from being called
+    #
+    # @param callback [Proc, Method, #call]
+    # @return [void]
+    def add_on_breadcrumb(callback)
+      @on_breadcrumb_callbacks.add(callback)
+    end
+
+    ##
+    # Remove the given callback from the list of on_breadcrumb callbacks
+    #
+    # Note that this must be the same instance that was passed to
+    # {add_on_breadcrumb}, otherwise it will not be removed
+    #
+    # @param callback [Proc, Method, #call]
+    # @return [void]
+    def remove_on_breadcrumb(callback)
+      @on_breadcrumb_callbacks.remove(callback)
     end
 
     # TODO: These methods can be a simple attr_accessor when they replace the
