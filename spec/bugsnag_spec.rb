@@ -417,6 +417,95 @@ describe Bugsnag do
         Bugsnag.leave_breadcrumb("TestName")
       end
     end
+
+    describe "on_breadcrumb callbacks" do
+      it "runs callbacks when a breadcrumb is left" do
+        Bugsnag.add_on_breadcrumb(proc do |breadcrumb|
+          breadcrumb.metadata = { callback: true }
+        end)
+
+        Bugsnag.leave_breadcrumb("TestName")
+
+        expect(breadcrumbs.to_a.size).to eq(1)
+        expect(breadcrumbs.first.to_h).to match({
+          name: "TestName",
+          type: Bugsnag::BreadcrumbType::MANUAL,
+          metaData: { callback: true },
+          timestamp: match(timestamp_regex)
+        })
+      end
+
+      it "validates any changes made in a callback" do
+        Bugsnag.add_on_breadcrumb(proc do |breadcrumb|
+          breadcrumb.metadata = { abc: 123, xyz: { a: 1, b: 2 } }
+
+          breadcrumb.type = "Not a real type"
+          breadcrumb.name = "123123123123123123123123123123456456456456456"
+        end)
+
+        Bugsnag.leave_breadcrumb("TestName")
+
+        expect(breadcrumbs.to_a.size).to eq(1)
+        expect(breadcrumbs.first.to_h).to match({
+          name: "123123123123123123123123123123456456456456456",
+          type: Bugsnag::BreadcrumbType::MANUAL,
+          metaData: { abc: 123, xyz: { a: 1, b: 2 } },
+          timestamp: match(timestamp_regex)
+        })
+      end
+
+      it "doesn't add the breadcrumb when ignored due to enabled_breadcrumb_types" do
+        Bugsnag.configure do |config|
+          config.enabled_breadcrumb_types = [Bugsnag::BreadcrumbType::MANUAL]
+
+          config.add_on_breadcrumb(proc do |breadcrumb|
+            breadcrumb.type = Bugsnag::BreadcrumbType::ERROR
+          end)
+        end
+
+        Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::BreadcrumbType::MANUAL, :auto)
+
+        expect(breadcrumbs.to_a).to be_empty
+      end
+
+      it "stops calling callbacks if the breadcrumb is ignored in them" do
+        callback1 = spy('callback1')
+        callback2 = spy('callback2')
+
+        Bugsnag.configure do |config|
+          config.add_on_breadcrumb(callback1)
+          config.add_on_breadcrumb(proc { false })
+          config.add_on_breadcrumb(callback2)
+        end
+
+        Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::BreadcrumbType::ERROR, :auto)
+
+        expect(callback1).to have_received(:call)
+        expect(callback2).not_to have_received(:call)
+      end
+
+      it "continues calling callbacks after a callback raises" do
+        callback1 = spy('callback1')
+        callback2 = spy('callback2')
+
+        Bugsnag.configure do |config|
+          config.add_on_breadcrumb(callback1)
+          config.add_on_breadcrumb(proc { raise 'uh oh' })
+          config.add_on_breadcrumb(callback2)
+        end
+
+        Bugsnag.leave_breadcrumb("TestName", {}, Bugsnag::BreadcrumbType::ERROR, :auto)
+
+        expect(callback1).to have_received(:call)
+        expect(callback2).to have_received(:call)
+        expect(breadcrumbs.to_a.first.to_h).to match({
+          name: "TestName",
+          type: Bugsnag::BreadcrumbType::ERROR,
+          metaData: {},
+          timestamp: match(timestamp_regex)
+        })
+      end
+    end
   end
 
   describe "request headers" do
