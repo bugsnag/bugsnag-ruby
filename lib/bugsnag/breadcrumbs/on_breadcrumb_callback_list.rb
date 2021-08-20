@@ -2,9 +2,10 @@ require "set"
 
 module Bugsnag::Breadcrumbs
   class OnBreadcrumbCallbackList
-    def initialize
+    def initialize(configuration)
       @callbacks = Set.new
       @mutex = Mutex.new
+      @configuration = configuration
     end
 
     ##
@@ -30,7 +31,12 @@ module Bugsnag::Breadcrumbs
     # @return [void]
     def call(breadcrumb)
       @callbacks.each do |callback|
-        should_continue = callback.call(breadcrumb)
+        begin
+          should_continue = callback.call(breadcrumb)
+        rescue StandardError => e
+          @configuration.warn("Error occurred in on_breadcrumb callback: '#{e}'")
+          @configuration.warn("on_breadcrumb callback stacktrace: #{e.backtrace.inspect}")
+        end
 
         # only stop if should_continue is explicity 'false' to allow callbacks
         # to return 'nil'

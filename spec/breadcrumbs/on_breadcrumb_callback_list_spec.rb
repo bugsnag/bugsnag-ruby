@@ -6,7 +6,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
   it "can add callbacks to its list" do
     callback = spy('callback')
 
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
     list.add(callback)
 
     breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new('name', 'type', {}, nil)
@@ -20,7 +20,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
   it "can remove callbacks to its list" do
     callback = spy('callback')
 
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
     list.add(callback)
     list.remove(callback)
 
@@ -36,7 +36,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
     callback1 = spy('callback1')
     callback2 = spy('callback2')
 
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
 
     # note: adding callback1 but removing callback2
     list.add(callback1)
@@ -54,7 +54,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
   it "calls callbacks in the order they were added" do
     calls = []
 
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
 
     list.add(proc { calls << 1 })
     list.add(proc { calls << 2 })
@@ -69,7 +69,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
   end
 
   it "ignores the breadcrumb if a callback returns false" do
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
 
     list.add(proc { false })
 
@@ -81,7 +81,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
   end
 
   it "does not ignore the breadcrumb if a callback returns nil" do
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
 
     list.add(proc { nil })
 
@@ -105,7 +105,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
       end
     end
 
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
 
     list.add(ArbitraryClassMethod.method(:arbitrary_name))
 
@@ -132,7 +132,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
       end
     end
 
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
 
     list.add(ArbitraryClassMethod.method(:arbitrary_name))
     list.remove(ArbitraryClassMethod.method(:arbitrary_name))
@@ -161,7 +161,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
       end
     end
 
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
 
     list.add(RespondsToCallAsClassMethod)
     list.add(RespondsToCallAsInstanceMethod.new)
@@ -186,7 +186,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
       end
     end
 
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
 
     list.add(RespondsToCallAsClassMethod)
     list.remove(RespondsToCallAsClassMethod)
@@ -203,7 +203,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
   end
 
   it "works when accessed concurrently" do
-    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
 
     list.add(proc do |breadcrumb|
       breadcrumb.metadata[:numbers] = []
@@ -227,5 +227,50 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
     # sort the numbers as they will be out of order but that doesn't matter as
     # long as every number is present
     expect(breadcrumb.metadata[:numbers].sort).to eq((0...NUMBER_OF_THREADS).to_a)
+  end
+
+  it "logs errors thrown in callbacks" do
+    logger = spy('logger')
+    Bugsnag.configuration.logger = logger
+
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
+    error = RuntimeError.new('Oh no!')
+
+    list.add(proc { raise error })
+
+    breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new('name', 'type', {}, nil)
+
+    list.call(breadcrumb)
+
+    expect(breadcrumb.ignore?).to be(false)
+
+    message_index = 0
+    expected_messages = [
+      /^Error occurred in on_breadcrumb callback: 'Oh no!'$/,
+      /^on_breadcrumb callback stacktrace:/
+    ]
+
+    expect(logger).to have_received(:warn).with("[Bugsnag]").twice do |&block|
+      expect(block.call).to match(expected_messages[message_index])
+      message_index += 1
+    end
+  end
+
+  it "calls subsequent callbacks after an error is raised" do
+    list = Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList.new(Bugsnag.configuration)
+    calls = []
+
+    list.add(proc { calls << 1 })
+    list.add(proc { calls << 2 })
+    list.add(proc { raise 'ab' })
+    list.add(proc { calls << 4 })
+    list.add(proc { calls << 5 })
+
+    breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new('name', 'type', {}, nil)
+
+    list.call(breadcrumb)
+
+    expect(calls).to eq([1, 2, 4, 5])
+    expect(breadcrumb.ignore?).to be(false)
   end
 end
