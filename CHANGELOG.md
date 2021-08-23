@@ -8,6 +8,9 @@ Changelog
 * Sessions will now be delivered every 10 seconds, instead of every 30 seconds
   | [#680](https://github.com/bugsnag/bugsnag-ruby/pull/680)
 
+* Add `on_breadcrumb` callbacks to replace `before_breadcrumb_callbacks`
+  | [#686](https://github.com/bugsnag/bugsnag-ruby/pull/686)
+
 ### Fixes
 
 * Avoid starting session delivery thread when the current release stage is not enabled
@@ -15,6 +18,7 @@ Changelog
 
 ### Deprecated
 
+* `before_breadcrumb_callbacks` have been deprecated in favour of `on_breadcrumb` callbacks and will be removed in the next major release
 * For consistency with Bugsnag notifiers for other languages, a number of methods have been deprecated in this release. The old options will be removed in the next major version | [#676](https://github.com/bugsnag/bugsnag-ruby/pull/676)
     * The `notify_release_stages` configuration option has been deprecated in favour of `enabled_release_stages`
     * The `auto_capture_sessions` and `track_sessions` configuration options have been deprecated in favour of `auto_track_sessions`
