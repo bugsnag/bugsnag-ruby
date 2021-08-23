@@ -1,0 +1,120 @@
+#!/usr/bin/env ruby
+
+require "socket"
+require "timeout"
+require "pathname"
+
+DOCKER_DIRECTORY = Pathname.new(__dir__)
+ROOT_DIRECTORY = DOCKER_DIRECTORY + "../.."
+FIXTURE_DIRECTORY = DOCKER_DIRECTORY + "rails_integrations"
+
+raise "Fixture directory does not exist at: '#{FIXTURE_DIRECTORY}'" unless FIXTURE_DIRECTORY.exist?
+
+QUEUE_LIBRARY_COMMANDS = {
+  sidekiq: 'sidekiq',
+  resque: 'rake resque:work',
+  que: 'que --log-level debug --queue-name "*" ./config/environment.rb',
+  delayed_job: 'rake jobs:work',
+}
+
+QUEUE_LIBRARY = ARGV.fetch(0, :sidekiq).to_sym
+
+raise "Invalid queue libarary '#{QUEUE_LIBRARY}'" unless QUEUE_LIBRARY_COMMANDS.key?(QUEUE_LIBRARY)
+
+def wait_for_port(port, max_attempts: 60, seconds_between_attempts: 1)
+  is_open = false
+  attempts = 0
+
+  until is_open || attempts > max_attempts
+    begin
+      attempts += 1
+
+      # add a timeout as sometimes TCPSocket will wait for ages before realising
+      # it can't connect - this is a local port so should be """instant"""
+      Timeout.timeout(2) do
+        TCPSocket.new("127.0.0.1", port).close
+
+        # success!
+        is_open = true
+      end
+    rescue Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+      # ignore timeouts and errors from the port being closed
+
+      # wait between attempts to give the port some time to open
+      sleep(seconds_between_attempts)
+    end
+  end
+
+  raise "Port #{port} not open in time!" unless is_open
+end
+
+def run_in_shell(command, env: {}, background: false)
+  puts "running '#{command}' with env: #{env}, background: #{background}"
+
+  if background
+    spawn(env, command)
+  else
+    system(env, command, exception: true)
+  end
+end
+
+def run_docker_command(command, env: {}, **kwargs)
+  default_env = { "NETWORK_NAME" => "notwerk-norm", "ACTIVE_JOB_QUEUE_ADAPTER" => QUEUE_LIBRARY.to_s }
+
+  run_in_shell(command, env: default_env.merge(env), **kwargs)
+end
+
+# ensure we clean up after ourselves on exit
+at_exit do
+  temp_bugsnag_lib = FIXTURE_DIRECTORY + "temp-bugsnag-lib"
+  temp_bugsnag_lib.rmtree if temp_bugsnag_lib.exist?
+
+  # stop the docker compose stack
+  Dir.chdir(FIXTURE_DIRECTORY) do
+    run_docker_command("docker-compose down")
+  end
+end
+
+# build the bugsnag gem and move it to the fixture directory
+Dir.chdir(ROOT_DIRECTORY) do
+  run_in_shell("gem build bugsnag.gemspec -o bugsnag.gem")
+  run_in_shell("mv bugsnag.gem #{FIXTURE_DIRECTORY}")
+end
+
+Dir.chdir(FIXTURE_DIRECTORY) do
+  # unpack the gem into the directory the dockerfile expects
+  run_in_shell("gem unpack bugsnag.gem --target temp-bugsnag-lib")
+  run_in_shell("rm bugsnag.gem")
+
+  rails_pid = run_docker_command(
+    "docker-compose up --build rails_integrations",
+    env: { "RUBY_TEST_VERSION" => "2.7" },
+    background: true
+  )
+
+  # wait for the container to finish building & starting
+  wait_for_port(3000)
+
+  # setup and migrate the database
+  run_docker_command("docker-compose run rails_integrations bundle exec rake db:prepare")
+  run_docker_command("docker-compose run rails_integrations bundle exec rake db:migrate")
+
+  # run the queue library in the background (not using '--detach' so we can see the logs)
+  queue_library_pid = run_docker_command(
+    "docker-compose run rails_integrations bundle exec #{QUEUE_LIBRARY_COMMANDS[QUEUE_LIBRARY]}",
+    background: true
+  )
+
+  # give the queue library some time to start before we print stuff, otherwise
+  # we'll print before the library does
+  sleep(5)
+
+  puts "Everything is running!"
+
+  # this will wait forever as the queue libraries won't exit on their own - quit with Ctrl+C
+  Process.wait(queue_library_pid)
+
+  # the queue library has exited (because of Ctrl+C) so tell rails to stop too,
+  # otherwise you'll need to Ctrl+C twice and no one has time for that
+  Process.kill("TERM", rails_pid)
+end

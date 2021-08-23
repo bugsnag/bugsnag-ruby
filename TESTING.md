@@ -79,3 +79,24 @@ RUBY_TEST_VERSION=2.6 RAILS_VERSION=6 docker-compose run --use-aliases ruby-maze
 ```
 
 In order to avoid running flakey or unfinished tests, the tag `"not @wip"` can be added to the tags option. This is recommended for all CI runs. If a tag is already specified, this should be added using the `and` keyword, e.g. `--tags "@rails6 and not @wip"`
+
+## Manually testing queue libraries
+
+To help manually test queue libraries and Active Job with various queue adapters, you can use [the `run-ruby-integrations` script](./features/fixtures/run-ruby-integrations). This takes care of installing your local copy of Bugsnag, booting Rails, setting up the database and booting the queue library
+
+As with the end-to-end tests, only Bugsnag employees can run this script as it relies on the same private resources
+
+The script will default to booting Sidekiq:
+
+```
+# run the rails_integrations fixture with sidekiq
+$ ./features/fixtures/run-rails-integrations
+```
+
+The script can also run Resque, Que or Delayed Job:
+
+```
+$ ./features/fixtures/run-rails-integrations resque
+$ ./features/fixtures/run-rails-integrations que
+$ ./features/fixtures/run-rails-integrations delayed_job
+```

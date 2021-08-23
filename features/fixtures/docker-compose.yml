@@ -261,6 +261,8 @@ services:
       - RUN_AT_EXIT_HOOKS
       - ACTIVE_JOB_QUEUE_ADAPTER
     restart: "no"
+    ports:
+      - "3000:3000"
 
   sidekiq:
     build:
