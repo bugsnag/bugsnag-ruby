@@ -252,13 +252,17 @@ module Bugsnag
       # Skip if it's already invalid
       return if breadcrumb.ignore?
 
-      # Run callbacks
+      # Run before_breadcrumb_callbacks
       configuration.before_breadcrumb_callbacks.each do |c|
         c.arity > 0 ? c.call(breadcrumb) : c.call
         break if breadcrumb.ignore?
       end
 
       # Return early if ignored
+      return if breadcrumb.ignore?
+
+      # Run on_breadcrumb callbacks
+      configuration.on_breadcrumb_callbacks.call(breadcrumb)
       return if breadcrumb.ignore?
 
       # Validate again in case of callback alteration
@@ -293,6 +297,33 @@ module Bugsnag
     # @return [void]
     def remove_on_error(callback)
       configuration.remove_on_error(callback)
+    end
+
+    ##
+    # Add the given callback to the list of on_breadcrumb callbacks
+    #
+    # The on_breadcrumb callbacks will be called when a breadcrumb is left and
+    # are passed the {Breadcrumbs::Breadcrumb Breadcrumb} object
+    #
+    # Returning false from an on_breadcrumb callback will cause the breadcrumb
+    # to be ignored and will prevent any remaining callbacks from being called
+    #
+    # @param callback [Proc, Method, #call]
+    # @return [void]
+    def add_on_breadcrumb(callback)
+      configuration.add_on_breadcrumb(callback)
+    end
+
+    ##
+    # Remove the given callback from the list of on_breadcrumb callbacks
+    #
+    # Note that this must be the same instance that was passed to
+    # {add_on_breadcrumb}, otherwise it will not be removed
+    #
+    # @param callback [Proc, Method, #call]
+    # @return [void]
+    def remove_on_breadcrumb(callback)
+      configuration.remove_on_breadcrumb(callback)
     end
 
     ##
