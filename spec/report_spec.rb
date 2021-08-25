@@ -568,6 +568,34 @@ describe Bugsnag::Report do
     }
   end
 
+  it "uses the context from Configuration, if set" do
+    Bugsnag.configure do |config|
+      config.context = "example context"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("example context")
+    })
+  end
+
+  it "allows overriding the context from Configuration" do
+    Bugsnag.configure do |config|
+      config.context = "example context"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.context = "different context"
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("different context")
+    })
+  end
+
   it "accepts a user_id in overrides" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.user = {id: 'test_user'}
