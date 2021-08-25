@@ -102,6 +102,9 @@ module Bugsnag
     ##
     # Initializes a new report from an exception.
     def initialize(exception, passed_configuration, auto_notify=false)
+      # store the creation time for use as device.time
+      @created_at = Time.now.utc.iso8601(3)
+
       @should_ignore = false
       @unhandled = auto_notify
 
@@ -192,7 +195,8 @@ module Bugsnag
         context: context,
         device: {
           hostname: hostname,
-          runtimeVersions: runtime_versions
+          runtimeVersions: runtime_versions,
+          time: @created_at
         },
         exceptions: exceptions,
         groupingHash: grouping_hash,
