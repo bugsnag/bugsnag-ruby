@@ -124,7 +124,7 @@ describe Bugsnag::Rack do
       allow(report).to receive(:request_data).and_return({
         :rack_env => rack_env
       })
-      expect(report).to receive(:context=).with("TEST /TEST_PATH")
+      expect(report).to receive(:automatic_context=).with("TEST /TEST_PATH")
       expect(report).to receive(:user).and_return({})
 
       config = Bugsnag.configuration
@@ -185,7 +185,7 @@ describe Bugsnag::Rack do
       allow(report).to receive(:request_data).and_return({
         :rack_env => rack_env
       })
-      expect(report).to receive(:context=).with("TEST /TEST_PATH")
+      expect(report).to receive(:automatic_context=).with("TEST /TEST_PATH")
       expect(report).to receive(:user).and_return({})
 
       config = Bugsnag.configuration

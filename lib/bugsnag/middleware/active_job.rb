@@ -9,7 +9,7 @@ module Bugsnag::Middleware
 
       if data
         report.add_tab(:active_job, data)
-        report.context = "#{data[:job_name]}@#{data[:queue]}"
+        report.automatic_context = "#{data[:job_name]}@#{data[:queue]}"
       end
 
       @bugsnag.call(report)

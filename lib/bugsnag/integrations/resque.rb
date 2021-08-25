@@ -56,7 +56,7 @@ module Bugsnag
 
         context = "#{class_name}@#{queue}"
         report.meta_data.merge!({ context: context, payload: metadata })
-        report.context = context
+        report.automatic_context = context
       end
     end
   end

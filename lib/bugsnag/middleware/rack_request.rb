@@ -18,8 +18,8 @@ module Bugsnag::Middleware
         client_ip = request.ip.to_s rescue SPOOF
         session = env["rack.session"]
 
-        # Set the context
-        report.context = "#{request.request_method} #{request.path}"
+        # Set the automatic context
+        report.automatic_context = "#{request.request_method} #{request.path}"
 
         # Set a sensible default for user_id
         report.user["id"] = request.ip

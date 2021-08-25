@@ -11,8 +11,9 @@ Changelog
   | [#681](https://github.com/bugsnag/bugsnag-ruby/pull/681)
 * Add `on_breadcrumb` callbacks to replace `before_breadcrumb_callbacks`
   | [#686](https://github.com/bugsnag/bugsnag-ruby/pull/686)
-* Add `context` attribute to configuration, which will be used as the default context for events
+* Add `context` attribute to configuration, which will be used as the default context for events. Using this option will disable automatic context setting
   | [#687](https://github.com/bugsnag/bugsnag-ruby/pull/687)
+  | [#688](https://github.com/bugsnag/bugsnag-ruby/pull/688)
 
 ### Fixes
 

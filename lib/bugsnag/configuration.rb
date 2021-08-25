@@ -146,6 +146,7 @@ module Bugsnag
     attr_accessor :vendor_path
 
     # The default context for all future events
+    # Setting this will disable automatic context setting
     # @return [String, nil]
     attr_accessor :context
 
@@ -550,6 +551,18 @@ module Bugsnag
     # @return [void]
     def remove_on_breadcrumb(callback)
       @on_breadcrumb_callbacks.remove(callback)
+    end
+
+    ##
+    # Has the context been explicitly set?
+    #
+    # This is necessary to differentiate between the context not being set and
+    # the context being set to 'nil' explicitly
+    #
+    # @api private
+    # @return [Boolean]
+    def context_set?
+      defined?(@context) != nil
     end
 
     # TODO: These methods can be a simple attr_accessor when they replace the

@@ -16,7 +16,7 @@ module Bugsnag::Middleware
           :arguments => task.arg_description
         })
 
-        report.context ||= task.name
+        report.automatic_context ||= task.name
       end
 
       @bugsnag.call(report)
