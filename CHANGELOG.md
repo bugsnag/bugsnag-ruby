@@ -9,9 +9,10 @@ Changelog
   | [#680](https://github.com/bugsnag/bugsnag-ruby/pull/680)
 * Log errors that prevent delivery at `ERROR` level
   | [#681](https://github.com/bugsnag/bugsnag-ruby/pull/681)
-
 * Add `on_breadcrumb` callbacks to replace `before_breadcrumb_callbacks`
   | [#686](https://github.com/bugsnag/bugsnag-ruby/pull/686)
+* Add `context` attribute to configuration, which will be used as the default context for events
+  | [#687](https://github.com/bugsnag/bugsnag-ruby/pull/687)
 
 ### Fixes
 
