@@ -118,6 +118,7 @@ module Bugsnag
       self.app_type = configuration.app_type
       self.app_version = configuration.app_version
       self.breadcrumbs = []
+      self.context = configuration.context
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
       self.runtime_versions = configuration.runtime_versions.dup
