@@ -114,7 +114,7 @@ module Bugsnag
       self.app_type = configuration.app_type
       self.app_version = configuration.app_version
       self.breadcrumbs = []
-      self.context = configuration.context
+      self.context = configuration.context if configuration.context_set?
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
       self.runtime_versions = configuration.runtime_versions.dup
@@ -130,7 +130,9 @@ module Bugsnag
     # @!attribute context
     # @return [String, nil]
     def context
-      @context || @automatic_context
+      return @context if defined?(@context)
+
+      @automatic_context
     end
 
     attr_writer :context

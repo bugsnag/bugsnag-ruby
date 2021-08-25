@@ -610,6 +610,21 @@ describe Bugsnag::Report do
     })
   end
 
+  it "uses overridden context even it is set to 'nil'" do
+    Bugsnag.configure do |config|
+      config.context = nil
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.automatic_context = "automatic context"
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to be_nil
+    })
+  end
+
   it "uses the context from Configuration, if set" do
     Bugsnag.configure do |config|
       config.context = "example context"

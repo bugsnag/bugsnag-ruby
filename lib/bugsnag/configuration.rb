@@ -553,6 +553,18 @@ module Bugsnag
       @on_breadcrumb_callbacks.remove(callback)
     end
 
+    ##
+    # Has the context been explicitly set?
+    #
+    # This is necessary to differentiate between the context not being set and
+    # the context being set to 'nil' explicitly
+    #
+    # @api private
+    # @return [Boolean]
+    def context_set?
+      defined?(@context) != nil
+    end
+
     # TODO: These methods can be a simple attr_accessor when they replace the
     #       methods they are aliasing
     # NOTE: they are not aliases as YARD doesn't allow documenting the non-alias
