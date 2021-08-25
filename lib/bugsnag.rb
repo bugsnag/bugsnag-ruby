@@ -327,6 +327,17 @@ module Bugsnag
     end
 
     ##
+    # Returns the current list of breadcrumbs
+    #
+    # This is a per-thread circular buffer, containing at most 'max_breadcrumbs'
+    # breadcrumbs
+    #
+    # @return [Bugsnag::Utility::CircularBuffer]
+    def breadcrumbs
+      configuration.breadcrumbs
+    end
+
+    ##
     # Returns the client's Cleaner object, or creates one if not yet created.
     #
     # @api private

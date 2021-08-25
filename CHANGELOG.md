@@ -14,6 +14,8 @@ Changelog
 * Add `context` attribute to configuration, which will be used as the default context for events. Using this option will disable automatic context setting
   | [#687](https://github.com/bugsnag/bugsnag-ruby/pull/687)
   | [#688](https://github.com/bugsnag/bugsnag-ruby/pull/688)
+* Add `Bugsnag#breadcrumbs` getter to fetch the current list of breadcrumbs
+  | [#689](https://github.com/bugsnag/bugsnag-ruby/pull/689)
 
 ### Fixes
 

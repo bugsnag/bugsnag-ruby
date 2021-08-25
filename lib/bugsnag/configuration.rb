@@ -449,9 +449,12 @@ module Bugsnag
     end
 
     ##
-    # Returns the breadcrumb circular buffer
+    # Returns the current list of breadcrumbs
     #
-    # @return [Bugsnag::Utility::CircularBuffer] a thread based circular buffer containing breadcrumbs
+    # This is a per-thread circular buffer, containing at most 'max_breadcrumbs'
+    # breadcrumbs
+    #
+    # @return [Bugsnag::Utility::CircularBuffer]
     def breadcrumbs
       request_data[:breadcrumbs] ||= Bugsnag::Utility::CircularBuffer.new(@max_breadcrumbs)
     end
