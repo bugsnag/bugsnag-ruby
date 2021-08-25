@@ -568,6 +568,48 @@ describe Bugsnag::Report do
     }
   end
 
+  it "uses automatic context if no other context has been set" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.automatic_context = "automatic context"
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("automatic context")
+    })
+  end
+
+  it "uses Configuration context even if the automatic context has been set" do
+    Bugsnag.configure do |config|
+      config.context = "configuration context"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.automatic_context = "automatic context"
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("configuration context")
+    })
+  end
+
+  it "uses overridden context even if the automatic context has been set" do
+    Bugsnag.configure do |config|
+      config.context = "configuration context"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.context = "overridden context"
+      report.automatic_context = "automatic context"
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("overridden context")
+    })
+  end
+
   it "uses the context from Configuration, if set" do
     Bugsnag.configure do |config|
       config.context = "example context"

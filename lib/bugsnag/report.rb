@@ -45,10 +45,6 @@ module Bugsnag
     # @return [Configuration]
     attr_accessor :configuration
 
-    # Additional context for this report
-    # @return [String, nil]
-    attr_accessor :context
-
     # The delivery method that will be used for this report
     # @see Configuration#delivery_method
     # @return [Symbol]
@@ -128,6 +124,23 @@ module Bugsnag
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
       self.user = {}
     end
+
+    ##
+    # Additional context for this report
+    # @!attribute context
+    # @return [String, nil]
+    def context
+      @context || @automatic_context
+    end
+
+    attr_writer :context
+
+    ##
+    # Context set automatically by Bugsnag uses this attribute, which prevents
+    # it from overwriting the user-supplied context
+    # @api private
+    # @return [String, nil]
+    attr_accessor :automatic_context
 
     ##
     # Add a new metadata tab to this notification.
