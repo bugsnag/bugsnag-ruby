@@ -146,6 +146,7 @@ module Bugsnag
     attr_accessor :vendor_path
 
     # The default context for all future events
+    # Setting this will disable automatic context setting
     # @return [String, nil]
     attr_accessor :context
 
