@@ -61,6 +61,17 @@ describe Bugsnag::Configuration do
     end
   end
 
+  describe "context" do
+    it "should default to nil" do
+      expect(subject.context).to be_nil
+    end
+
+    it "should be settable" do
+      subject.context = "test"
+      expect(subject.context).to eq("test")
+    end
+  end
+
   describe "#notify_endpoint" do
     it "defaults to DEFAULT_NOTIFY_ENDPOINT" do
       expect(subject.notify_endpoint).to eq(Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT)

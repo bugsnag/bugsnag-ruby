@@ -145,6 +145,10 @@ module Bugsnag
     # @return [Regexp]
     attr_accessor :vendor_path
 
+    # The default context for all future events
+    # @return [String, nil]
+    attr_accessor :context
+
     # @api private
     # @return [Array<String>]
     attr_reader :scopes_to_filter
