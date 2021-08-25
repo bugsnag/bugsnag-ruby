@@ -7,7 +7,7 @@ namespace :bugsnag do
       raise RuntimeError.new("Bugsnag test exception")
     rescue => e
       Bugsnag.notify(e) do |report|
-        report.context = "rake#test_exception"
+        report.automatic_context = "rake#test_exception"
       end
     end
   end

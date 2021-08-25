@@ -15,8 +15,8 @@ module Bugsnag::Middleware
         client_ip = env["action_dispatch.remote_ip"].to_s rescue SPOOF
 
         if params
-          # Set the context
-          report.context = "#{params[:controller]}##{params[:action]}"
+          # Set the automatic context
+          report.automatic_context = "#{params[:controller]}##{params[:action]}"
 
           # Augment the request tab
           report.add_tab(:request, {

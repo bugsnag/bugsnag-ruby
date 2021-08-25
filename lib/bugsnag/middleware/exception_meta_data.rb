@@ -16,6 +16,8 @@ module Bugsnag::Middleware
 
         if exception.respond_to?(:bugsnag_context)
           context = exception.bugsnag_context
+          # note: this should set 'context' not 'automatic_context' as it's a
+          #       user-supplied value
           report.context = context if context.is_a?(String)
         end
 

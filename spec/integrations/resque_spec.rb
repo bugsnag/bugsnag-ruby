@@ -85,7 +85,7 @@ describe 'Bugsnag::Resque', :order => :defined do
         "class" => "class"
       }
     })
-    expect(report).to receive(:context=).with(expected_context)
+    expect(report).to receive(:automatic_context=).with(expected_context)
     expect(Bugsnag).to receive(:notify).with(exception, true).and_yield(report)
     resque.save
   end

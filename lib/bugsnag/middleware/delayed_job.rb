@@ -30,7 +30,7 @@ module Bugsnag::Middleware
           payload_data = construct_job_payload(job.payload_object)
 
           context = get_context(payload_data, job_data[:active_job])
-          report.context = context unless context.nil?
+          report.automatic_context = context unless context.nil?
 
           job_data[:payload] = payload_data
         end
