@@ -30,7 +30,7 @@ end
 shared_examples "Report or Event tests" do |class_to_test|
   it "#headers should return the correct request headers" do
     fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
-    expect(Time).to receive(:now).and_return(fake_now)
+    expect(Time).to receive(:now).twice.and_return(fake_now)
 
     report_or_event = class_to_test.new(
       BugsnagTestException.new("It crashed"),
@@ -1709,15 +1709,26 @@ describe Bugsnag::Report do
   end
 
   it 'includes device data when notify is called' do
+    fake_device_time = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
+    fake_sent_at = Time.gm(2021, 1, 2, 3, 4, 5, 123456)
+    expect(Time).to receive(:now).at_least(:twice).and_return(fake_device_time, fake_sent_at)
+
     Bugsnag.configuration.hostname = 'test-host'
     Bugsnag.configuration.runtime_versions["ruby"] = '9.9.9'
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+    expect(Bugsnag).to(have_sent_notification { |payload, headers|
       event = payload["events"][0]
       expect(event["device"]["hostname"]).to eq('test-host')
       expect(event["device"]["runtimeVersions"]["ruby"]).to eq('9.9.9')
-    }
+      # This matches the time we stubbed earlier (fake_device_time)
+      expect(event["device"]["time"]).to eq("2020-01-02T03:04:05.123Z")
+
+      expect(headers["Bugsnag-Api-Key"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b8")
+      expect(headers["Bugsnag-Payload-Version"]).to eq("4.0")
+      # This matches the time we stubbed earlier (fake_sent_at)
+      expect(headers["Bugsnag-Sent-At"]).to eq("2021-01-02T03:04:05.123Z")
+    })
   end
 end
 # rubocop:enable Metrics/BlockLength

@@ -16,6 +16,8 @@ Changelog
   | [#688](https://github.com/bugsnag/bugsnag-ruby/pull/688)
 * Add `Bugsnag#breadcrumbs` getter to fetch the current list of breadcrumbs
   | [#689](https://github.com/bugsnag/bugsnag-ruby/pull/689)
+* Add `time` (an ISO8601 string in UTC) to `device` metadata
+  | [#690](https://github.com/bugsnag/bugsnag-ruby/pull/690)
 
 ### Fixes
 
