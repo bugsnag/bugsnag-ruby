@@ -521,4 +521,10 @@ describe Bugsnag do
       }
     end
   end
+
+  describe "#breadcrumbs" do
+    it "returns the configuration's breadcrumb buffer" do
+      expect(Bugsnag.breadcrumbs).to be(Bugsnag.configuration.breadcrumbs)
+    end
+  end
 end
