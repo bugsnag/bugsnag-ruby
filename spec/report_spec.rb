@@ -192,6 +192,13 @@ shared_examples "Report or Event tests" do |class_to_test|
       )
     end
   end
+
+  it "has a reference to the original error" do
+    exception = RuntimeError.new("example error")
+    report = class_to_test.new(exception, Bugsnag.configuration)
+
+    expect(report.original_error).to be(exception)
+  end
 end
 
 # rubocop:disable Metrics/BlockLength
