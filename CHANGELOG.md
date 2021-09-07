@@ -22,6 +22,8 @@ Changelog
   | [#691](https://github.com/bugsnag/bugsnag-ruby/pull/691)
 * Add `original_error` to `Report`/`Event` containing the original Exception instance
   | [#692](https://github.com/bugsnag/bugsnag-ruby/pull/692)
+* Add `request` to `Report`/`Event` containing HTTP request metadata
+  | [#693](https://github.com/bugsnag/bugsnag-ruby/pull/693)
 
 ### Fixes
 
@@ -43,6 +45,7 @@ Changelog
     For example, `Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE` is now available as `Bugsnag::BreadcrumbType::ERROR`
 * `Report#exceptions` has been deprecated in favour of the new `errors` property
 * `Report#raw_exceptions` has been deprecated in favour of the new `original_error` property
+* Accessing request data via `Report#metadata` has been deprecated in favour of using the new `request` property. Request data will be moved out of metadata in the next major version
 
 ## v6.22.1 (11 August 2021)
 
