@@ -1,8 +1,10 @@
 require "json"
 require "pathname"
+require "bugsnag/error"
 require "bugsnag/stacktrace"
 
 module Bugsnag
+  # rubocop:todo Metrics/ClassLength
   class Report
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
@@ -18,6 +20,9 @@ module Bugsnag
     MAX_EXCEPTIONS_TO_UNWRAP = 5
 
     CURRENT_PAYLOAD_VERSION = "4.0"
+
+    # @api private
+    ERROR_TYPE = "ruby".freeze
 
     # Whether this report is for a handled or unhandled error
     # @return [Boolean]
@@ -51,6 +56,7 @@ module Bugsnag
     attr_accessor :delivery_method
 
     # The list of exceptions in this report
+    # @deprecated Use {#errors} instead
     # @return [Array<Hash>]
     attr_accessor :exceptions
 
@@ -99,6 +105,10 @@ module Bugsnag
     # @return [Hash]
     attr_accessor :user
 
+    # A list of errors in this report
+    # @return [Array<Error>]
+    attr_reader :errors
+
     ##
     # Initializes a new report from an exception.
     def initialize(exception, passed_configuration, auto_notify=false)
@@ -112,6 +122,7 @@ module Bugsnag
 
       self.raw_exceptions = generate_raw_exceptions(exception)
       self.exceptions = generate_exception_list
+      @errors = generate_error_list
 
       self.api_key = configuration.api_key
       self.app_type = configuration.app_type
@@ -303,6 +314,12 @@ module Bugsnag
       end
     end
 
+    def generate_error_list
+      exceptions.map do |exception|
+        Error.new(exception[:errorClass], exception[:message], ERROR_TYPE)
+      end
+    end
+
     def error_class(exception)
       # The "Class" check is for some strange exceptions like Timeout::Error
       # which throw the error class instead of an instance
@@ -345,4 +362,5 @@ module Bugsnag
       exceptions
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

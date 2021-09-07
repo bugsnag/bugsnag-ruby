@@ -125,6 +125,73 @@ shared_examples "Report or Event tests" do |class_to_test|
       end
     end
   end
+
+  describe "#errors" do
+    it "has required hash keys" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report.errors).to eq(
+        [Bugsnag::Error.new("RuntimeError", "example error", "ruby")]
+      )
+    end
+
+    it "includes errors that caused the top-most exception" do
+      begin
+        begin
+          raise "one"
+        rescue
+          Ruby21Exception.raise!("two")
+        end
+      rescue => exception
+      end
+
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report.errors).to eq(
+        [
+          Bugsnag::Error.new("Ruby21Exception", "two", "ruby"),
+          Bugsnag::Error.new("RuntimeError", "one", "ruby")
+        ]
+      )
+    end
+
+    it "cannot be assigned to" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report).not_to respond_to(:errors=)
+    end
+
+    it "can be mutated" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      report.errors.push("haha")
+      report.errors.push("haha 2")
+      report.errors.pop
+
+      expect(report.errors).to eq(
+        [
+          Bugsnag::Error.new("RuntimeError", "example error", "ruby"),
+          "haha"
+        ]
+      )
+    end
+
+    it "contains mutable data" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      report.errors.first.error_class = "haha"
+      report.errors.first.error_message = "ahah"
+      report.errors.first.type = "aahh"
+
+      expect(report.errors).to eq(
+        [Bugsnag::Error.new("haha", "ahah", "aahh")]
+      )
+    end
+  end
 end
 
 # rubocop:disable Metrics/BlockLength
