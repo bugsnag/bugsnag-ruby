@@ -132,7 +132,7 @@ describe Bugsnag::Rack do
       middleware = Bugsnag::Middleware::RackRequest.new(callback)
       middleware.call(report)
 
-      expect(report.metadata[:request]).to eq({
+      expect(report.request).to eq({
         url: "http://test_host/TEST_PATH?email=[FILTERED]&another_param=thing",
         httpMethod: "TEST",
         params: { param: 'test' },
@@ -143,6 +143,7 @@ describe Bugsnag::Rack do
         }
       })
 
+      expect(report.metadata[:request]).to be(report.request)
       expect(report.metadata[:environment]).to eq(rack_env)
       expect(report.metadata[:session]).to eq({ session: true })
     end
@@ -183,7 +184,7 @@ describe Bugsnag::Rack do
       middleware = Bugsnag::Middleware::RackRequest.new(callback)
       middleware.call(report)
 
-      expect(report.metadata[:request]).to eq({
+      expect(report.request).to eq({
         url: "http://test_host/TEST_PATH",
         httpMethod: "TEST",
         params: { param: 'test' },
@@ -192,6 +193,7 @@ describe Bugsnag::Rack do
         headers: { "Test-Key" => "test_key" }
       })
 
+      expect(report.metadata[:request]).to be(report.request)
       expect(report.metadata[:environment]).to eq(rack_env)
       expect(report.metadata[:session]).to eq({ session: true })
     end
