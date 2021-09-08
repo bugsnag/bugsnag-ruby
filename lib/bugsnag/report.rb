@@ -308,6 +308,14 @@ module Bugsnag
       @meta_data = metadata
     end
 
+    ##
+    # Data from the current HTTP request. May be nil if no data has been recorded
+    #
+    # @return [Hash, nil]
+    def request
+      @meta_data[:request]
+    end
+
     private
 
     def generate_exception_list

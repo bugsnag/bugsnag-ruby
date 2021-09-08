@@ -25,4 +25,11 @@ Bugsnag.configure do |config|
       })
     end)
   end
+
+  if ENV["ADD_REQUEST_ON_ERROR"] == "true"
+    config.add_on_error(proc do |report|
+      report.request[:something] = "hello"
+      report.request[:params][:another_thing] = "hi"
+    end)
+  end
 end
