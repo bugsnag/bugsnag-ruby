@@ -20,6 +20,8 @@ Changelog
   | [#690](https://github.com/bugsnag/bugsnag-ruby/pull/690)
 * Add `errors` to `Report`/`Event` containing an array of `Error` objects. The `Error` object contains `error_class`, `error_message` and `type` (always "ruby")
   | [#691](https://github.com/bugsnag/bugsnag-ruby/pull/691)
+* Add `original_error` to `Report`/`Event` containing the original Exception instance
+  | [#692](https://github.com/bugsnag/bugsnag-ruby/pull/692)
 
 ### Fixes
 
@@ -40,6 +42,7 @@ Changelog
     * The breadcrumb type constants in the `Bugsnag::Breadcrumbs` module has been deprecated in favour of the constants available in the `Bugsnag::BreadcrumbType` module
     For example, `Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE` is now available as `Bugsnag::BreadcrumbType::ERROR`
 * `Report#exceptions` has been deprecated in favour of the new `errors` property
+* `Report#raw_exceptions` has been deprecated in favour of the new `original_error` property
 
 ## v6.22.1 (11 August 2021)
 

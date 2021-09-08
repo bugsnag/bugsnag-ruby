@@ -79,6 +79,7 @@ module Bugsnag
     attr_accessor :meta_data
 
     # The raw Exception instances for this report
+    # @deprecated Use {#original_error} instead
     # @see #exceptions
     # @return [Array<Exception>]
     attr_accessor :raw_exceptions
@@ -109,6 +110,10 @@ module Bugsnag
     # @return [Array<Error>]
     attr_reader :errors
 
+    # The Exception instance this report was created for
+    # @return [Exception]
+    attr_reader :original_error
+
     ##
     # Initializes a new report from an exception.
     def initialize(exception, passed_configuration, auto_notify=false)
@@ -120,6 +125,7 @@ module Bugsnag
 
       self.configuration = passed_configuration
 
+      @original_error = exception
       self.raw_exceptions = generate_raw_exceptions(exception)
       self.exceptions = generate_exception_list
       @errors = generate_error_list
