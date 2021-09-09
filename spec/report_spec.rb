@@ -2,6 +2,7 @@
 require_relative './spec_helper'
 require 'securerandom'
 require 'ostruct'
+require 'support/shared_examples_for_metadata'
 
 module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class NestedException < StandardError; attr_accessor :original_exception; end
@@ -28,6 +29,24 @@ class JRubyException
 end
 
 shared_examples "Report or Event tests" do |class_to_test|
+  context "metadata" do
+    include_examples(
+      "metadata delegate",
+      lambda do |metadata, *args|
+        report = class_to_test.new(RuntimeError.new, Bugsnag.configuration)
+        report.metadata = metadata
+
+        report.add_metadata(*args)
+      end,
+      lambda do |metadata, *args|
+        report = class_to_test.new(RuntimeError.new, Bugsnag.configuration)
+        report.metadata = metadata
+
+        report.clear_metadata(*args)
+      end
+    )
+  end
+
   it "#headers should return the correct request headers" do
     fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
     expect(Time).to receive(:now).twice.and_return(fake_now)
@@ -349,7 +368,53 @@ describe Bugsnag::Report do
     end
   end
 
-  # TODO: nested context
+  it "metadata added with 'add_metadata' ends up in the payload" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_metadata(
+        :some_tab,
+        { info: "here", data: "also here" }
+      )
+
+      report.add_metadata(:some_other_tab, :info, true)
+      report.add_metadata(:some_other_tab, :data, "very true")
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]).to eq({
+        "some_tab" => {
+          "info" => "here",
+          "data" => "also here"
+        },
+        "some_other_tab" => {
+          "info" => true,
+          "data" => "very true"
+        }
+      })
+    })
+  end
+
+  it "metadata removed with 'clear_metadata' does not end up in the payload" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_metadata(
+        :some_tab,
+        { info: "here", data: "also here" }
+      )
+
+      report.add_metadata(:some_other_tab, :info, true)
+      report.add_metadata(:some_other_tab, :data, "very true")
+
+      report.clear_metadata(:some_tab)
+      report.clear_metadata(:some_other_tab, :info)
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]).to eq({
+        "some_other_tab" => { "data" => "very true" }
+      })
+    })
+  end
 
   it "accepts tabs in overrides and adds them to metaData" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|

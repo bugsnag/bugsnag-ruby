@@ -24,6 +24,8 @@ Changelog
   | [#692](https://github.com/bugsnag/bugsnag-ruby/pull/692)
 * Add `request` to `Report`/`Event` containing HTTP request metadata
   | [#693](https://github.com/bugsnag/bugsnag-ruby/pull/693)
+* Add `add_metadata` and `clear_metadata` to `Report`/`Event`
+  | [#694](https://github.com/bugsnag/bugsnag-ruby/pull/694)
 
 ### Fixes
 
@@ -46,6 +48,7 @@ Changelog
 * `Report#exceptions` has been deprecated in favour of the new `errors` property
 * `Report#raw_exceptions` has been deprecated in favour of the new `original_error` property
 * Accessing request data via `Report#metadata` has been deprecated in favour of using the new `request` property. Request data will be moved out of metadata in the next major version
+* The `Report#add_tab` and `Report#remove_tab` methods have been deprecated in favour of the new `add_metadata` and `clear_metadata` methods
 
 ## v6.22.1 (11 August 2021)
 
