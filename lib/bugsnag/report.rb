@@ -174,6 +174,8 @@ module Bugsnag
     #   exists, this will be merged with the existing values. If a Hash is not
     #   given, the value will be placed into the 'custom' tab
     # @return [void]
+    #
+    # @deprecated Use {#add_metadata} instead
     def add_tab(name, value)
       return if name.nil?
 
@@ -192,6 +194,8 @@ module Bugsnag
     #
     # @param name [String]
     # @return [void]
+    #
+    # @deprecated Use {#clear_metadata} instead
     def remove_tab(name)
       return if name.nil?
 
