@@ -34,6 +34,8 @@ require "bugsnag/breadcrumbs/validator"
 require "bugsnag/breadcrumbs/breadcrumb"
 require "bugsnag/breadcrumbs/breadcrumbs"
 
+require "bugsnag/utility/metadata_delegate"
+
 # rubocop:todo Metrics/ModuleLength
 module Bugsnag
   LOCK = Mutex.new

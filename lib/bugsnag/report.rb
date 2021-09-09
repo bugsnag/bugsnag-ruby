@@ -143,6 +143,8 @@ module Bugsnag
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
       self.user = {}
+
+      @metadata_delegate = Utility::MetadataDelegate.new
     end
 
     ##
@@ -314,6 +316,43 @@ module Bugsnag
     # @return [Hash, nil]
     def request
       @meta_data[:request]
+    end
+
+    ##
+    # Add values to metadata
+    #
+    # @overload add_metadata(section, data)
+    #   Merges data into the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param data [Hash]
+    #
+    # @overload add_metadata(section, key, value)
+    #   Sets key to value in the given section of metadata. If the value is nil
+    #   the key will be deleted
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #   @param value
+    #
+    # @return [void]
+    def add_metadata(section, key_or_data, *args)
+      @metadata_delegate.add_metadata(@meta_data, section, key_or_data, *args)
+    end
+
+    ##
+    # Clear values from metadata
+    #
+    # @overload clear_metadata(section)
+    #   Clears the given section of metadata
+    #   @param section [String, Symbol]
+    #
+    # @overload clear_metadata(section, key)
+    #   Clears the key in the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #
+    # @return [void]
+    def clear_metadata(section, *args)
+      @metadata_delegate.clear_metadata(@meta_data, section, *args)
     end
 
     private
