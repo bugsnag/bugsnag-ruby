@@ -158,6 +158,11 @@ shared_examples "Report or Event tests" do |class_to_test|
       expect(error).to respond_to(:error_message)
       expect(error).to respond_to(:type)
       expect(error).to respond_to(:stacktrace)
+
+      expect(error).to respond_to(:error_class=)
+      expect(error).to respond_to(:error_message=)
+      expect(error).to respond_to(:type=)
+      expect(error).not_to respond_to(:stacktrace=)
     end
 
     it "includes errors that caused the top-most exception" do
@@ -266,10 +271,6 @@ shared_examples "Report or Event tests" do |class_to_test|
           method: "do_nothing",
           code: "yes, lots"
         }
-
-        # reassiging the stacktrace will not affect the payload, until
-        # 'report#errors' replaces 'report#exceptions' entirely
-        error.stacktrace = []
       end
 
       expect(Bugsnag).to(have_sent_notification { |payload, _headers|
