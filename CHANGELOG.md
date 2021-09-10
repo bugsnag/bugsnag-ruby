@@ -26,6 +26,8 @@ Changelog
   | [#693](https://github.com/bugsnag/bugsnag-ruby/pull/693)
 * Add `add_metadata` and `clear_metadata` to `Report`/`Event`
   | [#694](https://github.com/bugsnag/bugsnag-ruby/pull/694)
+* Add `set_user` to `Report`/`Event`
+  | [#695](https://github.com/bugsnag/bugsnag-ruby/pull/695)
 
 ### Fixes
 
