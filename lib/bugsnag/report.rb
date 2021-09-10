@@ -359,6 +359,24 @@ module Bugsnag
       @metadata_delegate.clear_metadata(@meta_data, section, *args)
     end
 
+    ##
+    # Set information about the current user
+    #
+    # Additional user fields can be added as metadata in a "user" section
+    #
+    # Setting a field to 'nil' will remove it from the user data
+    #
+    # @param id [String, nil]
+    # @param email [String, nil]
+    # @param name [String, nil]
+    # @return [void]
+    def set_user(id = nil, email = nil, name = nil)
+      new_user = { id: id, email: email, name: name }
+      new_user.reject! { |key, value| value.nil? }
+
+      @user = new_user
+    end
+
     private
 
     def generate_exception_list
