@@ -373,7 +373,12 @@ module Bugsnag
 
     def generate_error_list
       exceptions.map do |exception|
-        Error.new(exception[:errorClass], exception[:message], ERROR_TYPE)
+        Error.new(
+          exception[:errorClass],
+          exception[:message],
+          exception[:stacktrace],
+          ERROR_TYPE
+        )
       end
     end
 
