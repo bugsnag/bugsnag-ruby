@@ -870,17 +870,6 @@ describe Bugsnag::Report do
     })
   end
 
-  it "accepts a user_id in overrides" do
-    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
-      report.user = {id: 'test_user'}
-    end
-
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
-      event = get_event_from_payload(payload)
-      expect(event["user"]["id"]).to eq("test_user")
-    }
-  end
-
   it "does not send an automatic notification if auto_notify is false" do
     Bugsnag.configure do |config|
       config.auto_notify = false
@@ -1946,6 +1935,85 @@ describe Bugsnag::Report do
       # This matches the time we stubbed earlier (fake_sent_at)
       expect(headers["Bugsnag-Sent-At"]).to eq("2021-01-02T03:04:05.123Z")
     })
+  end
+
+  context "#user" do
+    it "accepts an arbitrary user hash" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.user = { id: "test_user", abc: "xyz" }
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("test_user")
+        expect(event["user"]["abc"]).to eq("xyz")
+      })
+    end
+
+    it "set_user will set the three supported fields" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.set_user("123", "abc.xyz@example.com", "abc xyz")
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("123")
+        expect(event["user"]["email"]).to eq("abc.xyz@example.com")
+        expect(event["user"]["name"]).to eq("abc xyz")
+      })
+    end
+
+    it "set_user will not set fields that are 'nil'" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.set_user("123", nil, "abc xyz")
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("123")
+        expect(event["user"]).not_to have_key("email")
+        expect(event["user"]["name"]).to eq("abc xyz")
+      })
+    end
+
+    it "set_user will unset all fields if passed no parameters" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.user = { id: "nope", email: "nah@example.com", name: "yes", other: "stuff" }
+
+        report.set_user
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]).to be_empty
+      })
+    end
+
+    it "set_user can be passed only an ID" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.set_user("123")
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("123")
+        expect(event["user"]).not_to have_key("email")
+        expect(event["user"]).not_to have_key("name")
+      })
+    end
+
+    it "set_user can be passed only an ID and email" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.set_user("123", "123@example.com")
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("123")
+        expect(event["user"]["email"]).to eq("123@example.com")
+        expect(event["user"]).not_to have_key("name")
+      })
+    end
   end
 end
 # rubocop:enable Metrics/BlockLength
