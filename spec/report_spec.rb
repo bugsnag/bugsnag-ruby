@@ -146,13 +146,23 @@ shared_examples "Report or Event tests" do |class_to_test|
   end
 
   describe "#errors" do
-    it "has required hash keys" do
+    it "has required attributes" do
       exception = RuntimeError.new("example error")
       report = class_to_test.new(exception, Bugsnag.configuration)
 
-      expect(report.errors).to eq(
-        [Bugsnag::Error.new("RuntimeError", "example error", "ruby")]
-      )
+      expect(report.errors.length).to eq(1)
+
+      error = report.errors.first
+
+      expect(error).to respond_to(:error_class)
+      expect(error).to respond_to(:error_message)
+      expect(error).to respond_to(:type)
+      expect(error).to respond_to(:stacktrace)
+
+      expect(error).to respond_to(:error_class=)
+      expect(error).to respond_to(:error_message=)
+      expect(error).to respond_to(:type=)
+      expect(error).not_to respond_to(:stacktrace=)
     end
 
     it "includes errors that caused the top-most exception" do
@@ -167,12 +177,21 @@ shared_examples "Report or Event tests" do |class_to_test|
 
       report = class_to_test.new(exception, Bugsnag.configuration)
 
-      expect(report.errors).to eq(
-        [
-          Bugsnag::Error.new("Ruby21Exception", "two", "ruby"),
-          Bugsnag::Error.new("RuntimeError", "one", "ruby")
-        ]
-      )
+      expect(report.errors.length).to eq(2)
+
+      expect(report.errors[0].stacktrace).not_to be_empty
+      expect(report.errors[0]).to have_attributes({
+        error_class: "Ruby21Exception",
+        error_message: "two",
+        type: "ruby"
+      })
+
+      expect(report.errors[1].stacktrace).not_to be_empty
+      expect(report.errors[1]).to have_attributes({
+        error_class: "RuntimeError",
+        error_message: "one",
+        type: "ruby"
+      })
     end
 
     it "cannot be assigned to" do
@@ -190,25 +209,84 @@ shared_examples "Report or Event tests" do |class_to_test|
       report.errors.push("haha 2")
       report.errors.pop
 
-      expect(report.errors).to eq(
-        [
-          Bugsnag::Error.new("RuntimeError", "example error", "ruby"),
-          "haha"
-        ]
-      )
+      expect(report.errors.length).to eq(2)
+
+      expect(report.errors.first.stacktrace).not_to be_empty
+      expect(report.errors.first).to have_attributes({
+        error_class: "RuntimeError",
+        error_message: "example error",
+        type: "ruby"
+      })
+
+      expect(report.errors[1]).to eq("haha")
     end
 
     it "contains mutable data" do
       exception = RuntimeError.new("example error")
       report = class_to_test.new(exception, Bugsnag.configuration)
 
+      expect(report.errors.length).to eq(1)
+
       report.errors.first.error_class = "haha"
       report.errors.first.error_message = "ahah"
       report.errors.first.type = "aahh"
 
-      expect(report.errors).to eq(
-        [Bugsnag::Error.new("haha", "ahah", "aahh")]
-      )
+      expect(report.errors.first.stacktrace).not_to be_empty
+      expect(report.errors.first).to have_attributes({
+        error_class: "haha",
+        error_message: "ahah",
+        type: "aahh"
+      })
+    end
+
+    it "shares the stacktrace with #exceptions" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report.errors.length).to eq(1)
+      expect(report.exceptions.length).to eq(1)
+
+      error = report.errors.first
+      exception = report.exceptions.first
+
+      expect(error.stacktrace).not_to be_empty
+      expect(error.stacktrace).to all(have_key(:lineNumber))
+      expect(error.stacktrace).to all(have_key(:file))
+      expect(error.stacktrace).to all(have_key(:method))
+      expect(error.stacktrace).to all(have_key(:code))
+
+      expect(error.stacktrace).to be(exception[:stacktrace])
+    end
+
+    it "mutating the stacktrace affects the payload" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        expect(report.errors.length).to eq(1)
+
+        error = report.errors.first
+
+        error.stacktrace.clear
+        error.stacktrace[0] = {
+          lineNumber: 123,
+          file: "/dev/null",
+          method: "do_nothing",
+          code: "yes, lots"
+        }
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        exception = get_exception_from_payload(payload)
+
+        expect(exception["stacktrace"]).to eq(
+          [
+            {
+              "lineNumber" => 123,
+              "file" => "/dev/null",
+              "method" => "do_nothing",
+              "code" => "yes, lots"
+            }
+          ]
+        )
+      })
     end
   end
 

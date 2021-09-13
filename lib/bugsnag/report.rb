@@ -21,9 +21,6 @@ module Bugsnag
 
     CURRENT_PAYLOAD_VERSION = "4.0"
 
-    # @api private
-    ERROR_TYPE = "ruby".freeze
-
     # Whether this report is for a handled or unhandled error
     # @return [Boolean]
     attr_reader :unhandled
@@ -373,7 +370,7 @@ module Bugsnag
 
     def generate_error_list
       exceptions.map do |exception|
-        Error.new(exception[:errorClass], exception[:message], ERROR_TYPE)
+        Error.new(exception[:errorClass], exception[:message], exception[:stacktrace])
       end
     end
 
