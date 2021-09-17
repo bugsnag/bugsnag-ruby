@@ -136,6 +136,11 @@ module Bugsnag
           report.severity_reason = initial_reason
         end
 
+        if report.unhandled_overridden?
+          # let the dashboard know that the unhandled flag was overridden
+          report.severity_reason[:unhandledOverridden] = true
+        end
+
         deliver_notification(report)
       end
     end

@@ -119,6 +119,7 @@ module Bugsnag
 
       @should_ignore = false
       @unhandled = auto_notify
+      @initial_unhandled = @unhandled
 
       self.configuration = passed_configuration
 
@@ -374,7 +375,42 @@ module Bugsnag
       @user = new_user
     end
 
+    def unhandled=(new_unhandled)
+      # fix the handled/unhandled counts in the current session
+      update_handled_counts(new_unhandled, @unhandled)
+
+      @unhandled = new_unhandled
+    end
+
+    ##
+    # Returns true if the unhandled flag has been changed from its initial value
+    #
+    # @api private
+    # @return [Boolean]
+    def unhandled_overridden?
+      @unhandled != @initial_unhandled
+    end
+
     private
+
+    def update_handled_counts(is_unhandled, was_unhandled)
+      # do nothing if there is no session to update
+      return if @session.nil?
+
+      # increment the counts for the current unhandled value
+      if is_unhandled
+        @session[:events][:unhandled] += 1
+      else
+        @session[:events][:handled] += 1
+      end
+
+      # decrement the counts for the previous unhandled value
+      if was_unhandled
+        @session[:events][:unhandled] -= 1
+      else
+        @session[:events][:handled] -= 1
+      end
+    end
 
     def generate_exception_list
       raw_exceptions.map do |exception|
