@@ -7,6 +7,7 @@ Scenario: A rescued exception sends a report
   And the event "unhandled" is false
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
+  And the event "device.time" is a timestamp
   And the exception "errorClass" equals "RuntimeError"
   And the "file" of stack frame 0 equals "/usr/src/app/handled/notify_exception.rb"
   And the "lineNumber" of stack frame 0 equals 6
@@ -18,6 +19,7 @@ Scenario: A notified string sends a report
   And the event "unhandled" is false
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
+  And the event "device.time" is a timestamp
   And the exception "errorClass" equals "RuntimeError"
   And the "file" of the top non-bugsnag stackframe equals "/usr/src/app/handled/notify_string.rb"
   And the "lineNumber" of the top non-bugsnag stackframe equals 8
@@ -40,3 +42,4 @@ Scenario: A handled error can attach metadata in a block
   And the event "metaData.account.id" equals "1234abcd"
   And the event "metaData.account.name" equals "Acme Co"
   And the event "metaData.account.support" is true
+  And the event "device.time" is a timestamp

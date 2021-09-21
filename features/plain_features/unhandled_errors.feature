@@ -7,6 +7,7 @@ Scenario Outline: An unhandled error sends a report
   And the event "unhandled" is true
   And the event "severity" equals "error"
   And the event "severityReason.type" equals "unhandledException"
+  And the event "device.time" is a timestamp
   And the exception "errorClass" equals "<error>"
   And the "file" of stack frame 0 equals "/usr/src/app/unhandled/<file>.rb"
   And the "lineNumber" of stack frame 0 equals <lineNumber>

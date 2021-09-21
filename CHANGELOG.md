@@ -1,6 +1,57 @@
 Changelog
 =========
 
+## v6.23.0 (21 September 2021)
+
+### Enhancements
+
+* Sessions will now be delivered every 10 seconds, instead of every 30 seconds
+  | [#680](https://github.com/bugsnag/bugsnag-ruby/pull/680)
+* Log errors that prevent delivery at `ERROR` level
+  | [#681](https://github.com/bugsnag/bugsnag-ruby/pull/681)
+* Add `on_breadcrumb` callbacks to replace `before_breadcrumb_callbacks`
+  | [#686](https://github.com/bugsnag/bugsnag-ruby/pull/686)
+* Add `context` attribute to configuration, which will be used as the default context for events. Using this option will disable automatic context setting
+  | [#687](https://github.com/bugsnag/bugsnag-ruby/pull/687)
+  | [#688](https://github.com/bugsnag/bugsnag-ruby/pull/688)
+* Add `Bugsnag#breadcrumbs` getter to fetch the current list of breadcrumbs
+  | [#689](https://github.com/bugsnag/bugsnag-ruby/pull/689)
+* Add `time` (an ISO8601 string in UTC) to `device` metadata
+  | [#690](https://github.com/bugsnag/bugsnag-ruby/pull/690)
+* Add `errors` to `Report`/`Event` containing an array of `Error` objects. The `Error` object contains `error_class`, `error_message`, `stacktrace` and `type` (always "ruby")
+  | [#691](https://github.com/bugsnag/bugsnag-ruby/pull/691)
+* Add `original_error` to `Report`/`Event` containing the original Exception instance
+  | [#692](https://github.com/bugsnag/bugsnag-ruby/pull/692)
+* Add `request` to `Report`/`Event` containing HTTP request metadata
+  | [#693](https://github.com/bugsnag/bugsnag-ruby/pull/693)
+* Add `add_metadata` and `clear_metadata` to `Report`/`Event`
+  | [#694](https://github.com/bugsnag/bugsnag-ruby/pull/694)
+* Add `set_user` to `Report`/`Event`
+  | [#695](https://github.com/bugsnag/bugsnag-ruby/pull/695)
+
+### Fixes
+
+* Avoid starting session delivery thread when the current release stage is not enabled
+  | [#677](https://github.com/bugsnag/bugsnag-ruby/pull/677)
+
+### Deprecated
+
+* `before_breadcrumb_callbacks` have been deprecated in favour of `on_breadcrumb` callbacks and will be removed in the next major release
+* For consistency with Bugsnag notifiers for other languages, a number of methods have been deprecated in this release. The old options will be removed in the next major version | [#676](https://github.com/bugsnag/bugsnag-ruby/pull/676)
+    * The `notify_release_stages` configuration option has been deprecated in favour of `enabled_release_stages`
+    * The `auto_capture_sessions` and `track_sessions` configuration options have been deprecated in favour of `auto_track_sessions`
+    * The `enabled_automatic_breadcrumb_types` configuration option has been deprecated in favour of `enabled_breadcrumb_types`
+    * The `Report` class has been deprecated in favour of the `Event` class
+    * The `Report#meta_data` attribute has been deprecated in favour of `Event#metadata`
+    * The `Breadcrumb#meta_data` attribute has been deprecated in favour of `Breadcrumb#metadata`
+    * The `Breadcrumb#name` attribute has been deprecated in favour of `Breadcrumb#message`
+    * The breadcrumb type constants in the `Bugsnag::Breadcrumbs` module has been deprecated in favour of the constants available in the `Bugsnag::BreadcrumbType` module
+    For example, `Bugsnag::Breadcrumbs::ERROR_BREADCRUMB_TYPE` is now available as `Bugsnag::BreadcrumbType::ERROR`
+* `Report#exceptions` has been deprecated in favour of the new `errors` property
+* `Report#raw_exceptions` has been deprecated in favour of the new `original_error` property
+* Accessing request data via `Report#metadata` has been deprecated in favour of using the new `request` property. Request data will be moved out of metadata in the next major version
+* The `Report#add_tab` and `Report#remove_tab` methods have been deprecated in favour of the new `add_metadata` and `clear_metadata` methods
+
 ## v6.22.1 (11 August 2021)
 
 ### Fixes

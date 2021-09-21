@@ -35,7 +35,8 @@ module Bugsnag
     #
     # This allows Bugsnag to track error rates for a release.
     def start_session
-      return unless Bugsnag.configuration.enable_sessions
+      return unless Bugsnag.configuration.enable_sessions && Bugsnag.configuration.should_notify_release_stage?
+
       start_delivery_thread
       start_time = Time.now().utc().strftime('%Y-%m-%dT%H:%M:00')
       new_session = {
@@ -83,7 +84,7 @@ module Bugsnag
             end
           end
         end
-        @delivery_thread = Concurrent::TimerTask.execute(execution_interval: 30) do
+        @delivery_thread = Concurrent::TimerTask.execute(execution_interval: 10) do
           if @session_counts.size > 0
             send_sessions
           end
@@ -103,11 +104,6 @@ module Bugsnag
 
       if !Bugsnag.configuration.valid_api_key?
         Bugsnag.configuration.debug("Not delivering sessions due to an invalid api_key")
-        return
-      end
-
-      if !Bugsnag.configuration.should_notify_release_stage?
-        Bugsnag.configuration.debug("Not delivering sessions due to notify_release_stages :#{Bugsnag.configuration.notify_release_stages.inspect}")
         return
       end
 

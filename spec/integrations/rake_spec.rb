@@ -23,8 +23,8 @@ describe "Bugsnag Rake integration" do
         :description => "TEST_COMMENT",
         :arguments => "TEST_ARGS"
       })
-      expect(report).to receive(:context).with(no_args)
-      expect(report).to receive(:context=).with("TEST_NAME")
+      expect(report).to receive(:automatic_context).with(no_args)
+      expect(report).to receive(:automatic_context=).with("TEST_NAME")
 
       expect(callback).to receive(:call).with(report)
 

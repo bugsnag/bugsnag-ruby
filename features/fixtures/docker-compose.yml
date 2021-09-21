@@ -129,6 +129,7 @@ services:
       - SQL_ONLY_BREADCRUMBS
       - ADD_ON_ERROR
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
+      - ADD_REQUEST_ON_ERROR
     restart: "no"
 
   rails4:
@@ -165,6 +166,7 @@ services:
       - SQL_ONLY_BREADCRUMBS
       - ADD_ON_ERROR
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
+      - ADD_REQUEST_ON_ERROR
     restart: "no"
 
   rails5:
@@ -201,6 +203,7 @@ services:
       - SQL_ONLY_BREADCRUMBS
       - ADD_ON_ERROR
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
+      - ADD_REQUEST_ON_ERROR
     restart: "no"
 
   rails6:
@@ -237,6 +240,7 @@ services:
       - SQL_ONLY_BREADCRUMBS
       - ADD_ON_ERROR
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
+      - ADD_REQUEST_ON_ERROR
     restart: "no"
     networks:
       default:
@@ -261,6 +265,8 @@ services:
       - RUN_AT_EXIT_HOOKS
       - ACTIVE_JOB_QUEUE_ADAPTER
     restart: "no"
+    ports:
+      - "3000:3000"
 
   sidekiq:
     build:

@@ -1,8 +1,10 @@
 require "json"
 require "pathname"
+require "bugsnag/error"
 require "bugsnag/stacktrace"
 
 module Bugsnag
+  # rubocop:todo Metrics/ClassLength
   class Report
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
@@ -45,16 +47,13 @@ module Bugsnag
     # @return [Configuration]
     attr_accessor :configuration
 
-    # Additional context for this report
-    # @return [String, nil]
-    attr_accessor :context
-
     # The delivery method that will be used for this report
     # @see Configuration#delivery_method
     # @return [Symbol]
     attr_accessor :delivery_method
 
     # The list of exceptions in this report
+    # @deprecated Use {#errors} instead
     # @return [Array<Hash>]
     attr_accessor :exceptions
 
@@ -72,10 +71,12 @@ module Bugsnag
     attr_accessor :grouping_hash
 
     # Arbitrary metadata attached to this report
+    # @deprecated Use {#metadata} instead
     # @return [Hash]
     attr_accessor :meta_data
 
     # The raw Exception instances for this report
+    # @deprecated Use {#original_error} instead
     # @see #exceptions
     # @return [Array<Exception>]
     attr_accessor :raw_exceptions
@@ -102,21 +103,35 @@ module Bugsnag
     # @return [Hash]
     attr_accessor :user
 
+    # A list of errors in this report
+    # @return [Array<Error>]
+    attr_reader :errors
+
+    # The Exception instance this report was created for
+    # @return [Exception]
+    attr_reader :original_error
+
     ##
     # Initializes a new report from an exception.
     def initialize(exception, passed_configuration, auto_notify=false)
+      # store the creation time for use as device.time
+      @created_at = Time.now.utc.iso8601(3)
+
       @should_ignore = false
       @unhandled = auto_notify
 
       self.configuration = passed_configuration
 
+      @original_error = exception
       self.raw_exceptions = generate_raw_exceptions(exception)
       self.exceptions = generate_exception_list
+      @errors = generate_error_list
 
       self.api_key = configuration.api_key
       self.app_type = configuration.app_type
       self.app_version = configuration.app_version
       self.breadcrumbs = []
+      self.context = configuration.context if configuration.context_set?
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
       self.runtime_versions = configuration.runtime_versions.dup
@@ -125,7 +140,28 @@ module Bugsnag
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
       self.user = {}
+
+      @metadata_delegate = Utility::MetadataDelegate.new
     end
+
+    ##
+    # Additional context for this report
+    # @!attribute context
+    # @return [String, nil]
+    def context
+      return @context if defined?(@context)
+
+      @automatic_context
+    end
+
+    attr_writer :context
+
+    ##
+    # Context set automatically by Bugsnag uses this attribute, which prevents
+    # it from overwriting the user-supplied context
+    # @api private
+    # @return [String, nil]
+    attr_accessor :automatic_context
 
     ##
     # Add a new metadata tab to this notification.
@@ -135,6 +171,8 @@ module Bugsnag
     #   exists, this will be merged with the existing values. If a Hash is not
     #   given, the value will be placed into the 'custom' tab
     # @return [void]
+    #
+    # @deprecated Use {#add_metadata} instead
     def add_tab(name, value)
       return if name.nil?
 
@@ -153,6 +191,8 @@ module Bugsnag
     #
     # @param name [String]
     # @return [void]
+    #
+    # @deprecated Use {#clear_metadata} instead
     def remove_tab(name)
       return if name.nil?
 
@@ -175,7 +215,8 @@ module Bugsnag
         context: context,
         device: {
           hostname: hostname,
-          runtimeVersions: runtime_versions
+          runtimeVersions: runtime_versions,
+          time: @created_at
         },
         exceptions: exceptions,
         groupingHash: grouping_hash,
@@ -257,6 +298,82 @@ module Bugsnag
       end
     end
 
+    # A Hash containing arbitrary metadata
+    # @!attribute metadata
+    # @return [Hash]
+    def metadata
+      @meta_data
+    end
+
+    # @param metadata [Hash]
+    # @return [void]
+    def metadata=(metadata)
+      @meta_data = metadata
+    end
+
+    ##
+    # Data from the current HTTP request. May be nil if no data has been recorded
+    #
+    # @return [Hash, nil]
+    def request
+      @meta_data[:request]
+    end
+
+    ##
+    # Add values to metadata
+    #
+    # @overload add_metadata(section, data)
+    #   Merges data into the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param data [Hash]
+    #
+    # @overload add_metadata(section, key, value)
+    #   Sets key to value in the given section of metadata. If the value is nil
+    #   the key will be deleted
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #   @param value
+    #
+    # @return [void]
+    def add_metadata(section, key_or_data, *args)
+      @metadata_delegate.add_metadata(@meta_data, section, key_or_data, *args)
+    end
+
+    ##
+    # Clear values from metadata
+    #
+    # @overload clear_metadata(section)
+    #   Clears the given section of metadata
+    #   @param section [String, Symbol]
+    #
+    # @overload clear_metadata(section, key)
+    #   Clears the key in the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #
+    # @return [void]
+    def clear_metadata(section, *args)
+      @metadata_delegate.clear_metadata(@meta_data, section, *args)
+    end
+
+    ##
+    # Set information about the current user
+    #
+    # Additional user fields can be added as metadata in a "user" section
+    #
+    # Setting a field to 'nil' will remove it from the user data
+    #
+    # @param id [String, nil]
+    # @param email [String, nil]
+    # @param name [String, nil]
+    # @return [void]
+    def set_user(id = nil, email = nil, name = nil)
+      new_user = { id: id, email: email, name: name }
+      new_user.reject! { |key, value| value.nil? }
+
+      @user = new_user
+    end
+
     private
 
     def generate_exception_list
@@ -266,6 +383,12 @@ module Bugsnag
           message: exception.message,
           stacktrace: Stacktrace.process(exception.backtrace, configuration)
         }
+      end
+    end
+
+    def generate_error_list
+      exceptions.map do |exception|
+        Error.new(exception[:errorClass], exception[:message], exception[:stacktrace])
       end
     end
 
@@ -311,4 +434,5 @@ module Bugsnag
       exceptions
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

@@ -12,6 +12,7 @@ require "bugsnag/middleware/session_data"
 require "bugsnag/middleware/breadcrumbs"
 require "bugsnag/utility/circular_buffer"
 require "bugsnag/breadcrumbs/breadcrumbs"
+require "bugsnag/breadcrumbs/on_breadcrumb_callback_list"
 
 module Bugsnag
   class Configuration
@@ -24,6 +25,7 @@ module Bugsnag
     attr_accessor :release_stage
 
     # A list of which release stages should cause notifications to be sent
+    # @deprecated Use {#enabled_release_stages} instead
     # @return [Array<String>, nil]
     attr_accessor :notify_release_stages
 
@@ -104,6 +106,7 @@ module Bugsnag
     attr_accessor :discard_classes
 
     # Whether Bugsnag should automatically record sessions
+    # @deprecated Use {#auto_track_sessions} instead
     # @return [Boolean]
     attr_accessor :auto_capture_sessions
 
@@ -125,7 +128,8 @@ module Bugsnag
     attr_reader :enable_sessions
 
     # A list of strings indicating allowable automatic breadcrumb types
-    # @see Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES
+    # @deprecated Use {#enabled_breadcrumb_types} instead
+    # @see Bugsnag::BreadcrumbType
     # @return [Array<String>]
     attr_accessor :enabled_automatic_breadcrumb_types
 
@@ -141,9 +145,19 @@ module Bugsnag
     # @return [Regexp]
     attr_accessor :vendor_path
 
+    # The default context for all future events
+    # Setting this will disable automatic context setting
+    # @return [String, nil]
+    attr_accessor :context
+
     # @api private
     # @return [Array<String>]
     attr_reader :scopes_to_filter
+
+    # Expose on_breadcrumb_callbacks internally for Bugsnag.leave_breadcrumb
+    # @api private
+    # @return [Breadcrumbs::OnBreadcrumbCallbackList]
+    attr_reader :on_breadcrumb_callbacks
 
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
@@ -193,6 +207,7 @@ module Bugsnag
       # All valid breadcrumb types should be allowable initially
       self.enabled_automatic_breadcrumb_types = Bugsnag::Breadcrumbs::VALID_BREADCRUMB_TYPES.dup
       self.before_breadcrumb_callbacks = []
+      @on_breadcrumb_callbacks = Breadcrumbs::OnBreadcrumbCallbackList.new(self)
 
       # Store max_breadcrumbs here instead of outputting breadcrumbs.max_items
       # to avoid infinite recursion when creating breadcrumb buffer
@@ -389,15 +404,23 @@ module Bugsnag
     ##
     # Logs a warning level message
     #
-    # @param (see info)
+    # @param message [String, #to_s] The message to log
     def warn(message)
       logger.warn(PROG_NAME) { message }
     end
 
     ##
+    # Logs an error level message
+    #
+    # @param message [String, #to_s] The message to log
+    def error(message)
+      logger.error(PROG_NAME) { message }
+    end
+
+    ##
     # Logs a debug level message
     #
-    # @param (see info)
+    # @param message [String, #to_s] The message to log
     def debug(message)
       logger.debug(PROG_NAME) { message }
     end
@@ -426,9 +449,12 @@ module Bugsnag
     end
 
     ##
-    # Returns the breadcrumb circular buffer
+    # Returns the current list of breadcrumbs
     #
-    # @return [Bugsnag::Utility::CircularBuffer] a thread based circular buffer containing breadcrumbs
+    # This is a per-thread circular buffer, containing at most 'max_breadcrumbs'
+    # breadcrumbs
+    #
+    # @return [Bugsnag::Utility::CircularBuffer]
     def breadcrumbs
       request_data[:breadcrumbs] ||= Bugsnag::Utility::CircularBuffer.new(@max_breadcrumbs)
     end
@@ -501,6 +527,90 @@ module Bugsnag
     # @return [void]
     def remove_on_error(callback)
       middleware.remove(callback)
+    end
+
+    ##
+    # Add the given callback to the list of on_breadcrumb callbacks
+    #
+    # The on_breadcrumb callbacks will be called when a breadcrumb is left and
+    # are passed the {Breadcrumbs::Breadcrumb Breadcrumb} object
+    #
+    # Returning false from an on_breadcrumb callback will cause the breadcrumb
+    # to be ignored and will prevent any remaining callbacks from being called
+    #
+    # @param callback [Proc, Method, #call]
+    # @return [void]
+    def add_on_breadcrumb(callback)
+      @on_breadcrumb_callbacks.add(callback)
+    end
+
+    ##
+    # Remove the given callback from the list of on_breadcrumb callbacks
+    #
+    # Note that this must be the same instance that was passed to
+    # {add_on_breadcrumb}, otherwise it will not be removed
+    #
+    # @param callback [Proc, Method, #call]
+    # @return [void]
+    def remove_on_breadcrumb(callback)
+      @on_breadcrumb_callbacks.remove(callback)
+    end
+
+    ##
+    # Has the context been explicitly set?
+    #
+    # This is necessary to differentiate between the context not being set and
+    # the context being set to 'nil' explicitly
+    #
+    # @api private
+    # @return [Boolean]
+    def context_set?
+      defined?(@context) != nil
+    end
+
+    # TODO: These methods can be a simple attr_accessor when they replace the
+    #       methods they are aliasing
+    # NOTE: they are not aliases as YARD doesn't allow documenting the non-alias
+    #       as deprecated without also marking the alias as deprecated
+
+    # A list of which release stages should cause notifications to be sent
+    # @!attribute enabled_release_stages
+    # @return [Array<String>, nil]
+    def enabled_release_stages
+      @notify_release_stages
+    end
+
+    # @param release_stages [Array<String>, nil]
+    # @return [void]
+    def enabled_release_stages=(release_stages)
+      @notify_release_stages = release_stages
+    end
+
+    # A list of breadcrumb types that Bugsnag will collect automatically
+    # @!attribute enabled_breadcrumb_types
+    # @see Bugsnag::BreadcrumbType
+    # @return [Array<String>]
+    def enabled_breadcrumb_types
+      @enabled_automatic_breadcrumb_types
+    end
+
+    # @param breadcrumb_types [Array<String>]
+    # @return [void]
+    def enabled_breadcrumb_types=(breadcrumb_types)
+      @enabled_automatic_breadcrumb_types = breadcrumb_types
+    end
+
+    # Whether sessions should be tracked automatically
+    # @!attribute auto_track_sessions
+    # @return [Boolean]
+    def auto_track_sessions
+      @auto_capture_sessions
+    end
+
+    # @param track_sessions [Boolean]
+    # @return [void]
+    def auto_track_sessions=(track_sessions)
+      @auto_capture_sessions = track_sessions
     end
 
     private

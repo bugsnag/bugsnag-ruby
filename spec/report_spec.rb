@@ -2,6 +2,7 @@
 require_relative './spec_helper'
 require 'securerandom'
 require 'ostruct'
+require 'support/shared_examples_for_metadata'
 
 module ActiveRecord; class RecordNotFound < RuntimeError; end; end
 class NestedException < StandardError; attr_accessor :original_exception; end
@@ -27,8 +28,281 @@ class JRubyException
   end
 end
 
+shared_examples "Report or Event tests" do |class_to_test|
+  context "metadata" do
+    include_examples(
+      "metadata delegate",
+      lambda do |metadata, *args|
+        report = class_to_test.new(RuntimeError.new, Bugsnag.configuration)
+        report.metadata = metadata
+
+        report.add_metadata(*args)
+      end,
+      lambda do |metadata, *args|
+        report = class_to_test.new(RuntimeError.new, Bugsnag.configuration)
+        report.metadata = metadata
+
+        report.clear_metadata(*args)
+      end
+    )
+  end
+
+  it "#headers should return the correct request headers" do
+    fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
+    expect(Time).to receive(:now).twice.and_return(fake_now)
+
+    report_or_event = class_to_test.new(
+      BugsnagTestException.new("It crashed"),
+      Bugsnag.configuration
+    )
+
+    expect(report_or_event.headers).to eq({
+      "Bugsnag-Api-Key" => "c9d60ae4c7e70c4b6c4ebd3e8056d2b8",
+      "Bugsnag-Payload-Version" => "4.0",
+      # This matches the time we stubbed earlier (fake_now)
+      "Bugsnag-Sent-At" => "2020-01-02T03:04:05.123Z"
+    })
+  end
+
+  describe "#summary" do
+    it "provides a hash of the name, message, and severity" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report_or_event = class_to_test.new(e, Bugsnag.configuration)
+
+        expect(report_or_event.summary).to eq({
+          :error_class => "ZeroDivisionError",
+          :message => "divided by 0",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles strings" do
+      report_or_event = class_to_test.new("test string", Bugsnag.configuration)
+
+      expect(report_or_event.summary).to eq({
+        :error_class => "RuntimeError",
+        :message => "test string",
+        :severity => "warning"
+      })
+    end
+
+    it "handles error edge cases" do
+      report_or_event = class_to_test.new(Timeout::Error, Bugsnag.configuration)
+
+      expect(report_or_event.summary).to eq({
+        :error_class => "Timeout::Error",
+        :message => "Timeout::Error",
+        :severity => "warning"
+      })
+    end
+
+    it "handles empty exceptions" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report_or_event = class_to_test.new(e, Bugsnag.configuration)
+
+        report_or_event.exceptions = []
+
+        expect(report_or_event.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles removed exceptions" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report_or_event = class_to_test.new(e, Bugsnag.configuration)
+
+        report_or_event.exceptions = nil
+
+        expect(report_or_event.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+
+    it "handles exceptions being replaced" do
+      begin
+        1/0
+      rescue ZeroDivisionError => e
+        report_or_event = class_to_test.new(e, Bugsnag.configuration)
+
+        report_or_event.exceptions = "no one should ever do this"
+
+        expect(report_or_event.summary).to eq({
+          :error_class => "Unknown",
+          :severity => "warning"
+        })
+      end
+    end
+  end
+
+  describe "#errors" do
+    it "has required attributes" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report.errors.length).to eq(1)
+
+      error = report.errors.first
+
+      expect(error).to respond_to(:error_class)
+      expect(error).to respond_to(:error_message)
+      expect(error).to respond_to(:type)
+      expect(error).to respond_to(:stacktrace)
+
+      expect(error).to respond_to(:error_class=)
+      expect(error).to respond_to(:error_message=)
+      expect(error).to respond_to(:type=)
+      expect(error).not_to respond_to(:stacktrace=)
+    end
+
+    it "includes errors that caused the top-most exception" do
+      begin
+        begin
+          raise "one"
+        rescue
+          Ruby21Exception.raise!("two")
+        end
+      rescue => exception
+      end
+
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report.errors.length).to eq(2)
+
+      expect(report.errors[0].stacktrace).not_to be_empty
+      expect(report.errors[0]).to have_attributes({
+        error_class: "Ruby21Exception",
+        error_message: "two",
+        type: "ruby"
+      })
+
+      expect(report.errors[1].stacktrace).not_to be_empty
+      expect(report.errors[1]).to have_attributes({
+        error_class: "RuntimeError",
+        error_message: "one",
+        type: "ruby"
+      })
+    end
+
+    it "cannot be assigned to" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report).not_to respond_to(:errors=)
+    end
+
+    it "can be mutated" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      report.errors.push("haha")
+      report.errors.push("haha 2")
+      report.errors.pop
+
+      expect(report.errors.length).to eq(2)
+
+      expect(report.errors.first.stacktrace).not_to be_empty
+      expect(report.errors.first).to have_attributes({
+        error_class: "RuntimeError",
+        error_message: "example error",
+        type: "ruby"
+      })
+
+      expect(report.errors[1]).to eq("haha")
+    end
+
+    it "contains mutable data" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report.errors.length).to eq(1)
+
+      report.errors.first.error_class = "haha"
+      report.errors.first.error_message = "ahah"
+      report.errors.first.type = "aahh"
+
+      expect(report.errors.first.stacktrace).not_to be_empty
+      expect(report.errors.first).to have_attributes({
+        error_class: "haha",
+        error_message: "ahah",
+        type: "aahh"
+      })
+    end
+
+    it "shares the stacktrace with #exceptions" do
+      exception = RuntimeError.new("example error")
+      report = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report.errors.length).to eq(1)
+      expect(report.exceptions.length).to eq(1)
+
+      error = report.errors.first
+      exception = report.exceptions.first
+
+      expect(error.stacktrace).not_to be_empty
+      expect(error.stacktrace).to all(have_key(:lineNumber))
+      expect(error.stacktrace).to all(have_key(:file))
+      expect(error.stacktrace).to all(have_key(:method))
+      expect(error.stacktrace).to all(have_key(:code))
+
+      expect(error.stacktrace).to be(exception[:stacktrace])
+    end
+
+    it "mutating the stacktrace affects the payload" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        expect(report.errors.length).to eq(1)
+
+        error = report.errors.first
+
+        error.stacktrace.clear
+        error.stacktrace[0] = {
+          lineNumber: 123,
+          file: "/dev/null",
+          method: "do_nothing",
+          code: "yes, lots"
+        }
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        exception = get_exception_from_payload(payload)
+
+        expect(exception["stacktrace"]).to eq(
+          [
+            {
+              "lineNumber" => 123,
+              "file" => "/dev/null",
+              "method" => "do_nothing",
+              "code" => "yes, lots"
+            }
+          ]
+        )
+      })
+    end
+  end
+
+  it "has a reference to the original error" do
+    exception = RuntimeError.new("example error")
+    report = class_to_test.new(exception, Bugsnag.configuration)
+
+    expect(report.original_error).to be(exception)
+  end
+end
+
 # rubocop:disable Metrics/BlockLength
 describe Bugsnag::Report do
+  include_examples("Report or Event tests", Bugsnag::Report)
+  include_examples("Report or Event tests", Bugsnag::Event)
+
   it "should contain an api_key if one is set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
@@ -90,23 +364,6 @@ describe Bugsnag::Report do
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
       expect(headers["Bugsnag-Api-Key"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b9")
     }
-  end
-
-  it "#headers should return the correct request headers" do
-    fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
-    expect(Time).to receive(:now).and_return(fake_now)
-
-    report = Bugsnag::Report.new(
-      BugsnagTestException.new("It crashed"),
-      Bugsnag.configuration
-    )
-
-    expect(report.headers).to eq({
-      "Bugsnag-Api-Key" => "c9d60ae4c7e70c4b6c4ebd3e8056d2b8",
-      "Bugsnag-Payload-Version" => "4.0",
-      # This matches the time we stubbed earlier (fake_now)
-      "Bugsnag-Sent-At" => "2020-01-02T03:04:05.123Z"
-    })
   end
 
   it "has the right exception class" do
@@ -189,7 +446,53 @@ describe Bugsnag::Report do
     end
   end
 
-  # TODO: nested context
+  it "metadata added with 'add_metadata' ends up in the payload" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_metadata(
+        :some_tab,
+        { info: "here", data: "also here" }
+      )
+
+      report.add_metadata(:some_other_tab, :info, true)
+      report.add_metadata(:some_other_tab, :data, "very true")
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]).to eq({
+        "some_tab" => {
+          "info" => "here",
+          "data" => "also here"
+        },
+        "some_other_tab" => {
+          "info" => true,
+          "data" => "very true"
+        }
+      })
+    })
+  end
+
+  it "metadata removed with 'clear_metadata' does not end up in the payload" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_metadata(
+        :some_tab,
+        { info: "here", data: "also here" }
+      )
+
+      report.add_metadata(:some_other_tab, :info, true)
+      report.add_metadata(:some_other_tab, :data, "very true")
+
+      report.clear_metadata(:some_tab)
+      report.clear_metadata(:some_other_tab, :info)
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]).to eq({
+        "some_other_tab" => { "data" => "very true" }
+      })
+    })
+  end
 
   it "accepts tabs in overrides and adds them to metaData" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
@@ -199,15 +502,27 @@ describe Bugsnag::Report do
           data: "also here"
         }
       })
+
+      report.metadata.merge!({
+        some_other_tab: {
+          info: true,
+          data: "very true"
+        }
+      })
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+    expect(Bugsnag).to(have_sent_notification{ |payload, headers|
       event = get_event_from_payload(payload)
       expect(event["metaData"]["some_tab"]).to eq(
         "info" => "here",
         "data" => "also here"
       )
-    }
+
+      expect(event["metaData"]["some_other_tab"]).to eq(
+        "info" => true,
+        "data" => "very true"
+      )
+    })
   end
 
   it "accepts meta data from an exception that mixes in Bugsnag::MetaData" do
@@ -470,15 +785,89 @@ describe Bugsnag::Report do
     }
   end
 
-  it "accepts a user_id in overrides" do
+  it "uses automatic context if no other context has been set" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
-      report.user = {id: 'test_user'}
+      report.automatic_context = "automatic context"
     end
 
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
       event = get_event_from_payload(payload)
-      expect(event["user"]["id"]).to eq("test_user")
-    }
+      expect(event["context"]).to eq("automatic context")
+    })
+  end
+
+  it "uses Configuration context even if the automatic context has been set" do
+    Bugsnag.configure do |config|
+      config.context = "configuration context"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.automatic_context = "automatic context"
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("configuration context")
+    })
+  end
+
+  it "uses overridden context even if the automatic context has been set" do
+    Bugsnag.configure do |config|
+      config.context = "configuration context"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.context = "overridden context"
+      report.automatic_context = "automatic context"
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("overridden context")
+    })
+  end
+
+  it "uses overridden context even it is set to 'nil'" do
+    Bugsnag.configure do |config|
+      config.context = nil
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.automatic_context = "automatic context"
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to be_nil
+    })
+  end
+
+  it "uses the context from Configuration, if set" do
+    Bugsnag.configure do |config|
+      config.context = "example context"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("example context")
+    })
+  end
+
+  it "allows overriding the context from Configuration" do
+    Bugsnag.configure do |config|
+      config.context = "example context"
+    end
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.context = "different context"
+    end
+
+    expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+      event = get_event_from_payload(payload)
+      expect(event["context"]).to eq("different context")
+    })
   end
 
   it "does not send an automatic notification if auto_notify is false" do
@@ -502,6 +891,26 @@ describe Bugsnag::Report do
       event = get_event_from_payload(payload)
       expect(event["app"]["releaseStage"]).to eq("production")
     }
+  end
+
+  it "respects the enabled_release_stages setting by not sending in development" do
+    Bugsnag.configuration.enabled_release_stages = ["production"]
+    Bugsnag.configuration.release_stage = "development"
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).not_to have_sent_notification
+  end
+
+  it "respects the enabled_release_stages setting when set" do
+    Bugsnag.configuration.release_stage = "development"
+    Bugsnag.configuration.enabled_release_stages = ["development"]
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to(have_sent_notification { |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["exceptions"].length).to eq(1)
+    })
   end
 
   it "respects the notify_release_stages setting by not sending in development" do
@@ -624,7 +1033,8 @@ describe Bugsnag::Report do
           :user_secret => "key"
         }
       })
-      report.meta_data.merge!({
+
+      report.metadata.merge!({
         :session => {
           :"warden.user.user.key" => "1234",
           :"warden.user.foobar.key" => "1234",
@@ -673,7 +1083,7 @@ describe Bugsnag::Report do
   it "filters params from all payload hashes if they are added to meta_data_filters as regex" do
     Bugsnag.configuration.meta_data_filters << /other_data/
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
-      report.meta_data.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
+      report.metadata.merge!({:request => {:params => {:password => "1234", :other_password => "123456", :other_data => "123456"}}})
     end
 
     expect(Bugsnag).to have_sent_notification{ |payload, headers|
@@ -1486,87 +1896,6 @@ describe Bugsnag::Report do
     end
   end
 
-  describe "#summary" do
-    it "provides a hash of the name, message, and severity" do
-      begin
-        1/0
-      rescue ZeroDivisionError => e
-        report = Bugsnag::Report.new(e, Bugsnag.configuration)
-
-        expect(report.summary).to eq({
-          :error_class => "ZeroDivisionError",
-          :message => "divided by 0",
-          :severity => "warning"
-        })
-      end
-    end
-
-    it "handles strings" do
-      report = Bugsnag::Report.new("test string", Bugsnag.configuration)
-
-      expect(report.summary).to eq({
-        :error_class => "RuntimeError",
-        :message => "test string",
-        :severity => "warning"
-      })
-    end
-
-    it "handles error edge cases" do
-      report = Bugsnag::Report.new(Timeout::Error, Bugsnag.configuration)
-
-      expect(report.summary).to eq({
-        :error_class => "Timeout::Error",
-        :message => "Timeout::Error",
-        :severity => "warning"
-      })
-    end
-
-    it "handles empty exceptions" do
-      begin
-        1/0
-      rescue ZeroDivisionError => e
-        report = Bugsnag::Report.new(e, Bugsnag.configuration)
-
-        report.exceptions = []
-
-        expect(report.summary).to eq({
-          :error_class => "Unknown",
-          :severity => "warning"
-        })
-      end
-    end
-
-    it "handles removed exceptions" do
-      begin
-        1/0
-      rescue ZeroDivisionError => e
-        report = Bugsnag::Report.new(e, Bugsnag.configuration)
-
-        report.exceptions = nil
-
-        expect(report.summary).to eq({
-          :error_class => "Unknown",
-          :severity => "warning"
-        })
-      end
-    end
-
-    it "handles exceptions being replaced" do
-      begin
-        1/0
-      rescue ZeroDivisionError => e
-        report = Bugsnag::Report.new(e, Bugsnag.configuration)
-
-        report.exceptions = "no one should ever do this"
-
-        expect(report.summary).to eq({
-          :error_class => "Unknown",
-          :severity => "warning"
-        })
-      end
-    end
-  end
-
   if defined?(JRUBY_VERSION)
 
     it "works with java.lang.Throwables" do
@@ -1586,15 +1915,105 @@ describe Bugsnag::Report do
   end
 
   it 'includes device data when notify is called' do
+    fake_device_time = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
+    fake_sent_at = Time.gm(2021, 1, 2, 3, 4, 5, 123456)
+    expect(Time).to receive(:now).at_least(:twice).and_return(fake_device_time, fake_sent_at)
+
     Bugsnag.configuration.hostname = 'test-host'
     Bugsnag.configuration.runtime_versions["ruby"] = '9.9.9'
     Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+    expect(Bugsnag).to(have_sent_notification { |payload, headers|
       event = payload["events"][0]
       expect(event["device"]["hostname"]).to eq('test-host')
       expect(event["device"]["runtimeVersions"]["ruby"]).to eq('9.9.9')
-    }
+      # This matches the time we stubbed earlier (fake_device_time)
+      expect(event["device"]["time"]).to eq("2020-01-02T03:04:05.123Z")
+
+      expect(headers["Bugsnag-Api-Key"]).to eq("c9d60ae4c7e70c4b6c4ebd3e8056d2b8")
+      expect(headers["Bugsnag-Payload-Version"]).to eq("4.0")
+      # This matches the time we stubbed earlier (fake_sent_at)
+      expect(headers["Bugsnag-Sent-At"]).to eq("2021-01-02T03:04:05.123Z")
+    })
+  end
+
+  context "#user" do
+    it "accepts an arbitrary user hash" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.user = { id: "test_user", abc: "xyz" }
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("test_user")
+        expect(event["user"]["abc"]).to eq("xyz")
+      })
+    end
+
+    it "set_user will set the three supported fields" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.set_user("123", "abc.xyz@example.com", "abc xyz")
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("123")
+        expect(event["user"]["email"]).to eq("abc.xyz@example.com")
+        expect(event["user"]["name"]).to eq("abc xyz")
+      })
+    end
+
+    it "set_user will not set fields that are 'nil'" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.set_user("123", nil, "abc xyz")
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("123")
+        expect(event["user"]).not_to have_key("email")
+        expect(event["user"]["name"]).to eq("abc xyz")
+      })
+    end
+
+    it "set_user will unset all fields if passed no parameters" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.user = { id: "nope", email: "nah@example.com", name: "yes", other: "stuff" }
+
+        report.set_user
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]).to be_empty
+      })
+    end
+
+    it "set_user can be passed only an ID" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.set_user("123")
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("123")
+        expect(event["user"]).not_to have_key("email")
+        expect(event["user"]).not_to have_key("name")
+      })
+    end
+
+    it "set_user can be passed only an ID and email" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        report.set_user("123", "123@example.com")
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, _headers|
+        event = get_event_from_payload(payload)
+        expect(event["user"]["id"]).to eq("123")
+        expect(event["user"]["email"]).to eq("123@example.com")
+        expect(event["user"]).not_to have_key("name")
+      })
+    end
   end
 end
 # rubocop:enable Metrics/BlockLength
