@@ -527,4 +527,397 @@ describe Bugsnag do
       expect(Bugsnag.breadcrumbs).to be(Bugsnag.configuration.breadcrumbs)
     end
   end
+
+  describe "sessions" do
+    let(:session_id_regex) { /\A[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}\z/ }
+    let(:session_timestamp_regex) { /\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:00\z/ }
+
+    it "attaches session information for handled errors" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+      end
+
+      Bugsnag.start_session
+      Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        session = payload["events"][0]["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 1,
+          "unhandled" => 0,
+        })
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 1,
+          unhandled: 0,
+        })
+      })
+    end
+
+    it "attaches session information for unhandled errors" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+      end
+
+      Bugsnag.start_session
+      Bugsnag.notify(BugsnagTestException.new("It crashed"), true)
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        session = payload["events"][0]["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 0,
+          "unhandled" => 1,
+        })
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 0,
+          unhandled: 1,
+        })
+      })
+    end
+
+    it "attaches session information for multiple errors" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+      end
+
+      Bugsnag.start_session
+
+      Bugsnag.notify(BugsnagTestException.new("one handled"))
+      Bugsnag.notify(BugsnagTestException.new("one unhandled"), true)
+      Bugsnag.notify(BugsnagTestException.new("two handled"))
+
+      # reset WebMock's stored requests so we only assert against the last one
+      # as "have_sent_notification" doesn't support finding a specific request
+      WebMock::RequestRegistry.instance.reset!
+
+      Bugsnag.notify(BugsnagTestException.new("two unhandled"), true)
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        session = payload["events"][0]["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 2,
+          "unhandled" => 2,
+        })
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 2,
+          unhandled: 2,
+        })
+      })
+    end
+
+    it "allows changing an event from handled to unhandled" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+      end
+
+      Bugsnag.start_session
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        expect(report.session[:events]).to eq({ handled: 1, unhandled: 0 })
+
+        report.unhandled = true
+
+        expect(report.session[:events]).to eq({ handled: 0, unhandled: 1 })
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        event = payload["events"].first
+
+        expect(event["unhandled"]).to be(true)
+        expect(event["severityReason"]).to eq({
+          "type" => "handledException",
+          "unhandledOverridden" => true
+        })
+
+        session = event["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 0,
+          "unhandled" => 1,
+        })
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 0,
+          unhandled: 1,
+        })
+      })
+    end
+
+    it "allows changing an event from unhandled to handled" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+
+        # we have to use an on_error here because blocks are evaluated before we
+        # store the initial unhandled-ness for unhandled notify calls
+        config.add_on_error(proc do |report|
+          expect(report.session[:events]).to eq({ handled: 0, unhandled: 1 })
+
+          report.unhandled = false
+
+          expect(report.session[:events]).to eq({ handled: 1, unhandled: 0 })
+        end)
+      end
+
+      Bugsnag.start_session
+      Bugsnag.notify(BugsnagTestException.new("It crashed"), true)
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        event = payload["events"].first
+
+        expect(event["unhandled"]).to be(false)
+        expect(event["severityReason"]).to eq({
+          "type" => "unhandledException",
+          "unhandledOverridden" => true
+        })
+
+        session = event["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 1,
+          "unhandled" => 0,
+        })
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 1,
+          unhandled: 0,
+        })
+      })
+    end
+
+    it "allows changing an event from handled to unhandled and back again" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+
+        config.add_on_error(proc do |report|
+          expect(report.session[:events]).to eq({ handled: 1, unhandled: 0 })
+
+          report.unhandled = !report.unhandled
+
+          expect(report.session[:events]).to eq({ handled: 0, unhandled: 1 })
+        end)
+
+        config.add_on_error(proc do |report|
+          expect(report.session[:events]).to eq({ handled: 0, unhandled: 1 })
+
+          report.unhandled = !report.unhandled
+
+          expect(report.session[:events]).to eq({ handled: 1, unhandled: 0 })
+        end)
+      end
+
+      Bugsnag.start_session
+      Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        event = payload["events"].first
+
+        expect(event["unhandled"]).to be(false)
+        expect(event["severityReason"]).to eq({ "type" => "handledException" })
+
+        session = event["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 1,
+          "unhandled" => 0,
+        })
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 1,
+          unhandled: 0,
+        })
+      })
+    end
+
+    it "allows changing an event from unhandled to handled and back again" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+
+        config.add_on_error(proc do |report|
+          expect(report.session[:events]).to eq({ handled: 0, unhandled: 1 })
+
+          report.unhandled = false
+
+          expect(report.session[:events]).to eq({ handled: 1, unhandled: 0 })
+        end)
+
+        config.add_on_error(proc do |report|
+          expect(report.session[:events]).to eq({ handled: 1, unhandled: 0 })
+
+          report.unhandled = true
+
+          expect(report.session[:events]).to eq({ handled: 0, unhandled: 1 })
+        end)
+      end
+
+      Bugsnag.start_session
+      Bugsnag.notify(BugsnagTestException.new("It crashed"), true)
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        event = payload["events"].first
+
+        expect(event["unhandled"]).to be(true)
+        expect(event["severityReason"]).to eq({ "type" => "unhandledException" })
+
+        session = event["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 0,
+          "unhandled" => 1,
+        })
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 0,
+          unhandled: 1,
+        })
+      })
+    end
+
+    it "works for handled -> unhandled errors if a session is started during notify" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+        config.add_on_error(proc { Bugsnag.start_session })
+      end
+
+      Bugsnag.start_session
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+        expect(report.session[:events]).to eq({ handled: 1, unhandled: 0 })
+
+        report.unhandled = true
+
+        expect(report.session[:events]).to eq({ handled: 0, unhandled: 1 })
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        event = payload["events"].first
+
+        expect(event["unhandled"]).to be(true)
+        expect(event["severityReason"]).to eq({
+          "type" => "handledException",
+          "unhandledOverridden" => true
+        })
+
+        session = event["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 0,
+          "unhandled" => 1,
+        })
+
+        # the new session was started _after_ the error was notified, so should
+        # have 0 events
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 0,
+          unhandled: 0,
+        })
+      })
+    end
+
+    it "works for unhandled -> handled errors if a session is started during notify" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+        config.add_on_error(proc do |report|
+          expect(report.session[:events]).to eq({ handled: 0, unhandled: 1 })
+
+          report.unhandled = false
+
+          expect(report.session[:events]).to eq({ handled: 1, unhandled: 0 })
+        end)
+
+        config.add_on_error(proc { Bugsnag.start_session })
+      end
+
+      Bugsnag.start_session
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed"), true)
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        event = payload["events"].first
+
+        expect(event["unhandled"]).to be(false)
+        expect(event["severityReason"]).to eq({
+          "type" => "unhandledException",
+          "unhandledOverridden" => true
+        })
+
+        session = event["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 1,
+          "unhandled" => 0,
+        })
+
+        # the new session was started _after_ the error was notified, so should
+        # have 0 events
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 0,
+          unhandled: 0,
+        })
+      })
+    end
+
+    it "works for multiple errors if a session is started during notify" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+
+        config.add_on_error(proc do |report|
+          # start a new session when notifying the second error so that there
+          # are two errors with the first session and two with the new session
+          if report.errors.first.error_message == "one unhandled"
+            Bugsnag.start_session
+          end
+        end)
+      end
+
+      Bugsnag.start_session
+
+      Bugsnag.notify(BugsnagTestException.new("one handled"))
+      Bugsnag.notify(BugsnagTestException.new("one unhandled"), true)
+      Bugsnag.notify(BugsnagTestException.new("two handled"))
+
+      # reset WebMock's stored requests so we only assert against the last one
+      # as "have_sent_notification" doesn't support finding a specific request
+      WebMock::RequestRegistry.instance.reset!
+
+      Bugsnag.notify(BugsnagTestException.new("two unhandled"), true)
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        session = payload["events"][0]["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 1,
+          "unhandled" => 1,
+        })
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 1,
+          unhandled: 1,
+        })
+      })
+    end
+  end
 end

@@ -151,26 +151,4 @@ describe Bugsnag::SessionTracker do
     expect(device["hostname"]).to eq(Bugsnag.configuration.hostname)
     expect(device["runtimeVersions"]["ruby"]).to eq(Bugsnag.configuration.runtime_versions["ruby"])
   end
-
-  it 'uses middleware to attach session to notification' do
-    Bugsnag.configure do |conf|
-      conf.auto_capture_sessions = true
-      conf.release_stage = "test_stage"
-    end
-    Bugsnag.start_session
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
-      event = payload["events"][0]
-      expect(event.include?("session")).to be true
-      session = event["session"]
-      expect(session.include?("id")).to be true
-      expect(session.include?("startedAt")).to be true
-      expect(session.include?("events")).to be true
-      sesevents = session['events']
-      expect(sesevents.include?("unhandled")).to be true
-      expect(sesevents["unhandled"]).to eq(0)
-      expect(sesevents.include?("handled")).to be true
-      expect(sesevents["handled"]).to eq(1)
-    }
-  end
 end

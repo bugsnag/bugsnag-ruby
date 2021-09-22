@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Allow overriding an event's unhandled flag
+  | [#698](https://github.com/bugsnag/bugsnag-ruby/pull/698)
+
 ## v6.23.0 (21 September 2021)
 
 ### Enhancements
