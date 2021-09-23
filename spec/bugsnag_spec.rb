@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'spec_helper'
+require 'support/shared_examples_for_metadata'
 
 describe Bugsnag do
 
@@ -916,6 +917,85 @@ describe Bugsnag do
         expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
           handled: 1,
           unhandled: 1,
+        })
+      })
+    end
+  end
+
+  describe "global metadata" do
+    include_examples(
+      "metadata delegate",
+      lambda do |metadata, *args|
+        Bugsnag.configuration.instance_variable_set(:@metadata, metadata)
+
+        Bugsnag.add_metadata(*args)
+      end,
+      lambda do |metadata, *args|
+        Bugsnag.configuration.instance_variable_set(:@metadata, metadata)
+
+        Bugsnag.clear_metadata(*args)
+      end
+    )
+
+    describe "#metadata" do
+      it "is initially empty" do
+        expect(subject.metadata).to be_empty
+      end
+
+      it "cannot be reassigned" do
+        expect(subject).not_to respond_to(:metadata=)
+      end
+
+      it "reflects changes made by add_/clear_metadata" do
+        subject.add_metadata(:abc, { a: 1, b: 2, c: 3 })
+        subject.add_metadata(:xyz, :x, 1)
+
+        expect(subject.metadata).to eq({ abc: { a: 1, b: 2, c: 3 }, xyz: { x: 1 } })
+
+        subject.clear_metadata(:abc)
+
+        expect(subject.metadata).to eq({ xyz: { x: 1 } })
+      end
+    end
+
+    it "is added to the payload" do
+      Bugsnag.add_metadata(:abc, { a: 1, b: 2, c: 3 })
+      Bugsnag.add_metadata(:xyz, { x: 1, y: 2, z: 3 })
+      Bugsnag.add_metadata(:example, { array: [1, 2, 3], string: "hello" })
+
+      Bugsnag.notify(RuntimeError.new("example")) do |report|
+        report.add_metadata(:abc, :d, 4)
+        report.metadata[:example][:array].push(4, 5, 6)
+        report.metadata[:example][:string].upcase!
+
+        report.clear_metadata(:abc, :b)
+        report.clear_metadata(:xyz, :z)
+        Bugsnag.clear_metadata(:abc)
+
+        expect(report.metadata).to eq({
+          abc: { a: 1, c: 3, d: 4 },
+          xyz: { x: 1, y: 2 },
+          example: { array: [1, 2, 3, 4, 5, 6], string: "HELLO" },
+        })
+
+        expect(Bugsnag.metadata).to eq({
+          xyz: { x: 1, y: 2, z: 3 },
+          example: { array: [1, 2, 3], string: "hello" },
+        })
+      end
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+
+        expect(event["metaData"]).to eq({
+          "abc" => { "a" => 1, "c" => 3, "d" => 4 },
+          "xyz" => { "x" => 1, "y" => 2 },
+          "example" => { "array" => [1, 2, 3, 4, 5, 6], "string" => "HELLO" },
+        })
+
+        expect(Bugsnag.metadata).to eq({
+          xyz: { x: 1, y: 2, z: 3 },
+          example: { array: [1, 2, 3], string: "hello" },
         })
       })
     end

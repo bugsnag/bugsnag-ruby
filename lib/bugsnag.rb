@@ -34,6 +34,7 @@ require "bugsnag/breadcrumbs/validator"
 require "bugsnag/breadcrumbs/breadcrumb"
 require "bugsnag/breadcrumbs/breadcrumbs"
 
+require "bugsnag/utility/duplicator"
 require "bugsnag/utility/metadata_delegate"
 
 # rubocop:todo Metrics/ModuleLength
@@ -355,6 +356,51 @@ module Bugsnag
       @cleaner || LOCK.synchronize do
         @cleaner ||= Bugsnag::Cleaner.new(configuration)
       end
+    end
+
+    ##
+    # Global metadata added to every event
+    #
+    # @return [Hash]
+    def metadata
+      configuration.metadata
+    end
+
+    ##
+    # Add values to metadata
+    #
+    # @overload add_metadata(section, data)
+    #   Merges data into the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param data [Hash]
+    #
+    # @overload add_metadata(section, key, value)
+    #   Sets key to value in the given section of metadata. If the value is nil
+    #   the key will be deleted
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #   @param value
+    #
+    # @return [void]
+    def add_metadata(section, key_or_data, *args)
+      configuration.add_metadata(section, key_or_data, *args)
+    end
+
+    ##
+    # Clear values from metadata
+    #
+    # @overload clear_metadata(section)
+    #   Clears the given section of metadata
+    #   @param section [String, Symbol]
+    #
+    # @overload clear_metadata(section, key)
+    #   Clears the key in the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #
+    # @return [void]
+    def clear_metadata(section, *args)
+      configuration.clear_metadata(section, *args)
     end
 
     private

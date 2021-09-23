@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'spec_helper'
+require 'support/shared_examples_for_metadata'
 
 describe Bugsnag::Configuration do
   describe "delivery_method" do
@@ -497,6 +498,118 @@ describe Bugsnag::Configuration do
     it "returns the defined vendor path" do
       subject.vendor_path = /foo/
       expect(subject.vendor_path).to eq(/foo/)
+    end
+  end
+
+  describe "metadata" do
+    include_examples(
+      "metadata delegate",
+      lambda do |metadata, *args|
+        configuration = Bugsnag::Configuration.new
+        configuration.instance_variable_set(:@metadata, metadata)
+
+        configuration.add_metadata(*args)
+      end,
+      lambda do |metadata, *args|
+        configuration = Bugsnag::Configuration.new
+        configuration.instance_variable_set(:@metadata, metadata)
+
+        configuration.clear_metadata(*args)
+      end
+    )
+
+    describe "#metadata" do
+      it "is initially empty" do
+        expect(subject.metadata).to be_empty
+      end
+
+      it "cannot be reassigned" do
+        expect(subject).not_to respond_to(:metadata=)
+      end
+
+      it "reflects changes made by add_/clear_metadata" do
+        subject.add_metadata(:abc, { a: 1, b: 2, c: 3 })
+        subject.add_metadata(:xyz, :x, 1)
+
+        expect(subject.metadata).to eq({ abc: { a: 1, b: 2, c: 3 }, xyz: { x: 1 } })
+
+        subject.clear_metadata(:abc)
+
+        expect(subject.metadata).to eq({ xyz: { x: 1 } })
+      end
+    end
+
+    describe "concurrent access" do
+      it "can handle multiple threads adding metadata" do
+        configuration = Bugsnag::Configuration.new
+
+        threads = 5.times.map do |i|
+          Thread.new do
+            configuration.add_metadata(:abc, "thread_#{i}", i)
+          end
+        end
+
+        threads += 5.times.map do |i|
+          Thread.new do
+            configuration.add_metadata(:xyz, {
+              "thread_#{i}" => i * 100,
+              "also thread_#{i}" => [i, i + 1, i + 2],
+            })
+          end
+        end
+
+        threads.shuffle.map(&:join)
+
+        expect(configuration.metadata).to eq({
+          abc: {
+            "thread_0" => 0,
+            "thread_1" => 1,
+            "thread_2" => 2,
+            "thread_3" => 3,
+            "thread_4" => 4,
+          },
+          xyz: {
+            "thread_0" => 0,
+            "thread_1" => 100,
+            "thread_2" => 200,
+            "thread_3" => 300,
+            "thread_4" => 400,
+            "also thread_0" => [0, 1, 2],
+            "also thread_1" => [1, 2, 3],
+            "also thread_2" => [2, 3, 4],
+            "also thread_3" => [3, 4, 5],
+            "also thread_4" => [4, 5, 6],
+          }
+        })
+      end
+
+      it "can handle multiple threads clearing metadata" do
+        configuration = Bugsnag::Configuration.new
+
+        configuration.add_metadata(:abc, { a: 1, b: 2, c: 3 })
+        configuration.add_metadata(:xyz, { 0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5 })
+
+        5.times do |i|
+          configuration.add_metadata("thread_#{i}", :i, i)
+        end
+
+        threads = 5.times.map do |i|
+          Thread.new do
+            configuration.clear_metadata("thread_#{i}")
+            configuration.clear_metadata(:xyz, i)
+          end
+        end
+
+        threads += 5.times.map do |i|
+          Thread.new do
+            configuration.clear_metadata(:xyz)
+          end
+        end
+
+        threads.shuffle.map(&:join)
+
+        expect(configuration.metadata).to eq({ abc: { a: 1, b: 2, c: 3 } })
+      end
     end
   end
 end

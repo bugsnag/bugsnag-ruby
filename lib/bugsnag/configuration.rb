@@ -150,6 +150,10 @@ module Bugsnag
     # @return [String, nil]
     attr_accessor :context
 
+    # Global metadata added to every event
+    # @return [Hash]
+    attr_reader :metadata
+
     # @api private
     # @return [Array<String>]
     attr_reader :scopes_to_filter
@@ -217,6 +221,9 @@ module Bugsnag
       @notify_endpoint = DEFAULT_NOTIFY_ENDPOINT
       @session_endpoint = DEFAULT_SESSION_ENDPOINT
       @enable_sessions = true
+
+      @metadata = {}
+      @metadata_delegate = Utility::MetadataDelegate.new
 
       # SystemExit and SignalException are common Exception types seen with
       # successful exits and are not automatically reported to Bugsnag
@@ -554,6 +561,47 @@ module Bugsnag
     # @return [void]
     def remove_on_breadcrumb(callback)
       @on_breadcrumb_callbacks.remove(callback)
+    end
+
+    ##
+    # Add values to metadata
+    #
+    # @overload add_metadata(section, data)
+    #   Merges data into the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param data [Hash]
+    #
+    # @overload add_metadata(section, key, value)
+    #   Sets key to value in the given section of metadata. If the value is nil
+    #   the key will be deleted
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #   @param value
+    #
+    # @return [void]
+    def add_metadata(section, key_or_data, *args)
+      @mutex.synchronize do
+        @metadata_delegate.add_metadata(@metadata, section, key_or_data, *args)
+      end
+    end
+
+    ##
+    # Clear values from metadata
+    #
+    # @overload clear_metadata(section)
+    #   Clears the given section of metadata
+    #   @param section [String, Symbol]
+    #
+    # @overload clear_metadata(section, key)
+    #   Clears the key in the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #
+    # @return [void]
+    def clear_metadata(section, *args)
+      @mutex.synchronize do
+        @metadata_delegate.clear_metadata(@metadata, section, *args)
+      end
     end
 
     ##

@@ -136,7 +136,7 @@ module Bugsnag
       self.delivery_method = configuration.delivery_method
       self.hostname = configuration.hostname
       self.runtime_versions = configuration.runtime_versions.dup
-      self.meta_data = {}
+      self.meta_data = Utility::Duplicator.duplicate(configuration.metadata)
       self.release_stage = configuration.release_stage
       self.severity = auto_notify ? "error" : "warning"
       self.severity_reason = auto_notify ? {:type => UNHANDLED_EXCEPTION} : {:type => HANDLED_EXCEPTION}
