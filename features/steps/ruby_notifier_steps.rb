@@ -1,3 +1,6 @@
+require "json"
+require "net/http"
+
 Then(/^the "(.+)" of the top non-bugsnag stackframe equals (\d+|".+")$/) do |element, value|
   stacktrace = read_key_path(Server.current_request[:body], 'events.0.exceptions.0.stacktrace')
   frame_index = stacktrace.find_index { |frame| ! /.*lib\/bugsnag.*\.rb/.match(frame["file"]) }
@@ -89,6 +92,23 @@ When("I navigate to the route {string} on the rack app") do |route|
   steps %Q{
     When I open the URL "http://rack#{rack_version}:3000#{route}"
   }
+end
+
+When("I send a POST request to {string} in the rack app with the following form data:") do |route, data|
+  rack_version = ENV["RACK_VERSION"]
+  uri = URI("http://rack#{rack_version}:3000#{route}")
+
+  Net::HTTP.post_form(uri, data.rows_hash)
+end
+
+When("I send a POST request to {string} in the rack app with the following JSON:") do |route, data|
+  rack_version = ENV["RACK_VERSION"]
+
+  Net::HTTP.post(
+    URI("http://rack#{rack_version}:3000#{route}"),
+    JSON.generate(data.rows_hash),
+    { "Content-Type" => "application/json" }
+  )
 end
 
 Then("the payload field {string} matches the appropriate Sidekiq handled payload") do |field|
