@@ -49,6 +49,7 @@ end
 RSpec.configure do |config|
   config.order = "random"
   config.example_status_persistence_file_path = "#{Dir.tmpdir}/rspec_status"
+  config.filter_run_when_matching(:focus)
 
   config.before(:each) do
     WebMock.stub_request(:post, "https://notify.bugsnag.com/")
@@ -70,6 +71,37 @@ RSpec.configure do |config|
   config.after(:each) do
     Bugsnag.configuration.clear_request_data
   end
+end
+
+RSpec::Matchers.define :have_the_same_id_as do |expected|
+  match do |actual|
+    actual.__id__ == expected.__id__
+  end
+
+  def safe_class_name(object)
+    object.class.name
+  rescue NoMethodError
+    # BasicObject doesn't implement #class (or much else!), but we can get the
+    # name from a reference to the object's 'self'
+    temp_self = class << object; self; end
+    temp_self.ancestors.find { |obj| obj != temp_self }.name
+  end
+
+  def format_object(object)
+    "[#{object.__id__}] #{object.inspect rescue safe_class_name(object)}"
+  end
+
+  def message(actual, is_negated = false)
+    [
+      "expected #{safe_class_name(actual)}:",
+      format_object(actual),
+      "#{is_negated ? "not " : ""}to have the same ID as #{safe_class_name(expected)}:",
+      format_object(expected)
+    ].join("\n")
+  end
+
+  failure_message { |actual| message(actual) }
+  failure_message_when_negated { |actual| message(actual, true) }
 end
 
 def have_sent_sessions(&matcher)

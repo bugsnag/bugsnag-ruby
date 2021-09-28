@@ -1817,14 +1817,7 @@ describe Bugsnag::Report do
       # - Report.generate_exceptions_list
       # - Report.generate_exceptions_list | raw_exceptions.map
       # - Report.generate_exceptions_list | raw_exceptions.map | block
-      # However, JRUBY does not include the `Report.new` frame, resulting in 5 bugsnag frames
-      if defined?(JRUBY_VERSION)
-        frame_count = 5
-      else
-        frame_count = 6
-      end
-
-      expect(bugsnag_count).to equal frame_count
+      expect(bugsnag_count).to eq(6)
     }
   end
 
