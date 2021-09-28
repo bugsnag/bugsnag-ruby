@@ -94,6 +94,20 @@ When("I navigate to the route {string} on the rack app") do |route|
   }
 end
 
+When("I navigate to the route {string} on the rack app with these cookies:") do |route, data|
+  rack_version = ENV["RACK_VERSION"]
+  uri = URI("http://rack#{rack_version}:3000#{route}")
+
+  # e.g. { "a" => "b", "c" => "d" } -> "a=b;c=d"
+  cookie = data.rows_hash.map { |key, value| "#{key}=#{value}" }.join(";")
+
+  http = Net::HTTP.new(uri.host, uri.port)
+  request = Net::HTTP::Get.new(uri.request_uri)
+  request["Cookie"] = cookie
+
+  http.request(request)
+end
+
 When("I send a POST request to {string} in the rack app with the following form data:") do |route, data|
   rack_version = ENV["RACK_VERSION"]
   uri = URI("http://rack#{rack_version}:3000#{route}")

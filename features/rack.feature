@@ -92,3 +92,48 @@ Scenario: A POST request with JSON sends a report with the parsed request body a
   And the event "metaData.request.params.b" equals "456"
   And the event "metaData.request.referer" is null
   And the event "metaData.request.url" ends with "/unhandled?a=123&b=456"
+
+Scenario: A request with cookies will be filtered out by default
+  Given I start the rack service
+  When I navigate to the route "/unhandled?a=123&b=456" on the rack app with these cookies:
+    | a | b |
+    | c | d |
+    | e | f |
+  And I wait to receive a request
+  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And the event "metaData.request.cookie" is null
+  And the event "metaData.request.headers.Cookie" equals "[FILTERED]"
+  And the event "metaData.request.clientIp" is not null
+  And the event "metaData.request.headers.Host" is not null
+  And the event "metaData.request.headers.User-Agent" is not null
+  And the event "metaData.request.headers.Version" is not null
+  And the event "metaData.request.httpMethod" equals "GET"
+  And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
+  And the event "metaData.request.params.a" equals "123"
+  And the event "metaData.request.params.b" equals "456"
+  And the event "metaData.request.referer" is null
+  And the event "metaData.request.url" ends with "/unhandled?a=123&b=456"
+
+Scenario: A request with cookies and no matching filter will set cookies in metadata
+  Given I set environment variable "BUGSNAG_METADATA_FILTERS" to '["password"]'
+  And I start the rack service
+  When I navigate to the route "/unhandled?a=123&b=456" on the rack app with these cookies:
+    | a | b |
+    | c | d |
+    | e | f |
+  And I wait to receive a request
+  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And the event "metaData.request.cookies.a" equals "b"
+  And the event "metaData.request.cookies.c" equals "d"
+  And the event "metaData.request.cookies.e" equals "f"
+  And the event "metaData.request.headers.Cookie" equals "a=b;c=d;e=f"
+  And the event "metaData.request.clientIp" is not null
+  And the event "metaData.request.headers.Host" is not null
+  And the event "metaData.request.headers.User-Agent" is not null
+  And the event "metaData.request.headers.Version" is not null
+  And the event "metaData.request.httpMethod" equals "GET"
+  And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
+  And the event "metaData.request.params.a" equals "123"
+  And the event "metaData.request.params.b" equals "456"
+  And the event "metaData.request.referer" is null
+  And the event "metaData.request.url" ends with "/unhandled?a=123&b=456"

@@ -1,11 +1,14 @@
 require 'bugsnag'
 require 'rack'
+require 'json'
 
 Bugsnag.configure do |config|
-  puts "Configuring `api_key` to #{ENV['BUGSNAG_API_KEY']}"
   config.api_key = ENV['BUGSNAG_API_KEY']
-  puts "Configuring `endpoint` to #{ENV['BUGSNAG_ENDPOINT']}"
   config.endpoint = ENV['BUGSNAG_ENDPOINT']
+
+  if ENV.key?('BUGSNAG_METADATA_FILTERS')
+    config.meta_data_filters = JSON.parse(ENV['BUGSNAG_METADATA_FILTERS'])
+  end
 end
 
 class BugsnagTests
