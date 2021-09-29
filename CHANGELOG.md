@@ -9,6 +9,8 @@ Changelog
   | [#698](https://github.com/bugsnag/bugsnag-ruby/pull/698)
 * Add the ability to store metadata globally
   | [#699](https://github.com/bugsnag/bugsnag-ruby/pull/699)
+* Add `cookies`, `body` and `httpVersion` to the automatically captured request data for Rack apps
+  | [#700](https://github.com/bugsnag/bugsnag-ruby/pull/700)
 
 ## v6.23.0 (21 September 2021)
 
