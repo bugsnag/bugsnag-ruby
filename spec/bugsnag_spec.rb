@@ -145,6 +145,72 @@ describe Bugsnag do
     end
   end
 
+  describe "endpoint configuration" do
+    it "does not send events when both endpoints are invalid" do
+      Bugsnag.configuration.endpoints = {}
+
+      expect(Bugsnag.configuration).not_to receive(:debug)
+      expect(Bugsnag.configuration).not_to receive(:info)
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      expect(Bugsnag.configuration).not_to receive(:error)
+
+      Bugsnag.notify(RuntimeError.new("abc"))
+
+      expect(Bugsnag).not_to have_sent_notification
+    end
+
+    it "does not send sessions when both endpoints are invalid" do
+      Bugsnag.configuration.endpoints = {}
+
+      expect(Bugsnag.configuration).not_to receive(:debug)
+      expect(Bugsnag.configuration).not_to receive(:info)
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      expect(Bugsnag.configuration).not_to receive(:error)
+
+      Bugsnag.start_session
+
+      expect(Bugsnag).not_to have_sent_sessions
+    end
+
+    it "does not send events or sessions when the notify endpoint is invalid" do
+      Bugsnag.configuration.endpoints = { sessions: "sessions.example.com" }
+
+      expect(Bugsnag.configuration).not_to receive(:debug)
+      expect(Bugsnag.configuration).not_to receive(:info)
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      expect(Bugsnag.configuration).not_to receive(:error)
+
+      Bugsnag.notify(RuntimeError.new("abc"))
+      Bugsnag.start_session
+
+      expect(Bugsnag).not_to have_sent_notification
+      expect(Bugsnag).not_to have_sent_sessions
+    end
+
+    it "does not send sessions when the session endpoint is invalid" do
+      Bugsnag.configuration.endpoints = Bugsnag::EndpointConfiguration.new("http://notify.example.com", nil)
+
+      expect(Bugsnag.configuration).to receive(:debug).with("Request to http://notify.example.com completed, status: 200").once
+      expect(Bugsnag.configuration).to receive(:info).with("Notifying http://notify.example.com of RuntimeError").once
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      expect(Bugsnag.configuration).not_to receive(:error)
+
+      stub_request(:post, "http://notify.example.com/")
+
+      Bugsnag.notify(RuntimeError.new("abc"))
+      Bugsnag.start_session
+
+      expect(Bugsnag).to(have_requested(:post, "http://notify.example.com/").with do |request|
+        payload = JSON.parse(request.body)
+        exception = get_exception_from_payload(payload)
+
+        expect(exception["message"]).to eq("abc")
+      end)
+
+      expect(Bugsnag).not_to have_sent_sessions
+    end
+  end
+
   describe "add_exit_handler" do
 
     before do
