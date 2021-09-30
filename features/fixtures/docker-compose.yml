@@ -85,6 +85,7 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
+      - BUGSNAG_METADATA_FILTERS
     restart: "no"
 
   rack2:
@@ -95,6 +96,7 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
+      - BUGSNAG_METADATA_FILTERS
     restart: "no"
 
   rails3:
