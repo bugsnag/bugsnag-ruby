@@ -121,6 +121,7 @@ describe Bugsnag do
     end
 
     it "warns and disables sessions if a notify endpoint is set without a session endpoint" do
+      expect(Bugsnag.configuration).to receive(:warn).with(Bugsnag::EndpointValidator::Result::MISSING_SESSION_URL)
       expect(Bugsnag.configuration).to receive(:warn).with("The session endpoint has not been set, all further session capturing will be disabled")
       expect(Bugsnag.configuration).to receive(:disable_sessions)
       Bugsnag.configuration.set_endpoints(custom_notify_endpoint, nil)
@@ -133,9 +134,10 @@ describe Bugsnag do
     end
 
     it "is called after the configuration block has returned" do
-      expect(Bugsnag.configuration).to receive(:warn).with("The 'endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead").once
-      expect(Bugsnag.configuration).to receive(:warn).with("The 'session_endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead").once
+      expect(Bugsnag.configuration).to receive(:warn).with("The 'endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead").once
+      expect(Bugsnag.configuration).to receive(:warn).with("The 'session_endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead").once
       expect(Bugsnag.configuration).not_to receive(:warn).with("The session endpoint has not been set, all further session capturing will be disabled")
+
       Bugsnag.configure do |configuration|
         configuration.endpoint = custom_notify_endpoint
         configuration.session_endpoint = custom_session_endpoint

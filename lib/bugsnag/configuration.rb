@@ -13,6 +13,8 @@ require "bugsnag/middleware/breadcrumbs"
 require "bugsnag/utility/circular_buffer"
 require "bugsnag/breadcrumbs/breadcrumbs"
 require "bugsnag/breadcrumbs/on_breadcrumb_callback_list"
+require "bugsnag/endpoint_configuration"
+require "bugsnag/endpoint_validator"
 
 module Bugsnag
   class Configuration
@@ -114,16 +116,17 @@ module Bugsnag
     # @return [Set<Class, Proc>]
     attr_accessor :ignore_classes
 
-    # The URL error notifications will be delivered to
-    # @return [String]
-    attr_reader :notify_endpoint
-    alias :endpoint :notify_endpoint
+    # The URLs to send events and sessions to
+    # @return [EndpointConfiguration]
+    attr_reader :endpoints
 
-    # The URL session notifications will be delivered to
-    # @return [String]
-    attr_reader :session_endpoint
+    # Whether events will be delivered
+    # @api private
+    # @return [Boolean]
+    attr_reader :enable_events
 
     # Whether sessions will be delivered
+    # @api private
     # @return [Boolean]
     attr_reader :enable_sessions
 
@@ -217,9 +220,9 @@ module Bugsnag
       # to avoid infinite recursion when creating breadcrumb buffer
       @max_breadcrumbs = DEFAULT_MAX_BREADCRUMBS
 
-      # These are set exclusively using the "set_endpoints" method
-      @notify_endpoint = DEFAULT_NOTIFY_ENDPOINT
-      @session_endpoint = DEFAULT_SESSION_ENDPOINT
+      @endpoints = EndpointConfiguration.new(DEFAULT_NOTIFY_ENDPOINT, DEFAULT_SESSION_ENDPOINT)
+
+      @enable_events = true
       @enable_sessions = true
 
       @metadata = {}
@@ -466,26 +469,44 @@ module Bugsnag
       request_data[:breadcrumbs] ||= Bugsnag::Utility::CircularBuffer.new(@max_breadcrumbs)
     end
 
+    # The URL error notifications will be delivered to
+    # @!attribute notify_endpoint
+    # @return [String]
+    # @deprecated Use {#endpoints} instead
+    def notify_endpoint
+      @endpoints.notify
+    end
+
+    alias :endpoint :notify_endpoint
+
     # Sets the notification endpoint
     #
-    # @deprecated Use {#set_endpoints} instead
+    # @deprecated Use {#endpoints} instead
     #
     # @param new_notify_endpoint [String] The URL to deliver error notifications to
     # @return [void]
     def endpoint=(new_notify_endpoint)
-      warn("The 'endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
+      warn("The 'endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead")
       set_endpoints(new_notify_endpoint, session_endpoint) # Pass the existing session_endpoint through so it doesn't get overwritten
+    end
+
+    # The URL session notifications will be delivered to
+    # @!attribute session_endpoint
+    # @return [String]
+    # @deprecated Use {#endpoints} instead
+    def session_endpoint
+      @endpoints.sessions
     end
 
     ##
     # Sets the sessions endpoint
     #
-    # @deprecated Use {#set_endpoints} instead
+    # @deprecated Use {#endpoints} instead
     #
     # @param new_session_endpoint [String] The URL to deliver session notifications to
     # @return [void]
     def session_endpoint=(new_session_endpoint)
-      warn("The 'session_endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
+      warn("The 'session_endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead")
       set_endpoints(notify_endpoint, new_session_endpoint) # Pass the existing notify_endpoint through so it doesn't get overwritten
     end
 
@@ -495,9 +516,26 @@ module Bugsnag
     # @param new_notify_endpoint [String] The URL to deliver error notifications to
     # @param new_session_endpoint [String] The URL to deliver session notifications to
     # @return [void]
+    # @deprecated Use {#endpoints} instead
     def set_endpoints(new_notify_endpoint, new_session_endpoint)
-      @notify_endpoint = new_notify_endpoint
-      @session_endpoint = new_session_endpoint
+      self.endpoints = EndpointConfiguration.new(new_notify_endpoint, new_session_endpoint)
+    end
+
+    def endpoints=(endpoint_configuration)
+      result = EndpointValidator.validate(endpoint_configuration)
+
+      if result.valid?
+        @enable_events = true
+        @enable_sessions = true
+      else
+        warn(result.reason)
+
+        @enable_events = result.keep_events_enabled_for_backwards_compatibility?
+        @enable_sessions = false
+      end
+
+      # use the given endpoints even if they are invalid
+      @endpoints = endpoint_configuration
     end
 
     ##
