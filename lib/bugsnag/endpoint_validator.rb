@@ -22,12 +22,12 @@ module Bugsnag
     class Result
       # rubocop:disable Layout/LineLength
       MISSING_URLS = "Invalid configuration. endpoints must be set with both a notify and session URL. Bugsnag will not send any requests.".freeze
-      MISSING_NOTIFY_URL = "Invalid configuration. endpoints.notify cannot be set without also setting endpoints.sessions. Sessions will not be sent to Bugsnag.".freeze
-      MISSING_SESSION_URL = "Invalid configuration. endpoints.sessions cannot be set without also setting endpoints.notify. Bugsnag will not send any requests.".freeze
+      MISSING_NOTIFY_URL = "Invalid configuration. endpoints.sessions cannot be set without also setting endpoints.notify. Bugsnag will not send any requests.".freeze
+      MISSING_SESSION_URL = "Invalid configuration. endpoints.notify cannot be set without also setting endpoints.sessions. Bugsnag will not send any sessions.".freeze
 
       INVALID_URLS = "Invalid configuration. endpoints should be valid URLs, got empty strings. Bugsnag will not send any requests.".freeze
-      INVALID_NOTIFY_URL = "Invalid configuration. endpoints.notify should be a valid URL, got empty string. Sessions will not be sent to Bugsnag.".freeze
-      INVALID_SESSION_URL = "Invalid configuration. endpoints.sessions should be a valid URL, got empty string. Bugsnag will not send any requests.".freeze
+      INVALID_NOTIFY_URL = "Invalid configuration. endpoints.notify should be a valid URL, got empty string. Bugsnag will not send any requests.".freeze
+      INVALID_SESSION_URL = "Invalid configuration. endpoints.sessions should be a valid URL, got empty string. Bugsnag will not send any sessions.".freeze
       # rubocop:enable Layout/LineLength
 
       attr_reader :reason
