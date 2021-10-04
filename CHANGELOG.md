@@ -13,11 +13,14 @@ Changelog
   | [#700](https://github.com/bugsnag/bugsnag-ruby/pull/700)
 * Add `Configuration#endpoints` for reading the notify and sessions endpoints and `Configuration#endpoints=` for setting them
   | [#701](https://github.com/bugsnag/bugsnag-ruby/pull/701)
+* Add `Configuration#redacted_keys`. This is like `meta_data_filters` but matches strings with case-insensitive equality, rather than matching based on inclusion
+  | [#703](https://github.com/bugsnag/bugsnag-ruby/pull/703)
 
 ### Deprecated
 
 * In the next major release, `params` will only contain query string parameters. Currently it also contains the request body for form data requests, but this is deprecated in favour of the new `body` property
 * The `Configuration#set_endpoints` method is now deprecated in favour of `Configuration#endpoints=`
+* The `Configuration#meta_data_filters` option is now deprecated in favour of `Configuration#redacted_keys`
 
 ## v6.23.0 (21 September 2021)
 
