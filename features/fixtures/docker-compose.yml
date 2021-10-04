@@ -5,7 +5,7 @@ services:
     image: redis
 
   postgres:
-    image: postgres
+    image: postgres:13
     environment:
       - POSTGRES_PASSWORD=test_password
 
