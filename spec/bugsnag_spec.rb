@@ -685,6 +685,65 @@ describe Bugsnag do
       })
     end
 
+    it "does not attach session information when the session is paused" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+      end
+
+      Bugsnag.start_session
+      Bugsnag.pause_session
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed"), true)
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        expect(payload["events"][0]["session"]).to be(nil)
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 0,
+          unhandled: 0,
+        })
+      })
+    end
+
+    it "attaches session information when the session is resumed" do
+      Bugsnag.configure do |config|
+        config.auto_capture_sessions = true
+      end
+
+      Bugsnag.start_session
+
+      Bugsnag.notify(BugsnagTestException.new("one handled"))
+
+      Bugsnag.pause_session
+
+      Bugsnag.notify(BugsnagTestException.new("this unhandled error is not counted"), true)
+      Bugsnag.notify(BugsnagTestException.new("this handled error is not counted"))
+
+      # reset WebMock's stored requests so we only assert against the last one
+      # as "have_sent_notification" doesn't support finding a specific request
+      WebMock::RequestRegistry.instance.reset!
+
+      Bugsnag.resume_session
+
+      Bugsnag.notify(BugsnagTestException.new("one unhandled"), true)
+
+      expect(Bugsnag).to(have_sent_notification { |payload, headers|
+        session = payload["events"][0]["session"]
+
+        expect(session["id"]).to match(session_id_regex)
+        expect(session["startedAt"]).to match(session_timestamp_regex)
+        expect(session["events"]).to eq({
+          "handled" => 1,
+          "unhandled" => 1,
+        })
+
+        expect(Bugsnag::SessionTracker.get_current_session[:events]).to eq({
+          handled: 1,
+          unhandled: 1,
+        })
+      })
+    end
+
     it "allows changing an event from handled to unhandled" do
       Bugsnag.configure do |config|
         config.auto_capture_sessions = true
