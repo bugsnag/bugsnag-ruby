@@ -406,6 +406,8 @@ module Bugsnag
     private
 
     def should_deliver_notification?(exception, auto_notify)
+      return false unless configuration.enable_events
+
       reason = abort_reason(exception, auto_notify)
       configuration.debug(reason) unless reason.nil?
       reason.nil?

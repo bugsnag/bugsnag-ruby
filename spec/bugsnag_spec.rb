@@ -121,6 +121,7 @@ describe Bugsnag do
     end
 
     it "warns and disables sessions if a notify endpoint is set without a session endpoint" do
+      expect(Bugsnag.configuration).to receive(:warn).with(Bugsnag::EndpointValidator::Result::MISSING_SESSION_URL)
       expect(Bugsnag.configuration).to receive(:warn).with("The session endpoint has not been set, all further session capturing will be disabled")
       expect(Bugsnag.configuration).to receive(:disable_sessions)
       Bugsnag.configuration.set_endpoints(custom_notify_endpoint, nil)
@@ -133,13 +134,80 @@ describe Bugsnag do
     end
 
     it "is called after the configuration block has returned" do
-      expect(Bugsnag.configuration).to receive(:warn).with("The 'endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead").once
-      expect(Bugsnag.configuration).to receive(:warn).with("The 'session_endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead").once
+      expect(Bugsnag.configuration).to receive(:warn).with("The 'endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead").once
+      expect(Bugsnag.configuration).to receive(:warn).with("The 'session_endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead").once
       expect(Bugsnag.configuration).not_to receive(:warn).with("The session endpoint has not been set, all further session capturing will be disabled")
+
       Bugsnag.configure do |configuration|
         configuration.endpoint = custom_notify_endpoint
         configuration.session_endpoint = custom_session_endpoint
       end
+    end
+  end
+
+  describe "endpoint configuration" do
+    it "does not send events when both endpoints are invalid" do
+      Bugsnag.configuration.endpoints = {}
+
+      expect(Bugsnag.configuration).not_to receive(:debug)
+      expect(Bugsnag.configuration).not_to receive(:info)
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      expect(Bugsnag.configuration).not_to receive(:error)
+
+      Bugsnag.notify(RuntimeError.new("abc"))
+
+      expect(Bugsnag).not_to have_sent_notification
+    end
+
+    it "does not send sessions when both endpoints are invalid" do
+      Bugsnag.configuration.endpoints = {}
+
+      expect(Bugsnag.configuration).not_to receive(:debug)
+      expect(Bugsnag.configuration).not_to receive(:info)
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      expect(Bugsnag.configuration).not_to receive(:error)
+
+      Bugsnag.start_session
+
+      expect(Bugsnag).not_to have_sent_sessions
+    end
+
+    it "does not send events or sessions when the notify endpoint is invalid" do
+      Bugsnag.configuration.endpoints = { sessions: "sessions.example.com" }
+
+      expect(Bugsnag.configuration).not_to receive(:debug)
+      expect(Bugsnag.configuration).not_to receive(:info)
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      expect(Bugsnag.configuration).not_to receive(:error)
+
+      Bugsnag.notify(RuntimeError.new("abc"))
+      Bugsnag.start_session
+
+      expect(Bugsnag).not_to have_sent_notification
+      expect(Bugsnag).not_to have_sent_sessions
+    end
+
+    it "does not send sessions when the session endpoint is invalid" do
+      Bugsnag.configuration.endpoints = Bugsnag::EndpointConfiguration.new("http://notify.example.com", nil)
+
+      expect(Bugsnag.configuration).to receive(:debug).with("Request to http://notify.example.com completed, status: 200").once
+      expect(Bugsnag.configuration).to receive(:info).with("Notifying http://notify.example.com of RuntimeError").once
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      expect(Bugsnag.configuration).not_to receive(:error)
+
+      stub_request(:post, "http://notify.example.com/")
+
+      Bugsnag.notify(RuntimeError.new("abc"))
+      Bugsnag.start_session
+
+      expect(Bugsnag).to(have_requested(:post, "http://notify.example.com/").with do |request|
+        payload = JSON.parse(request.body)
+        exception = get_exception_from_payload(payload)
+
+        expect(exception["message"]).to eq("abc")
+      end)
+
+      expect(Bugsnag).not_to have_sent_sessions
     end
   end
 

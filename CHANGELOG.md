@@ -11,10 +11,13 @@ Changelog
   | [#699](https://github.com/bugsnag/bugsnag-ruby/pull/699)
 * Add `cookies`, `body` and `httpVersion` to the automatically captured request data for Rack apps
   | [#700](https://github.com/bugsnag/bugsnag-ruby/pull/700)
+* Add `Configuration#endpoints` for reading the notify and sessions endpoints and `Configuration#endpoints=` for setting them
+  | [#701](https://github.com/bugsnag/bugsnag-ruby/pull/701)
 
 ### Deprecated
 
 * In the next major release, `params` will only contain query string parameters. Currently it also contains the request body for form data requests, but this is deprecated in favour of the new `body` property
+* The `Configuration#set_endpoints` method is now deprecated in favour of `Configuration#endpoints=`
 
 ## v6.23.0 (21 September 2021)
 
