@@ -34,17 +34,20 @@ module Bugsnag
     # Starts a new session, storing it on the current thread.
     #
     # This allows Bugsnag to track error rates for a release.
+    #
+    # @return [void]
     def start_session
       return unless Bugsnag.configuration.enable_sessions && Bugsnag.configuration.should_notify_release_stage?
 
       start_delivery_thread
       start_time = Time.now().utc().strftime('%Y-%m-%dT%H:%M:00')
       new_session = {
-        :id => SecureRandom.uuid,
-        :startedAt => start_time,
-        :events => {
-          :handled => 0,
-          :unhandled => 0
+        id: SecureRandom.uuid,
+        startedAt: start_time,
+        paused?: false,
+        events: {
+          handled: 0,
+          unhandled: 0
         }
       }
       SessionTracker.set_current_session(new_session)
@@ -52,6 +55,47 @@ module Bugsnag
     end
 
     alias_method :create_session, :start_session
+
+    ##
+    # Stop any events being attributed to the current session until it is
+    # resumed or a new session is started
+    #
+    # @see resume_session
+    #
+    # @return [void]
+    def pause_session
+      current_session = SessionTracker.get_current_session
+
+      return unless current_session
+
+      current_session[:paused?] = true
+    end
+
+    ##
+    # Resume the current session if it was previously paused. If there is no
+    # current session, a new session will be started
+    #
+    # @see pause_session
+    #
+    # @return [Boolean] true if a paused session was resumed
+    def resume_session
+      current_session = SessionTracker.get_current_session
+
+      if current_session
+        # if the session is paused then resume it, otherwise we don't need to
+        # do anything
+        if current_session[:paused?]
+          current_session[:paused?] = false
+
+          return true
+        end
+      else
+        # if there's no current session, start a new one
+        start_session
+      end
+
+      false
+    end
 
     ##
     # Delivers the current session_counts lists to the session endpoint.
