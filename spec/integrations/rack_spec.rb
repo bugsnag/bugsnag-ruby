@@ -152,6 +152,63 @@ describe Bugsnag::Rack do
       expect(report.metadata[:session]).to eq({ session: true })
     end
 
+    it "correctly redacts from url and referer any value indicated by redacted_keys" do
+      rack_env = {
+        env: true,
+        HTTP_REFERER: "https://bugsnag.com/about?email=hello@world.com&another_param=thing",
+        "rack.session" => { session: true }
+      }
+
+      rack_request = double
+      allow(rack_request).to receive_messages(
+        params: { param: 'test', param2: 'test2' },
+        ip: "rack_ip",
+        request_method: "TEST",
+        path: "/TEST_PATH",
+        scheme: "http",
+        host: "test_host",
+        port: 80,
+        referer: "https://bugsnag.com/about?email=hello@world.com&another_param=thing",
+        fullpath: "/TEST_PATH?email=hello@world.com&another_param=thing",
+        form_data?: true,
+        POST: { param: 'test' },
+        cookies: { session_id: 12345 }
+      )
+
+      expect(::Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
+
+      Bugsnag.configure do |config|
+        config.send_environment = true
+        config.meta_data_filters = []
+        config.redacted_keys = Set["email", "cookie"]
+        config.request_data[:rack_env] = rack_env
+      end
+
+      report = Bugsnag::Report.new(RuntimeError.new('abc'), Bugsnag.configuration)
+
+      callback = double
+      expect(callback).to receive(:call).with(report)
+
+      middleware = Bugsnag::Middleware::RackRequest.new(callback)
+      middleware.call(report)
+
+      expect(report.request).to eq({
+        url: "http://test_host/TEST_PATH?email=[FILTERED]&another_param=thing",
+        httpMethod: "TEST",
+        params: { param: 'test', param2: 'test2' },
+        referer: "https://bugsnag.com/about?email=[FILTERED]&another_param=thing",
+        clientIp: "rack_ip",
+        headers: {
+          "Referer" => "https://bugsnag.com/about?email=[FILTERED]&another_param=thing"
+        },
+        body: { param: 'test' }
+      })
+
+      expect(report.metadata[:request]).to be(report.request)
+      expect(report.metadata[:environment]).to eq(rack_env)
+      expect(report.metadata[:session]).to eq({ session: true })
+    end
+
     it "correctly extracts data from rack middleware" do
       rack_env = {
         env: true,

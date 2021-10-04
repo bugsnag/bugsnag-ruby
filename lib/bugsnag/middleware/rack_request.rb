@@ -138,7 +138,7 @@ module Bugsnag::Middleware
     end
 
     def add_cookies(report, request)
-      return unless record_cookies?(report.configuration)
+      return unless record_cookies?
 
       cookies = request.cookies rescue nil
 
@@ -147,17 +147,10 @@ module Bugsnag::Middleware
       report.add_metadata(:request, :cookies, cookies)
     end
 
-    def record_cookies?(configuration)
+    def record_cookies?
       # only record cookies in the request if none of the filters match "Cookie"
       # the "Cookie" header will be filtered as normal
-      configuration.meta_data_filters.none? do |filter|
-        case filter
-        when Regexp
-          COOKIE_HEADER.match(filter)
-        else
-          COOKIE_HEADER.include?(filter.to_s)
-        end
-      end
+      !Bugsnag.cleaner.filters_match?(COOKIE_HEADER)
     end
   end
 end
