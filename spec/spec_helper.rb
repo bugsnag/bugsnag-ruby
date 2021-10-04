@@ -59,6 +59,8 @@ RSpec.configure do |config|
     Bugsnag.instance_variable_set(:@session_tracker, Bugsnag::SessionTracker.new)
     Bugsnag.instance_variable_set(:@cleaner, Bugsnag::Cleaner.new(Bugsnag.configuration))
 
+    Thread.current[Bugsnag::SessionTracker::THREAD_SESSION] = nil
+
     Bugsnag.configure do |bugsnag|
       bugsnag.api_key = "c9d60ae4c7e70c4b6c4ebd3e8056d2b8"
       bugsnag.release_stage = "production"
