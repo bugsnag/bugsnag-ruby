@@ -162,7 +162,8 @@ module Bugsnag
     # An array of paths within the {project_root} that should not be considered
     # as "in project"
     #
-    # These paths should be relative to the {project_root}
+    # These paths should be relative to the {project_root} and will only match
+    # whole directory names
     #
     # @return [Array<String>]
     attr_accessor :vendor_paths
