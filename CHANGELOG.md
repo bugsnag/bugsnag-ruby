@@ -13,6 +13,8 @@ Changelog
   | [#700](https://github.com/bugsnag/bugsnag-ruby/pull/700)
 * Add `Configuration#endpoints` for reading the notify and sessions endpoints and `Configuration#endpoints=` for setting them
   | [#701](https://github.com/bugsnag/bugsnag-ruby/pull/701)
+* Allow pausing and resuming sessions, giving more control over stability score
+  | [#704](https://github.com/bugsnag/bugsnag-ruby/pull/704)
 
 ### Deprecated
 
