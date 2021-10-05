@@ -197,11 +197,34 @@ module Bugsnag
     end
 
     ##
-    # Starts a session.
+    # Starts a new session, which allows Bugsnag to track error rates across
+    # releases
     #
-    # Allows Bugsnag to track error rates across releases.
+    # @return [void]
     def start_session
       session_tracker.start_session
+    end
+
+    ##
+    # Stop any events being attributed to the current session until it is
+    # resumed or a new session is started
+    #
+    # @see resume_session
+    #
+    # @return [void]
+    def pause_session
+      session_tracker.pause_session
+    end
+
+    ##
+    # Resume the current session if it was previously paused. If there is no
+    # current session, a new session will be started
+    #
+    # @see pause_session
+    #
+    # @return [Boolean] true if a paused session was resumed
+    def resume_session
+      session_tracker.resume_session
     end
 
     ##

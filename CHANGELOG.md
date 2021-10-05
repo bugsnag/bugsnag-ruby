@@ -15,6 +15,8 @@ Changelog
   | [#701](https://github.com/bugsnag/bugsnag-ruby/pull/701)
 * Add `Configuration#redacted_keys`. This is like `meta_data_filters` but matches strings with case-insensitive equality, rather than matching based on inclusion
   | [#703](https://github.com/bugsnag/bugsnag-ruby/pull/703)
+* Allow pausing and resuming sessions, giving more control over the stability score
+  | [#704](https://github.com/bugsnag/bugsnag-ruby/pull/704)
 
 ### Deprecated
 
