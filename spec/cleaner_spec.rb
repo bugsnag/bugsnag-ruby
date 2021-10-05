@@ -278,51 +278,95 @@ describe Bugsnag::Cleaner do
 
     describe "redacted keys" do
       it "redacts exact string match" do
-        object = { events: { metaData: { foo: 'bar' } } }
+        object = { events: { metaData: { foo: 'bar', bar: 'foo' } } }
 
         configuration = Bugsnag::Configuration.new
         configuration.redacted_keys = Set['foo']
 
         cleaner = Bugsnag::Cleaner.new(configuration)
-        expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: '[FILTERED]' } } })
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: '[FILTERED]',
+              bar: 'foo'
+            }
+          }
+        })
 
         configuration = Bugsnag::Configuration.new
         configuration.redacted_keys = Set['bar']
 
         cleaner = Bugsnag::Cleaner.new(configuration)
-        expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: 'bar' } } })
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: 'bar',
+              bar: '[FILTERED]'
+            }
+          }
+        })
       end
 
       it "redacts case insensitive string match" do
-        object = { events: { metaData: { foo: 'bar' } } }
+        object = { events: { metaData: { foo: 'bar', bar: 'foo' } } }
 
         configuration = Bugsnag::Configuration.new
         configuration.redacted_keys = Set['FOO']
 
         cleaner = Bugsnag::Cleaner.new(configuration)
-        expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: '[FILTERED]' } } })
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: '[FILTERED]',
+              bar: 'foo'
+            }
+          }
+        })
 
         configuration = Bugsnag::Configuration.new
-        configuration.redacted_keys = Set['bar']
+        configuration.redacted_keys = Set['bAr']
 
         cleaner = Bugsnag::Cleaner.new(configuration)
-        expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: 'bar' } } })
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: 'bar',
+              bar: '[FILTERED]'
+            }
+          }
+        })
       end
 
       it "redacts by regular expression" do
-        object = { events: { metaData: { foo: 'bar' } } }
+        object = { events: { metaData: { foo: 'bar', bar: 'foo' } } }
 
         configuration = Bugsnag::Configuration.new
         configuration.redacted_keys = Set[/fb?/]
 
         cleaner = Bugsnag::Cleaner.new(configuration)
-        expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: '[FILTERED]' } } })
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: '[FILTERED]',
+              bar: 'foo'
+            }
+          }
+        })
 
         configuration = Bugsnag::Configuration.new
         configuration.redacted_keys = Set[/fb+/]
 
         cleaner = Bugsnag::Cleaner.new(configuration)
-        expect(cleaner.clean_object(object)).to eq({ events: { metaData: { foo: 'bar' } } })
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: 'bar',
+              bar: 'foo'
+            }
+          }
+        })
       end
 
       it "redacts deeply nested keys" do
@@ -331,8 +375,17 @@ describe Bugsnag::Cleaner do
 
         cleaner = Bugsnag::Cleaner.new(configuration)
 
-        params = { events: { metaData: { foo: { bar: 'baz' } } } }
-        expect(cleaner.clean_object(params)).to eq({ events: { metaData: { foo: { bar: '[FILTERED]' } } } })
+        params = { events: { metaData: { foo: { bar: 'baz', baz: 'bar' } } } }
+        expect(cleaner.clean_object(params)).to eq({
+          events: {
+            metaData: {
+              foo: {
+                bar: '[FILTERED]',
+                baz: 'bar'
+              }
+            }
+          }
+        })
       end
 
       it "redacts deeply nested request parameters" do
@@ -341,66 +394,79 @@ describe Bugsnag::Cleaner do
 
         cleaner = Bugsnag::Cleaner.new(configuration)
 
-        params = { events: { metaData: { request: { params: { foo: { bar: 'baz' } } } } } }
-        expect(cleaner.clean_object(params)).to eq({ events: { metaData: { request: { params: { foo: { bar: '[FILTERED]' } } } } } })
+        params = { events: { metaData: { request: { params: { foo: { bar: 'baz', baz: 'bar' } } } } } }
+        expect(cleaner.clean_object(params)).to eq({
+          events: {
+            metaData: {
+              request: {
+                params: {
+                  foo: {
+                    bar: '[FILTERED]',
+                    baz: 'bar'
+                  }
+                }
+              }
+            }
+          }
+        })
       end
 
-      it "doesn't filter by string inclusion when the scope is not in 'scopes_to_filter'" do
-        object = { foo: 'bar' }
+      it "doesn't filter by string match when the scope is not in 'scopes_to_filter'" do
+        object = { foo: 'bar', bar: 'foo' }
 
         configuration = Bugsnag::Configuration.new
-        configuration.redacted_keys = Set['f']
+        configuration.redacted_keys = Set['foo']
 
         cleaner = Bugsnag::Cleaner.new(configuration)
 
-        expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+        expect(cleaner.clean_object(object)).to eq({ foo: 'bar', bar: 'foo' })
 
         configuration = Bugsnag::Configuration.new
-        configuration.redacted_keys = Set['b']
+        configuration.redacted_keys = Set['bar']
 
         cleaner = Bugsnag::Cleaner.new(configuration)
 
-        expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+        expect(cleaner.clean_object(object)).to eq({ foo: 'bar', bar: 'foo' })
       end
 
       it "doesn't filter by regular expression when the scope is not in 'scopes_to_filter'" do
-        object = { foo: 'bar' }
+        object = { foo: 'bar', bar: 'foo' }
 
         configuration = Bugsnag::Configuration.new
         configuration.redacted_keys = Set[/fb?/]
 
         cleaner = Bugsnag::Cleaner.new(configuration)
 
-        expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+        expect(cleaner.clean_object(object)).to eq({ foo: 'bar', bar: 'foo' })
 
         configuration = Bugsnag::Configuration.new
         configuration.redacted_keys = Set[/fb+/]
 
         cleaner = Bugsnag::Cleaner.new(configuration)
 
-        expect(cleaner.clean_object(object)).to eq({ foo: 'bar' })
+        expect(cleaner.clean_object(object)).to eq({ foo: 'bar', bar: 'foo' })
       end
 
       it "doesn't filter deeply nested keys when the scope is not in 'scopes_to_filter'" do
-        params = { foo: { bar: 'baz' } }
+        params = { foo: { bar: 'baz', baz: 'bar' } }
 
         configuration = Bugsnag::Configuration.new
         configuration.redacted_keys = Set[/^foo\.bar/]
 
         cleaner = Bugsnag::Cleaner.new(configuration)
 
-        expect(cleaner.clean_object(params)).to eq({ foo: { bar: 'baz' } })
+        expect(cleaner.clean_object(params)).to eq({ foo: { bar: 'baz', baz: 'bar' } })
       end
 
       it "doesn't filter deeply nested request parameters when the scope is not in 'scopes_to_filter'" do
-        params = { request: { params: { foo: { bar: 'baz' } } } }
+        params = { request: { params: { foo: { bar: 'baz', baz: 'bar' } } } }
 
         configuration = Bugsnag::Configuration.new
         configuration.redacted_keys = Set[/^foo\.bar/]
 
         cleaner = Bugsnag::Cleaner.new(configuration)
 
-        expect(cleaner.clean_object(params)).to eq({ request: { params: { foo: { bar: 'baz' } } } })
+        expect(cleaner.clean_object(params)).to eq({ request: { params: { foo: { bar: 'baz', baz: 'bar' } } } })
       end
     end
 
