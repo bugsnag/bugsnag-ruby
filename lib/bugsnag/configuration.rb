@@ -60,8 +60,13 @@ module Bugsnag
     # @return [Set<String, Regexp>]
     attr_accessor :meta_data_filters
 
-    # A list of keys that should be redacted from the report and breadcrumb
+    # A set of keys that should be redacted from the report and breadcrumb
     # metadata before sending them to Bugsnag
+    #
+    # When adding strings, keys that are equal to the string (ignoring case)
+    # will be redacted. When adding regular expressions, any keys which match
+    # the regular expression will be redacted
+    #
     # @return [Set<String, Regexp>]
     attr_accessor :redacted_keys
 
