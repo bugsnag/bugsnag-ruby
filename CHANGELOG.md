@@ -17,12 +17,15 @@ Changelog
   | [#703](https://github.com/bugsnag/bugsnag-ruby/pull/703)
 * Allow pausing and resuming sessions, giving more control over the stability score
   | [#704](https://github.com/bugsnag/bugsnag-ruby/pull/704)
+* Add `Configuration#vendor_paths` to replace `Configuration#vendor_path`
+  | [#705](https://github.com/bugsnag/bugsnag-ruby/pull/705)
 
 ### Deprecated
 
 * In the next major release, `params` will only contain query string parameters. Currently it also contains the request body for form data requests, but this is deprecated in favour of the new `body` property
 * The `Configuration#set_endpoints` method is now deprecated in favour of `Configuration#endpoints=`
 * The `Configuration#meta_data_filters` option is now deprecated in favour of `Configuration#redacted_keys`
+* The `Configuration#vendor_path` option is now deprecated in favour of `Configuration#vendor_paths`
 
 ## v6.23.0 (21 September 2021)
 
