@@ -56,8 +56,19 @@ module Bugsnag
 
     # A list of keys that should be filtered out from the report and breadcrumb
     # metadata before sending them to Bugsnag
+    # @deprecated Use {#redacted_keys} instead
     # @return [Set<String, Regexp>]
     attr_accessor :meta_data_filters
+
+    # A set of keys that should be redacted from the report and breadcrumb
+    # metadata before sending them to Bugsnag
+    #
+    # When adding strings, keys that are equal to the string (ignoring case)
+    # will be redacted. When adding regular expressions, any keys which match
+    # the regular expression will be redacted
+    #
+    # @return [Set<String, Regexp>]
+    attr_accessor :redacted_keys
 
     # The logger to use for Bugsnag log messages
     # @return [Logger]
@@ -201,6 +212,7 @@ module Bugsnag
       self.send_environment = false
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
+      @redacted_keys = Set.new
       self.scopes_to_filter = DEFAULT_SCOPES_TO_FILTER
       self.hostname = default_hostname
       self.runtime_versions = {}
