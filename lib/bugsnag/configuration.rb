@@ -155,9 +155,17 @@ module Bugsnag
     # @return [Integer]
     attr_reader :max_breadcrumbs
 
-    #
+    # @deprecated Use {vendor_paths} instead
     # @return [Regexp]
     attr_accessor :vendor_path
+
+    # An array of paths within the {project_root} that should not be considered
+    # as "in project"
+    #
+    # These paths should be relative to the {project_root}
+    #
+    # @return [Array<String>]
+    attr_accessor :vendor_paths
 
     # The default context for all future events
     # Setting this will disable automatic context setting
@@ -259,6 +267,7 @@ module Bugsnag
       # Stacktrace lines that matches regex will be marked as "out of project"
       # will only appear in the full trace.
       self.vendor_path = DEFAULT_VENDOR_PATH
+      @vendor_paths = []
 
       # Set up logging
       self.logger = Logger.new(STDOUT)
