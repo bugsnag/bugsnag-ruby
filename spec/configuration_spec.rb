@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'spec_helper'
+require 'support/shared_examples_for_metadata'
 
 describe Bugsnag::Configuration do
   describe "delivery_method" do
@@ -72,26 +73,6 @@ describe Bugsnag::Configuration do
     end
   end
 
-  describe "#notify_endpoint" do
-    it "defaults to DEFAULT_NOTIFY_ENDPOINT" do
-      expect(subject.notify_endpoint).to eq(Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT)
-    end
-
-    it "is readonly" do
-      expect{ subject.notify_endpoint = "My Custom Url" }.to raise_error(NoMethodError)
-    end
-
-    it "is the same as endpoint" do
-      expect(subject.notify_endpoint).to equal(subject.endpoint)
-    end
-  end
-
-  describe "#session_endpoint" do
-    it "defaults to DEFAULT_SESSION_ENDPOINT" do
-      expect(subject.session_endpoint).to eq(Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT)
-    end
-  end
-
   describe "#auto_capture_sessions" do
     it "defaults to true" do
       expect(subject.auto_capture_sessions).to eq(true)
@@ -124,47 +105,167 @@ describe Bugsnag::Configuration do
     end
   end
 
-  describe "#endpoint=" do
-    let(:custom_notify_endpoint) { "My custom notify endpoint" }
-    let(:session_endpoint) { "My session endpoint" }
-    it "calls #warn with a deprecation notice" do
-      allow(subject).to receive(:set_endpoints)
-      expect(subject).to receive(:warn).with("The 'endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
-      subject.endpoint = custom_notify_endpoint
+  describe "endpoint configuration" do
+    describe "#notify_endpoint" do
+      it "defaults to DEFAULT_NOTIFY_ENDPOINT" do
+        expect(subject.notify_endpoint).to eq(Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT)
+      end
+
+      it "is readonly" do
+        expect{ subject.notify_endpoint = "My Custom Url" }.to raise_error(NoMethodError)
+      end
+
+      it "is the same as endpoint" do
+        expect(subject.notify_endpoint).to equal(subject.endpoint)
+      end
     end
 
-    it "calls #set_endpoints with the new notify_endpoint and existing session endpoint" do
-      allow(subject).to receive(:session_endpoint).and_return(session_endpoint)
-      allow(subject).to receive(:warn)
-      expect(subject).to receive(:set_endpoints).with(custom_notify_endpoint, session_endpoint)
-      subject.endpoint = custom_notify_endpoint
-    end
-  end
-
-  describe "#session_endpoint=" do
-    let(:notify_endpoint) { "My notify endpoint" }
-    let(:custom_session_endpoint) { "My custom session endpoint" }
-    it "calls #warn with a deprecation notice" do
-      allow(subject).to receive(:set_endpoints)
-      expect(subject).to receive(:warn).with("The 'session_endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
-      subject.session_endpoint = custom_session_endpoint
+    describe "#session_endpoint" do
+      it "defaults to DEFAULT_SESSION_ENDPOINT" do
+        expect(subject.session_endpoint).to eq(Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT)
+      end
     end
 
-    it "calls #set_endpoints with the existing notify_endpoint and new session endpoint" do
-      allow(subject).to receive(:notify_endpoint).and_return(notify_endpoint)
-      allow(subject).to receive(:warn)
-      expect(subject).to receive(:set_endpoints).with(notify_endpoint, custom_session_endpoint)
-      subject.session_endpoint = custom_session_endpoint
-    end
-  end
+    describe "#endpoint=" do
+      let(:custom_notify_endpoint) { "My custom notify endpoint" }
+      let(:session_endpoint) { "My session endpoint" }
+      it "calls #warn with a deprecation notice" do
+        allow(subject).to receive(:set_endpoints)
+        expect(subject).to receive(:warn).with("The 'endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead")
+        subject.endpoint = custom_notify_endpoint
+      end
 
-  describe "#set_endpoints" do
-    let(:custom_notify_endpoint) { "My custom notify endpoint" }
-    let(:custom_session_endpoint) { "My custom session endpoint" }
-    it "set notify_endpoint and session_endpoint" do
-      subject.set_endpoints(custom_notify_endpoint, custom_session_endpoint)
-      expect(subject.notify_endpoint).to eq(custom_notify_endpoint)
-      expect(subject.session_endpoint).to eq(custom_session_endpoint)
+      it "calls #set_endpoints with the new notify_endpoint and existing session endpoint" do
+        allow(subject).to receive(:session_endpoint).and_return(session_endpoint)
+        allow(subject).to receive(:warn)
+        expect(subject).to receive(:set_endpoints).with(custom_notify_endpoint, session_endpoint)
+        subject.endpoint = custom_notify_endpoint
+      end
+    end
+
+    describe "#session_endpoint=" do
+      let(:notify_endpoint) { "My notify endpoint" }
+      let(:custom_session_endpoint) { "My custom session endpoint" }
+      it "calls #warn with a deprecation notice" do
+        allow(subject).to receive(:set_endpoints)
+        expect(subject).to receive(:warn).with("The 'session_endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead")
+        subject.session_endpoint = custom_session_endpoint
+      end
+
+      it "calls #set_endpoints with the existing notify_endpoint and new session endpoint" do
+        allow(subject).to receive(:notify_endpoint).and_return(notify_endpoint)
+        allow(subject).to receive(:warn)
+        expect(subject).to receive(:set_endpoints).with(notify_endpoint, custom_session_endpoint)
+        subject.session_endpoint = custom_session_endpoint
+      end
+    end
+
+    describe "#set_endpoints" do
+      let(:custom_notify_endpoint) { "My custom notify endpoint" }
+      let(:custom_session_endpoint) { "My custom session endpoint" }
+      it "set notify_endpoint and session_endpoint" do
+        subject.set_endpoints(custom_notify_endpoint, custom_session_endpoint)
+        expect(subject.notify_endpoint).to eq(custom_notify_endpoint)
+        expect(subject.session_endpoint).to eq(custom_session_endpoint)
+      end
+    end
+
+    describe "#endpoints" do
+      it "defaults to 'DEFAULT_NOTIFY_ENDPOINT' & 'DEFAULT_SESSION_ENDPOINT'" do
+        config = Bugsnag::Configuration.new
+
+        expect(config.endpoints.notify).to eq(Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT)
+        expect(config.endpoints.sessions).to eq(Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT)
+      end
+    end
+
+    describe "#endpoints=" do
+      it "can be set with an EndpointConfiguration" do
+        config = Bugsnag::Configuration.new
+        expect(config).not_to receive(:warn)
+
+        config.endpoints = Bugsnag::EndpointConfiguration.new("notify.example.com", "sessions.example.com")
+
+        expect(config.endpoints.notify).to eq("notify.example.com")
+        expect(config.endpoints.sessions).to eq("sessions.example.com")
+      end
+
+      it "warns and disables all sending if the no URLs are given" do
+        config = Bugsnag::Configuration.new
+        expect(config).to receive(:warn).with(Bugsnag::EndpointValidator::Result::MISSING_URLS)
+
+        config.endpoints = Bugsnag::EndpointConfiguration.new(nil, nil)
+
+        expect(config.endpoints.notify).to be_nil
+        expect(config.endpoints.sessions).to be_nil
+
+        expect(config.enable_events).to be(false)
+        expect(config.enable_sessions).to be(false)
+      end
+
+      # TODO: this behaviour exists for backwards compatibilitiy
+      #       ideally we should not send events in this case
+      it "warns and disables sessions if only notify URL is given" do
+        config = Bugsnag::Configuration.new
+        expect(config).to receive(:warn).with(Bugsnag::EndpointValidator::Result::MISSING_SESSION_URL)
+
+        config.endpoints = Bugsnag::EndpointConfiguration.new("notify.example.com", nil)
+
+        expect(config.endpoints.notify).to eq("notify.example.com")
+        expect(config.endpoints.sessions).to be_nil
+
+        expect(config.enable_events).to be(true)
+        expect(config.enable_sessions).to be(false)
+      end
+
+      it "warns and disables events and sessions if only session URL is given" do
+        config = Bugsnag::Configuration.new
+        expect(config).to receive(:warn).with(Bugsnag::EndpointValidator::Result::MISSING_NOTIFY_URL)
+
+        config.endpoints = Bugsnag::EndpointConfiguration.new(nil, "sessions.example.com")
+
+        expect(config.endpoints.notify).to be_nil
+        expect(config.endpoints.sessions).to eq("sessions.example.com")
+
+        expect(config.enable_events).to be(false)
+        expect(config.enable_sessions).to be(false)
+      end
+
+      it "re-enables sessions if valid URLs are given after only giving notify URL" do
+        config = Bugsnag::Configuration.new
+        expect(config).to receive(:warn).with(Bugsnag::EndpointValidator::Result::MISSING_SESSION_URL)
+
+        config.endpoints = Bugsnag::EndpointConfiguration.new("notify.example.com", nil)
+
+        expect(config.enable_events).to be(true)
+        expect(config.enable_sessions).to be(false)
+
+        config.endpoints = Bugsnag::EndpointConfiguration.new("notify.example.com", "sessions.example.com")
+
+        expect(config.endpoints.notify).to eq("notify.example.com")
+        expect(config.endpoints.sessions).to eq("sessions.example.com")
+
+        expect(config.enable_events).to be(true)
+        expect(config.enable_sessions).to be(true)
+      end
+
+      it "re-enables events and sessions if valid URLs are given after only giving session URL" do
+        config = Bugsnag::Configuration.new
+        expect(config).to receive(:warn).with(Bugsnag::EndpointValidator::Result::MISSING_NOTIFY_URL)
+
+        config.endpoints = Bugsnag::EndpointConfiguration.new(nil, "sessions.example.com")
+
+        expect(config.enable_events).to be(false)
+        expect(config.enable_sessions).to be(false)
+
+        config.endpoints = Bugsnag::EndpointConfiguration.new("notify.example.com", "sessions.example.com")
+
+        expect(config.endpoints.notify).to eq("notify.example.com")
+        expect(config.endpoints.sessions).to eq("sessions.example.com")
+
+        expect(config.enable_events).to be(true)
+        expect(config.enable_sessions).to be(true)
+      end
     end
   end
 
@@ -497,6 +598,118 @@ describe Bugsnag::Configuration do
     it "returns the defined vendor path" do
       subject.vendor_path = /foo/
       expect(subject.vendor_path).to eq(/foo/)
+    end
+  end
+
+  describe "metadata" do
+    include_examples(
+      "metadata delegate",
+      lambda do |metadata, *args|
+        configuration = Bugsnag::Configuration.new
+        configuration.instance_variable_set(:@metadata, metadata)
+
+        configuration.add_metadata(*args)
+      end,
+      lambda do |metadata, *args|
+        configuration = Bugsnag::Configuration.new
+        configuration.instance_variable_set(:@metadata, metadata)
+
+        configuration.clear_metadata(*args)
+      end
+    )
+
+    describe "#metadata" do
+      it "is initially empty" do
+        expect(subject.metadata).to be_empty
+      end
+
+      it "cannot be reassigned" do
+        expect(subject).not_to respond_to(:metadata=)
+      end
+
+      it "reflects changes made by add_/clear_metadata" do
+        subject.add_metadata(:abc, { a: 1, b: 2, c: 3 })
+        subject.add_metadata(:xyz, :x, 1)
+
+        expect(subject.metadata).to eq({ abc: { a: 1, b: 2, c: 3 }, xyz: { x: 1 } })
+
+        subject.clear_metadata(:abc)
+
+        expect(subject.metadata).to eq({ xyz: { x: 1 } })
+      end
+    end
+
+    describe "concurrent access" do
+      it "can handle multiple threads adding metadata" do
+        configuration = Bugsnag::Configuration.new
+
+        threads = 5.times.map do |i|
+          Thread.new do
+            configuration.add_metadata(:abc, "thread_#{i}", i)
+          end
+        end
+
+        threads += 5.times.map do |i|
+          Thread.new do
+            configuration.add_metadata(:xyz, {
+              "thread_#{i}" => i * 100,
+              "also thread_#{i}" => [i, i + 1, i + 2],
+            })
+          end
+        end
+
+        threads.shuffle.map(&:join)
+
+        expect(configuration.metadata).to eq({
+          abc: {
+            "thread_0" => 0,
+            "thread_1" => 1,
+            "thread_2" => 2,
+            "thread_3" => 3,
+            "thread_4" => 4,
+          },
+          xyz: {
+            "thread_0" => 0,
+            "thread_1" => 100,
+            "thread_2" => 200,
+            "thread_3" => 300,
+            "thread_4" => 400,
+            "also thread_0" => [0, 1, 2],
+            "also thread_1" => [1, 2, 3],
+            "also thread_2" => [2, 3, 4],
+            "also thread_3" => [3, 4, 5],
+            "also thread_4" => [4, 5, 6],
+          }
+        })
+      end
+
+      it "can handle multiple threads clearing metadata" do
+        configuration = Bugsnag::Configuration.new
+
+        configuration.add_metadata(:abc, { a: 1, b: 2, c: 3 })
+        configuration.add_metadata(:xyz, { 0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5 })
+
+        5.times do |i|
+          configuration.add_metadata("thread_#{i}", :i, i)
+        end
+
+        threads = 5.times.map do |i|
+          Thread.new do
+            configuration.clear_metadata("thread_#{i}")
+            configuration.clear_metadata(:xyz, i)
+          end
+        end
+
+        threads += 5.times.map do |i|
+          Thread.new do
+            configuration.clear_metadata(:xyz)
+          end
+        end
+
+        threads.shuffle.map(&:join)
+
+        expect(configuration.metadata).to eq({ abc: { a: 1, b: 2, c: 3 } })
+      end
     end
   end
 end

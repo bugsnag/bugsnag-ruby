@@ -34,6 +34,7 @@ require "bugsnag/breadcrumbs/validator"
 require "bugsnag/breadcrumbs/breadcrumb"
 require "bugsnag/breadcrumbs/breadcrumbs"
 
+require "bugsnag/utility/duplicator"
 require "bugsnag/utility/metadata_delegate"
 
 # rubocop:todo Metrics/ModuleLength
@@ -136,6 +137,11 @@ module Bugsnag
           report.severity_reason = initial_reason
         end
 
+        if report.unhandled_overridden?
+          # let the dashboard know that the unhandled flag was overridden
+          report.severity_reason[:unhandledOverridden] = true
+        end
+
         deliver_notification(report)
       end
     end
@@ -191,11 +197,34 @@ module Bugsnag
     end
 
     ##
-    # Starts a session.
+    # Starts a new session, which allows Bugsnag to track error rates across
+    # releases
     #
-    # Allows Bugsnag to track error rates across releases.
+    # @return [void]
     def start_session
       session_tracker.start_session
+    end
+
+    ##
+    # Stop any events being attributed to the current session until it is
+    # resumed or a new session is started
+    #
+    # @see resume_session
+    #
+    # @return [void]
+    def pause_session
+      session_tracker.pause_session
+    end
+
+    ##
+    # Resume the current session if it was previously paused. If there is no
+    # current session, a new session will be started
+    #
+    # @see pause_session
+    #
+    # @return [Boolean] true if a paused session was resumed
+    def resume_session
+      session_tracker.resume_session
     end
 
     ##
@@ -352,9 +381,56 @@ module Bugsnag
       end
     end
 
+    ##
+    # Global metadata added to every event
+    #
+    # @return [Hash]
+    def metadata
+      configuration.metadata
+    end
+
+    ##
+    # Add values to metadata
+    #
+    # @overload add_metadata(section, data)
+    #   Merges data into the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param data [Hash]
+    #
+    # @overload add_metadata(section, key, value)
+    #   Sets key to value in the given section of metadata. If the value is nil
+    #   the key will be deleted
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #   @param value
+    #
+    # @return [void]
+    def add_metadata(section, key_or_data, *args)
+      configuration.add_metadata(section, key_or_data, *args)
+    end
+
+    ##
+    # Clear values from metadata
+    #
+    # @overload clear_metadata(section)
+    #   Clears the given section of metadata
+    #   @param section [String, Symbol]
+    #
+    # @overload clear_metadata(section, key)
+    #   Clears the key in the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #
+    # @return [void]
+    def clear_metadata(section, *args)
+      configuration.clear_metadata(section, *args)
+    end
+
     private
 
     def should_deliver_notification?(exception, auto_notify)
+      return false unless configuration.enable_events
+
       reason = abort_reason(exception, auto_notify)
       configuration.debug(reason) unless reason.nil?
       reason.nil?

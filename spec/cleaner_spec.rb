@@ -276,6 +276,200 @@ describe Bugsnag::Cleaner do
       expect(cleaner.clean_object(params)).to eq({ request: { params: { foo: { bar: 'baz' } } } })
     end
 
+    describe "redacted keys" do
+      it "redacts exact string match" do
+        object = { events: { metaData: { foo: 'bar', bar: 'foo' } } }
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set['foo']
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: '[FILTERED]',
+              bar: 'foo'
+            }
+          }
+        })
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set['bar']
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: 'bar',
+              bar: '[FILTERED]'
+            }
+          }
+        })
+      end
+
+      it "redacts case insensitive string match" do
+        object = { events: { metaData: { foo: 'bar', bar: 'foo' } } }
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set['FOO']
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: '[FILTERED]',
+              bar: 'foo'
+            }
+          }
+        })
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set['bAr']
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: 'bar',
+              bar: '[FILTERED]'
+            }
+          }
+        })
+      end
+
+      it "redacts by regular expression" do
+        object = { events: { metaData: { foo: 'bar', bar: 'foo' } } }
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set[/fb?/]
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: '[FILTERED]',
+              bar: 'foo'
+            }
+          }
+        })
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set[/fb+/]
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+        expect(cleaner.clean_object(object)).to eq({
+          events: {
+            metaData: {
+              foo: 'bar',
+              bar: 'foo'
+            }
+          }
+        })
+      end
+
+      it "redacts deeply nested keys" do
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set[/^foo\.bar/]
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+
+        params = { events: { metaData: { foo: { bar: 'baz', baz: 'bar' } } } }
+        expect(cleaner.clean_object(params)).to eq({
+          events: {
+            metaData: {
+              foo: {
+                bar: '[FILTERED]',
+                baz: 'bar'
+              }
+            }
+          }
+        })
+      end
+
+      it "redacts deeply nested request parameters" do
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set[/^foo\.bar/]
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+
+        params = { events: { metaData: { request: { params: { foo: { bar: 'baz', baz: 'bar' } } } } } }
+        expect(cleaner.clean_object(params)).to eq({
+          events: {
+            metaData: {
+              request: {
+                params: {
+                  foo: {
+                    bar: '[FILTERED]',
+                    baz: 'bar'
+                  }
+                }
+              }
+            }
+          }
+        })
+      end
+
+      it "doesn't filter by string match when the scope is not in 'scopes_to_filter'" do
+        object = { foo: 'bar', bar: 'foo' }
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set['foo']
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+
+        expect(cleaner.clean_object(object)).to eq({ foo: 'bar', bar: 'foo' })
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set['bar']
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+
+        expect(cleaner.clean_object(object)).to eq({ foo: 'bar', bar: 'foo' })
+      end
+
+      it "doesn't filter by regular expression when the scope is not in 'scopes_to_filter'" do
+        object = { foo: 'bar', bar: 'foo' }
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set[/fb?/]
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+
+        expect(cleaner.clean_object(object)).to eq({ foo: 'bar', bar: 'foo' })
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set[/fb+/]
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+
+        expect(cleaner.clean_object(object)).to eq({ foo: 'bar', bar: 'foo' })
+      end
+
+      it "doesn't filter deeply nested keys when the scope is not in 'scopes_to_filter'" do
+        params = { foo: { bar: 'baz', baz: 'bar' } }
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set[/^foo\.bar/]
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+
+        expect(cleaner.clean_object(params)).to eq({ foo: { bar: 'baz', baz: 'bar' } })
+      end
+
+      it "doesn't filter deeply nested request parameters when the scope is not in 'scopes_to_filter'" do
+        params = { request: { params: { foo: { bar: 'baz', baz: 'bar' } } } }
+
+        configuration = Bugsnag::Configuration.new
+        configuration.redacted_keys = Set[/^foo\.bar/]
+
+        cleaner = Bugsnag::Cleaner.new(configuration)
+
+        expect(cleaner.clean_object(params)).to eq({ request: { params: { foo: { bar: 'baz', baz: 'bar' } } } })
+      end
+    end
+
     it "filters objects which can't be stringified" do
       class StringRaiser
         def to_s

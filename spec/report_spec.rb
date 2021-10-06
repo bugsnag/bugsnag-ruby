@@ -1155,6 +1155,62 @@ describe Bugsnag::Report do
     }
   end
 
+  it "filters params from all payload hashes if they are added to redacted_keys as a string" do
+    Bugsnag.configuration.redacted_keys << "other_data"
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_metadata(:request, {
+        params: {
+          password: "1234",
+          other_password: "123456",
+          other_data: "123456",
+          more_other_data: "123456",
+          abc: "xyz"
+        }
+      })
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]).not_to be_nil
+      expect(event["metaData"]["request"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]["password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_data"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["more_other_data"]).to eq("123456")
+      expect(event["metaData"]["request"]["params"]["abc"]).to eq("xyz")
+    }
+  end
+
+  it "filters params from all payload hashes if they are added to redacted_keys as partial regex" do
+    Bugsnag.configuration.redacted_keys << /r_data/
+
+    Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
+      report.add_metadata(:request, {
+        params: {
+          password: "1234",
+          other_password: "123456",
+          other_data: "123456",
+          more_other_data: "123456",
+          abc: "xyz"
+        }
+      })
+    end
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      event = get_event_from_payload(payload)
+      expect(event["metaData"]).not_to be_nil
+      expect(event["metaData"]["request"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]).not_to be_nil
+      expect(event["metaData"]["request"]["params"]["password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_password"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["other_data"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["more_other_data"]).to eq("[FILTERED]")
+      expect(event["metaData"]["request"]["params"]["abc"]).to eq("xyz")
+    }
+  end
+
   it "does not notify if report ignored" do
     Bugsnag.notify(BugsnagTestException.new("It crashed")) do |report|
       report.ignore!
@@ -1817,14 +1873,7 @@ describe Bugsnag::Report do
       # - Report.generate_exceptions_list
       # - Report.generate_exceptions_list | raw_exceptions.map
       # - Report.generate_exceptions_list | raw_exceptions.map | block
-      # However, JRUBY does not include the `Report.new` frame, resulting in 5 bugsnag frames
-      if defined?(JRUBY_VERSION)
-        frame_count = 5
-      else
-        frame_count = 6
-      end
-
-      expect(bugsnag_count).to equal frame_count
+      expect(bugsnag_count).to eq(6)
     }
   end
 
@@ -1853,6 +1902,31 @@ describe Bugsnag::Report do
       })
       Bugsnag.configuration.meta_data_filters << "forbidden"
       notify_test_exception
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["breadcrumbs"].size).to eq(1)
+        expect(event["breadcrumbs"].first).to match({
+          "name" => "Test breadcrumb",
+          "type" => "manual",
+          "metaData" => {
+            "forbidden_key" => "[FILTERED]",
+            "allowed_key" => true
+          },
+          "timestamp" => match(timestamp_regex)
+        })
+      }
+    end
+
+    it "redacted keys apply to breadcrumb metadata" do
+      Bugsnag.leave_breadcrumb("Test breadcrumb", {
+        :forbidden_key => false,
+        :allowed_key => true
+      })
+
+      Bugsnag.configuration.redacted_keys << "forbidden_key"
+
+      notify_test_exception
+
       expect(Bugsnag).to have_sent_notification { |payload, headers|
         event = get_event_from_payload(payload)
         expect(event["breadcrumbs"].size).to eq(1)

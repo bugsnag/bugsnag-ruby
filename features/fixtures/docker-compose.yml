@@ -5,7 +5,7 @@ services:
     image: redis
 
   postgres:
-    image: postgres
+    image: postgres:13
     environment:
       - POSTGRES_PASSWORD=test_password
 
@@ -35,6 +35,7 @@ services:
       - BUGSNAG_PROXY_PASSWORD
       - BUGSNAG_PROXY_PORT
       - BUGSNAG_PROXY_USER
+      - BUGSNAG_REDACTED_KEYS
       - BUGSNAG_RELEASE_STAGE
       - BUGSNAG_SEND_CODE
       - BUGSNAG_SEND_ENVIRONMENT
@@ -85,6 +86,7 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
+      - BUGSNAG_METADATA_FILTERS
     restart: "no"
 
   rack2:
@@ -95,6 +97,7 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
+      - BUGSNAG_METADATA_FILTERS
     restart: "no"
 
   rails3:

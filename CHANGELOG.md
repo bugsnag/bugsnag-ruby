@@ -1,6 +1,32 @@
 Changelog
 =========
 
+## v6.24.0 (6 October 2021)
+
+### Enhancements
+
+* Allow overriding an event's unhandled flag
+  | [#698](https://github.com/bugsnag/bugsnag-ruby/pull/698)
+* Add the ability to store metadata globally
+  | [#699](https://github.com/bugsnag/bugsnag-ruby/pull/699)
+* Add `cookies`, `body` and `httpVersion` to the automatically captured request data for Rack apps
+  | [#700](https://github.com/bugsnag/bugsnag-ruby/pull/700)
+* Add `Configuration#endpoints` for reading the notify and sessions endpoints and `Configuration#endpoints=` for setting them
+  | [#701](https://github.com/bugsnag/bugsnag-ruby/pull/701)
+* Add `Configuration#redacted_keys`. This is like `meta_data_filters` but matches strings with case-insensitive equality, rather than matching based on inclusion
+  | [#703](https://github.com/bugsnag/bugsnag-ruby/pull/703)
+* Allow pausing and resuming sessions, giving more control over the stability score
+  | [#704](https://github.com/bugsnag/bugsnag-ruby/pull/704)
+* Add `Configuration#vendor_paths` to replace `Configuration#vendor_path`
+  | [#705](https://github.com/bugsnag/bugsnag-ruby/pull/705)
+
+### Deprecated
+
+* In the next major release, `params` will only contain query string parameters. Currently it also contains the request body for form data requests, but this is deprecated in favour of the new `body` property
+* The `Configuration#set_endpoints` method is now deprecated in favour of `Configuration#endpoints=`
+* The `Configuration#meta_data_filters` option is now deprecated in favour of `Configuration#redacted_keys`
+* The `Configuration#vendor_path` option is now deprecated in favour of `Configuration#vendor_paths`
+
 ## v6.23.0 (21 September 2021)
 
 ### Enhancements

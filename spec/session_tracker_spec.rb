@@ -152,25 +152,76 @@ describe Bugsnag::SessionTracker do
     expect(device["runtimeVersions"]["ruby"]).to eq(Bugsnag.configuration.runtime_versions["ruby"])
   end
 
-  it 'uses middleware to attach session to notification' do
-    Bugsnag.configure do |conf|
-      conf.auto_capture_sessions = true
-      conf.release_stage = "test_stage"
+  context "#pause_session" do
+    it "does nothing if there is no current session" do
+      Bugsnag.pause_session
+
+      expect(Bugsnag::SessionTracker.get_current_session).to be(nil)
     end
-    Bugsnag.start_session
-    Bugsnag.notify(BugsnagTestException.new("It crashed"))
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
-      event = payload["events"][0]
-      expect(event.include?("session")).to be true
-      session = event["session"]
-      expect(session.include?("id")).to be true
-      expect(session.include?("startedAt")).to be true
-      expect(session.include?("events")).to be true
-      sesevents = session['events']
-      expect(sesevents.include?("unhandled")).to be true
-      expect(sesevents["unhandled"]).to eq(0)
-      expect(sesevents.include?("handled")).to be true
-      expect(sesevents["handled"]).to eq(1)
-    }
+
+    it "marks the current session as paused if one exists" do
+      Bugsnag.start_session
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(false)
+
+      Bugsnag.pause_session
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(true)
+    end
+
+    it "does nothing if the current session is already paused" do
+      Bugsnag.start_session
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(false)
+
+      Bugsnag.pause_session
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(true)
+
+      Bugsnag.pause_session
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(true)
+    end
+  end
+
+  context "#resume_session" do
+    it "returns false and does nothing when there is a current session" do
+      Bugsnag.start_session
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(false)
+
+      expect(Bugsnag.resume_session).to be(false)
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(false)
+    end
+
+    it "returns false and does nothing when a session is started after one has been paused" do
+      Bugsnag.start_session
+      Bugsnag.pause_session
+      Bugsnag.start_session
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(false)
+
+      expect(Bugsnag.resume_session).to be(false)
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(false)
+    end
+
+    it "returns false and starts a new session when there is no current or paused session" do
+      expect(Bugsnag.resume_session).to be(false)
+
+      expect(Bugsnag::SessionTracker.get_current_session).not_to be(nil)
+    end
+
+    it "returns true and makes the paused session the active session when there is no current session" do
+      Bugsnag.start_session
+      Bugsnag.pause_session
+
+      expect(Bugsnag::SessionTracker.get_current_session[:paused?]).to be(true)
+
+      expect(Bugsnag.resume_session).to be(true)
+
+      expect(Bugsnag::SessionTracker.get_current_session).not_to be(nil)
+    end
   end
 end

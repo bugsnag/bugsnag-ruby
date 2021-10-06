@@ -13,6 +13,8 @@ require "bugsnag/middleware/breadcrumbs"
 require "bugsnag/utility/circular_buffer"
 require "bugsnag/breadcrumbs/breadcrumbs"
 require "bugsnag/breadcrumbs/on_breadcrumb_callback_list"
+require "bugsnag/endpoint_configuration"
+require "bugsnag/endpoint_validator"
 
 module Bugsnag
   class Configuration
@@ -54,8 +56,19 @@ module Bugsnag
 
     # A list of keys that should be filtered out from the report and breadcrumb
     # metadata before sending them to Bugsnag
+    # @deprecated Use {#redacted_keys} instead
     # @return [Set<String, Regexp>]
     attr_accessor :meta_data_filters
+
+    # A set of keys that should be redacted from the report and breadcrumb
+    # metadata before sending them to Bugsnag
+    #
+    # When adding strings, keys that are equal to the string (ignoring case)
+    # will be redacted. When adding regular expressions, any keys which match
+    # the regular expression will be redacted
+    #
+    # @return [Set<String, Regexp>]
+    attr_accessor :redacted_keys
 
     # The logger to use for Bugsnag log messages
     # @return [Logger]
@@ -114,16 +127,17 @@ module Bugsnag
     # @return [Set<Class, Proc>]
     attr_accessor :ignore_classes
 
-    # The URL error notifications will be delivered to
-    # @return [String]
-    attr_reader :notify_endpoint
-    alias :endpoint :notify_endpoint
+    # The URLs to send events and sessions to
+    # @return [EndpointConfiguration]
+    attr_reader :endpoints
 
-    # The URL session notifications will be delivered to
-    # @return [String]
-    attr_reader :session_endpoint
+    # Whether events will be delivered
+    # @api private
+    # @return [Boolean]
+    attr_reader :enable_events
 
     # Whether sessions will be delivered
+    # @api private
     # @return [Boolean]
     attr_reader :enable_sessions
 
@@ -141,14 +155,27 @@ module Bugsnag
     # @return [Integer]
     attr_reader :max_breadcrumbs
 
-    #
+    # @deprecated Use {vendor_paths} instead
     # @return [Regexp]
     attr_accessor :vendor_path
+
+    # An array of paths within the {project_root} that should not be considered
+    # as "in project"
+    #
+    # These paths should be relative to the {project_root} and will only match
+    # whole directory names
+    #
+    # @return [Array<String>]
+    attr_accessor :vendor_paths
 
     # The default context for all future events
     # Setting this will disable automatic context setting
     # @return [String, nil]
     attr_accessor :context
+
+    # Global metadata added to every event
+    # @return [Hash]
+    attr_reader :metadata
 
     # @api private
     # @return [Array<String>]
@@ -194,6 +221,7 @@ module Bugsnag
       self.send_environment = false
       self.send_code = true
       self.meta_data_filters = Set.new(DEFAULT_META_DATA_FILTERS)
+      @redacted_keys = Set.new
       self.scopes_to_filter = DEFAULT_SCOPES_TO_FILTER
       self.hostname = default_hostname
       self.runtime_versions = {}
@@ -213,10 +241,13 @@ module Bugsnag
       # to avoid infinite recursion when creating breadcrumb buffer
       @max_breadcrumbs = DEFAULT_MAX_BREADCRUMBS
 
-      # These are set exclusively using the "set_endpoints" method
-      @notify_endpoint = DEFAULT_NOTIFY_ENDPOINT
-      @session_endpoint = DEFAULT_SESSION_ENDPOINT
+      @endpoints = EndpointConfiguration.new(DEFAULT_NOTIFY_ENDPOINT, DEFAULT_SESSION_ENDPOINT)
+
+      @enable_events = true
       @enable_sessions = true
+
+      @metadata = {}
+      @metadata_delegate = Utility::MetadataDelegate.new
 
       # SystemExit and SignalException are common Exception types seen with
       # successful exits and are not automatically reported to Bugsnag
@@ -237,6 +268,7 @@ module Bugsnag
       # Stacktrace lines that matches regex will be marked as "out of project"
       # will only appear in the full trace.
       self.vendor_path = DEFAULT_VENDOR_PATH
+      @vendor_paths = []
 
       # Set up logging
       self.logger = Logger.new(STDOUT)
@@ -459,26 +491,44 @@ module Bugsnag
       request_data[:breadcrumbs] ||= Bugsnag::Utility::CircularBuffer.new(@max_breadcrumbs)
     end
 
+    # The URL error notifications will be delivered to
+    # @!attribute notify_endpoint
+    # @return [String]
+    # @deprecated Use {#endpoints} instead
+    def notify_endpoint
+      @endpoints.notify
+    end
+
+    alias :endpoint :notify_endpoint
+
     # Sets the notification endpoint
     #
-    # @deprecated Use {#set_endpoints} instead
+    # @deprecated Use {#endpoints} instead
     #
     # @param new_notify_endpoint [String] The URL to deliver error notifications to
     # @return [void]
     def endpoint=(new_notify_endpoint)
-      warn("The 'endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
+      warn("The 'endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead")
       set_endpoints(new_notify_endpoint, session_endpoint) # Pass the existing session_endpoint through so it doesn't get overwritten
+    end
+
+    # The URL session notifications will be delivered to
+    # @!attribute session_endpoint
+    # @return [String]
+    # @deprecated Use {#endpoints} instead
+    def session_endpoint
+      @endpoints.sessions
     end
 
     ##
     # Sets the sessions endpoint
     #
-    # @deprecated Use {#set_endpoints} instead
+    # @deprecated Use {#endpoints} instead
     #
     # @param new_session_endpoint [String] The URL to deliver session notifications to
     # @return [void]
     def session_endpoint=(new_session_endpoint)
-      warn("The 'session_endpoint' configuration option is deprecated. The 'set_endpoints' method should be used instead")
+      warn("The 'session_endpoint' configuration option is deprecated. Set both endpoints with the 'endpoints=' method instead")
       set_endpoints(notify_endpoint, new_session_endpoint) # Pass the existing notify_endpoint through so it doesn't get overwritten
     end
 
@@ -488,9 +538,26 @@ module Bugsnag
     # @param new_notify_endpoint [String] The URL to deliver error notifications to
     # @param new_session_endpoint [String] The URL to deliver session notifications to
     # @return [void]
+    # @deprecated Use {#endpoints} instead
     def set_endpoints(new_notify_endpoint, new_session_endpoint)
-      @notify_endpoint = new_notify_endpoint
-      @session_endpoint = new_session_endpoint
+      self.endpoints = EndpointConfiguration.new(new_notify_endpoint, new_session_endpoint)
+    end
+
+    def endpoints=(endpoint_configuration)
+      result = EndpointValidator.validate(endpoint_configuration)
+
+      if result.valid?
+        @enable_events = true
+        @enable_sessions = true
+      else
+        warn(result.reason)
+
+        @enable_events = result.keep_events_enabled_for_backwards_compatibility?
+        @enable_sessions = false
+      end
+
+      # use the given endpoints even if they are invalid
+      @endpoints = endpoint_configuration
     end
 
     ##
@@ -554,6 +621,47 @@ module Bugsnag
     # @return [void]
     def remove_on_breadcrumb(callback)
       @on_breadcrumb_callbacks.remove(callback)
+    end
+
+    ##
+    # Add values to metadata
+    #
+    # @overload add_metadata(section, data)
+    #   Merges data into the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param data [Hash]
+    #
+    # @overload add_metadata(section, key, value)
+    #   Sets key to value in the given section of metadata. If the value is nil
+    #   the key will be deleted
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #   @param value
+    #
+    # @return [void]
+    def add_metadata(section, key_or_data, *args)
+      @mutex.synchronize do
+        @metadata_delegate.add_metadata(@metadata, section, key_or_data, *args)
+      end
+    end
+
+    ##
+    # Clear values from metadata
+    #
+    # @overload clear_metadata(section)
+    #   Clears the given section of metadata
+    #   @param section [String, Symbol]
+    #
+    # @overload clear_metadata(section, key)
+    #   Clears the key in the given section of metadata
+    #   @param section [String, Symbol]
+    #   @param key [String, Symbol]
+    #
+    # @return [void]
+    def clear_metadata(section, *args)
+      @mutex.synchronize do
+        @metadata_delegate.clear_metadata(@metadata, section, *args)
+      end
     end
 
     ##

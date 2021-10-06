@@ -25,7 +25,7 @@ module Bugsnag
     # @param url [String]
     # @return [String]
     def clean_url(url)
-      return url if @configuration.meta_data_filters.empty?
+      return url if @configuration.meta_data_filters.empty? && @configuration.redacted_keys.empty?
 
       uri = URI(url)
       return url unless uri.query
@@ -43,6 +43,33 @@ module Bugsnag
       uri.to_s
     end
 
+    ##
+    # @param key [String, #to_s]
+    # @return [Boolean]
+    def filters_match?(key)
+      str = key.to_s
+
+      matched = @configuration.meta_data_filters.any? do |filter|
+        case filter
+        when Regexp
+          str.match(filter)
+        else
+          str.include?(filter.to_s)
+        end
+      end
+
+      return true if matched
+
+      @configuration.redacted_keys.any? do |redaction_pattern|
+        case redaction_pattern
+        when Regexp
+          str.match(redaction_pattern)
+        when String
+          str.downcase == redaction_pattern.downcase
+        end
+      end
+    end
+
     private
 
     ##
@@ -54,9 +81,11 @@ module Bugsnag
     #
     # @return [Boolean]
     def deep_filters?
-      @configuration.meta_data_filters.any? do |filter|
+      is_deep_filter = proc do |filter|
         filter.is_a?(Regexp) && filter.to_s.include?("\\.".freeze)
       end
+
+      @configuration.meta_data_filters.any?(&is_deep_filter) || @configuration.redacted_keys.any?(&is_deep_filter)
     end
 
     def clean_string(str)
@@ -135,22 +164,6 @@ module Bugsnag
 
       seen[obj] = value if protection
       value
-    end
-
-    ##
-    # @param key [String, #to_s]
-    # @return [Boolean]
-    def filters_match?(key)
-      str = key.to_s
-
-      @configuration.meta_data_filters.any? do |filter|
-        case filter
-        when Regexp
-          str.match(filter)
-        else
-          str.include?(filter.to_s)
-        end
-      end
     end
 
     ##
