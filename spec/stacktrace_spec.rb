@@ -440,4 +440,56 @@ describe Bugsnag::Stacktrace do
       expect(out_project_trace(stacktrace)).to eq(["other_vendor/lib/dont.rb"])
     end
   end
+
+  context "with configurable vendor_paths" do
+    let(:configuration) do
+      configuration = Bugsnag::Configuration.new
+      configuration.project_root = "/foo/bar"
+      configuration
+    end
+
+    let(:backtrace) do
+      [
+        "/foo/bar/app/models/user.rb:1:in `something'",
+        "/foo/bar/abc_xyz/lib/dont.rb:1:in `to_s'",
+        "/foo/bar/abc/other_lib/ignore_me.rb:1:in `to_s'",
+        "/foo/bar/abc/lib/ignore_me.rb:1:in `to_s'",
+        "/foo/bar/xyz/lib/ignore_me.rb:1:in `to_s'",
+      ]
+    end
+
+    def out_project_trace(stacktrace)
+      stacktrace.map do |trace_line|
+        trace_line[:file] unless trace_line[:inProject]
+      end.compact
+    end
+
+    it "with vendor_paths set to ['abc', 'xyz']" do
+      configuration.vendor_paths = ['abc', 'xyz']
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
+
+      expect(out_project_trace(stacktrace)).to eq([
+        "abc/other_lib/ignore_me.rb",
+        "abc/lib/ignore_me.rb",
+        "xyz/lib/ignore_me.rb",
+      ])
+    end
+
+    it "with nested directories" do
+      configuration.vendor_paths = ['abc/lib', 'xyz/lib']
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
+
+      expect(out_project_trace(stacktrace)).to eq([
+        "abc/lib/ignore_me.rb",
+        "xyz/lib/ignore_me.rb",
+      ])
+    end
+
+    it "with vendor_paths set to ['abc_xyz/']" do
+      configuration.vendor_paths = ['abc_xyz/']
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
+
+      expect(out_project_trace(stacktrace)).to eq(["abc_xyz/lib/dont.rb"])
+    end
+  end
 end
