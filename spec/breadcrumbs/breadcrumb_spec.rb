@@ -101,7 +101,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Breadcrumb do
   describe "#to_h" do
     it "outputs as a hash" do
       fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
-      expect(Time).to receive(:now).and_return(fake_now)
+      expect(Time).to receive(:now).at_least(:once).and_return(fake_now)
 
       breadcrumb = Bugsnag::Breadcrumbs::Breadcrumb.new(
         "my message",

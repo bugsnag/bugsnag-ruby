@@ -49,7 +49,7 @@ shared_examples "Report or Event tests" do |class_to_test|
 
   it "#headers should return the correct request headers" do
     fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
-    expect(Time).to receive(:now).twice.and_return(fake_now)
+    expect(Time).to receive(:now).at_least(:twice).and_return(fake_now)
 
     report_or_event = class_to_test.new(
       BugsnagTestException.new("It crashed"),
