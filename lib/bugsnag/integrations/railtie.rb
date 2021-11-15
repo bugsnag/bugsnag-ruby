@@ -70,8 +70,15 @@ module Bugsnag
       end
 
       ActiveSupport.on_load(:active_record) do
-        require "bugsnag/integrations/rails/active_record_rescue"
-        include Bugsnag::Rails::ActiveRecordRescue
+        if Rails::VESION::MAJOR == 4
+          if ActiveRecord::Base.errors_in_transactional_callbacks == :raise
+            require "bugsnag/integrations/rails/active_record_rescue"
+            include Bugsnag::Rails::ActiveRecordRescue
+          end
+        elsif Rails::VESION::MAJOR < 4
+          require "bugsnag/integrations/rails/active_record_rescue"
+          include Bugsnag::Rails::ActiveRecordRescue
+        end
       end
 
       ActiveSupport.on_load(:active_job) do
