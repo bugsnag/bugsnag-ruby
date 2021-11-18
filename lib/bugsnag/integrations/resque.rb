@@ -49,7 +49,7 @@ module Bugsnag
 
         # when using Active Job the payload "class" will always be the Resque
         # "JobWrapper", not the actual job class so we need to fix this here
-        if metadata['args'] && metadata['args'][0] && metadata['args'][0]['job_class']
+        if class_name == 'ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper' && metadata['args'] && metadata['args'][0] && metadata['args'][0]['job_class']
           class_name = metadata['args'][0]['job_class']
           metadata['wrapped'] ||= class_name
         end
