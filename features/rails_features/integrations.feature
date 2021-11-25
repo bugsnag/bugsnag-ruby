@@ -160,7 +160,7 @@ Scenario: Using Sidekiq as the Active Job queue adapter for a job that raises
   And the event "metaData.sidekiq.queue" equals "default"
 
 @rails_integrations
-Scenario: Using Rescue as the Active Job queue adapter for a job that raises
+Scenario: Using Resque as the Active Job queue adapter for a job that raises
   When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "resque"
   And I run "bundle exec rake resque:work" in the rails app
   And I run "UnhandledJob.perform_later(1, yes: true)" with the rails runner
@@ -231,7 +231,7 @@ Scenario: Using Sidekiq as the Active Job queue adapter for a job that works
   Then I should receive no requests
 
 @rails_integrations
-Scenario: Using Rescue as the Active Job queue adapter for a job that works
+Scenario: Using Resque as the Active Job queue adapter for a job that works
   When I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "resque"
   And I run "bundle exec rake resque:work" in the rails app
   And I run "WorkingJob.perform_later" with the rails runner
