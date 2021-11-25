@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* Fix metadata not being recorded when using Resque outside of Active Job
+  | [#710](https://github.com/bugsnag/bugsnag-ruby/pull/710)
+  | [isnotajoke](https://github.com/isnotajoke)
+
 ## v6.24.0 (6 October 2021)
 
 ### Enhancements
