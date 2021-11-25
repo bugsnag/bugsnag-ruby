@@ -72,7 +72,7 @@ Scenario: Rake
 @rails_integrations
 Scenario: Resque (no on_exit hooks)
   When I run "bundle exec rake resque:work" in the rails app
-  And I run "Resque.enqueue(ResqueWorker)" with the rails runner
+  And I run "Resque.enqueue(ResqueWorker, 123, %(abc), x: true, y: false)" with the rails runner
   And I wait to receive a request
   Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
   And the event "unhandled" is true
@@ -85,6 +85,10 @@ Scenario: Resque (no on_exit hooks)
   And the event "metaData.config.delivery_method" equals "synchronous"
   And the event "metaData.context" equals "ResqueWorker@crash"
   And the event "metaData.payload.class" equals "ResqueWorker"
+  And the event "metaData.payload.args.0" equals 123
+  And the event "metaData.payload.args.1" equals "abc"
+  And the event "metaData.payload.args.2.x" is true
+  And the event "metaData.payload.args.2.y" is false
   And the event "metaData.rake_task.name" equals "resque:work"
   And the event "metaData.rake_task.description" equals "Start a Resque worker"
   And the event "metaData.rake_task.arguments" is null
@@ -93,7 +97,7 @@ Scenario: Resque (no on_exit hooks)
 Scenario: Resque (with on_exit hooks)
   Given I set environment variable "RUN_AT_EXIT_HOOKS" to "1"
   When I run "bundle exec rake resque:work" in the rails app
-  And I run "Resque.enqueue(ResqueWorker)" with the rails runner
+  And I run "Resque.enqueue(ResqueWorker, %(xyz), [7, 8, 9], a: 4, b: 5)" with the rails runner
   And I wait to receive a request
   Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
   And the event "unhandled" is true
@@ -106,6 +110,12 @@ Scenario: Resque (with on_exit hooks)
   And the event "metaData.config.delivery_method" equals "thread_queue"
   And the event "metaData.context" equals "ResqueWorker@crash"
   And the event "metaData.payload.class" equals "ResqueWorker"
+  And the event "metaData.payload.args.0" equals "xyz"
+  And the event "metaData.payload.args.1.0" equals 7
+  And the event "metaData.payload.args.1.1" equals 8
+  And the event "metaData.payload.args.1.2" equals 9
+  And the event "metaData.payload.args.2.a" equals 4
+  And the event "metaData.payload.args.2.b" equals 5
   And the event "metaData.rake_task.name" equals "resque:work"
   And the event "metaData.rake_task.description" equals "Start a Resque worker"
   And the event "metaData.rake_task.arguments" is null
