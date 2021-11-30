@@ -580,7 +580,7 @@ describe Bugsnag do
   describe "request headers" do
     it "Bugsnag-Sent-At should use the current time" do
       fake_now = Time.gm(2020, 1, 2, 3, 4, 5, 123456)
-      expect(Time).to receive(:now).at_most(6).times.and_return(fake_now)
+      expect(Time).to receive(:now).at_least(6).times.and_return(fake_now)
 
       Bugsnag.notify(BugsnagTestException.new("It crashed"))
 

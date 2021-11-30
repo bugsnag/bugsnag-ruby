@@ -6,7 +6,7 @@ group :test, optional: true do
   gem 'rake', ruby_version <= Gem::Version.new('1.9.3') ? '~> 11.3.0' : '~> 12.3.0'
   gem 'rspec'
   gem 'rspec-mocks'
-  gem 'yard', '~> 0.9.25'
+  gem 'yard', ruby_version < Gem::Version.new('2.3.0') ? '< 0.9.27' : '~> 0.9.25'
   gem 'pry'
   gem 'addressable', '~> 2.3.8'
 
