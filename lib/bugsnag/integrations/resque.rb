@@ -50,7 +50,7 @@ module Bugsnag
         # when using Active Job the payload "class" will always be the Resque
         # "JobWrapper", so we need to unwrap the actual class name
         if class_name == "ActiveJob::QueueAdapters::ResqueAdapter::JobWrapper"
-          unwrapped_class_name = metadata['args'][0]['job_class'] rescue nil
+          unwrapped_class_name = metadata.dig('args', 0, 'job_class')
 
           if unwrapped_class_name
             class_name = unwrapped_class_name
