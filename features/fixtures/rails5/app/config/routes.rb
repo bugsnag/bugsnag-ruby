@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   get '/', to: 'application#index'
 
   get 'unhandled/error', to: 'unhandled#error'
+  get 'unhandled/error_in_active_record_callback', to: 'unhandled#error_in_active_record_callback'
 
   get 'handled/unthrown', to: 'handled#unthrown'
   get 'handled/thrown', to: 'handled#thrown'

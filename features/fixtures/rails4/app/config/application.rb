@@ -19,5 +19,11 @@ module App
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
+
+    raise_in_transactional_callbacks = ActiveRecord::Type::Boolean.new.type_cast_from_user(
+      ENV.fetch("RAISE_IN_TRANSACTIONAL_CALLBACKS", "true")
+    )
+
+    config.active_record.raise_in_transactional_callbacks = raise_in_transactional_callbacks
   end
 end
