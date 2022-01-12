@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* Avoid rescuing from errors in Active Record transaction callbacks in versions of Rails where they will be re-raised
+  | [#709](https://github.com/bugsnag/bugsnag-ruby/pull/709)
+  | [apalmblad](https://github.com/apalmblad)
+
 ## v6.24.1 (30 November 2021)
 
 ### Fixes
