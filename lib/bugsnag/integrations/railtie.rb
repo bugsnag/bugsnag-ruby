@@ -47,6 +47,29 @@ module Bugsnag
       end
     end
 
+    ##
+    # Do we need to rescue (& notify) in Active Record callbacks?
+    #
+    # On Rails versions < 4.2, Rails did not raise errors in AR callbacks
+    # On Rails version 4.2, a config option was added to control this
+    # On Rails version 5.0, the config option was removed and errors in callbacks
+    # always bubble up
+    #
+    # @api private
+    def self.rescue_in_active_record_callbacks?
+      # Rails 5+ will re-raise errors in callbacks, so we don't need to rescue them
+      return false if ::Rails::VERSION::MAJOR > 4
+
+      # before 4.2, errors were always swallowed, so we need to rescue them
+      return true if ::Rails::VERSION::MAJOR < 4
+
+      # a config option was added in 4.2 to control this, but won't exist in 4.0 & 4.1
+      return true unless ActiveRecord::Base.respond_to?(:raise_in_transactional_callbacks)
+
+      # if the config option is false, we need to rescue and notify
+      ActiveRecord::Base.raise_in_transactional_callbacks == false
+    end
+
     rake_tasks do
       require "bugsnag/integrations/rake"
       load "bugsnag/tasks/bugsnag.rake"
@@ -70,8 +93,10 @@ module Bugsnag
       end
 
       ActiveSupport.on_load(:active_record) do
-        require "bugsnag/integrations/rails/active_record_rescue"
-        include Bugsnag::Rails::ActiveRecordRescue
+        if Bugsnag::Railtie.rescue_in_active_record_callbacks?
+          require "bugsnag/integrations/rails/active_record_rescue"
+          include Bugsnag::Rails::ActiveRecordRescue
+        end
       end
 
       ActiveSupport.on_load(:active_job) do
