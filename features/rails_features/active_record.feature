@@ -1,6 +1,6 @@
 Feature: Active Record
 
-@rails3 @rails4 @rails5 @rails6
+@rails3 @rails4 @rails5 @rails6 @rails7
 Scenario: An unhandled error in a transaction callback will be delivered
   Given I start the rails service
   When I navigate to the route "/unhandled/error_in_active_record_callback" on the rails app

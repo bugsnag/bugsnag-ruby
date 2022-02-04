@@ -1,6 +1,6 @@
 Feature: Unhandled exceptions support
 
-@rails3 @rails4 @rails5 @rails6
+@rails3 @rails4 @rails5 @rails6 @rails7
 Scenario: Unhandled RuntimeError
   Given I start the rails service
   When I navigate to the route "/unhandled/error" on the rails app

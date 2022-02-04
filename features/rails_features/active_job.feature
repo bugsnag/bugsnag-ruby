@@ -1,6 +1,6 @@
 Feature: Active Job
 
-@rails4 @rails5 @rails6
+@rails4 @rails5 @rails6 @rails7
 Scenario: A handled error will be delivered
   Given I start the rails service
   When I navigate to the route "/active_job/handled" on the rails app
@@ -26,7 +26,7 @@ Scenario: A handled error will be delivered
   And in Rails versions ">=" 6 the event "metaData.active_job.timezone" equals "UTC"
   And in Rails versions ">=" 6 the event "metaData.active_job.enqueued_at" is a timestamp
 
-@rails4 @rails5 @rails6
+@rails4 @rails5 @rails6 @rails7
 Scenario: An unhandled error will be delivered
   Given I start the rails service
   When I navigate to the route "/active_job/unhandled" on the rails app

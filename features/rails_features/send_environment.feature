@@ -1,6 +1,6 @@
 Feature: Send environment
 
-@rails3 @rails4 @rails5 @rails6
+@rails3 @rails4 @rails5 @rails6 @rails7
 Scenario: Send_environment should send environment in handled errors when true
   Given I set environment variable "BUGSNAG_SEND_ENVIRONMENT" to "true"
   And I start the rails service
