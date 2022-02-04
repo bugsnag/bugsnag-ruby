@@ -15,7 +15,6 @@ Then(/^the total sessionStarted count equals (\d+)$/) do |value|
   assert_equal(value, total_count)
 end
 
-
 # Due to an ongoing discussion on whether the `payload_version` needs to be present within the headers
 # and body of the payload, this step is a local replacement for the similar step present in the main
 # maze-runner library. Once the discussion is resolved this step should be removed and replaced in scenarios

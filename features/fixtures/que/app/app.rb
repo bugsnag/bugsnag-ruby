@@ -4,6 +4,8 @@ require 'socket'
 require 'bugsnag'
 require 'active_record'
 
+QUE_VERSION = ENV.fetch("QUE_VERSION")
+
 Bugsnag.configure do |config|
   puts "Configuring `api_key` to #{ENV['BUGSNAG_API_KEY']}"
   config.api_key = ENV['BUGSNAG_API_KEY']
@@ -37,15 +39,17 @@ ActiveRecord::Base.establish_connection(
 )
 
 Que.connection = ActiveRecord
-Que.migrate!(version: 3)
+Que.migrate!(version: Que::Migrations::CURRENT_VERSION)
 
 # Workaround a bug in que/pg
 # see https://github.com/que-rb/que/issues/247
-Que::Adapters::Base::CAST_PROCS[1184] = lambda do |value|
-  case value
-  when Time then value
-  when String then Time.parse(value)
-  else raise "Unexpected time class: #{value.class} (#{value.inspect})"
+if QUE_VERSION == '0.14'
+  Que::Adapters::Base::CAST_PROCS[1184] = lambda do |value|
+    case value
+    when Time then value
+    when String then Time.parse(value)
+    else raise "Unexpected time class: #{value.class} (#{value.inspect})"
+    end
   end
 end
 
