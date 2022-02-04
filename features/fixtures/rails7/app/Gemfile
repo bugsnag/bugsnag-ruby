@@ -59,3 +59,9 @@ group :test do
   gem "selenium-webdriver"
   gem "webdrivers"
 end
+
+# required for Maze Runner tests
+gem "clearance"
+# gem "mongoid" # FIXME: mongoid doesn't yet have a version compatible with Rails 7
+
+gem 'bugsnag', path: '/bugsnag'

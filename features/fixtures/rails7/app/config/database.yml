@@ -23,3 +23,7 @@ test:
 production:
   <<: *default
   database: db/production.sqlite3
+
+rails_env:
+  <<: *default
+  database: db/rails_env.sqlite3
