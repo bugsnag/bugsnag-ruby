@@ -12,10 +12,10 @@ describe Bugsnag::Middleware::WardenUser do
     )
 
     warden = double
-    allow(warden).to receive(:user).with(
+    allow(warden).to receive(:user).with({
       :scope => "user",
       :run_callbacks => false
-    ).and_return(user)
+    }).and_return(user)
 
     report = double("Bugsnag::Report") 
     expect(report).to receive(:request_data).exactly(3).times.and_return({

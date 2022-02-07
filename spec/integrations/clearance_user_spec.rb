@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe Bugsnag::Middleware::ClearanceUser do
-  it "updates the reports user with warden parameters" do
+  it "updates the reports user with clearance parameters" do
     callback = double
 
     user = double
