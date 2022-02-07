@@ -971,6 +971,45 @@ steps:
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
 
+  - label: ':key: Que 1.x Ruby 2.5 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/que.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.5'
+      QUE_VERSION: '1'
+    concurrency: 4
+    concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+  - label: ':key: Que 1.x Ruby 2.6 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/que.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.6'
+      QUE_VERSION: '1'
+    concurrency: 4
+    concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+  - label: ':key: Que 1.x Ruby 2.7 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ['features/que.feature', '--tags', 'not @wip']
+    env:
+      RUBY_TEST_VERSION: '2.7'
+      QUE_VERSION: '1'
+    concurrency: 4
+    concurrency_group: 'ruby/integrations-maze-runner-tests'
+
   - label: ':bed: Rack 1 Ruby 1.9 tests'
     timeout_in_minutes: 30
     plugins:
