@@ -20,15 +20,7 @@ group :test, optional: true do
 
   gem 'hashdiff', ruby_version <= Gem::Version.new('1.9.3') ? '0.3.8': '>0.3.8'
 
-  if ruby_version >= Gem::Version.new('3.0.0')
-    gem 'did_you_mean', '~> 1.5.0'
-  elsif ruby_version >= Gem::Version.new('2.7.0')
-    gem 'did_you_mean', '~> 1.4.0'
-  elsif ruby_version >= Gem::Version.new('2.5.0')
-    gem 'did_you_mean', '~> 1.3.1'
-  elsif ruby_version >= Gem::Version.new('2.4.0')
-    gem 'did_you_mean', '~> 1.1.0'
-  elsif ruby_version >= Gem::Version.new('2.3.0')
+  if ruby_version >= Gem::Version.new('2.3.0') && ruby_version <= Gem::Version.new('2.4.0')
     gem 'did_you_mean', '~> 1.0.4'
   end
 
