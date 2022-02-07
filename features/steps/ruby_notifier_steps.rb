@@ -195,3 +195,13 @@ Then("in Rails versions {string} {int} the event {string} is a timestamp") do |o
     }
   end
 end
+
+Then("the event {string} matches the current Que version") do |path|
+  # append a '.' to make this assertion stricter, e.g. if QUE_VERSION is '1'
+  # we'll use '1.'
+  que_version = ENV.fetch("QUE_VERSION") + "."
+
+  steps %Q{
+    And the event "#{path}" starts with "#{que_version}"
+  }
+end
