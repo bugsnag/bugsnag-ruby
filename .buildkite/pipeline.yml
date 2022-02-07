@@ -65,6 +65,17 @@ steps:
       RUBY_TEST_VERSION: "2.7"
       RAILS_VERSION: "6"
 
+  - label: ':rails: Rails 7 Ruby 2.7 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/",  "--tags", "@rails7 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.7"
+      RAILS_VERSION: "7"
+
   - label: ':rails: Rails integrations Ruby 2.7 tests'
     timeout_in_minutes: 30
     plugins:
@@ -579,6 +590,28 @@ steps:
       RAILS_VERSION: "6"
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
+
+  - label: ':rails: Rails 7 Ruby 3.0 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/",  "--tags", "@rails7 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "3.0"
+      RAILS_VERSION: "7"
+
+  - label: ':rails: Rails 7 Ruby 3.1 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/",  "--tags", "@rails7 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "3.1"
+      RAILS_VERSION: "7"
 
   - label: ':rails: Rails integrations Ruby 3.0 tests'
     timeout_in_minutes: 30

@@ -34,7 +34,7 @@ Scenario Outline: Devise user information is sent
     | handled   |
     | unhandled |
 
-@rails5 @rails6
+@rails5 @rails6 @rails7
 Scenario Outline: Clearance user information is sent
   Given I start the rails service
   When I navigate to the route "/clearance/create" on the rails app
