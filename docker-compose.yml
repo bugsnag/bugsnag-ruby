@@ -19,6 +19,7 @@ services:
       RAILS_VERSION:
       RACK_VERSION:
       SIDEKIQ_VERSION:
+      QUE_VERSION:
       RUBY_TEST_VERSION:
       VERBOSE:
       DEBUG:

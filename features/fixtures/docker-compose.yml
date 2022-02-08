@@ -375,6 +375,7 @@ services:
       context: que
       args:
         - RUBY_TEST_VERSION
+        - QUE_VERSION
     depends_on:
       - postgres
     environment:

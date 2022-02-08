@@ -10,6 +10,7 @@ Scenario: Que will deliver unhandled errors
   And the event "severityReason.type" equals "unhandledExceptionMiddleware"
   And the event "severityReason.attributes.framework" equals "Que"
   And the event "app.type" equals "que"
+  And the event "device.runtimeVersions.que" matches the current Que version
   And the exception "errorClass" equals "RuntimeError"
 
 Scenario: Que will deliver handled errors
@@ -21,4 +22,5 @@ Scenario: Que will deliver handled errors
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
   And the event "app.type" equals "que"
+  And the event "device.runtimeVersions.que" matches the current Que version
   And the exception "errorClass" equals "RuntimeError"

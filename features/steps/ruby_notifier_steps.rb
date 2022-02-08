@@ -15,7 +15,6 @@ Then(/^the total sessionStarted count equals (\d+)$/) do |value|
   assert_equal(value, total_count)
 end
 
-
 # Due to an ongoing discussion on whether the `payload_version` needs to be present within the headers
 # and body of the payload, this step is a local replacement for the similar step present in the main
 # maze-runner library. Once the discussion is resolved this step should be removed and replaced in scenarios
@@ -195,4 +194,14 @@ Then("in Rails versions {string} {int} the event {string} is a timestamp") do |o
       And the event "#{path}" is null
     }
   end
+end
+
+Then("the event {string} matches the current Que version") do |path|
+  # append a '.' to make this assertion stricter, e.g. if QUE_VERSION is '1'
+  # we'll use '1.'
+  que_version = ENV.fetch("QUE_VERSION") + "."
+
+  steps %Q{
+    And the event "#{path}" starts with "#{que_version}"
+  }
 end
