@@ -25,14 +25,10 @@ steps:
         run: ruby-unit-tests
         use-aliases: true
     env:
-    RUBY_TEST_VERSION: "{{matrix.version}}"
-    |
-      if [ {{matrix.version}}) == "1.9" ]; then
+      RUBY_TEST_VERSION: "{{matrix.version}}"
       BUNDLE_VERSION: "1.12.0"
-      else
       GEMSETS: "test sidekiq coverage"
-      fi
-      
+
 
 #  - label: ':ruby: Ruby 1.9 unit tests'
 #    timeout_in_minutes: 30
