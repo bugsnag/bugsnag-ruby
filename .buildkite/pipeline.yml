@@ -126,11 +126,10 @@ steps:
           - '2.0'
           - '2.1'
         bundle_version:
-          - ''
+          - '1.12.0'
       adjustments:
         - with:
             version: '2.0'
-            bundle_version: "1.12.0"
     timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
