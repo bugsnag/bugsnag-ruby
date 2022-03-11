@@ -24,11 +24,12 @@ steps:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "{{matrix.version}}"
+    env: |
       if [ {{matrix.version}} == "1.9" ];then
+        RUBY_TEST_VERSION: "{{matrix.version}}"      
         BUNDLE_VERSION: "1.12.0"
       elif [ {{matrix.version}} == "2.7" ]; then
+        RUBY_TEST_VERSION: "{{matrix.version}}"
         GEMSETS: "test sidekiq coverage"
       fi
 #
