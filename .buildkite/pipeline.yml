@@ -119,18 +119,24 @@ steps:
     concurrency: 4
     concurrency_group: 'ruby/unit-tests'
 
-  - label: ':ruby: Ruby {{matrix}} unit tests'
+  - label: ':ruby: Ruby {{matrix.version}} unit tests'
     matrix:
-      - '2.0'
-      - '2.1'
+      setup:
+        versions:
+          - '2.0'
+          - '2.1'
+      adjustments:
+        - with:
+            version: '2.0'
+            bundle_version: "1.12.0"
     timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
         run: ruby-unit-tests
         use-aliases: true
     env:
-      RUBY_TEST_VERSION: "{{matrix}}"
-      BUNDLE_VERSION: "1.12.0"
+      RUBY_TEST_VERSION: "{{matrix.version}}"
+      BUNDLE_VERSION: "{{matrix.version}}"
     concurrency: 4
     concurrency_group: 'ruby/unit-tests'
 
