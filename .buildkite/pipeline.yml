@@ -14,12 +14,22 @@ steps:
   - wait
 
   - label: ':ruby: Ruby {{matrix.version}} unit test'
+    timeout_in_minutes: 30
     matrix:
       setup:
         version:
           - '1.9'
           - '2.7'
-    command: "echo {{matrix.version}}"
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-unit-tests
+        use-aliases: true
+    env: |
+      if [ {{matrix.version}}) == "1.9" ]; then
+      BUNDLE_VERSION: "1.12.0"
+      else
+      GEMSETS: "test sidekiq coverage"
+      fi
 
 #  - label: ':ruby: Ruby 1.9 unit tests'
 #    timeout_in_minutes: 30
