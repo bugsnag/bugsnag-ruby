@@ -30,6 +30,7 @@ steps:
       else
       GEMSETS: "test sidekiq coverage"
       fi
+      RUBY_TEST_VERSION: "{{matrix.version}}"
 
 #  - label: ':ruby: Ruby 1.9 unit tests'
 #    timeout_in_minutes: 30
