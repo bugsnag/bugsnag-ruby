@@ -351,163 +351,85 @@ steps:
 #    concurrency: 8
 #    concurrency_group: 'ruby/slow-maze-runner-tests'
 #
-#  - label: ':sidekiq: Sidekiq 2 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/sidekiq.feature", "--tags", "not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.5"
-#      SIDEKIQ_VERSION: "2"
-#    concurrency: 4
-#    concurrency_group: 'ruby/integrations-maze-runner-tests'
-#
-#  - label: ':sidekiq: Sidekiq 3 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/sidekiq.feature", "--tags", "not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.5"
-#      SIDEKIQ_VERSION: "3"
-#    concurrency: 4
-#    concurrency_group: 'ruby/integrations-maze-runner-tests'
-#
-#  - label: ':sidekiq: Sidekiq 4 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/sidekiq.feature", "--tags", "not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.5"
-#      SIDEKIQ_VERSION: "4"
-#    concurrency: 4
-#    concurrency_group: 'ruby/integrations-maze-runner-tests'
-#
-#  - label: ':sidekiq: Sidekiq 5 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/sidekiq.feature", "--tags", "not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.5"
-#      SIDEKIQ_VERSION: "5"
-#
-#  - label: ':rails: Rails 3 Ruby 2.0 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.0"
-#      RAILS_VERSION: "3"
-#      BUNDLE_VERSION: "1.12.0"
-#    concurrency: 8
-#    concurrency_group: 'ruby/slow-maze-runner-tests'
-#
-#  - label: ':rails: Rails 3 Ruby 2.1 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.1"
-#      RAILS_VERSION: "3"
-#      BUNDLE_VERSION: "1.12.0"
-#    concurrency: 8
-#    concurrency_group: 'ruby/slow-maze-runner-tests'
-#
-#  - label: ':rails: Rails 3 Ruby 2.2 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.2"
-#      RAILS_VERSION: "3"
-#      BUNDLE_VERSION: "1.12.0"
-#    concurrency: 8
-#    concurrency_group: 'ruby/slow-maze-runner-tests'
-#
-#  - label: ':rails: Rails 3 Ruby 2.3 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.3"
-#      RAILS_VERSION: "3"
-#    concurrency: 8
-#    concurrency_group: 'ruby/slow-maze-runner-tests'
-#
-#  - label: ':rails: Rails 3 Ruby 2.4 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.4"
-#      RAILS_VERSION: "3"
-#    concurrency: 8
-#    concurrency_group: 'ruby/slow-maze-runner-tests'
-#
-#  - label: ':rails: Rails 3 Ruby 2.5 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.5"
-#      RAILS_VERSION: "3"
-#    concurrency: 8
-#    concurrency_group: 'ruby/slow-maze-runner-tests'
-#
-#  - label: ':rails: Rails 4 Ruby 2.2 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/rails_features/", "--tags", "@rails4 and not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.2"
-#      RAILS_VERSION: "4"
-#      BUNDLE_VERSION: "1.12.0"
-#    concurrency: 8
-#    concurrency_group: 'ruby/slow-maze-runner-tests'
-#
-#  - label: ':rails: Rails 4 Ruby 2.3 tests'
-#    timeout_in_minutes: 30
-#    plugins:
-#      docker-compose#v3.1.0:
-#        run: ruby-maze-runner
-#        use-aliases: true
-#        command: ["features/rails_features/", "--tags", "@rails4 and not @wip"]
-#    env:
-#      RUBY_TEST_VERSION: "2.3"
-#      RAILS_VERSION: "4"
-#    concurrency: 8
-#    concurrency_group: 'ruby/slow-maze-runner-tests'
+  - label: ':sidekiq: Sidekiq {{matrix}} tests'
+    matrix:
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: [ "features/sidekiq.feature", "--tags", "not @wip" ]
+    env:
+      RUBY_TEST_VERSION: "2.5"
+      SIDEKIQ_VERSION: "{{matrix}}"
+    concurrency: 4
+    concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+  - label: ':rails: Rails 3 Ruby {{matrix}} tests'
+    matrix:
+      - '2.0'
+      - '2.1'
+      - '2.2'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "{{matrix}}"
+      RAILS_VERSION: "3"
+      BUNDLE_VERSION: "1.12.0"
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
+
+  - label: ':rails: Rails 3 Ruby {{matrix}} tests'
+    matrix:
+      - '2.3'
+      - '2.4'
+      - '2.5'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "{{matrix}}"
+      RAILS_VERSION: "3"
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
+
+  - label: ':rails: Rails 4 Ruby 2.2 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails4 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.2"
+      RAILS_VERSION: "4"
+      BUNDLE_VERSION: "1.12.0"
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
+
+  - label: ':rails: Rails 4 Ruby 2.3 tests'
+    timeout_in_minutes: 30
+    plugins:
+      docker-compose#v3.1.0:
+        run: ruby-maze-runner
+        use-aliases: true
+        command: ["features/rails_features/", "--tags", "@rails4 and not @wip"]
+    env:
+      RUBY_TEST_VERSION: "2.3"
+      RAILS_VERSION: "4"
+    concurrency: 8
+    concurrency_group: 'ruby/slow-maze-runner-tests'
 
   - label: ':rails: Rails 4 Ruby 2.3 tests'
     timeout_in_minutes: 30
