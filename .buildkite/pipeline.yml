@@ -125,6 +125,8 @@ steps:
         versions:
           - '2.0'
           - '2.1'
+        bundle_version:
+          - ''
       adjustments:
         - with:
             version: '2.0'
