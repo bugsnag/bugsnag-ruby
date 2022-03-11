@@ -153,7 +153,7 @@ steps:
     concurrency: 4
     concurrency_group: 'ruby/unit-tests'
 
-   - label: ':ruby: Ruby {{matrix}} unit tests'
+  - label: ':ruby: Ruby {{matrix}} unit tests'
     matrix:
       - '3.0'
       - '3.1'
