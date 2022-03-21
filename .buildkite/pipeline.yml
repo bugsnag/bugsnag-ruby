@@ -356,7 +356,7 @@ steps:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
-        command: ["features/rails_features/",  "--tags", "@rails7 and not @wip"]
+        command: ["features/rails_features/", "--tags", "@rails7 and not @wip"]
     env:
       RUBY_TEST_VERSION: "{{matrix}}"
       RAILS_VERSION: "7"
