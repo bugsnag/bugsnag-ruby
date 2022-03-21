@@ -295,19 +295,6 @@ steps:
     concurrency: 8
     concurrency_group: 'ruby/slow-maze-runner-tests'
 
-  - label: ':rails: Rails 4 Ruby 2.3 tests'
-    timeout_in_minutes: 30
-    plugins:
-      docker-compose#v3.1.0:
-        run: ruby-maze-runner
-        use-aliases: true
-        command: ["features/rails_features/", "--tags", "@rails4 and not @wip"]
-    env:
-      RUBY_TEST_VERSION: "2.3"
-      RAILS_VERSION: "4"
-    concurrency: 8
-    concurrency_group: 'ruby/slow-maze-runner-tests'
-
   - label: ':rails: Rails 5 Ruby {{matrix}} tests'
     matrix:
       - '2.2'
