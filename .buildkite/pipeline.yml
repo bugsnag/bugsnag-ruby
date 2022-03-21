@@ -75,7 +75,6 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.7"
       RAILS_VERSION: "7"
-#
   - label: ':rails: Rails integrations Ruby 2.7 tests'
     timeout_in_minutes: 30
     plugins:
