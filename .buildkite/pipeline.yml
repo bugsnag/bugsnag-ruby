@@ -32,7 +32,6 @@ steps:
     env:
       RUBY_TEST_VERSION: "2.7"
       GEMSETS: "test sidekiq coverage"
-#
   - label: ':ruby: Ruby 2.7 linting'
     timeout_in_minutes: 30
     plugins:
