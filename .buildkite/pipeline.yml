@@ -228,7 +228,7 @@ steps:
       docker-compose#v3.1.0:
         run: ruby-maze-runner
         use-aliases: true
-        command: [ "features/sidekiq.feature", "--tags", "not @wip" ]
+        command: ["features/sidekiq.feature", "--tags", "not @wip"]
     env:
       RUBY_TEST_VERSION: "2.5"
       SIDEKIQ_VERSION: "{{matrix}}"
