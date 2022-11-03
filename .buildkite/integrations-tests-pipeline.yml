@@ -1,0 +1,152 @@
+steps:
+  - group: ":hammer_and_wrench: Integrations tests"
+    steps:
+      - label: ':sidekiq: Sidekiq {{matrix}} tests'
+        matrix:
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/sidekiq.feature", "--tags", "not @wip"]
+        env:
+          RUBY_TEST_VERSION: "2.5"
+          SIDEKIQ_VERSION: "{{matrix}}"
+        concurrency: 4
+        concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+      - label: ':clipboard: Rake Ruby {{matrix}} tests'
+        matrix:
+          - '1.9.3'
+          - '2.0'
+          - '2.1'
+          - '2.2'
+          - '2.3'
+          - '2.4'
+          - '2.5'
+          - '2.6'
+          - '2.7'
+          - '3.0'
+          - '3.1'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ['features/rake.feature', '--tags', 'not @wip']
+        env:
+          RUBY_TEST_VERSION: "{{matrix}}"
+        concurrency: 4
+        concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+      - label: ':postbox: Mailman Ruby {{matrix}} tests'
+        matrix:
+          - '2.0'
+          - '2.1'
+          - '2.2'
+          - '2.3'
+          - '2.4'
+          - '2.5'
+          - '2.6'
+          - '2.7'
+          - '3.0'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ['features/mailman.feature', '--tags', 'not @wip']
+        env:
+          RUBY_TEST_VERSION: "{{matrix}}"
+        concurrency: 4
+        concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+      - label: ':key: Que 0.14 Ruby {{matrix}} tests'
+        matrix:
+          - '2.0'
+          - '2.1'
+          - '2.2'
+          - '2.3'
+          - '2.4'
+          - '2.5'
+          - '2.6'
+          - '2.7'
+          - '3.0'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ['features/que.feature', '--tags', 'not @wip']
+        env:
+          RUBY_TEST_VERSION: '{{matrix}}'
+          QUE_VERSION: '0.14'
+        concurrency: 4
+        concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+      - label: ':key: Que 1.x Ruby {{matrix}} tests'
+        matrix:
+          - '2.5'
+          - '2.6'
+          - '2.7'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ['features/que.feature', '--tags', 'not @wip']
+        env:
+          RUBY_TEST_VERSION: '{{matrix}}'
+          QUE_VERSION: '1'
+        concurrency: 4
+        concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+      - label: ':bed: Rack 1 Ruby {{matrix}} tests'
+        matrix:
+          - '1.9.3'
+          - '2.0'
+          - '2.1'
+          - '2.2'
+          - '2.3'
+          - '2.4'
+          - '2.5'
+          - '2.6'
+          - '2.7'
+          - '3.0'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ['features/rack.feature', '--tags', 'not @wip']
+        env:
+          RUBY_TEST_VERSION: '{{matrix}}'
+          RACK_VERSION: '1'
+        concurrency: 4
+        concurrency_group: 'ruby/integrations-maze-runner-tests'
+
+      - label: ':bed: Rack 2 Ruby {{matrix}} tests'
+        matrix:
+          - '2.2'
+          - '2.3'
+          - '2.4'
+          - '2.5'
+          - '2.6'
+          - '2.7'
+          - '3.0'
+          - '3.1'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ['features/rack.feature', '--tags', 'not @wip']
+        env:
+          RUBY_TEST_VERSION: '{{matrix}}'
+          RACK_VERSION: '2'
+        concurrency: 4
+        concurrency_group: 'ruby/integrations-maze-runner-tests'

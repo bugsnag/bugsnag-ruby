@@ -1,0 +1,128 @@
+steps:
+  - group: ":rails: Rails tests"
+    steps:
+      - label: ':rails: Rails 3 Ruby {{matrix}} tests'
+        matrix:
+          - '2.0'
+          - '2.1'
+          - '2.2'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+        env:
+          RUBY_TEST_VERSION: "{{matrix}}"
+          RAILS_VERSION: "3"
+          BUNDLE_VERSION: "1.12.0"
+        concurrency: 8
+        concurrency_group: 'ruby/slow-maze-runner-tests'
+
+      - label: ':rails: Rails 3 Ruby {{matrix}} tests'
+        matrix:
+          - '2.3'
+          - '2.4'
+          - '2.5'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/rails_features/", "--tags", "@rails3 and not @wip"]
+        env:
+          RUBY_TEST_VERSION: "{{matrix}}"
+          RAILS_VERSION: "3"
+        concurrency: 8
+        concurrency_group: 'ruby/slow-maze-runner-tests'
+
+      - label: ':rails: Rails 4 Ruby 2.2 tests'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/rails_features/", "--tags", "@rails4 and not @wip"]
+        env:
+          RUBY_TEST_VERSION: "2.2"
+          RAILS_VERSION: "4"
+          BUNDLE_VERSION: "1.12.0"
+        concurrency: 8
+        concurrency_group: 'ruby/slow-maze-runner-tests'
+
+      - label: ':rails: Rails 4 Ruby 2.3 tests'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/rails_features/", "--tags", "@rails4 and not @wip"]
+        env:
+          RUBY_TEST_VERSION: "2.3"
+          RAILS_VERSION: "4"
+        concurrency: 8
+        concurrency_group: 'ruby/slow-maze-runner-tests'
+
+      - label: ':rails: Rails 5 Ruby {{matrix}} tests'
+        matrix:
+          - '2.2'
+          - '2.3'
+          - '2.4'
+          - '2.5'
+          - '2.6'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/rails_features/", "--tags", "@rails5 and not @wip"]
+        env:
+          RUBY_TEST_VERSION: "{{matrix}}"
+          RAILS_VERSION: "5"
+        concurrency: 8
+        concurrency_group: 'ruby/slow-maze-runner-tests'
+
+      - label: ':rails: Rails 6 Ruby {{matrix}} tests'
+        matrix:
+          - '2.5'
+          - '2.6'
+          - '3.0'
+          - '3.1'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/rails_features/", "--tags", "@rails6 and not @wip"]
+        env:
+          RUBY_TEST_VERSION: "{{matrix}}"
+          RAILS_VERSION: "6"
+        concurrency: 8
+        concurrency_group: 'ruby/slow-maze-runner-tests'
+
+      - label: ':rails: Rails 7 Ruby {{matrix}} tests'
+        matrix:
+          - '3.0'
+          - '3.1'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/rails_features/", "--tags", "@rails7 and not @wip"]
+        env:
+          RUBY_TEST_VERSION: "{{matrix}}"
+          RAILS_VERSION: "7"
+
+      - label: ':rails: Rails integrations Ruby 3.0 tests'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/rails_features/", "--tags", "@rails_integrations"]
+        env:
+          RUBY_TEST_VERSION: "3.0"
+          RAILS_VERSION: "_integrations"
+        concurrency: 8
+        concurrency_group: 'ruby/slow-maze-runner-tests'

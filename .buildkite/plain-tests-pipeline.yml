@@ -1,0 +1,39 @@
+steps:
+  - group: ":ruby: Plain tests"
+    steps:
+      - label: ':ruby: Ruby {{matrix}} plain tests'
+        matrix:
+          - "1.9.3"
+          - "2.0"
+          - "2.1"
+          - "2.2"
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/plain_features", "--tags", "not @wip"]
+        env:
+          RUBY_TEST_VERSION: "{{matrix}}"
+          BUNDLE_VERSION: "1.12.0"
+        concurrency: 8
+        concurrency_group: 'ruby/slow-maze-runner-tests'
+
+      - label: ':ruby: Ruby {{matrix}} plain tests'
+        matrix:
+          - '2.3'
+          - '2.4'
+          - '2.5'
+          - '2.6'
+          - '3.0'
+          - '3.1'
+        timeout_in_minutes: 30
+        plugins:
+          docker-compose#v3.1.0:
+            run: ruby-maze-runner
+            use-aliases: true
+            command: ["features/plain_features/", "--tags", "not @wip"]
+        env:
+          RUBY_TEST_VERSION: "{{matrix}}"
+        concurrency: 8
+        concurrency_group: 'ruby/slow-maze-runner-tests'
