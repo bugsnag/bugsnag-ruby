@@ -31,6 +31,7 @@ group :test, optional: true do
 
   if ruby_version >= Gem::Version.new('2.2.0') && ruby_version < Gem::Version.new('2.4.0')
     gem 'minitest', '< 5.16.0'
+    gem 'connection_pool', '< 2.3.0'
   end
 end
 
