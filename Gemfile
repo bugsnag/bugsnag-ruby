@@ -28,6 +28,10 @@ group :test, optional: true do
   gem 'webrick' if ruby_version >= Gem::Version.new('3.0.0')
 
   gem 'rexml', '< 3.2.5' if ruby_version == Gem::Version.new('2.0.0')
+
+  if ruby_version >= Gem::Version.new('2.2.0') && ruby_version < Gem::Version.new('2.4.0')
+    gem 'minitest', '< 5.16.0'
+  end
 end
 
 group :coverage, optional: true do
