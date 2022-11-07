@@ -40,28 +40,32 @@ group :coverage, optional: true do
   gem 'coveralls'
 end
 
-group :rubocop, optional: true do
-  gem 'rubocop', '~> 1.0.0'
+if ruby_version >= Gem::Version.new('2.4.0')
+  group :rubocop, optional: true do
+    gem 'rubocop', '~> 1.0.0'
+  end
 end
 
-group :sidekiq, optional: true do
-  gem 'sidekiq', '~> 5.2.7'
+if ruby_version >= Gem::Version.new('2.2.0')
+  group :sidekiq, optional: true do
+    gem 'sidekiq', '~> 5.2.7'
 
-  if ruby_version < Gem::Version.new('2.3.0')
-    # redis 4.1.2 dropped support for Ruby 2.2
-    gem 'redis', '4.1.1'
-  elsif ruby_version < Gem::Version.new('2.4.0')
-    # redis 4.5.0 dropped support for Ruby 2.3
-    gem 'redis', '< 4.5.0'
-  else
-    gem 'redis'
+    if ruby_version < Gem::Version.new('2.3.0')
+      # redis 4.1.2 dropped support for Ruby 2.2
+      gem 'redis', '4.1.1'
+    elsif ruby_version < Gem::Version.new('2.4.0')
+      # redis 4.5.0 dropped support for Ruby 2.3
+      gem 'redis', '< 4.5.0'
+    else
+      gem 'redis'
+    end
+
+    # rack 2.2.0 dropped support for Ruby 2.2
+    gem 'rack', ruby_version < Gem::Version.new('2.3.0') ? '< 2.2.0' : '~> 2.2'
+
+    # rack-protection 3.0.0 requires Ruby 2.6+
+    gem 'rack-protection', '< 3.0.0' if ruby_version < Gem::Version.new('2.6.0')
   end
-
-  # rack 2.2.0 dropped support for Ruby 2.2
-  gem 'rack', ruby_version < Gem::Version.new('2.3.0') ? '< 2.2.0' : '~> 2.2'
-
-  # rack-protection 3.0.0 requires Ruby 2.6+
-  gem 'rack-protection', '< 3.0.0' if ruby_version < Gem::Version.new('2.6.0')
 end
 
 gemspec
