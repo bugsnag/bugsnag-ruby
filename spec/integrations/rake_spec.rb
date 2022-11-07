@@ -44,15 +44,13 @@ describe "Bugsnag Rake integration" do
         res.status = 200
         res.body = "OK\n"
       end
-      Thread.new{ server.start }
+      Thread.new { server.start }
     end
 
     after do
       server.stop
       queue.clear
     end
-
-    let(:request) { JSON.parse(queue.pop) }
 
     it 'should run the rake middleware when rake tasks crash' do
       ENV['BUGSNAG_TEST_SERVER_PORT'] = server.config[:Port].to_s
@@ -61,7 +59,23 @@ describe "Bugsnag Rake integration" do
         system("../../../bin/rake test:crash")
       end
 
-      result = request()
+      result = nil
+      attempts = 0
+
+      while result.nil? && attempts < 20
+        begin
+          sleep 0.1
+          attempts += 1
+
+          result = queue.pop(true)
+        rescue ThreadError
+        end
+      end
+
+      expect(result).not_to be_nil
+
+      result = JSON.parse(result)
+
       expect(result["events"][0]["metaData"]["rake_task"]).not_to be_nil
       expect(result["events"][0]["metaData"]["rake_task"]["name"]).to eq("test:crash")
       expect(result["events"][0]["app"]["type"]).to eq("rake")
