@@ -1,0 +1,53 @@
+name: run-maze-runner
+
+on:
+  workflow_call:
+    inputs:
+      features:
+        required: true
+        type: string
+      ruby-version:
+        required: true
+        type: string
+      rack-version:
+        required: false
+        type: string
+      que-version:
+        required: false
+        type: string
+      rails-version:
+        required: false
+        type: string
+      sidekiq-version:
+        required: false
+        type: string
+
+jobs:
+  maze-runner:
+    runs-on: ubuntu-latest
+
+    env:
+      BUNDLE_GEMFILE: Gemfile-maze-runner
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install libcurl4-openssl-dev and net-tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install libcurl4-openssl-dev net-tools
+
+      - name: install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: true
+
+      - run: bundle exec maze-runner ${{ inputs.features }} --no-source
+        env:
+          NETWORK_NAME: notwerk
+          RUBY_TEST_VERSION: ${{ inputs.ruby-version }}
+          RACK_VERSION: ${{ inputs.rack-version }}
+          QUE_VERSION: ${{ inputs.que-version }}
+          RAILS_VERSION: ${{ inputs.rails-version }}
+          SIDEKIQ_VERSION: ${{ inputs.sidekiq-version }}
