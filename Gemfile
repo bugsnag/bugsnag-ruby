@@ -28,6 +28,11 @@ group :test, optional: true do
   gem 'webrick' if ruby_version >= Gem::Version.new('3.0.0')
 
   gem 'rexml', '< 3.2.5' if ruby_version == Gem::Version.new('2.0.0')
+
+  if ruby_version >= Gem::Version.new('2.2.0') && ruby_version < Gem::Version.new('2.4.0')
+    gem 'minitest', '< 5.16.0'
+    gem 'connection_pool', '< 2.3.0'
+  end
 end
 
 group :coverage, optional: true do
@@ -54,6 +59,9 @@ group :sidekiq, optional: true do
 
   # rack 2.2.0 dropped support for Ruby 2.2
   gem 'rack', ruby_version < Gem::Version.new('2.3.0') ? '< 2.2.0' : '~> 2.2'
+
+  # rack-protection 3.0.0 requires Ruby 2.6+
+  gem 'rack-protection', '< 3.0.0' if ruby_version < Gem::Version.new('2.6.0')
 end
 
 gemspec
