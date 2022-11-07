@@ -169,3 +169,30 @@ Then("the event {string} matches the current Que version") do |path|
     And the event "#{path}" starts with "#{que_version}"
   }
 end
+
+Given("I configure the BUGSNAG_PROXY environment variables") do
+  host = running_in_docker? ? "maze-runner" : current_ip
+
+  steps %Q{
+    When I set environment variable "BUGSNAG_PROXY_HOST" to "#{host}"
+    And I set environment variable "BUGSNAG_PROXY_PORT" to "#{MOCK_API_PORT}"
+    And I set environment variable "BUGSNAG_PROXY_USER" to "tester"
+    And I set environment variable "BUGSNAG_PROXY_PASSWORD" to "testpass"
+  }
+end
+
+Given("I configure the http_proxy environment variable") do
+  host = running_in_docker? ? "maze-runner" : current_ip
+
+  steps %Q{
+    Given I set environment variable "http_proxy" to "http://tester:testpass@#{host}:#{MOCK_API_PORT}"
+  }
+end
+
+Given("I configure the https_proxy environment variable") do
+  host = running_in_docker? ? "maze-runner" : current_ip
+
+  steps %Q{
+    Given I set environment variable "https_proxy" to "https://tester:testpass@#{host}:#{MOCK_API_PORT}"
+  }
+end
