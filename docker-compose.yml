@@ -30,6 +30,29 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
+  ruby-maze-runner-v7:
+    image: ruby-maze-runner-v7
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile.ruby-maze-runner-v7
+      target: ruby-maze-runner-v7
+    environment:
+      NETWORK_NAME: "${BUILDKITE_JOB_ID:-ruby-maze-runner-v7}-${RUBY_TEST_VERSION:-local}"
+      BUILDKITE_JOB_ID:
+      RAILS_VERSION:
+      RACK_VERSION:
+      SIDEKIQ_VERSION:
+      QUE_VERSION:
+      RUBY_TEST_VERSION:
+      VERBOSE:
+      DEBUG:
+    networks:
+      default:
+        aliases:
+          - maze-runner
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   ruby-unit-tests:
     build:
       context: .

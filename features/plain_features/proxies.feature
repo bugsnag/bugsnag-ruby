@@ -6,20 +6,20 @@ Scenario: Proxy settings are provided as configuration options
   And I set environment variable "BUGSNAG_PROXY_USER" to "tester"
   And I set environment variable "BUGSNAG_PROXY_PASSWORD" to "testpass"
   When I run the service "plain-ruby" with the command "bundle exec ruby configuration/proxy.rb"
-  Then I wait to receive a request
+  Then I wait to receive an error
   And the "proxy-authorization" header equals "Basic dGVzdGVyOnRlc3RwYXNz"
   And the event "metaData.proxy.user" equals "tester"
 
 Scenario: Proxy settings are provided as the HTTP_PROXY environment variable
   Given I set environment variable "http_proxy" to "http://tester:testpass@maze-runner:9339"
   When I run the service "plain-ruby" with the command "bundle exec ruby configuration/proxy.rb"
-  Then I wait to receive a request
+  Then I wait to receive an error
   And the "proxy-authorization" header equals "Basic dGVzdGVyOnRlc3RwYXNz"
   And the event "metaData.proxy.user" equals "tester"
 
 Scenario: Proxy settings are provided as the HTTPS_PROXY environment variable
   Given I set environment variable "https_proxy" to "http://tester:testpass@maze-runner:9339"
   When I run the service "plain-ruby" with the command "bundle exec ruby configuration/proxy.rb"
-  Then I wait to receive a request
+  Then I wait to receive an error
   And the "proxy-authorization" header equals "Basic dGVzdGVyOnRlc3RwYXNz"
   And the event "metaData.proxy.user" equals "tester"

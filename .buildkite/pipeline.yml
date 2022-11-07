@@ -7,9 +7,15 @@ steps:
           image-repository: 855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby
           cache-from: ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
       - docker-compose#v3.1.0:
+          build: ruby-maze-runner-v7
+          image-repository: 855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby
+          cache-from: ruby-maze-runner-v7:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
+      - docker-compose#v3.1.0:
           push:
             - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby${BRANCH_NAME}
             - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby-latest
+            - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby-v7${BRANCH_NAME}
+            - ruby-maze-runner:855461928731.dkr.ecr.us-west-1.amazonaws.com/ruby:base-ruby-v7-latest
 
   - wait
 
@@ -47,7 +53,7 @@ steps:
     timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
-        run: ruby-maze-runner
+        run: ruby-maze-runner-v7
         use-aliases: true
         command: ["features/plain_features/", "--tags", "not @wip"]
     env:
@@ -187,7 +193,7 @@ steps:
     timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
-        run: ruby-maze-runner
+        run: ruby-maze-runner-v7
         use-aliases: true
         command: ["features/plain_features", "--tags", "not @wip"]
     env:
@@ -207,7 +213,7 @@ steps:
     timeout_in_minutes: 30
     plugins:
       docker-compose#v3.1.0:
-        run: ruby-maze-runner
+        run: ruby-maze-runner-v7
         use-aliases: true
         command: ["features/plain_features/", "--tags", "not @wip"]
     env:
