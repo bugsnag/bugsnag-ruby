@@ -40,24 +40,14 @@ Then("the request is valid for the error reporting API version {string} for the 
 end
 
 Given("I start the rails service") do
-  rails_version = ENV["RAILS_VERSION"]
   steps %Q{
-    When I start the service "rails#{rails_version}"
-    And I wait for the host "rails#{rails_version}" to open port "3000"
+    When I start the service "#{RAILS_FIXTURE.docker_service}"
+    And I wait for the host "#{RAILS_FIXTURE.host}" to open port "#{RAILS_FIXTURE.port}"
   }
 end
 
-# When running tests against Rails on Ruby 3, the base Maze Runner step
-# "I open the url {string}" commonly flakes due to a "Errno::ECONNREFUSED"
-# error, which MR doesn't rescue. The notifier request is still fired so the
-# test passes when these errors are rescued and there's no risk of swallowing an
-# actual failure because any assertion steps will fail if the notifier request
-# isn't fired. This may become unnecessary in future, when running Rails on
-# Ruby 3 is more stable
 When("I navigate to the route {string} on the rails app") do |route|
-  URI.open("http://rails#{ENV["RAILS_VERSION"]}:3000#{route}", &:read)
-rescue => e
-  $logger.debug(e.inspect)
+  RAILS_FIXTURE.navigate_to(route)
 end
 
 When("I run {string} in the rails app") do |command|
@@ -79,49 +69,29 @@ When("I run {string} with the rails runner") do |code|
 end
 
 Given("I start the rack service") do
-  rack_version = ENV["RACK_VERSION"]
   steps %Q{
-    When I start the service "rack#{rack_version}"
-    And I wait for the host "rack#{rack_version}" to open port "3000"
+    When I start the service "#{RACK_FIXTURE.docker_service}"
+    And I wait for the host "#{RACK_FIXTURE.host}" to open port "#{RACK_FIXTURE.port}"
   }
 end
 
 When("I navigate to the route {string} on the rack app") do |route|
-  rack_version = ENV["RACK_VERSION"]
-  steps %Q{
-    When I open the URL "http://rack#{rack_version}:3000#{route}"
-  }
+  RACK_FIXTURE.navigate_to(route)
 end
 
 When("I navigate to the route {string} on the rack app with these cookies:") do |route, data|
-  rack_version = ENV["RACK_VERSION"]
-  uri = URI("http://rack#{rack_version}:3000#{route}")
-
   # e.g. { "a" => "b", "c" => "d" } -> "a=b;c=d"
   cookie = data.rows_hash.map { |key, value| "#{key}=#{value}" }.join(";")
 
-  http = Net::HTTP.new(uri.host, uri.port)
-  request = Net::HTTP::Get.new(uri.request_uri)
-  request["Cookie"] = cookie
-
-  http.request(request)
+  RACK_FIXTURE.navigate_to(route, { "Cookie" => cookie })
 end
 
 When("I send a POST request to {string} in the rack app with the following form data:") do |route, data|
-  rack_version = ENV["RACK_VERSION"]
-  uri = URI("http://rack#{rack_version}:3000#{route}")
-
-  Net::HTTP.post_form(uri, data.rows_hash)
+  RACK_FIXTURE.post_form(route, data.rows_hash)
 end
 
 When("I send a POST request to {string} in the rack app with the following JSON:") do |route, data|
-  rack_version = ENV["RACK_VERSION"]
-
-  Net::HTTP.post(
-    URI("http://rack#{rack_version}:3000#{route}"),
-    JSON.generate(data.rows_hash),
-    { "Content-Type" => "application/json" }
-  )
+  RACK_FIXTURE.post_json(route, data.rows_hash)
 end
 
 Then("the payload field {string} matches the appropriate Sidekiq handled payload") do |field|
@@ -142,14 +112,8 @@ Then("the payload field {string} matches the appropriate Sidekiq unhandled paylo
   }
 end
 
-def rails_version_matches?(operator, version_to_compare)
-  # send the given operator as a method to the current rails version
-  # this will evaluate to e.g. '6.send(">=", 5)', which is the same as '6 >= 5'
-  ENV["RAILS_VERSION"].to_i.send(operator, version_to_compare)
-end
-
 Then("in Rails versions {string} {int} the event {string} equals {string}") do |operator, version, path, expected|
-  if rails_version_matches?(operator, version)
+  if RAILS_FIXTURE.version_matches?(operator, version)
     steps %Q{
       And the event "#{path}" equals "#{expected}"
     }
@@ -161,7 +125,7 @@ Then("in Rails versions {string} {int} the event {string} equals {string}") do |
 end
 
 Then("in Rails versions {string} {int} the event {string} equals {int}") do |operator, version, path, expected|
-  if rails_version_matches?(operator, version)
+  if RAILS_FIXTURE.version_matches?(operator, version)
     steps %Q{
       And the event "#{path}" equals #{expected}
     }
@@ -173,7 +137,7 @@ Then("in Rails versions {string} {int} the event {string} equals {int}") do |ope
 end
 
 Then("in Rails versions {string} {int} the event {string} matches {string}") do |operator, version, path, expected|
-  if rails_version_matches?(operator, version)
+  if RAILS_FIXTURE.version_matches?(operator, version)
     steps %Q{
       And the event "#{path}" matches "#{expected}"
     }
@@ -185,7 +149,7 @@ Then("in Rails versions {string} {int} the event {string} matches {string}") do 
 end
 
 Then("in Rails versions {string} {int} the event {string} is a timestamp") do |operator, version, path|
-  if rails_version_matches?(operator, version)
+  if RAILS_FIXTURE.version_matches?(operator, version)
     steps %Q{
       And the event "#{path}" is a timestamp
     }
