@@ -32,3 +32,20 @@ jobs:
       - run: bundle install --with "${{ matrix.optional-groups }}" --binstubs
 
       - run: ./bin/rake spec
+
+  linting:
+    runs-on: ubuntu-latest
+
+    env:
+      BUNDLE_WITH: rubocop
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: true
+
+      - run: bundle exec rubocop lib/
