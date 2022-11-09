@@ -1,0 +1,24 @@
+name: license audit
+
+on: [push, pull_request]
+
+jobs:
+  license-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: fetch decisions.yml
+        run: |
+          curl https://raw.githubusercontent.com/bugsnag/license-audit/master/config/decision_files/global.yml -o config/decisions.yml
+          curl https://raw.githubusercontent.com/bugsnag/license-audit/master/config/decision_files/bugsnag-ruby.yml >> config/decisions.yml
+
+      - name: run license finder
+        # for some reason license finder doesn't run without a login shell (-l)
+        run: >
+          docker run -v $PWD:/scan licensefinder/license_finder /bin/bash -lc "
+            cd /scan &&
+            bundle install &&
+            license_finder --decisions-file config/decisions.yml
+          "
