@@ -11,6 +11,7 @@ doc
 # bundler
 .bundle
 Gemfile.lock
+Gemfile-maze-runner.lock
 
 # jeweler generated
 pkg
