@@ -152,3 +152,5 @@ jobs:
     with:
       features: features/plain_features/
       ruby-version: ${{ matrix.ruby-version }}
+      # temporary while we have some tests on Maze Runner v7 and some on v3
+      gemfile: Gemfile-maze-runner-v7
