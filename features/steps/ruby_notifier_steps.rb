@@ -2,8 +2,16 @@ require "json"
 require "net/http"
 
 Then(/^the "(.+)" of the top non-bugsnag stackframe equals (\d+|".+")$/) do |element, value|
-  stacktrace = read_key_path(Server.current_request[:body], 'events.0.exceptions.0.stacktrace')
+  if using_maze_runner_v7?
+    body = Maze::Server.errors.current[:body]
+    stacktrace = Maze::Helper.read_key_path(body, 'events.0.exceptions.0.stacktrace')
+  else
+    body = Server.current_request[:body]
+    stacktrace = read_key_path(body, 'events.0.exceptions.0.stacktrace')
+  end
+
   frame_index = stacktrace.find_index { |frame| ! /.*lib\/bugsnag.*\.rb/.match(frame["file"]) }
+
   steps %Q{
     the "#{element}" of stack frame #{frame_index} equals #{value}
   }
@@ -172,10 +180,11 @@ end
 
 Given("I configure the BUGSNAG_PROXY environment variables") do
   host = running_in_docker? ? "maze-runner" : current_ip
+  port = using_maze_runner_v7? ? Maze.config.port : MOCK_API_PORT
 
   steps %Q{
     When I set environment variable "BUGSNAG_PROXY_HOST" to "#{host}"
-    And I set environment variable "BUGSNAG_PROXY_PORT" to "#{MOCK_API_PORT}"
+    And I set environment variable "BUGSNAG_PROXY_PORT" to "#{port}"
     And I set environment variable "BUGSNAG_PROXY_USER" to "tester"
     And I set environment variable "BUGSNAG_PROXY_PASSWORD" to "testpass"
   }
@@ -183,16 +192,18 @@ end
 
 Given("I configure the http_proxy environment variable") do
   host = running_in_docker? ? "maze-runner" : current_ip
+  port = using_maze_runner_v7? ? Maze.config.port : MOCK_API_PORT
 
   steps %Q{
-    Given I set environment variable "http_proxy" to "http://tester:testpass@#{host}:#{MOCK_API_PORT}"
+    Given I set environment variable "http_proxy" to "http://tester:testpass@#{host}:#{port}"
   }
 end
 
 Given("I configure the https_proxy environment variable") do
   host = running_in_docker? ? "maze-runner" : current_ip
+  port = using_maze_runner_v7? ? Maze.config.port : MOCK_API_PORT
 
   steps %Q{
-    Given I set environment variable "https_proxy" to "https://tester:testpass@#{host}:#{MOCK_API_PORT}"
+    Given I set environment variable "https_proxy" to "https://tester:testpass@#{host}:#{port}"
   }
 end

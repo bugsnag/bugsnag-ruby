@@ -38,19 +38,51 @@ def current_ip
   ip_list.captures.first
 end
 
-
-AfterConfiguration do |config|
-  install_fixture_gems
+def using_maze_runner_v7?
+  defined?(Maze)
 end
 
-Before do
-  Docker.compose_project_name = "#{rand.to_s}:#{Time.new.strftime("%s")}"
-  Runner.environment.clear
-  Runner.environment["BUGSNAG_API_KEY"] = $api_key
+if using_maze_runner_v7?
+  Maze.hooks.before_all do
+    install_fixture_gems
 
-  if running_in_docker?
-    Runner.environment["BUGSNAG_ENDPOINT"] = "http://maze-runner:#{MOCK_API_PORT}"
-  else
-    Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{current_ip}:#{MOCK_API_PORT}"
+    # log to console, not a file
+    Maze.config.file_log = false
+    Maze.config.log_requests = true
+
+    # don't wait so long for requests/not to receive requests
+    Maze.config.receive_requests_wait = 10
+    Maze.config.receive_no_requests_wait = 10
+
+    # bugsnag-ruby doesn't need to send the integrity header
+    Maze.config.enforce_bugsnag_integrity = false
+  end
+
+  Maze.hooks.before do
+    # Maze::Docker.compose_project_name = "#{rand.to_s}:#{Time.new.strftime("%s")}"
+
+    Maze::Runner.environment["BUGSNAG_API_KEY"] = $api_key
+
+    if running_in_docker?
+      Maze::Runner.environment["BUGSNAG_ENDPOINT"] = "http://maze-runner:#{Maze.config.port}/notify"
+    else
+      Maze::Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{current_ip}:#{Maze.config.port}/notify"
+    end
+  end
+else
+  AfterConfiguration do |config|
+    install_fixture_gems
+  end
+
+  Before do
+    Docker.compose_project_name = "#{rand.to_s}:#{Time.new.strftime("%s")}"
+    Runner.environment.clear
+    Runner.environment["BUGSNAG_API_KEY"] = $api_key
+
+    if running_in_docker?
+      Runner.environment["BUGSNAG_ENDPOINT"] = "http://maze-runner:#{MOCK_API_PORT}"
+    else
+      Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{current_ip}:#{MOCK_API_PORT}"
+    end
   end
 end
