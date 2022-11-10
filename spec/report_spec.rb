@@ -2089,5 +2089,14 @@ describe Bugsnag::Report do
       })
     end
   end
+
+  it "reports the payload version in the header and body" do
+    Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+    expect(Bugsnag).to(have_sent_notification { |payload, headers|
+      expect(headers["Bugsnag-Payload-Version"]).to eq("4.0")
+      expect(payload["payloadVersion"]).to eq("4.0")
+    })
+  end
 end
 # rubocop:enable Metrics/BlockLength
