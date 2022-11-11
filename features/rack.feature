@@ -3,8 +3,8 @@ Feature: Bugsnag raises errors in Rack
 Scenario: An unhandled RuntimeError sends a report
   Given I start the rack service
   When I navigate to the route "/unhandled?a=123&b=456" on the rack app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
   And the event "severity" equals "error"
   And the event "severityReason.type" equals "unhandledExceptionMiddleware"
@@ -27,8 +27,8 @@ Scenario: An unhandled RuntimeError sends a report
 Scenario: A handled RuntimeError sends a report
   Given I start the rack service
   When I navigate to the route "/handled?a=123&b=456" on the rack app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is false
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
@@ -53,8 +53,8 @@ Scenario: A POST request with form data sends a report with the parsed request b
     | name             | baba      |
     | favourite_letter | z         |
     | password         | password1 |
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "metaData.request.body.name" equals "baba"
   And the event "metaData.request.body.favourite_letter" equals "z"
   And the event "metaData.request.body.password" equals "[FILTERED]"
@@ -76,8 +76,8 @@ Scenario: A POST request with JSON sends a report with the parsed request body a
     | name             | baba      |
     | favourite_letter | z         |
     | password         | password1 |
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "metaData.request.body.name" equals "baba"
   And the event "metaData.request.body.favourite_letter" equals "z"
   And the event "metaData.request.body.password" equals "[FILTERED]"
@@ -99,8 +99,8 @@ Scenario: A request with cookies will be filtered out by default
     | a | b |
     | c | d |
     | e | f |
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "metaData.request.cookie" is null
   And the event "metaData.request.headers.Cookie" equals "[FILTERED]"
   And the event "metaData.request.clientIp" is not null
@@ -121,8 +121,8 @@ Scenario: A request with cookies and no matching filter will set cookies in meta
     | a | b |
     | c | d |
     | e | f |
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "metaData.request.cookies.a" equals "b"
   And the event "metaData.request.cookies.c" equals "d"
   And the event "metaData.request.cookies.e" equals "f"
