@@ -102,21 +102,21 @@ When("I send a POST request to {string} in the rack app with the following JSON:
   RACK_FIXTURE.post_json(route, data.rows_hash)
 end
 
-Then("the payload field {string} matches the appropriate Sidekiq handled payload") do |field|
+Then("the event {string} matches the appropriate Sidekiq handled payload") do |field|
   # Sidekiq 2 doesn't include the "created_at" field
   created_at_present = ENV["SIDEKIQ_VERSION"] > "2"
 
   steps %Q{
-    And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/handled_metadata_ca_#{created_at_present}.json"
+    And the event "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/handled_metadata_ca_#{created_at_present}.json"
   }
 end
 
-Then("the payload field {string} matches the appropriate Sidekiq unhandled payload") do |field|
+Then("the event {string} matches the appropriate Sidekiq unhandled payload") do |field|
   # Sidekiq 2 doesn't include the "created_at" field
   created_at_present = ENV["SIDEKIQ_VERSION"] > "2"
 
   steps %Q{
-    And the payload field "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_#{created_at_present}.json"
+    And the event "#{field}" matches the JSON fixture in "features/fixtures/sidekiq/payloads/unhandled_metadata_ca_#{created_at_present}.json"
   }
 end
 
