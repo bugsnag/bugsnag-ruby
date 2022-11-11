@@ -2,13 +2,8 @@ require "json"
 require "net/http"
 
 Then(/^the "(.+)" of the top non-bugsnag stackframe equals (\d+|".+")$/) do |element, value|
-  if using_maze_runner_v7?
-    body = Maze::Server.errors.current[:body]
-    stacktrace = Maze::Helper.read_key_path(body, 'events.0.exceptions.0.stacktrace')
-  else
-    body = Server.current_request[:body]
-    stacktrace = read_key_path(body, 'events.0.exceptions.0.stacktrace')
-  end
+  body = Maze::Server.errors.current[:body]
+  stacktrace = Maze::Helper.read_key_path(body, 'events.0.exceptions.0.stacktrace')
 
   frame_index = stacktrace.find_index { |frame| ! /.*lib\/bugsnag.*\.rb/.match(frame["file"]) }
 
@@ -18,40 +13,11 @@ Then(/^the "(.+)" of the top non-bugsnag stackframe equals (\d+|".+")$/) do |ele
 end
 
 Then(/^the total sessionStarted count equals (\d+)$/) do |value|
-  if using_maze_runner_v7?
-    body = Maze::Server.sessions.current[:body]
-    session_counts = Maze::Helper.read_key_path(body, "sessionCounts")
-  else
-    body = Server.current_request[:body]
-    session_counts = read_key_path(body, "sessionCounts")
-  end
+  body = Maze::Server.sessions.current[:body]
+  session_counts = Maze::Helper.read_key_path(body, "sessionCounts")
 
   total_count = session_counts.sum { |session| session["sessionsStarted"] }
   assert_equal(value, total_count)
-end
-
-# Due to an ongoing discussion on whether the `payload_version` needs to be present within the headers
-# and body of the payload, this step is a local replacement for the similar step present in the main
-# maze-runner library. Once the discussion is resolved this step should be removed and replaced in scenarios
-# with the main library version.
-Then("the request is valid for the error reporting API version {string} for the {string}") do |payload_version, notifier_name|
-  steps %Q{
-    Then the "Bugsnag-Api-Key" header equals "#{$api_key}"
-    And the payload field "apiKey" equals "#{$api_key}"
-    And the "Bugsnag-Payload-Version" header equals "#{payload_version}"
-    And the "Content-Type" header equals "application/json"
-    And the "Bugsnag-Sent-At" header is a timestamp
-
-    And the payload field "notifier.name" equals "#{notifier_name}"
-    And the payload field "notifier.url" is not null
-    And the payload field "notifier.version" is not null
-    And the payload field "events" is a non-empty array
-
-    And each element in payload field "events" has "severity"
-    And each element in payload field "events" has "severityReason.type"
-    And each element in payload field "events" has "unhandled"
-    And each element in payload field "events" has "exceptions"
-  }
 end
 
 Given("I start the rails service") do
@@ -187,11 +153,10 @@ end
 
 Given("I configure the BUGSNAG_PROXY environment variables") do
   host = running_in_docker? ? "maze-runner" : current_ip
-  port = using_maze_runner_v7? ? Maze.config.port : MOCK_API_PORT
 
   steps %Q{
     When I set environment variable "BUGSNAG_PROXY_HOST" to "#{host}"
-    And I set environment variable "BUGSNAG_PROXY_PORT" to "#{port}"
+    And I set environment variable "BUGSNAG_PROXY_PORT" to "#{Maze.config.port}"
     And I set environment variable "BUGSNAG_PROXY_USER" to "tester"
     And I set environment variable "BUGSNAG_PROXY_PASSWORD" to "testpass"
   }
@@ -199,18 +164,16 @@ end
 
 Given("I configure the http_proxy environment variable") do
   host = running_in_docker? ? "maze-runner" : current_ip
-  port = using_maze_runner_v7? ? Maze.config.port : MOCK_API_PORT
 
   steps %Q{
-    Given I set environment variable "http_proxy" to "http://tester:testpass@#{host}:#{port}"
+    Given I set environment variable "http_proxy" to "http://tester:testpass@#{host}:#{Maze.config.port}"
   }
 end
 
 Given("I configure the https_proxy environment variable") do
   host = running_in_docker? ? "maze-runner" : current_ip
-  port = using_maze_runner_v7? ? Maze.config.port : MOCK_API_PORT
 
   steps %Q{
-    Given I set environment variable "https_proxy" to "https://tester:testpass@#{host}:#{port}"
+    Given I set environment variable "https_proxy" to "https://tester:testpass@#{host}:#{Maze.config.port}"
   }
 end
