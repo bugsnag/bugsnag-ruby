@@ -1,0 +1,51 @@
+name: test
+
+on: [push, pull_request]
+
+jobs:
+  specs:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
+        optional-groups: ['test sidekiq']
+        include:
+          - ruby-version: '1.9'
+            optional-groups: 'test'
+          - ruby-version: '2.0'
+            optional-groups: 'test'
+          - ruby-version: '2.1'
+            optional-groups: 'test'
+          - ruby-version: 'jruby'
+            optional-groups: 'test'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+
+      - run: bundle install --with "${{ matrix.optional-groups }}" --binstubs
+
+      - run: ./bin/rake spec
+
+  linting:
+    runs-on: ubuntu-latest
+
+    env:
+      BUNDLE_WITH: rubocop
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: true
+
+      - run: bundle exec rubocop lib/

@@ -13,36 +13,6 @@ steps:
 
   - wait
 
-  - label: ':ruby: Ruby 1.9 unit tests'
-    timeout_in_minutes: 30
-    plugins:
-      docker-compose#v3.1.0:
-        run: ruby-unit-tests
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "1.9.3"
-      BUNDLE_VERSION: "1.12.0"
-
-  - label: ':ruby: Ruby 2.7 unit tests'
-    timeout_in_minutes: 30
-    plugins:
-      docker-compose#v3.1.0:
-        run: ruby-unit-tests
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "2.7"
-      GEMSETS: "test sidekiq coverage"
-  - label: ':ruby: Ruby 2.7 linting'
-    timeout_in_minutes: 30
-    plugins:
-      docker-compose#v3.1.0:
-        run: ruby-unit-tests
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "2.7"
-      GEMSETS: "test rubocop"
-    command: "bundle exec ./bin/rubocop lib/"
-
   - label: ':ruby: Ruby 2.7 plain tests'
     timeout_in_minutes: 30
     plugins:
@@ -107,76 +77,6 @@ steps:
       SIDEKIQ_VERSION: "6"
 
   - wait
-
-  - label: ':ruby: JRuby unit tests'
-    timeout_in_minutes: 30
-    plugins:
-      docker-compose#v3.1.0:
-        run: jruby-unit-tests
-        use-aliases: true
-    concurrency: 4
-    concurrency_group: 'ruby/unit-tests'
-
-  - label: ':ruby: Ruby {{matrix}} unit tests'
-    matrix:
-      - '2.0'
-      - '2.1'
-    timeout_in_minutes: 30
-    plugins:
-      docker-compose#v3.1.0:
-        run: ruby-unit-tests
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "{{matrix}}"
-      BUNDLE_VERSION: "1.12.0"
-    concurrency: 4
-    concurrency_group: 'ruby/unit-tests'
-
-  - label: ':ruby: Ruby {{matrix}} unit tests'
-    matrix:
-      - '2.2'
-      - '2.3'
-    timeout_in_minutes: 30
-    plugins:
-      docker-compose#v3.1.0:
-        run: ruby-unit-tests
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "{{matrix}}"
-      BUNDLE_VERSION: "1.12.0"
-      GEMSETS: "test sidekiq"
-    concurrency: 4
-    concurrency_group: 'ruby/unit-tests'
-
-  - label: ':ruby: Ruby {{matrix}} unit tests'
-    matrix:
-      - '2.4'
-      - '2.5'
-      - '2.6'
-    timeout_in_minutes: 30
-    plugins:
-      docker-compose#v3.1.0:
-        run: ruby-unit-tests
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "{{matrix}}"
-      GEMSETS: "test sidekiq"
-    concurrency: 4
-    concurrency_group: 'ruby/unit-tests'
-
-  - label: ':ruby: Ruby {{matrix}} unit tests'
-    matrix:
-      - '3.0'
-      - '3.1'
-    timeout_in_minutes: 30
-    plugins:
-      docker-compose#v3.1.0:
-        run: ruby-unit-tests
-        use-aliases: true
-    env:
-      RUBY_TEST_VERSION: "{{matrix}}"
-    concurrency: 4
-    concurrency_group: 'ruby/unit-tests'
 
   - label: ':ruby: Ruby {{matrix}} plain tests'
     matrix:
@@ -490,9 +390,3 @@ steps:
       RACK_VERSION: '2'
     concurrency: 4
     concurrency_group: 'ruby/integrations-maze-runner-tests'
-
-  - name: ':copyright: License Audit'
-    plugins:
-      docker-compose#v3.7.0:
-        run: license_finder
-    command: /bin/bash -lc '/scan/scripts/license_finder.sh'
