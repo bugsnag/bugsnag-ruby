@@ -21,13 +21,18 @@ on:
       sidekiq-version:
         required: false
         type: string
+      # temporary while we have some tests on Maze Runner v7 and some on v3
+      gemfile:
+        required: false
+        type: string
+        default: Gemfile-maze-runner
 
 jobs:
   maze-runner:
     runs-on: ubuntu-latest
 
     env:
-      BUNDLE_GEMFILE: Gemfile-maze-runner
+      BUNDLE_GEMFILE: ${{ inputs.gemfile }}
 
     steps:
       - uses: actions/checkout@v3
