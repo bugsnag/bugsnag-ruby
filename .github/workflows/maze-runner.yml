@@ -100,6 +100,8 @@ jobs:
     with:
       features: features/delayed_job.feature
       ruby-version: ${{ matrix.ruby-version }}
+      # temporary while we have some tests on Maze Runner v7 and some on v3
+      gemfile: Gemfile-maze-runner-v7
 
   rails-3-4-5-maze-runner:
     strategy:
