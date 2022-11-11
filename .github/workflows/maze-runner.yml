@@ -78,6 +78,8 @@ jobs:
       features: features/que.feature
       ruby-version: ${{ matrix.ruby-version }}
       que-version: ${{ matrix.que-version }}
+      # temporary while we have some tests on Maze Runner v7 and some on v3
+      gemfile: Gemfile-maze-runner-v7
 
   sidekiq-maze-runner:
     strategy:
