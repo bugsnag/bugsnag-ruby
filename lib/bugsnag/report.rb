@@ -239,6 +239,7 @@ module Bugsnag
           :version => NOTIFIER_VERSION,
           :url => NOTIFIER_URL
         },
+        :payloadVersion => CURRENT_PAYLOAD_VERSION,
         :events => [payload_event]
       }
     end
