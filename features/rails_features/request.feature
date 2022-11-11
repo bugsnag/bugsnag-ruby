@@ -4,8 +4,8 @@ Feature: Request data
 Scenario: Request data is collected automatically
   Given I start the rails service
   When I navigate to the route "/unhandled/error?a=123&b=456" on the rails app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
   And the exception "errorClass" equals "NameError"
   And the exception "message" starts with "undefined local variable or method `generate_unhandled_error' for #<UnhandledController"
@@ -29,8 +29,8 @@ Scenario: Request data can be modified in callbacks
   Given I set environment variable "ADD_REQUEST_ON_ERROR" to "true"
   And I start the rails service
   When I navigate to the route "/unhandled/error?a=123&b=456" on the rails app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
   And the exception "errorClass" equals "NameError"
   And the exception "message" starts with "undefined local variable or method `generate_unhandled_error' for #<UnhandledController"

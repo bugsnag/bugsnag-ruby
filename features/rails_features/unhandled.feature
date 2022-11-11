@@ -4,8 +4,8 @@ Feature: Unhandled exceptions support
 Scenario: Unhandled RuntimeError
   Given I start the rails service
   When I navigate to the route "/unhandled/error" on the rails app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
   And the exception "errorClass" equals "NameError"
   And the exception "message" starts with "undefined local variable or method `generate_unhandled_error' for #<UnhandledController"

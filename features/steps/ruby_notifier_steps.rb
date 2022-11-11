@@ -18,8 +18,15 @@ Then(/^the "(.+)" of the top non-bugsnag stackframe equals (\d+|".+")$/) do |ele
 end
 
 Then(/^the total sessionStarted count equals (\d+)$/) do |value|
-  session_counts = read_key_path(Server.current_request[:body], "sessionCounts")
-  total_count = session_counts.inject(0) { |count, session| count += session["sessionsStarted"] }
+  if using_maze_runner_v7?
+    body = Maze::Server.sessions.current[:body]
+    session_counts = Maze::Helper.read_key_path(body, "sessionCounts")
+  else
+    body = Server.current_request[:body]
+    session_counts = read_key_path(body, "sessionCounts")
+  end
+
+  total_count = session_counts.sum { |session| session["sessionsStarted"] }
   assert_equal(value, total_count)
 end
 
