@@ -14,6 +14,8 @@ require "bugsnag/delivery"
 require "bugsnag/delivery/synchronous"
 require "bugsnag/delivery/thread_queue"
 
+require "bugsnag/feature_flag"
+
 # Rack is not bundled with the other integrations
 # as it doesn't auto-configure when loaded
 require "bugsnag/integrations/rack"
