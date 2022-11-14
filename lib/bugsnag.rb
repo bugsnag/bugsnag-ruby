@@ -38,6 +38,7 @@ require "bugsnag/breadcrumbs/breadcrumbs"
 
 require "bugsnag/utility/duplicator"
 require "bugsnag/utility/metadata_delegate"
+require "bugsnag/utility/feature_flag_delegate"
 
 # rubocop:todo Metrics/ModuleLength
 module Bugsnag
