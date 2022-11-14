@@ -38,49 +38,26 @@ def current_ip
   ip_list.captures.first
 end
 
-def using_maze_runner_v7?
-  defined?(Maze)
+Maze.hooks.before_all do
+  install_fixture_gems
+
+  # log to console, not a file
+  Maze.config.file_log = false
+  Maze.config.log_requests = true
+
+  # don't wait so long for requests/not to receive requests
+  Maze.config.receive_requests_wait = 10
+  Maze.config.receive_no_requests_wait = 10
+
+  # bugsnag-ruby doesn't need to send the integrity header
+  Maze.config.enforce_bugsnag_integrity = false
 end
 
-if using_maze_runner_v7?
-  Maze.hooks.before_all do
-    install_fixture_gems
+Maze.hooks.before do
+  Maze::Runner.environment["BUGSNAG_API_KEY"] = $api_key
 
-    # log to console, not a file
-    Maze.config.file_log = false
-    Maze.config.log_requests = true
+  host = running_in_docker? ? "maze-runner" : current_ip
 
-    # don't wait so long for requests/not to receive requests
-    Maze.config.receive_requests_wait = 10
-    Maze.config.receive_no_requests_wait = 10
-
-    # bugsnag-ruby doesn't need to send the integrity header
-    Maze.config.enforce_bugsnag_integrity = false
-  end
-
-  Maze.hooks.before do
-    # Maze::Docker.compose_project_name = "#{rand.to_s}:#{Time.new.strftime("%s")}"
-
-    Maze::Runner.environment["BUGSNAG_API_KEY"] = $api_key
-
-    host = running_in_docker? ? "maze-runner" : current_ip
-
-    Maze::Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{host}:#{Maze.config.port}/notify"
-    Maze::Runner.environment["BUGSNAG_SESSION_ENDPOINT"] = "http://#{host}:#{Maze.config.port}/sessions"
-  end
-else
-  AfterConfiguration do |config|
-    install_fixture_gems
-  end
-
-  Before do
-    Docker.compose_project_name = "#{rand.to_s}:#{Time.new.strftime("%s")}"
-    Runner.environment.clear
-    Runner.environment["BUGSNAG_API_KEY"] = $api_key
-
-    host = running_in_docker? ? "maze-runner" : current_ip
-
-    Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{host}:#{MOCK_API_PORT}"
-    Runner.environment["BUGSNAG_SESSION_ENDPOINT"] = "http://#{host}:#{MOCK_API_PORT}"
-  end
+  Maze::Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{host}:#{Maze.config.port}/notify"
+  Maze::Runner.environment["BUGSNAG_SESSION_ENDPOINT"] = "http://#{host}:#{Maze.config.port}/sessions"
 end

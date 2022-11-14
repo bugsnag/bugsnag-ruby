@@ -13,8 +13,6 @@ jobs:
     with:
       features: features/rake.feature
       ruby-version: ${{ matrix.ruby-version }}
-      # temporary while we have some tests on Maze Runner v7 and some on v3
-      gemfile: Gemfile-maze-runner-v7
 
   mailman-maze-runner:
     strategy:
@@ -26,8 +24,6 @@ jobs:
     with:
       features: features/mailman.feature
       ruby-version: ${{ matrix.ruby-version }}
-      # temporary while we have some tests on Maze Runner v7 and some on v3
-      gemfile: Gemfile-maze-runner-v7
 
   rack-maze-runner:
     strategy:
@@ -50,8 +46,6 @@ jobs:
       features: features/rack.feature
       ruby-version: ${{ matrix.ruby-version }}
       rack-version: ${{ matrix.rack-version }}
-      # temporary while we have some tests on Maze Runner v7 and some on v3
-      gemfile: Gemfile-maze-runner-v7
 
   que-maze-runner:
     strategy:
@@ -82,8 +76,6 @@ jobs:
       features: features/que.feature
       ruby-version: ${{ matrix.ruby-version }}
       que-version: ${{ matrix.que-version }}
-      # temporary while we have some tests on Maze Runner v7 and some on v3
-      gemfile: Gemfile-maze-runner-v7
 
   sidekiq-maze-runner:
     strategy:
@@ -97,8 +89,6 @@ jobs:
       features: features/sidekiq.feature
       ruby-version: ${{ matrix.ruby-version }}
       sidekiq-version: ${{ matrix.sidekiq-version }}
-      # temporary while we have some tests on Maze Runner v7 and some on v3
-      gemfile: Gemfile-maze-runner-v7
 
   delayed-job-maze-runner:
     strategy:
@@ -110,8 +100,6 @@ jobs:
     with:
       features: features/delayed_job.feature
       ruby-version: ${{ matrix.ruby-version }}
-      # temporary while we have some tests on Maze Runner v7 and some on v3
-      gemfile: Gemfile-maze-runner-v7
 
   rails-3-4-5-maze-runner:
     strategy:
@@ -132,8 +120,6 @@ jobs:
       features: features/rails_features/ --tags @rails${{ matrix.rails-version }}
       ruby-version: ${{ matrix.ruby-version }}
       rails-version: ${{ matrix.rails-version }}
-      # temporary while we have some tests on Maze Runner v7 and some on v3
-      gemfile: Gemfile-maze-runner-v7
 
   rails-6-7-integrations-maze-runner:
     strategy:
@@ -155,8 +141,6 @@ jobs:
       features: features/rails_features/ --tags @rails${{ matrix.rails-version }}
       ruby-version: ${{ matrix.ruby-version }}
       rails-version: ${{ matrix.rails-version }}
-      # temporary while we have some tests on Maze Runner v7 and some on v3
-      gemfile: Gemfile-maze-runner-v7
 
   plain-maze-runner:
     strategy:
@@ -168,5 +152,3 @@ jobs:
     with:
       features: features/plain_features/
       ruby-version: ${{ matrix.ruby-version }}
-      # temporary while we have some tests on Maze Runner v7 and some on v3
-      gemfile: Gemfile-maze-runner-v7
