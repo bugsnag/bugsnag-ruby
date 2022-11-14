@@ -135,17 +135,20 @@ jobs:
       # temporary while we have some tests on Maze Runner v7 and some on v3
       gemfile: Gemfile-maze-runner-v7
 
-  rails-6-7-maze-runner:
+  rails-6-7-integrations-maze-runner:
     strategy:
       fail-fast: false
       matrix:
         ruby-version: ['2.7', '3.0', '3.1']
-        rails-version: ['6', '7']
+        rails-version: ['6', '7', '_integrations']
         include:
           - ruby-version: '2.5'
             rails-version: '6'
           - ruby-version: '2.6'
             rails-version: '6'
+        exclude:
+          - ruby-version: '3.1'
+            rails-version: '_integrations'
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
@@ -154,18 +157,6 @@ jobs:
       rails-version: ${{ matrix.rails-version }}
       # temporary while we have some tests on Maze Runner v7 and some on v3
       gemfile: Gemfile-maze-runner-v7
-
-  rails-integrations-maze-runner:
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby-version: ['2.7', '3.0']
-
-    uses: ./.github/workflows/run-maze-runner.yml
-    with:
-      features: features/rails_features/ --tags @rails_integrations
-      ruby-version: ${{ matrix.ruby-version }}
-      rails-version: _integrations
 
   plain-maze-runner:
     strategy:
