@@ -4,8 +4,8 @@ Feature: Active Job
 Scenario: A handled error will be delivered
   Given I start the rails service
   When I navigate to the route "/active_job/handled" on the rails app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is false
   And the event "severity" equals "warning"
   And the event "context" equals "NotifyJob@default"
@@ -30,8 +30,8 @@ Scenario: A handled error will be delivered
 Scenario: An unhandled error will be delivered
   Given I start the rails service
   When I navigate to the route "/active_job/unhandled" on the rails app
-  And I wait to receive 2 requests
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive 2 errors
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
   And the event "severity" equals "error"
   And the event "context" equals "UnhandledJob@default"
@@ -51,8 +51,8 @@ Scenario: An unhandled error will be delivered
   And in Rails versions ">=" 5 the event "metaData.active_job.executions" equals 1
   And in Rails versions ">=" 6 the event "metaData.active_job.timezone" equals "UTC"
   And in Rails versions ">=" 6 the event "metaData.active_job.enqueued_at" is a timestamp
-  When I discard the oldest request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  When I discard the oldest error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
   And the event "severity" equals "error"
   And the event "context" equals "UnhandledJob@default"

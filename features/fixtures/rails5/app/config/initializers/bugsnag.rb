@@ -1,7 +1,7 @@
 Bugsnag.configure do |config|
   config.api_key = ENV["BUGSNAG_API_KEY"] || ENV["BUGSNAG_API_KEY"]
   config.endpoint = ENV["BUGSNAG_ENDPOINT"] || ENV["BUGSNAG_ENDPOINT"]
-  config.session_endpoint = ENV["BUGSNAG_ENDPOINT"] || ENV["BUGSNAG_ENDPOINT"]
+  config.session_endpoint = ENV["BUGSNAG_SESSION_ENDPOINT"] || ENV["BUGSNAG_SESSION_ENDPOINT"]
   config.app_type = ENV["BUGSNAG_APP_TYPE"] if ENV.include? "BUGSNAG_APP_TYPE"
   config.app_version = ENV["BUGSNAG_APP_VERSION"] if ENV.include? "BUGSNAG_APP_VERSION"
   config.auto_notify = ENV["BUGSNAG_AUTO_NOTIFY"] != "false"

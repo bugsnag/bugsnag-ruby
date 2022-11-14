@@ -323,6 +323,7 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
+      - BUGSNAG_SESSION_ENDPOINT
       - DB_USERNAME=postgres
       - DB_PASSWORD=test_password
       - DB_HOST=postgres

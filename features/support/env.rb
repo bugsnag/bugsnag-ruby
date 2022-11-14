@@ -63,11 +63,10 @@ if using_maze_runner_v7?
 
     Maze::Runner.environment["BUGSNAG_API_KEY"] = $api_key
 
-    if running_in_docker?
-      Maze::Runner.environment["BUGSNAG_ENDPOINT"] = "http://maze-runner:#{Maze.config.port}/notify"
-    else
-      Maze::Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{current_ip}:#{Maze.config.port}/notify"
-    end
+    host = running_in_docker? ? "maze-runner" : current_ip
+
+    Maze::Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{host}:#{Maze.config.port}/notify"
+    Maze::Runner.environment["BUGSNAG_SESSION_ENDPOINT"] = "http://#{host}:#{Maze.config.port}/sessions"
   end
 else
   AfterConfiguration do |config|
@@ -79,10 +78,9 @@ else
     Runner.environment.clear
     Runner.environment["BUGSNAG_API_KEY"] = $api_key
 
-    if running_in_docker?
-      Runner.environment["BUGSNAG_ENDPOINT"] = "http://maze-runner:#{MOCK_API_PORT}"
-    else
-      Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{current_ip}:#{MOCK_API_PORT}"
-    end
+    host = running_in_docker? ? "maze-runner" : current_ip
+
+    Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{host}:#{MOCK_API_PORT}"
+    Runner.environment["BUGSNAG_SESSION_ENDPOINT"] = "http://#{host}:#{MOCK_API_PORT}"
   end
 end

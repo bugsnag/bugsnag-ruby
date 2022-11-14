@@ -5,7 +5,6 @@ Scenario: Auto_notify set to false in the initializer prevents unhandled error s
   Given I set environment variable "BUGSNAG_AUTO_NOTIFY" to "false"
   And I start the rails service
   When I navigate to the route "/auto_notify/unhandled" on the rails app
-  And I wait for 3 seconds
   Then I should receive no requests
 
 @rails3 @rails4 @rails5 @rails6 @rails7
@@ -13,8 +12,8 @@ Scenario: Auto_notify set to false in the initializer still sends handled errors
   Given I set environment variable "BUGSNAG_AUTO_NOTIFY" to "false"
   And I start the rails service
   When I navigate to the route "/auto_notify/handled" on the rails app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is false
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled string"
@@ -25,15 +24,14 @@ Scenario: Auto_notify set to false in the initializer still sends handled errors
 Scenario: Auto_notify set to false after the initializer prevents unhandled error sending
   Given I start the rails service
   When I navigate to the route "/auto_notify/unhandled_after" on the rails app
-  And I wait for 3 seconds
   Then I should receive no requests
 
 @rails3 @rails4 @rails5 @rails6 @rails7
 Scenario: Auto_notify set to false after the initializer still sends handled errors
   Given I start the rails service
   When I navigate to the route "/auto_notify/handled_after" on the rails app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled string"
   And the event "unhandled" is false
