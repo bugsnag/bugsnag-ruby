@@ -24,6 +24,36 @@ class BugsnagTests
       rescue StandardError => e
         Bugsnag.notify(e)
       end
+    when '/feature-flags/unhandled'
+      Bugsnag.add_on_error(proc do |event|
+        event.add_feature_flag('a', '1')
+
+        event.add_feature_flags([
+          Bugsnag::FeatureFlag.new('b'),
+          Bugsnag::FeatureFlag.new('c', '3'),
+        ])
+
+        event.add_feature_flag('d')
+
+        if req.params["clear_all_flags"]
+          event.clear_feature_flags
+        end
+      end)
+
+      raise 'Unhandled error'
+    when '/feature-flags/handled'
+      Bugsnag.notify(RuntimeError.new('oh no')) do |event|
+        event.add_feature_flag('x')
+
+        event.add_feature_flags([
+          Bugsnag::FeatureFlag.new('y', '1234'),
+          Bugsnag::FeatureFlag.new('z'),
+        ])
+
+        if req.params["clear_all_flags"]
+          event.clear_feature_flags
+        end
+      end
     end
 
     res = Rack::Response.new

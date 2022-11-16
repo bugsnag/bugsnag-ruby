@@ -131,3 +131,40 @@ Scenario: A request with cookies and no matching filter will set cookies in meta
   And the event "metaData.request.params.b" equals "456"
   And the event "metaData.request.referer" is null
   And the event "metaData.request.url" ends with "/unhandled?a=123&b=456"
+
+Scenario: adding feature flags for an unhandled error
+  Given I start the rack service
+  When I navigate to the route "/feature-flags/unhandled" on the rack app
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
+  And the event contains the following feature flags:
+     | featureFlag   | variant |
+     | a             | 1       |
+     | b             |         |
+     | c             | 3       |
+     | d             |         |
+
+ Scenario: adding feature flags for a handled error
+  Given I start the rack service
+  When I navigate to the route "/feature-flags/handled" on the rack app
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
+  And the event contains the following feature flags:
+     | featureFlag   | variant |
+     | x             |         |
+     | y             | 1234    |
+     | z             |         |
+
+Scenario: clearing feature flags for an unhandled error
+  Given I start the rack service
+  When I navigate to the route "/feature-flags/unhandled?clear_all_flags=1" on the rack app
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
+  And the event has no feature flags
+
+ Scenario: clearing feature flags for a handled error
+  Given I start the rack service
+  When I navigate to the route "/feature-flags/handled?clear_all_flags=1" on the rack app
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
+  And the event has no feature flags
