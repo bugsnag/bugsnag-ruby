@@ -78,11 +78,12 @@ services:
       - CALLBACK_INITIATOR
     restart: "no"
 
-  rack1:
+  rack:
     build:
-      context: rack1
+      context: rack
       args:
         - RUBY_TEST_VERSION
+        - RACK_VERSION
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
@@ -91,20 +92,6 @@ services:
     ports:
       - target: 3000
         published: 7251
-
-  rack2:
-    build:
-      context: rack2
-      args:
-        - RUBY_TEST_VERSION
-    environment:
-      - BUGSNAG_API_KEY
-      - BUGSNAG_ENDPOINT
-      - BUGSNAG_METADATA_FILTERS
-    restart: "no"
-    ports:
-      - target: 3000
-        published: 7252
 
   rails3:
     build:

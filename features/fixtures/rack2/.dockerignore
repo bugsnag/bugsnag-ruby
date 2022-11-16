@@ -1,3 +1,0 @@
-# Ignore the lock file so that we always use an up to date version. This won't
-# exist unless the fixtures are run manually anyway.
-app/Gemfile.lock

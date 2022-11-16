@@ -2,7 +2,7 @@ require 'os'
 require 'fileutils'
 require_relative "./../lib/fixture"
 
-RACK_FIXTURE = Fixture.new("rack", ENV["RACK_VERSION"])
+RACK_FIXTURE = Fixture.new("rack")
 RAILS_FIXTURE = Fixture.new("rails", ENV["RAILS_VERSION"])
 
 def running_in_docker?

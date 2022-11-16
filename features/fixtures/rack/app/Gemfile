@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
 
 gem 'bugsnag', path: '/bugsnag'
-gem 'rack', '~> 2'
+gem 'rack', "~> #{ENV['RACK_VERSION']}"
 gem 'webrick' if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('3.0.0')

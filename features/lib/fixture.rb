@@ -1,5 +1,5 @@
 class Fixture
-  def initialize(name, version)
+  def initialize(name, version = nil)
     @name = name
     @version = version
   end
@@ -21,6 +21,8 @@ class Fixture
     # bind to port 3000 even when running outside of docker
     if running_in_docker? || @version == "_integrations"
       "3000"
+    elsif @name == "rack"
+      "7251"
     else
       "725#{@version}"
     end
