@@ -14,7 +14,11 @@ module Bugsnag::Utility
     # @param variant [String, nil]
     # @return [void]
     def add(name, variant)
-      @storage[name] = Bugsnag::FeatureFlag.new(name, variant)
+      flag = Bugsnag::FeatureFlag.new(name, variant)
+
+      return unless flag.valid?
+
+      @storage[flag.name] = flag
     end
 
     # Merge the given array of FeatureFlag instances into the stored feature
@@ -28,6 +32,7 @@ module Bugsnag::Utility
     def merge(feature_flags)
       feature_flags.each do |flag|
         next unless flag.is_a?(Bugsnag::FeatureFlag)
+        next unless flag.valid?
 
         @storage[flag.name] = flag
       end

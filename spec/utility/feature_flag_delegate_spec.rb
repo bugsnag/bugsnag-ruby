@@ -1,6 +1,16 @@
 require 'spec_helper'
 
 describe Bugsnag::Utility::FeatureFlagDelegate do
+  invalid_names = [
+    nil,
+    true,
+    false,
+    1234,
+    [1, 2, 3],
+    { a: 1, b: 2 },
+    "",
+  ]
+
   it "contains no flags by default" do
     delegate = Bugsnag::Utility::FeatureFlagDelegate.new
 
@@ -59,6 +69,21 @@ describe Bugsnag::Utility::FeatureFlagDelegate do
         { "featureFlag" => "abc", "variant" => "987" },
         { "featureFlag" => "another" },
       ])
+    end
+
+    invalid_names.each do |name|
+      it "drops flags when name is '#{name.inspect}'" do
+        delegate = Bugsnag::Utility::FeatureFlagDelegate.new
+
+        delegate.add("abc", "123")
+        delegate.add(name, nil)
+        delegate.add("xyz", "987")
+
+        expect(delegate.as_json).to eq([
+          { "featureFlag" => "abc", "variant" => "123" },
+          { "featureFlag" => "xyz", "variant" => "987" },
+        ])
+      end
     end
   end
 
@@ -149,6 +174,23 @@ describe Bugsnag::Utility::FeatureFlagDelegate do
         { "featureFlag" => "c", "variant" => "111" },
         { "featureFlag" => "d" },
       ])
+    end
+
+    invalid_names.each do |name|
+      it "drops flag when name is '#{name.inspect}'" do
+        delegate = Bugsnag::Utility::FeatureFlagDelegate.new
+
+        delegate.merge([
+          Bugsnag::FeatureFlag.new("abc", "123"),
+          Bugsnag::FeatureFlag.new(name, "456"),
+          Bugsnag::FeatureFlag.new("xyz", "789"),
+        ])
+
+        expect(delegate.as_json).to eq([
+          { "featureFlag" => "abc", "variant" => "123" },
+          { "featureFlag" => "xyz", "variant" => "789" },
+        ])
+      end
     end
   end
 
