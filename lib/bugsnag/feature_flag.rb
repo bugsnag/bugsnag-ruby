@@ -42,6 +42,16 @@ module Bugsnag
       end
     end
 
+    # Check if this flag is valid, i.e. has a name that's a String and a variant
+    # that's either nil or a String
+    #
+    # @return [Boolean]
+    def valid?
+      @name.is_a?(String) &&
+        !@name.empty? &&
+        (@variant.nil? || @variant.is_a?(String))
+    end
+
     private
 
     # Coerce this variant into a valid value (String or nil)

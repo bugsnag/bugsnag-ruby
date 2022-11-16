@@ -118,4 +118,47 @@ describe Bugsnag::FeatureFlag do
       expect(flag2).not_to eq(flag1)
     end
   end
+
+  describe "#valid?" do
+    [
+      nil,
+      true,
+      false,
+      1234,
+      [1, 2, 3],
+      { a: 1, b: 2 },
+      :abc,
+      "",
+    ].each do |name|
+      it "returns false when name is '#{name.inspect}' with no variant" do
+        flag = Bugsnag::FeatureFlag.new(name)
+
+        expect(flag.valid?).to be(false)
+      end
+
+      it "returns false when name is '#{name.inspect}' and variant is present" do
+        flag = Bugsnag::FeatureFlag.new(name, name)
+
+        expect(flag.valid?).to be(false)
+      end
+
+      it "returns true when name is a string and variant is '#{name.inspect}'" do
+        flag = Bugsnag::FeatureFlag.new("a name", name)
+
+        expect(flag.valid?).to be(true)
+      end
+    end
+
+    it "returns true when name is a string with no variant" do
+      flag = Bugsnag::FeatureFlag.new("a name")
+
+      expect(flag.valid?).to be(true)
+    end
+
+    it "returns true when name and variant are strings" do
+      flag = Bugsnag::FeatureFlag.new("a name", "a variant")
+
+      expect(flag.valid?).to be(true)
+    end
+  end
 end
