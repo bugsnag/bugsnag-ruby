@@ -45,9 +45,11 @@ Maze.hooks.before_all do
   Maze.config.file_log = false
   Maze.config.log_requests = true
 
-  # don't wait so long for requests/not to receive requests
-  Maze.config.receive_requests_wait = 10
-  Maze.config.receive_no_requests_wait = 10
+  # don't wait so long for requests/not to receive requests locally
+  unless ENV["CI"]
+    Maze.config.receive_requests_wait = 10
+    Maze.config.receive_no_requests_wait = 10
+  end
 
   # bugsnag-ruby doesn't need to send the integrity header
   Maze.config.enforce_bugsnag_integrity = false

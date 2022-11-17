@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
+        ruby-version: ['1.9', '3.1']
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0']
+        ruby-version: ['2.0', '3.0']
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
@@ -29,16 +29,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
-        rack-version: ['1', '2']
-        exclude:
-          - ruby-version: '3.1'
-            rack-version: '1'
+        include:
           - ruby-version: '1.9'
+            rack-version: '1'
+          - ruby-version: '3.0'
+            rack-version: '1'
+          - ruby-version: '2.2'
             rack-version: '2'
-          - ruby-version: '2.0'
-            rack-version: '2'
-          - ruby-version: '2.1'
+          - ruby-version: '3.1'
             rack-version: '2'
 
     uses: ./.github/workflows/run-maze-runner.yml
@@ -51,24 +49,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
-        que-version: ['0.14', '1']
-        exclude:
+        include:
+          - ruby-version: '2.0'
+            que-version: '0.14'
           - ruby-version: '3.1'
             que-version: '0.14'
-          - ruby-version: '2.0'
+          - ruby-version: '2.5'
             que-version: '1'
-          - ruby-version: '2.1'
-            que-version: '1'
-          - ruby-version: '2.2'
-            que-version: '1'
-          - ruby-version: '2.3'
-            que-version: '1'
-          - ruby-version: '2.4'
-            que-version: '1'
-          - ruby-version: '3.0'
-            que-version: '1'
-          - ruby-version: '3.1'
+          - ruby-version: '2.7'
             que-version: '1'
 
     uses: ./.github/workflows/run-maze-runner.yml
@@ -105,14 +93,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.2', '2.3', '2.4', '2.5']
+        ruby-version: ['2.2', '2.5']
         rails-version: ['3', '4', '5']
         include:
           - ruby-version: '2.0'
             rails-version: '3'
-          - ruby-version: '2.1'
-            rails-version: '3'
           - ruby-version: '2.6'
+            rails-version: '5'
+        exclude:
+          - ruby-version: '2.2'
+            rails-version: '3'
+          - ruby-version: '2.5'
             rails-version: '5'
 
     uses: ./.github/workflows/run-maze-runner.yml
@@ -125,14 +116,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.7', '3.0', '3.1']
+        ruby-version: ['2.7', '3.1']
         rails-version: ['6', '7', '_integrations']
         include:
           - ruby-version: '2.5'
             rails-version: '6'
-          - ruby-version: '2.6'
-            rails-version: '6'
         exclude:
+          - ruby-version: '2.7'
+            rails-version: '6'
           - ruby-version: '3.1'
             rails-version: '_integrations'
 
