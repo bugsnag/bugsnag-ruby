@@ -1,6 +1,6 @@
 Feature: feature flags
 
-@rails6 @rails7
+@rails5 @rails6 @rails7
 Scenario: adding feature flags for an unhandled error
   Given I start the rails service
   When I navigate to the route "/features/unhandled?flags[a]=1&flags[b]&flags[c]=3&flags[d]=4" on the rails app
@@ -26,7 +26,7 @@ Scenario: adding feature flags for an unhandled error
      | y             |         |
      | z             | 7       |
 
-@rails6 @rails7
+@rails5 @rails6 @rails7
 Scenario: adding feature flags for a handled error
   Given I start the rails service
   When I navigate to the route "/features/handled?flags[ab]=12&flags[cd]=34" on the rails app
@@ -50,7 +50,7 @@ Scenario: adding feature flags for a handled error
      | f             | i       |
      | g             |         |
 
-@rails6 @rails7
+@rails5 @rails6 @rails7
 Scenario: clearing all feature flags doesn't affect subsequent requests
   Given I start the rails service
   When I navigate to the route "/features/unhandled?flags[a]=1&flags[b]&flags[c]=3&flags[d]=4&clear_all_flags" on the rails app
