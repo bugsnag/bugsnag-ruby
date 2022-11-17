@@ -186,6 +186,11 @@ module Bugsnag
     # @return [Breadcrumbs::OnBreadcrumbCallbackList]
     attr_reader :on_breadcrumb_callbacks
 
+    # Expose feature_flag_delegate internally for creating new events
+    # @api private
+    # @return [FeatureFlagDelegate]
+    attr_reader :feature_flag_delegate
+
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -289,6 +294,8 @@ module Bugsnag
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
+
+      @feature_flag_delegate = Bugsnag::Utility::FeatureFlagDelegate.new
     end
 
     ##
@@ -661,6 +668,50 @@ module Bugsnag
     def clear_metadata(section, *args)
       @mutex.synchronize do
         @metadata_delegate.clear_metadata(@metadata, section, *args)
+      end
+    end
+
+    # Add a feature flag with the given name & variant
+    #
+    # @param name [String]
+    # @param variant [String, nil]
+    # @return [void]
+    def add_feature_flag(name, variant = nil)
+      @mutex.synchronize do
+        @feature_flag_delegate.add(name, variant)
+      end
+    end
+
+    # Merge the given array of FeatureFlag instances into the stored feature
+    # flags
+    #
+    # New flags will be appended to the array. Flags with the same name will be
+    # overwritten, but their position in the array will not change
+    #
+    # @param feature_flags [Array<Bugsnag::FeatureFlag>]
+    # @return [void]
+    def add_feature_flags(feature_flags)
+      @mutex.synchronize do
+        @feature_flag_delegate.merge(feature_flags)
+      end
+    end
+
+    # Remove the stored flag with the given name
+    #
+    # @param name [String]
+    # @return [void]
+    def clear_feature_flag(name)
+      @mutex.synchronize do
+        @feature_flag_delegate.remove(name)
+      end
+    end
+
+    # Remove all the stored flags
+    #
+    # @return [void]
+    def clear_feature_flags
+      @mutex.synchronize do
+        @feature_flag_delegate.clear
       end
     end
 
