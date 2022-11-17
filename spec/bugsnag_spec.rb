@@ -1127,4 +1127,84 @@ describe Bugsnag do
       })
     end
   end
+
+  describe "feature flags" do
+    it "is added to the payload" do
+      Bugsnag.add_feature_flag('abc')
+      Bugsnag.add_feature_flag('xyz', '123')
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([
+          { "featureFlag" => "abc" },
+          { "featureFlag" => "xyz", "variant" => "123" },
+        ])
+      }
+    end
+
+    it "does not mutate the global feature flags if more flags are added" do
+      Bugsnag.add_feature_flag('abc')
+      Bugsnag.add_feature_flag('xyz', '123')
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        event.add_feature_flag('another one')
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([
+          { "featureFlag" => "abc" },
+          { "featureFlag" => "xyz", "variant" => "123" },
+          { "featureFlag" => "another one" },
+        ])
+
+        expect(Bugsnag.configuration.feature_flag_delegate.as_json).to eq([
+          { "featureFlag" => "abc" },
+          { "featureFlag" => "xyz", "variant" => "123" },
+        ])
+      }
+    end
+
+    it "does not mutate the global feature flags if flags are removed" do
+      Bugsnag.add_feature_flag('abc')
+      Bugsnag.add_feature_flag('xyz', '123')
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        event.clear_feature_flags
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to be_empty
+
+        expect(Bugsnag.configuration.feature_flag_delegate.as_json).to eq([
+          { "featureFlag" => "abc" },
+          { "featureFlag" => "xyz", "variant" => "123" },
+        ])
+      }
+    end
+
+    it "does not mutate the event's feature flags if global flags are removed" do
+      Bugsnag.add_feature_flags([
+        Bugsnag::FeatureFlag.new('abc'),
+        Bugsnag::FeatureFlag.new('xyz', 123),
+      ])
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        Bugsnag.clear_feature_flags
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([
+          { "featureFlag" => "abc" },
+          { "featureFlag" => "xyz", "variant" => "123" },
+        ])
+
+        expect(Bugsnag.configuration.feature_flag_delegate.as_json).to be_empty
+      }
+    end
+  end
 end
