@@ -712,4 +712,107 @@ describe Bugsnag::Configuration do
       end
     end
   end
+
+  describe "feature flags" do
+    describe "#feature_flag_delegate" do
+      it "is initially empty" do
+        expect(subject.feature_flag_delegate.to_a).to be_empty
+      end
+
+      it "cannot be reassigned" do
+        expect(subject).not_to respond_to(:feature_flag_delegate=)
+      end
+
+      it "reflects changes in add/clear feature flags" do
+        subject.add_feature_flag('abc')
+        subject.add_feature_flags([
+          Bugsnag::FeatureFlag.new('1'),
+          Bugsnag::FeatureFlag.new('2', 'z'),
+          Bugsnag::FeatureFlag.new('3'),
+        ])
+        subject.add_feature_flag('xyz', '1234')
+
+        subject.clear_feature_flag('3')
+
+        expect(subject.feature_flag_delegate.to_a).to eq([
+          Bugsnag::FeatureFlag.new('abc'),
+          Bugsnag::FeatureFlag.new('1'),
+          Bugsnag::FeatureFlag.new('2', 'z'),
+          Bugsnag::FeatureFlag.new('xyz', '1234'),
+        ])
+
+        subject.clear_feature_flags
+
+        expect(subject.feature_flag_delegate.to_a).to be_empty
+      end
+    end
+
+    describe "concurrent access" do
+      it "can handle multiple threads adding feature flags" do
+        configuration = Bugsnag::Configuration.new
+
+        threads = 5.times.map do |i|
+          Thread.new do
+            configuration.add_feature_flag("thread_#{i} flag 1", i)
+          end
+        end
+
+        threads += 5.times.map do |i|
+          Thread.new do
+            configuration.add_feature_flags([
+              Bugsnag::FeatureFlag.new("thread_#{i} flag 2", i * 100),
+              Bugsnag::FeatureFlag.new("thread_#{i} flag 3", i * 100 + 1),
+            ])
+          end
+        end
+
+        threads.shuffle.map(&:join)
+
+        flags = configuration.feature_flag_delegate.to_a.sort do |a, b|
+          a.name <=> b.name
+        end
+
+        expect(flags).to eq([
+          Bugsnag::FeatureFlag.new('thread_0 flag 1', 0),
+          Bugsnag::FeatureFlag.new('thread_0 flag 2', 0),
+          Bugsnag::FeatureFlag.new('thread_0 flag 3', 1),
+          Bugsnag::FeatureFlag.new('thread_1 flag 1', 1),
+          Bugsnag::FeatureFlag.new('thread_1 flag 2', 100),
+          Bugsnag::FeatureFlag.new('thread_1 flag 3', 101),
+          Bugsnag::FeatureFlag.new('thread_2 flag 1', 2),
+          Bugsnag::FeatureFlag.new('thread_2 flag 2', 200),
+          Bugsnag::FeatureFlag.new('thread_2 flag 3', 201),
+          Bugsnag::FeatureFlag.new('thread_3 flag 1', 3),
+          Bugsnag::FeatureFlag.new('thread_3 flag 2', 300),
+          Bugsnag::FeatureFlag.new('thread_3 flag 3', 301),
+          Bugsnag::FeatureFlag.new('thread_4 flag 1', 4),
+          Bugsnag::FeatureFlag.new('thread_4 flag 2', 400),
+          Bugsnag::FeatureFlag.new('thread_4 flag 3', 401),
+        ])
+      end
+
+      it "can handle multiple threads clearing feature flags" do
+        configuration = Bugsnag::Configuration.new
+
+        configuration.add_feature_flag('abc')
+        configuration.add_feature_flag('xyz')
+
+        5.times do |i|
+          configuration.add_feature_flag("thread_#{i}", i)
+        end
+
+        threads = 5.times.map do |i|
+          Thread.new do
+            configuration.clear_feature_flag("thread_#{i}")
+            configuration.clear_feature_flag('abc')
+            configuration.clear_feature_flag('xyz')
+          end
+        end
+
+        threads.shuffle.map(&:join)
+
+        expect(configuration.feature_flag_delegate.to_a).to be_empty
+      end
+    end
+  end
 end
