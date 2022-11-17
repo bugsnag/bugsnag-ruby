@@ -65,4 +65,7 @@ Rails.application.routes.draw do
 
   get 'active_job/handled', to: 'active_job#handled'
   get 'active_job/unhandled', to: 'active_job#unhandled'
+
+  get 'features/handled', to: 'feature_flags#handled'
+  get 'features/unhandled', to: 'feature_flags#unhandled'
 end
