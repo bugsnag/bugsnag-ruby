@@ -8,6 +8,13 @@ module Bugsnag::Utility
       @storage = {}
     end
 
+    def initialize_dup(original)
+      super
+
+      # copy the internal storage when 'dup' is called
+      @storage = @storage.dup
+    end
+
     # Add a feature flag with the given name & variant
     #
     # @param name [String]
