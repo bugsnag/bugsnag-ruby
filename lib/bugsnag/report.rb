@@ -143,7 +143,7 @@ module Bugsnag
       self.user = {}
 
       @metadata_delegate = Utility::MetadataDelegate.new
-      @feature_flags = Utility::FeatureFlagDelegate.new
+      @feature_flags = configuration.feature_flag_delegate.dup
     end
 
     ##
