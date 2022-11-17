@@ -19,4 +19,5 @@ App::Application.routes.draw do
   get "/breadcrumbs/(:action)", controller: 'breadcrumbs'
   get "/mongo/(:action)", controller: 'mongo'
   get "/active_job/(:action)", controller: 'active_job'
+  get "/features/(:action)", controller: 'feature_flags'
 end
