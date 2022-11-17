@@ -17,6 +17,37 @@ describe Bugsnag::Utility::FeatureFlagDelegate do
     expect(delegate.as_json).to eq([])
   end
 
+  it "does not get mutated after being duplicated" do
+    delegate1 = Bugsnag::Utility::FeatureFlagDelegate.new
+    delegate1.add('abc', '123')
+
+    delegate2 = delegate1.dup
+    delegate2.add('xyz', '987')
+
+    expect(delegate1.to_a).to eq([
+      Bugsnag::FeatureFlag.new('abc', '123'),
+    ])
+
+    expect(delegate2.to_a).to eq([
+      Bugsnag::FeatureFlag.new('abc', '123'),
+      Bugsnag::FeatureFlag.new('xyz', '987'),
+    ])
+
+    delegate3 = delegate2.dup
+    delegate3.clear
+
+    expect(delegate1.to_a).to eq([
+      Bugsnag::FeatureFlag.new('abc', '123'),
+    ])
+
+    expect(delegate2.to_a).to eq([
+      Bugsnag::FeatureFlag.new('abc', '123'),
+      Bugsnag::FeatureFlag.new('xyz', '987'),
+    ])
+
+    expect(delegate3.to_a).to be_empty
+  end
+
   describe "#add" do
     it "can add flags individually" do
       delegate = Bugsnag::Utility::FeatureFlagDelegate.new
