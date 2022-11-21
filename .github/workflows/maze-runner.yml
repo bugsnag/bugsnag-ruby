@@ -38,6 +38,10 @@ jobs:
             rack-version: '2'
           - ruby-version: '3.1'
             rack-version: '2'
+          - ruby-version: '2.4'
+            rack-version: '3'
+          - ruby-version: '3.1'
+            rack-version: '3'
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:

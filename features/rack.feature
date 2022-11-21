@@ -16,7 +16,6 @@ Scenario: An unhandled RuntimeError sends a report
   And the event "metaData.request.cookies" is null
   And the event "metaData.request.headers.Host" is not null
   And the event "metaData.request.headers.User-Agent" is not null
-  And the event "metaData.request.headers.Version" is not null
   And the event "metaData.request.httpMethod" equals "GET"
   And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
   And the event "metaData.request.params.a" equals "123"
@@ -39,7 +38,6 @@ Scenario: A handled RuntimeError sends a report
   And the event "metaData.request.cookies" is null
   And the event "metaData.request.headers.Host" is not null
   And the event "metaData.request.headers.User-Agent" is not null
-  And the event "metaData.request.headers.Version" is not null
   And the event "metaData.request.httpMethod" equals "GET"
   And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
   And the event "metaData.request.params.a" equals "123"
@@ -62,7 +60,6 @@ Scenario: A POST request with form data sends a report with the parsed request b
   And the event "metaData.request.cookies" is null
   And the event "metaData.request.headers.Host" is not null
   And the event "metaData.request.headers.User-Agent" is not null
-  And the event "metaData.request.headers.Version" is not null
   And the event "metaData.request.httpMethod" equals "POST"
   And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
   And the event "metaData.request.params.a" equals "123"
@@ -85,7 +82,6 @@ Scenario: A POST request with JSON sends a report with the parsed request body a
   And the event "metaData.request.cookies" is null
   And the event "metaData.request.headers.Host" is not null
   And the event "metaData.request.headers.User-Agent" is not null
-  And the event "metaData.request.headers.Version" is not null
   And the event "metaData.request.httpMethod" equals "POST"
   And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
   And the event "metaData.request.params.a" equals "123"
@@ -106,7 +102,6 @@ Scenario: A request with cookies will be filtered out by default
   And the event "metaData.request.clientIp" is not null
   And the event "metaData.request.headers.Host" is not null
   And the event "metaData.request.headers.User-Agent" is not null
-  And the event "metaData.request.headers.Version" is not null
   And the event "metaData.request.httpMethod" equals "GET"
   And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
   And the event "metaData.request.params.a" equals "123"
@@ -130,7 +125,6 @@ Scenario: A request with cookies and no matching filter will set cookies in meta
   And the event "metaData.request.clientIp" is not null
   And the event "metaData.request.headers.Host" is not null
   And the event "metaData.request.headers.User-Agent" is not null
-  And the event "metaData.request.headers.Version" is not null
   And the event "metaData.request.httpMethod" equals "GET"
   And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
   And the event "metaData.request.params.a" equals "123"
