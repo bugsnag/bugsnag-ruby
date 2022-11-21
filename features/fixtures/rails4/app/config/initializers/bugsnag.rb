@@ -39,3 +39,5 @@ Bugsnag.configure do |config|
     Bugsnag::FeatureFlag.new('should be removed!'),
   ])
 end
+
+Bugsnag.add_feature_flag('from global', '123')
