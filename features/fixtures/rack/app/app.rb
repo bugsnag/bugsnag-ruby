@@ -9,6 +9,12 @@ Bugsnag.configure do |config|
   if ENV.key?('BUGSNAG_METADATA_FILTERS')
     config.meta_data_filters = JSON.parse(ENV['BUGSNAG_METADATA_FILTERS'])
   end
+
+  config.add_feature_flags([
+    Bugsnag::FeatureFlag.new('from config 1'),
+    Bugsnag::FeatureFlag.new('from config 2', 'abc xyz'),
+    Bugsnag::FeatureFlag.new('should be removed!'),
+  ])
 end
 
 class BugsnagTests
@@ -35,6 +41,8 @@ class BugsnagTests
 
         event.add_feature_flag('d')
 
+        event.clear_feature_flag('should be removed!')
+
         if req.params["clear_all_flags"]
           event.clear_feature_flags
         end
@@ -49,6 +57,8 @@ class BugsnagTests
           Bugsnag::FeatureFlag.new('y', '1234'),
           Bugsnag::FeatureFlag.new('z'),
         ])
+
+        event.clear_feature_flag('should be removed!')
 
         if req.params["clear_all_flags"]
           event.clear_feature_flags
