@@ -17,6 +17,8 @@ Bugsnag.configure do |config|
   ])
 end
 
+Bugsnag.add_feature_flag('from global', '123')
+
 class BugsnagTests
   def call(env)
     req = Rack::Request.new(env)
