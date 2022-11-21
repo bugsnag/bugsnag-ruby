@@ -32,4 +32,10 @@ Bugsnag.configure do |config|
       report.request[:params][:another_thing] = "hi"
     end)
   end
+
+  config.add_feature_flags([
+    Bugsnag::FeatureFlag.new('from config 1'),
+    Bugsnag::FeatureFlag.new('from config 2', 'abc xyz'),
+    Bugsnag::FeatureFlag.new('should be removed!'),
+  ])
 end

@@ -20,6 +20,8 @@ class FeatureFlagsController < ActionController::Base
 
     if params.key?('clear_all_flags')
       event.clear_feature_flags
+    else
+      event.clear_feature_flag('should be removed!')
     end
   end
 end

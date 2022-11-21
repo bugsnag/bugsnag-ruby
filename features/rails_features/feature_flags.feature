@@ -12,6 +12,8 @@ Scenario: adding feature flags for an unhandled error
   And the exception "message" equals "oh no"
   And the event contains the following feature flags:
      | featureFlag   | variant |
+     | from config 1 |         |
+     | from config 2 | abc xyz |
      | a             | 1       |
      | b             |         |
      | c             | 3       |
@@ -22,6 +24,8 @@ Scenario: adding feature flags for an unhandled error
   And I wait to receive an error
   And the event contains the following feature flags:
      | featureFlag   | variant |
+     | from config 1 |         |
+     | from config 2 | abc xyz |
      | x             | 9       |
      | y             |         |
      | z             | 7       |
@@ -38,6 +42,8 @@ Scenario: adding feature flags for a handled error
   And the exception "message" equals "ahhh"
   And the event contains the following feature flags:
      | featureFlag   | variant |
+     | from config 1 |         |
+     | from config 2 | abc xyz |
      | ab            | 12      |
      | cd            | 34      |
   # ensure each request can have its own set of feature flags
@@ -46,6 +52,8 @@ Scenario: adding feature flags for a handled error
   And I wait to receive an error
   And the event contains the following feature flags:
      | featureFlag   | variant |
+     | from config 1 |         |
+     | from config 2 | abc xyz |
      | e             | h       |
      | f             | i       |
      | g             |         |
@@ -66,6 +74,8 @@ Scenario: clearing all feature flags doesn't affect subsequent requests
   And I wait to receive an error
   And the event contains the following feature flags:
      | featureFlag   | variant |
+     | from config 1 |         |
+     | from config 2 | abc xyz |
      | x             | 9       |
      | y             |         |
      | z             | 7       |
