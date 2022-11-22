@@ -12,7 +12,7 @@ Scenario: adding feature flags for an unhandled error
   And the exception "message" equals "oh no"
   And the event contains the following feature flags:
      | featureFlag   | variant |
-     | from global   | 123     |
+     | unhandled     |         |
      | from config 1 |         |
      | from config 2 | abc xyz |
      | a             | 1       |
@@ -23,9 +23,9 @@ Scenario: adding feature flags for an unhandled error
   When I discard the oldest error
   And I navigate to the route "/features/unhandled?flags[x]=9&flags[y]&flags[z]=7" on the rails app
   And I wait to receive an error
-  And the event contains the following feature flags:
+  Then the event contains the following feature flags:
      | featureFlag   | variant |
-     | from global   | 123     |
+     | unhandled     |         |
      | from config 1 |         |
      | from config 2 | abc xyz |
      | x             | 9       |
@@ -44,18 +44,18 @@ Scenario: adding feature flags for a handled error
   And the exception "message" equals "ahhh"
   And the event contains the following feature flags:
      | featureFlag   | variant |
-     | from global   | 123     |
+     | handled       |         |
      | from config 1 |         |
      | from config 2 | abc xyz |
      | ab            | 12      |
      | cd            | 34      |
   # ensure each request can have its own set of feature flags
   When I discard the oldest error
-  And I navigate to the route "/features/unhandled?flags[e]=h&flags[f]=i&flags[g]" on the rails app
+  And I navigate to the route "/features/handled?flags[e]=h&flags[f]=i&flags[g]" on the rails app
   And I wait to receive an error
-  And the event contains the following feature flags:
+  Then the event contains the following feature flags:
      | featureFlag   | variant |
-     | from global   | 123     |
+     | handled       |         |
      | from config 1 |         |
      | from config 2 | abc xyz |
      | e             | h       |
@@ -76,9 +76,9 @@ Scenario: clearing all feature flags doesn't affect subsequent requests
   When I discard the oldest error
   And I navigate to the route "/features/unhandled?flags[x]=9&flags[y]&flags[z]=7" on the rails app
   And I wait to receive an error
-  And the event contains the following feature flags:
+  Then the event contains the following feature flags:
      | featureFlag   | variant |
-     | from global   | 123     |
+     | unhandled     |         |
      | from config 1 |         |
      | from config 2 | abc xyz |
      | x             | 9       |

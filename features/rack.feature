@@ -139,7 +139,6 @@ Scenario: adding feature flags for an unhandled error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event contains the following feature flags:
      | featureFlag   | variant |
-     | from global   | 123     |
      | from config 1 |         |
      | from config 2 | abc xyz |
      | a             | 1       |
@@ -154,7 +153,6 @@ Scenario: adding feature flags for an unhandled error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event contains the following feature flags:
      | featureFlag   | variant |
-     | from global   | 123     |
      | from config 1 |         |
      | from config 2 | abc xyz |
      | x             |         |

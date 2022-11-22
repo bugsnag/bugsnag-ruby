@@ -4,10 +4,14 @@ class FeatureFlagsController < ActionController::Base
   before_bugsnag_notify :add_feature_flags
 
   def unhandled
+    Bugsnag.add_feature_flag('unhandled')
+
     raise 'oh no'
   end
 
   def handled
+    Bugsnag.add_feature_flag('handled')
+
     Bugsnag.notify(RuntimeError.new('ahhh'))
   end
 
@@ -19,7 +23,7 @@ class FeatureFlagsController < ActionController::Base
     end
 
     if params.key?('clear_all_flags')
-      event.clear_feature_flags
+      event.add_metadata(:clear_all_flags, :a, 1)
     else
       event.clear_feature_flag('should be removed!')
     end

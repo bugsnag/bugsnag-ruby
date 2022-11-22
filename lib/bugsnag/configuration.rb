@@ -186,11 +186,6 @@ module Bugsnag
     # @return [Breadcrumbs::OnBreadcrumbCallbackList]
     attr_reader :on_breadcrumb_callbacks
 
-    # Expose feature_flag_delegate internally for creating new events
-    # @api private
-    # @return [FeatureFlagDelegate]
-    attr_reader :feature_flag_delegate
-
     API_KEY_REGEX = /[0-9a-f]{32}/i
     THREAD_LOCAL_NAME = "bugsnag_req_data"
 
@@ -294,8 +289,6 @@ module Bugsnag
 
       self.middleware = Bugsnag::MiddlewareStack.new
       self.middleware.use Bugsnag::Middleware::Callbacks
-
-      @feature_flag_delegate = Bugsnag::Utility::FeatureFlagDelegate.new
     end
 
     ##
@@ -671,15 +664,21 @@ module Bugsnag
       end
     end
 
+    # Expose the feature flag delegate internally for use when creating new Events
+    #
+    # @return [Bugsnag::Utility::FeatureFlagDelegate]
+    # @api private
+    def feature_flag_delegate
+      request_data[:feature_flag_delegate] ||= Bugsnag::Utility::FeatureFlagDelegate.new
+    end
+
     # Add a feature flag with the given name & variant
     #
     # @param name [String]
     # @param variant [String, nil]
     # @return [void]
     def add_feature_flag(name, variant = nil)
-      @mutex.synchronize do
-        @feature_flag_delegate.add(name, variant)
-      end
+      feature_flag_delegate.add(name, variant)
     end
 
     # Merge the given array of FeatureFlag instances into the stored feature
@@ -691,9 +690,7 @@ module Bugsnag
     # @param feature_flags [Array<Bugsnag::FeatureFlag>]
     # @return [void]
     def add_feature_flags(feature_flags)
-      @mutex.synchronize do
-        @feature_flag_delegate.merge(feature_flags)
-      end
+      feature_flag_delegate.merge(feature_flags)
     end
 
     # Remove the stored flag with the given name
@@ -701,18 +698,14 @@ module Bugsnag
     # @param name [String]
     # @return [void]
     def clear_feature_flag(name)
-      @mutex.synchronize do
-        @feature_flag_delegate.remove(name)
-      end
+      feature_flag_delegate.remove(name)
     end
 
     # Remove all the stored flags
     #
     # @return [void]
     def clear_feature_flags
-      @mutex.synchronize do
-        @feature_flag_delegate.clear
-      end
+      feature_flag_delegate.clear
     end
 
     ##

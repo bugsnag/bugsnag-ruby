@@ -33,11 +33,14 @@ Bugsnag.configure do |config|
     end)
   end
 
-  config.add_feature_flags([
-    Bugsnag::FeatureFlag.new('from config 1'),
-    Bugsnag::FeatureFlag.new('from config 2', 'abc xyz'),
-    Bugsnag::FeatureFlag.new('should be removed!'),
-  ])
-end
+  config.add_on_error(proc do |event|
+    event.add_feature_flags([
+      Bugsnag::FeatureFlag.new('from config 1'),
+      Bugsnag::FeatureFlag.new('from config 2', 'abc xyz'),
+    ])
 
-Bugsnag.add_feature_flag('from global', '123')
+    if event.metadata.key?(:clear_all_flags)
+      event.clear_feature_flags
+    end
+  end)
+end
