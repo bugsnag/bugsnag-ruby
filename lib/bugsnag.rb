@@ -2,6 +2,7 @@ require "rubygems"
 require "thread"
 
 require "bugsnag/version"
+require "bugsnag/utility/feature_data_store"
 require "bugsnag/configuration"
 require "bugsnag/meta_data"
 require "bugsnag/report"
@@ -48,6 +49,8 @@ module Bugsnag
   NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
 
   class << self
+    include Utility::FeatureDataStore
+
     ##
     # Configure the Bugsnag notifier application-wide settings.
     #
@@ -429,42 +432,6 @@ module Bugsnag
       configuration.clear_metadata(section, *args)
     end
 
-    # Add a feature flag with the given name & variant
-    #
-    # @param name [String]
-    # @param variant [String, nil]
-    # @return [void]
-    def add_feature_flag(name, variant = nil)
-      configuration.add_feature_flag(name, variant)
-    end
-
-    # Merge the given array of FeatureFlag instances into the stored feature
-    # flags
-    #
-    # New flags will be appended to the array. Flags with the same name will be
-    # overwritten, but their position in the array will not change
-    #
-    # @param feature_flags [Array<Bugsnag::FeatureFlag>]
-    # @return [void]
-    def add_feature_flags(feature_flags)
-      configuration.add_feature_flags(feature_flags)
-    end
-
-    # Remove the stored flag with the given name
-    #
-    # @param name [String]
-    # @return [void]
-    def clear_feature_flag(name)
-      configuration.clear_feature_flag(name)
-    end
-
-    # Remove all the stored flags
-    #
-    # @return [void]
-    def clear_feature_flags
-      configuration.clear_feature_flags
-    end
-
     private
 
     def should_deliver_notification?(exception, auto_notify)
@@ -594,6 +561,13 @@ module Bugsnag
       return unwrapped if unwrapped.cause.nil?
 
       unwrapped.cause
+    end
+
+    # Expose the feature flag delegate for {Bugsnag::Utility::FeatureDataStore}
+    #
+    # @return [Bugsnag::Utility::FeatureFlagDelegate]
+    def feature_flag_delegate
+      configuration.feature_flag_delegate
     end
   end
 end

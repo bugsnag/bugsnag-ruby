@@ -6,6 +6,8 @@ require "bugsnag/stacktrace"
 module Bugsnag
   # rubocop:todo Metrics/ClassLength
   class Report
+    include Utility::FeatureDataStore
+
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "https://www.bugsnag.com"
@@ -143,7 +145,7 @@ module Bugsnag
       self.user = {}
 
       @metadata_delegate = Utility::MetadataDelegate.new
-      @feature_flags = configuration.feature_flag_delegate.dup
+      @feature_flag_delegate = configuration.feature_flag_delegate.dup
     end
 
     ##
@@ -221,7 +223,7 @@ module Bugsnag
           time: @created_at
         },
         exceptions: exceptions,
-        featureFlags: @feature_flags.as_json,
+        featureFlags: @feature_flag_delegate.as_json,
         groupingHash: grouping_hash,
         metaData: meta_data,
         session: session,
@@ -364,43 +366,7 @@ module Bugsnag
     #
     # @return [Array<Bugsnag::FeatureFlag>]
     def feature_flags
-      @feature_flags.to_a
-    end
-
-    # Add a feature flag with the given name & variant
-    #
-    # @param name [String]
-    # @param variant [String, nil]
-    # @return [void]
-    def add_feature_flag(name, variant = nil)
-      @feature_flags.add(name, variant)
-    end
-
-    # Merge the given array of FeatureFlag instances into the stored feature
-    # flags
-    #
-    # New flags will be appended to the array. Flags with the same name will be
-    # overwritten, but their position in the array will not change
-    #
-    # @param feature_flags [Array<Bugsnag::FeatureFlag>]
-    # @return [void]
-    def add_feature_flags(feature_flags)
-      @feature_flags.merge(feature_flags)
-    end
-
-    # Remove the stored flag with the given name
-    #
-    # @param name [String]
-    # @return [void]
-    def clear_feature_flag(name)
-      @feature_flags.remove(name)
-    end
-
-    # Remove all the stored flags
-    #
-    # @return [void]
-    def clear_feature_flags
-      @feature_flags.clear
+      @feature_flag_delegate.to_a
     end
 
     ##
@@ -438,6 +404,8 @@ module Bugsnag
     end
 
     private
+
+    attr_reader :feature_flag_delegate
 
     def update_handled_counts(is_unhandled, was_unhandled)
       # do nothing if there is no session to update
