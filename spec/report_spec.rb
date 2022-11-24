@@ -2109,9 +2109,9 @@ describe Bugsnag::Report do
       }
     end
 
-    it "includes the configuration's feature flags if present" do
-      Bugsnag.configuration.add_feature_flag('abc')
-      Bugsnag.configuration.add_feature_flag('xyz', '123')
+    it "includes the Bugsnag module's feature flags if present" do
+      Bugsnag.add_feature_flag('abc')
+      Bugsnag.add_feature_flag('xyz', '123')
 
       Bugsnag.notify(BugsnagTestException.new("It crashed"))
 
@@ -2124,9 +2124,9 @@ describe Bugsnag::Report do
       }
     end
 
-    it "does not mutate the configuration's feature flags if more flags are added" do
-      Bugsnag.configuration.add_feature_flag('abc')
-      Bugsnag.configuration.add_feature_flag('xyz', '123')
+    it "does not mutate the Bugsnag module's feature flags if more flags are added" do
+      Bugsnag.add_feature_flag('abc')
+      Bugsnag.add_feature_flag('xyz', '123')
 
       Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
         event.add_feature_flag('another one')
@@ -2140,16 +2140,16 @@ describe Bugsnag::Report do
           { "featureFlag" => "another one" },
         ])
 
-        expect(Bugsnag.configuration.feature_flag_delegate.as_json).to eq([
+        expect(Bugsnag.feature_flag_delegate.as_json).to eq([
           { "featureFlag" => "abc" },
           { "featureFlag" => "xyz", "variant" => "123" },
         ])
       }
     end
 
-    it "does not mutate the configuration's feature flags if flags are removed" do
-      Bugsnag.configuration.add_feature_flag('abc')
-      Bugsnag.configuration.add_feature_flag('xyz', '123')
+    it "does not mutate the Bugsnag module's feature flags if flags are removed" do
+      Bugsnag.add_feature_flag('abc')
+      Bugsnag.add_feature_flag('xyz', '123')
 
       Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
         event.clear_feature_flags
@@ -2159,7 +2159,7 @@ describe Bugsnag::Report do
         event = get_event_from_payload(payload)
         expect(event["featureFlags"]).to be_empty
 
-        expect(Bugsnag.configuration.feature_flag_delegate.as_json).to eq([
+        expect(Bugsnag.feature_flag_delegate.as_json).to eq([
           { "featureFlag" => "abc" },
           { "featureFlag" => "xyz", "variant" => "123" },
         ])

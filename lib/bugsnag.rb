@@ -432,6 +432,16 @@ module Bugsnag
       configuration.clear_metadata(section, *args)
     end
 
+    # Expose the feature flag delegate internally for use when creating new Events
+    #
+    # The Bugsnag module's feature_flag_delegate is request-specific
+    #
+    # @return [Bugsnag::Utility::FeatureFlagDelegate]
+    # @api private
+    def feature_flag_delegate
+      configuration.request_data[:feature_flag_delegate] ||= Utility::FeatureFlagDelegate.new
+    end
+
     private
 
     def should_deliver_notification?(exception, auto_notify)
@@ -561,13 +571,6 @@ module Bugsnag
       return unwrapped if unwrapped.cause.nil?
 
       unwrapped.cause
-    end
-
-    # Expose the feature flag delegate for {Bugsnag::Utility::FeatureDataStore}
-    #
-    # @return [Bugsnag::Utility::FeatureFlagDelegate]
-    def feature_flag_delegate
-      configuration.feature_flag_delegate
     end
   end
 end
