@@ -12,11 +12,6 @@ Bugsnag.configure do |config|
     config.meta_data_filters = JSON.parse(ENV['BUGSNAG_METADATA_FILTERS'])
   end
 
-  config.add_feature_flag(
-    'this flag is added outside of a request and so should never normally be visible',
-    'if an event was reported in the global scope, this flag would be attached to it'
-  )
-
   config.add_on_error(proc do |event|
     event.add_feature_flags([
       Bugsnag::FeatureFlag.new('from config 1'),

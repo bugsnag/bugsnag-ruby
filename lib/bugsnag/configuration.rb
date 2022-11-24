@@ -18,8 +18,6 @@ require "bugsnag/endpoint_validator"
 
 module Bugsnag
   class Configuration
-    include Utility::FeatureDataStore
-
     # Your Integration API Key
     # @return [String, nil]
     attr_accessor :api_key
@@ -664,14 +662,6 @@ module Bugsnag
       @mutex.synchronize do
         @metadata_delegate.clear_metadata(@metadata, section, *args)
       end
-    end
-
-    # Expose the feature flag delegate internally for use when creating new Events
-    #
-    # @return [Bugsnag::Utility::FeatureFlagDelegate]
-    # @api private
-    def feature_flag_delegate
-      request_data[:feature_flag_delegate] ||= Bugsnag::Utility::FeatureFlagDelegate.new
     end
 
     ##
