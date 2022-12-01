@@ -4,6 +4,7 @@
 --no-private
 --protected
 --title "bugsnag-ruby API Documentation"
+--embed-mixins
 lib/**/*.rb
 -
 README.md

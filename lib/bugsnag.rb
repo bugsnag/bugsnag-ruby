@@ -2,6 +2,7 @@ require "rubygems"
 require "thread"
 
 require "bugsnag/version"
+require "bugsnag/utility/feature_data_store"
 require "bugsnag/configuration"
 require "bugsnag/meta_data"
 require "bugsnag/report"
@@ -13,6 +14,8 @@ require "bugsnag/session_tracker"
 require "bugsnag/delivery"
 require "bugsnag/delivery/synchronous"
 require "bugsnag/delivery/thread_queue"
+
+require "bugsnag/feature_flag"
 
 # Rack is not bundled with the other integrations
 # as it doesn't auto-configure when loaded
@@ -36,6 +39,7 @@ require "bugsnag/breadcrumbs/breadcrumbs"
 
 require "bugsnag/utility/duplicator"
 require "bugsnag/utility/metadata_delegate"
+require "bugsnag/utility/feature_flag_delegate"
 
 # rubocop:todo Metrics/ModuleLength
 module Bugsnag
@@ -45,6 +49,8 @@ module Bugsnag
   NIL_EXCEPTION_DESCRIPTION = "'nil' was notified as an exception"
 
   class << self
+    include Utility::FeatureDataStore
+
     ##
     # Configure the Bugsnag notifier application-wide settings.
     #
@@ -424,6 +430,16 @@ module Bugsnag
     # @return [void]
     def clear_metadata(section, *args)
       configuration.clear_metadata(section, *args)
+    end
+
+    # Expose the feature flag delegate internally for use when creating new Events
+    #
+    # The Bugsnag module's feature_flag_delegate is request-specific
+    #
+    # @return [Bugsnag::Utility::FeatureFlagDelegate]
+    # @api private
+    def feature_flag_delegate
+      configuration.request_data[:feature_flag_delegate] ||= Utility::FeatureFlagDelegate.new
     end
 
     private

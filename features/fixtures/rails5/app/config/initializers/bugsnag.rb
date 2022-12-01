@@ -32,4 +32,15 @@ Bugsnag.configure do |config|
       report.request[:params][:another_thing] = "hi"
     end)
   end
+
+  config.add_on_error(proc do |event|
+    event.add_feature_flags([
+      Bugsnag::FeatureFlag.new('from config 1'),
+      Bugsnag::FeatureFlag.new('from config 2', 'abc xyz'),
+    ])
+
+    if event.metadata.key?(:clear_all_flags)
+      event.clear_feature_flags
+    end
+  end)
 end

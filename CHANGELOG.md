@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Add support for feature flags & experiments. For more information, please see https://docs.bugsnag.com/product/features-experiments
+  | [#758](https://github.com/bugsnag/bugsnag-ruby/pull/758)
+
 ## v6.24.2 (21 January 2022)
 
 ### Fixes

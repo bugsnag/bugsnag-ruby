@@ -2098,5 +2098,187 @@ describe Bugsnag::Report do
       expect(payload["payloadVersion"]).to eq("4.0")
     })
   end
+
+  describe "feature flags" do
+    it "includes no feature flags by default" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([])
+      }
+    end
+
+    it "includes the Bugsnag module's feature flags if present" do
+      Bugsnag.add_feature_flag('abc')
+      Bugsnag.add_feature_flag('xyz', '123')
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed"))
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([
+          { "featureFlag" => "abc" },
+          { "featureFlag" => "xyz", "variant" => "123" },
+        ])
+      }
+    end
+
+    it "does not mutate the Bugsnag module's feature flags if more flags are added" do
+      Bugsnag.add_feature_flag('abc')
+      Bugsnag.add_feature_flag('xyz', '123')
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        event.add_feature_flag('another one')
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([
+          { "featureFlag" => "abc" },
+          { "featureFlag" => "xyz", "variant" => "123" },
+          { "featureFlag" => "another one" },
+        ])
+
+        expect(Bugsnag.feature_flag_delegate.as_json).to eq([
+          { "featureFlag" => "abc" },
+          { "featureFlag" => "xyz", "variant" => "123" },
+        ])
+      }
+    end
+
+    it "does not mutate the Bugsnag module's feature flags if flags are removed" do
+      Bugsnag.add_feature_flag('abc')
+      Bugsnag.add_feature_flag('xyz', '123')
+
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        event.clear_feature_flags
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to be_empty
+
+        expect(Bugsnag.feature_flag_delegate.as_json).to eq([
+          { "featureFlag" => "abc" },
+          { "featureFlag" => "xyz", "variant" => "123" },
+        ])
+      }
+    end
+
+    it "can add individual feature flags to the payload" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        event.add_feature_flag("flag 1")
+        event.add_feature_flag("flag 2", "1234")
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([
+          { "featureFlag" => "flag 1" },
+          { "featureFlag" => "flag 2", "variant" => "1234" },
+        ])
+      }
+    end
+
+    it "can add multiple feature flags to the payload in one go" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        flags = [
+          Bugsnag::FeatureFlag.new("a"),
+          Bugsnag::FeatureFlag.new("b"),
+          Bugsnag::FeatureFlag.new("c", "1"),
+          Bugsnag::FeatureFlag.new("d", "2"),
+        ]
+
+        event.add_feature_flags(flags)
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([
+          { "featureFlag" => "a" },
+          { "featureFlag" => "b" },
+          { "featureFlag" => "c", "variant" => "1" },
+          { "featureFlag" => "d", "variant" => "2" },
+        ])
+      }
+    end
+
+    it "can remove a feature flag from the payload" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        flags = [
+          Bugsnag::FeatureFlag.new("a"),
+          Bugsnag::FeatureFlag.new("b"),
+          Bugsnag::FeatureFlag.new("c", "1"),
+          Bugsnag::FeatureFlag.new("d", "2"),
+        ]
+
+        event.add_feature_flags(flags)
+        event.add_feature_flag("e")
+
+        event.clear_feature_flag("b")
+        event.clear_feature_flag("d")
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([
+          { "featureFlag" => "a" },
+          { "featureFlag" => "c", "variant" => "1" },
+          { "featureFlag" => "e" },
+        ])
+      }
+    end
+
+    it "can remove all feature flags from the payload" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        flags = [
+          Bugsnag::FeatureFlag.new("a"),
+          Bugsnag::FeatureFlag.new("b"),
+          Bugsnag::FeatureFlag.new("c", "1"),
+          Bugsnag::FeatureFlag.new("d", "2"),
+        ]
+
+        event.add_feature_flags(flags)
+        event.add_feature_flag("e")
+
+        event.clear_feature_flags
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([])
+      }
+    end
+
+    it "can get feature flags from the event" do
+      Bugsnag.notify(BugsnagTestException.new("It crashed")) do |event|
+        flags = [
+          Bugsnag::FeatureFlag.new("a"),
+          Bugsnag::FeatureFlag.new("b"),
+          Bugsnag::FeatureFlag.new("c", "1"),
+          Bugsnag::FeatureFlag.new("d", "2"),
+        ]
+
+        event.add_feature_flags(flags)
+        event.add_feature_flag("e")
+
+        expect(event.feature_flags).to eq([
+          Bugsnag::FeatureFlag.new("a"),
+          Bugsnag::FeatureFlag.new("b"),
+          Bugsnag::FeatureFlag.new("c", "1"),
+          Bugsnag::FeatureFlag.new("d", "2"),
+          Bugsnag::FeatureFlag.new("e"),
+        ])
+
+        event.clear_feature_flags
+      end
+
+      expect(Bugsnag).to have_sent_notification { |payload, headers|
+        event = get_event_from_payload(payload)
+        expect(event["featureFlags"]).to eq([])
+      }
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength
