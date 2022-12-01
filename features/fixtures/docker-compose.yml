@@ -78,27 +78,20 @@ services:
       - CALLBACK_INITIATOR
     restart: "no"
 
-  rack1:
+  rack:
     build:
-      context: rack1
+      context: rack
       args:
         - RUBY_TEST_VERSION
+        - RACK_VERSION
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
       - BUGSNAG_METADATA_FILTERS
     restart: "no"
-
-  rack2:
-    build:
-      context: rack2
-      args:
-        - RUBY_TEST_VERSION
-    environment:
-      - BUGSNAG_API_KEY
-      - BUGSNAG_ENDPOINT
-      - BUGSNAG_METADATA_FILTERS
-    restart: "no"
+    ports:
+      - target: 3000
+        published: 7251
 
   rails3:
     build:
@@ -134,6 +127,9 @@ services:
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
       - ADD_REQUEST_ON_ERROR
     restart: "no"
+    ports:
+      - target: 3000
+        published: 7253
 
   rails4:
     build:
@@ -171,6 +167,9 @@ services:
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
       - ADD_REQUEST_ON_ERROR
     restart: "no"
+    ports:
+      - target: 3000
+        published: 7254
 
   rails5:
     build:
@@ -208,6 +207,9 @@ services:
       - USE_DEFAULT_AUTO_CAPTURE_SESSIONS
       - ADD_REQUEST_ON_ERROR
     restart: "no"
+    ports:
+      - target: 3000
+        published: 7255
 
   rails6:
     build:
@@ -249,6 +251,9 @@ services:
       default:
         aliases:
           - rails6
+    ports:
+      - target: 3000
+        published: 7256
 
   rails7:
     build:
@@ -290,6 +295,9 @@ services:
       default:
         aliases:
           - rails7
+    ports:
+      - target: 3000
+        published: 7257
 
   rails_integrations:
     build:
@@ -302,6 +310,7 @@ services:
     environment:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
+      - BUGSNAG_SESSION_ENDPOINT
       - DB_USERNAME=postgres
       - DB_PASSWORD=test_password
       - DB_HOST=postgres

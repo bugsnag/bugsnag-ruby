@@ -18,5 +18,13 @@ Gem::Specification.new do |s|
   ]
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 1.9.2'
-  s.add_runtime_dependency 'concurrent-ruby', '~> 1.0'
+
+  ruby_version = Gem::Version.new(RUBY_VERSION.dup)
+
+  if ruby_version < Gem::Version.new('2.2.0')
+    # concurrent-ruby 1.1.10 requires Ruby 2.2+
+    s.add_runtime_dependency 'concurrent-ruby', '~> 1.0', '< 1.1.10'
+  else
+    s.add_runtime_dependency 'concurrent-ruby', '~> 1.0'
+  end
 end

@@ -4,8 +4,8 @@ Feature: Rails handled errors
 Scenario: Unhandled RuntimeError
   Given I start the rails service
   When I navigate to the route "/handled/unthrown" on the rails app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is false
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled unthrown error"
@@ -18,8 +18,8 @@ Scenario: Unhandled RuntimeError
 Scenario: Thrown handled NameError
   Given I start the rails service
   When I navigate to the route "/handled/thrown" on the rails app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the exception "errorClass" equals "NameError"
   And the exception "message" starts with "undefined local variable or method `generate_unhandled_error' for #<HandledController"
   And the event "unhandled" is false
@@ -32,8 +32,8 @@ Scenario: Thrown handled NameError
 Scenario: Manual string notify
   Given I start the rails service
   When I navigate to the route "/handled/string_notify" on the rails app
-  And I wait to receive a request
-  Then the request is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier"
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the exception "errorClass" equals "RuntimeError"
   And the exception "message" starts with "handled string"
   And the event "unhandled" is false

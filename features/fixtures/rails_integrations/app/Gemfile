@@ -14,8 +14,8 @@ if RUBY_VERSION >= '3.0.0'
   gem 'redis-namespace', github: 'resque/redis-namespace', ref: 'c31e63dc3cd5e59ef5ea394d4d46ac60d1e6f82e'
 end
 
-gem 'resque', '~> 2.0.0'
-gem 'sidekiq', '~> 6.1.0'
+gem 'resque', '~> 2.0'
+gem 'sidekiq', '~> 6.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.3', '>= 6.0.3.2'

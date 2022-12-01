@@ -1,7 +1,7 @@
 Bugsnag.configure do |config|
   config.api_key = ENV["BUGSNAG_API_KEY"] || ENV["BUGSNAG_API_KEY"]
   config.endpoint = ENV["BUGSNAG_ENDPOINT"] || ENV["BUGSNAG_ENDPOINT"]
-  config.session_endpoint = ENV["BUGSNAG_ENDPOINT"] || ENV["BUGSNAG_ENDPOINT"]
+  config.session_endpoint = ENV["BUGSNAG_SESSION_ENDPOINT"] || ENV["BUGSNAG_SESSION_ENDPOINT"]
   config.app_type = ENV["BUGSNAG_APP_TYPE"] if ENV.include? "BUGSNAG_APP_TYPE"
   config.app_version = ENV["BUGSNAG_APP_VERSION"] if ENV.include? "BUGSNAG_APP_VERSION"
   config.auto_notify = ENV["BUGSNAG_AUTO_NOTIFY"] != "false"
@@ -32,4 +32,15 @@ Bugsnag.configure do |config|
       report.request[:params][:another_thing] = "hi"
     end)
   end
+
+  config.add_on_error(proc do |event|
+    event.add_feature_flags([
+      Bugsnag::FeatureFlag.new('from config 1'),
+      Bugsnag::FeatureFlag.new('from config 2', 'abc xyz'),
+    ])
+
+    if event.metadata.key?(:clear_all_flags)
+      event.clear_feature_flags
+    end
+  end)
 end

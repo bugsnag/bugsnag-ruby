@@ -20,9 +20,9 @@ namespace :delayed_job_tests do
 end
 
 def run_delayed_job_test(command)
-  fork do
-    system("rake jobs:work")
-  end
+  # queue the job with rails' runner
   system("rails runner #{command}")
-  Process.wait
+
+  # run the queued jobs and exit
+  system("rake jobs:workoff")
 end

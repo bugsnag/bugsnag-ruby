@@ -15,5 +15,6 @@ App::Application.routes.draw do
   get "/send_environment/(:action)", controller: 'send_environment'
   get "/warden/(:action)", controller: 'warden'
   get "/breadcrumbs/(:action)", controller: 'breadcrumbs'
+  get "/features/(:action)", controller: 'feature_flags'
   get "/(:action)", controller: 'application'
 end

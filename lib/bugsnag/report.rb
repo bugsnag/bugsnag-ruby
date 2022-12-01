@@ -6,6 +6,8 @@ require "bugsnag/stacktrace"
 module Bugsnag
   # rubocop:todo Metrics/ClassLength
   class Report
+    include Utility::FeatureDataStore
+
     NOTIFIER_NAME = "Ruby Bugsnag Notifier"
     NOTIFIER_VERSION = Bugsnag::VERSION
     NOTIFIER_URL = "https://www.bugsnag.com"
@@ -143,6 +145,7 @@ module Bugsnag
       self.user = {}
 
       @metadata_delegate = Utility::MetadataDelegate.new
+      @feature_flag_delegate = Bugsnag.feature_flag_delegate.dup
     end
 
     ##
@@ -220,6 +223,7 @@ module Bugsnag
           time: @created_at
         },
         exceptions: exceptions,
+        featureFlags: @feature_flag_delegate.as_json,
         groupingHash: grouping_hash,
         metaData: meta_data,
         session: session,
@@ -239,6 +243,7 @@ module Bugsnag
           :version => NOTIFIER_VERSION,
           :url => NOTIFIER_URL
         },
+        :payloadVersion => CURRENT_PAYLOAD_VERSION,
         :events => [payload_event]
       }
     end
@@ -357,6 +362,13 @@ module Bugsnag
       @metadata_delegate.clear_metadata(@meta_data, section, *args)
     end
 
+    # Get the array of stored feature flags
+    #
+    # @return [Array<Bugsnag::FeatureFlag>]
+    def feature_flags
+      @feature_flag_delegate.to_a
+    end
+
     ##
     # Set information about the current user
     #
@@ -392,6 +404,8 @@ module Bugsnag
     end
 
     private
+
+    attr_reader :feature_flag_delegate
 
     def update_handled_counts(is_unhandled, was_unhandled)
       # do nothing if there is no session to update

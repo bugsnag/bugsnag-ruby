@@ -1,0 +1,149 @@
+name: maze-runner
+
+on: [push, pull_request]
+
+jobs:
+  rake-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['1.9', '3.1']
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/rake.feature
+      ruby-version: ${{ matrix.ruby-version }}
+
+  mailman-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.0', '3.0']
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/mailman.feature
+      ruby-version: ${{ matrix.ruby-version }}
+
+  rack-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby-version: '1.9'
+            rack-version: '1'
+          - ruby-version: '3.0'
+            rack-version: '1'
+          - ruby-version: '2.2'
+            rack-version: '2'
+          - ruby-version: '3.1'
+            rack-version: '2'
+          - ruby-version: '2.4'
+            rack-version: '3'
+          - ruby-version: '3.1'
+            rack-version: '3'
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/rack.feature
+      ruby-version: ${{ matrix.ruby-version }}
+      rack-version: ${{ matrix.rack-version }}
+
+  que-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby-version: '2.0'
+            que-version: '0.14'
+          - ruby-version: '3.1'
+            que-version: '0.14'
+          - ruby-version: '2.5'
+            que-version: '1'
+          - ruby-version: '2.7'
+            que-version: '1'
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/que.feature
+      ruby-version: ${{ matrix.ruby-version }}
+      que-version: ${{ matrix.que-version }}
+
+  sidekiq-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.5']
+        sidekiq-version: ['2', '3', '4', '5', '6']
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/sidekiq.feature
+      ruby-version: ${{ matrix.ruby-version }}
+      sidekiq-version: ${{ matrix.sidekiq-version }}
+
+  delayed-job-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.5']
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/delayed_job.feature
+      ruby-version: ${{ matrix.ruby-version }}
+
+  rails-3-4-5-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.2', '2.5']
+        rails-version: ['3', '4', '5']
+        include:
+          - ruby-version: '2.0'
+            rails-version: '3'
+          - ruby-version: '2.6'
+            rails-version: '5'
+        exclude:
+          - ruby-version: '2.2'
+            rails-version: '3'
+          - ruby-version: '2.5'
+            rails-version: '5'
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/rails_features/ --tags @rails${{ matrix.rails-version }}
+      ruby-version: ${{ matrix.ruby-version }}
+      rails-version: ${{ matrix.rails-version }}
+
+  rails-6-7-integrations-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.7', '3.1']
+        rails-version: ['6', '7', '_integrations']
+        include:
+          - ruby-version: '2.5'
+            rails-version: '6'
+        exclude:
+          - ruby-version: '2.7'
+            rails-version: '6'
+          - ruby-version: '3.1'
+            rails-version: '_integrations'
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/rails_features/ --tags @rails${{ matrix.rails-version }}
+      ruby-version: ${{ matrix.ruby-version }}
+      rails-version: ${{ matrix.rails-version }}
+
+  plain-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1']
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/plain_features/
+      ruby-version: ${{ matrix.ruby-version }}
