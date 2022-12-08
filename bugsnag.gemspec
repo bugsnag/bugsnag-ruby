@@ -8,6 +8,11 @@ Gem::Specification.new do |s|
   s.description = "Ruby notifier for bugsnag.com"
   s.summary = "Ruby notifier for bugsnag.com"
   s.homepage = "https://github.com/bugsnag/bugsnag-ruby"
+  s.metadata = {
+    "changelog_uri" => "https://github.com/bugsnag/bugsnag-ruby/blob/master/CHANGELOG.md",
+    "documentation_uri" => "https://docs.bugsnag.com/platforms/ruby/",
+    "source_code_uri" => "https://github.com/bugsnag/bugsnag-ruby/"
+  }
   s.licenses = ["MIT"]
 
   s.files = `git ls-files -z lib bugsnag.gemspec VERSION .yardopts`.split("\x0")
