@@ -34,6 +34,12 @@ else
   require_relative './support/exception_with_detailed_message_ruby_1'
 end
 
+class ExceptionWithDetailedMessageButNoHighlight < Exception
+  def detailed_message
+    "detail about '#{self}'"
+  end
+end
+
 shared_examples "Report or Event tests" do |class_to_test|
   context "metadata" do
     include_examples(
@@ -1466,6 +1472,16 @@ describe Bugsnag::Report do
       exception = get_exception_from_payload(payload)
       expect(exception["errorClass"]).to eq("ExceptionWithDetailedMessage")
       expect(exception["message"]).to eq("some message with some extra detail")
+    }
+  end
+
+  it "handles implementations of Exception#detailed_message with no 'highlight' parameter" do
+    Bugsnag.notify(ExceptionWithDetailedMessageButNoHighlight.new("some message"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      exception = get_exception_from_payload(payload)
+      expect(exception["errorClass"]).to eq("ExceptionWithDetailedMessageButNoHighlight")
+      expect(exception["message"]).to eq("detail about 'some message'")
     }
   end
 

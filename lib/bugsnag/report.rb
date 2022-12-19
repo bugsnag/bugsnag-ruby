@@ -453,17 +453,21 @@ module Bugsnag
     def error_message(exception, class_name)
       # Ruby 3.2 added Exception#detailed_message for Gems like "Did you mean"
       # to annotate an exception's message
-      if exception.respond_to?(:detailed_message)
-        # the "highlight" argument may add terminal escape codes to the output,
-        # which we don't want to include
-        # we also need to strip the class name from the output to be consistent
-        # with Exception#message
-        exception
-          .detailed_message(highlight: false)
-          .sub(" (#{class_name})", '')
-      else
-        exception.message
-      end
+      return exception.message unless exception.respond_to?(:detailed_message)
+
+      # the "highlight" argument may add terminal escape codes to the output,
+      # which we don't want to include
+      # it _should_ always be present but it's possible to forget to add it or
+      # to have implemented this method before Ruby 3.2
+      message =
+        begin
+          exception.detailed_message(highlight: false)
+        rescue ArgumentError
+          exception.detailed_message
+        end
+
+      # remove the class name to be consistent with Exception#message
+      message.sub(" (#{class_name})", '')
     end
 
     def generate_raw_exceptions(exception)
