@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Use `Exception#detailed_message` instead of `Exception#message` when available
+  | [#761](https://github.com/bugsnag/bugsnag-ruby/pull/761)
+
 ## v6.26.0 (1 December 2022)
 
 ### Enhancements
