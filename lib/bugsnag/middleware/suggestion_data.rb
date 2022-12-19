@@ -10,23 +10,25 @@ module Bugsnag::Middleware
       @bugsnag = bugsnag
     end
 
-    def call(report)
+    def call(event)
       matches = []
-      report.raw_exceptions.each do |exception|
-        match = CAPTURE_REGEX.match(exception.message)
+
+      event.errors.each do |error|
+        match = CAPTURE_REGEX.match(error.error_message)
+
         next unless match
 
         suggestions = match.captures[0].split(DELIMITER)
-        matches.concat suggestions.map{ |suggestion| suggestion.strip }
+        matches.concat(suggestions.map(&:strip))
       end
 
       if matches.size == 1
-        report.add_tab(:error, {:suggestion => matches.first})
+        event.add_metadata(:error, { suggestion: matches.first })
       elsif matches.size > 1
-        report.add_tab(:error, {:suggestions => matches})
+        event.add_metadata(:error, { suggestions: matches })
       end
 
-      @bugsnag.call(report)
+      @bugsnag.call(event)
     end
   end
 end
