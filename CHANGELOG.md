@@ -3,6 +3,11 @@ Changelog
 
 ## TBD
 
+### Fixes
+
+* Allow Gem paths to be stripped from file names in stacktraces when they contain a Regexp special character
+  | [#764](https://github.com/bugsnag/bugsnag-ruby/pull/764)
+
 ### Enhancements
 
 * Use `Exception#detailed_message` instead of `Exception#message` when available
