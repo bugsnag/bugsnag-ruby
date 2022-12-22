@@ -11,7 +11,8 @@ Gem::Specification.new do |s|
   s.metadata = {
     "changelog_uri" => "https://github.com/bugsnag/bugsnag-ruby/blob/HEAD/CHANGELOG.md",
     "documentation_uri" => "https://docs.bugsnag.com/platforms/ruby/",
-    "source_code_uri" => "https://github.com/bugsnag/bugsnag-ruby/"
+    "source_code_uri" => "https://github.com/bugsnag/bugsnag-ruby/",
+    "rubygems_mfa_required" => "true"
   }
   s.licenses = ["MIT"]
 
