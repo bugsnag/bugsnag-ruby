@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.summary = "Ruby notifier for bugsnag.com"
   s.homepage = "https://github.com/bugsnag/bugsnag-ruby"
   s.metadata = {
-    "changelog_uri" => "https://github.com/bugsnag/bugsnag-ruby/blob/master/CHANGELOG.md",
+    "changelog_uri" => "https://github.com/bugsnag/bugsnag-ruby/blob/HEAD/CHANGELOG.md",
     "documentation_uri" => "https://docs.bugsnag.com/platforms/ruby/",
     "source_code_uri" => "https://github.com/bugsnag/bugsnag-ruby/"
   }
