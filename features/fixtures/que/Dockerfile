@@ -13,3 +13,5 @@ ENV QUE_VERSION $QUE_VERSION
 RUN bundle install
 
 COPY app/ /usr/src/app
+
+CMD bundle exec que ./app.rb
