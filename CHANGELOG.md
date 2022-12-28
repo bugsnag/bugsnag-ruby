@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## v6.26.0 (1 December 2022)
+## v6.25.0 (1 December 2022)
 
 ### Enhancements
 
