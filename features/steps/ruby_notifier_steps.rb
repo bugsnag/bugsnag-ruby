@@ -27,13 +27,27 @@ Given("I start the rails service") do
   }
 end
 
+Given("I start the rails service with the database") do
+  steps %Q{
+    Given I start the rails service
+    And I run the "db:prepare" rake task in the rails app
+    And I run the "db:migrate" rake task in the rails app
+  }
+end
+
 When("I navigate to the route {string} on the rails app") do |route|
   RAILS_FIXTURE.navigate_to(route)
 end
 
 When("I run {string} in the rails app") do |command|
   steps %Q{
-    When I run the service "rails#{ENV['RAILS_VERSION']}" with the command "#{command}"
+    When I execute the command "#{command}" in the service "rails#{ENV['RAILS_VERSION']}"
+  }
+end
+
+When("I run {string} in the rails app in the background") do |command|
+  steps %Q{
+    When I execute the command "#{command}" in the service "rails#{ENV['RAILS_VERSION']}" in the background
   }
 end
 
@@ -43,9 +57,15 @@ When("I run the {string} rake task in the rails app") do |task|
   }
 end
 
+When("I run the {string} rake task in the rails app in the background") do |task|
+  steps %Q{
+    When I run "bundle exec rake #{task}" in the rails app in the background
+  }
+end
+
 When("I run {string} with the rails runner") do |code|
   steps %Q{
-    When I run "bundle exec rails runner '#{code}'" in the rails app
+    When I execute the command "bundle exec rails runner #{code}" in the service "rails#{ENV['RAILS_VERSION']}"
   }
 end
 

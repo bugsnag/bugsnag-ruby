@@ -1,14 +1,10 @@
 Feature: App type is set correctly for integrations in a Rails app
 
-Background:
-  Given I start the rails service
-  And I run the "db:prepare" rake task in the rails app
-  And I run the "db:migrate" rake task in the rails app
-
 @rails_integrations
 Scenario: Delayed job
+  Given I start the rails service with the database
+  And I run the "jobs:work" rake task in the rails app in the background
   When I run "User.new.delay.raise_the_roof" with the rails runner
-  And I run the "jobs:workoff" rake task in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -27,6 +23,7 @@ Scenario: Delayed job
 
 @rails_integrations
 Scenario: Mailman
+  Given I start the rails service
   When I run "./run_mailman" in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
@@ -41,8 +38,9 @@ Scenario: Mailman
 
 @rails_integrations
 Scenario: Que
+  Given I start the rails service with the database
+  And I run "bundle exec que ./config/environment.rb" in the rails app in the background
   When I run "QueJob.enqueue" with the rails runner
-  And I run "timeout 5 bundle exec que ./config/environment.rb" in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -56,6 +54,7 @@ Scenario: Que
 
 @rails_integrations
 Scenario: Rake
+  Given I start the rails service
   When I run the "rake_task:raise" rake task in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
@@ -71,8 +70,9 @@ Scenario: Rake
 
 @rails_integrations
 Scenario: Resque (no on_exit hooks)
-  When I run "Resque.enqueue(ResqueWorker, 123, %(abc), x: true, y: false)" with the rails runner
-  And I run "timeout --signal QUIT 5 bundle exec rake resque:work" in the rails app
+  Given I start the rails service
+  And I run the "resque:work" rake task in the rails app in the background
+  When I run the "fixture:queue_resque_job" rake task in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -87,8 +87,11 @@ Scenario: Resque (no on_exit hooks)
   And the event "metaData.payload.class" equals "ResqueWorker"
   And the event "metaData.payload.args.0" equals 123
   And the event "metaData.payload.args.1" equals "abc"
-  And the event "metaData.payload.args.2.x" is true
-  And the event "metaData.payload.args.2.y" is false
+  And the event "metaData.payload.args.2.0" equals 7
+  And the event "metaData.payload.args.2.1" equals 8
+  And the event "metaData.payload.args.2.2" equals 9
+  And the event "metaData.payload.args.3.x" is true
+  And the event "metaData.payload.args.3.y" is false
   And the event "metaData.rake_task.name" equals "resque:work"
   And the event "metaData.rake_task.description" equals "Start a Resque worker"
   And the event "metaData.rake_task.arguments" is null
@@ -96,8 +99,9 @@ Scenario: Resque (no on_exit hooks)
 @rails_integrations
 Scenario: Resque (with on_exit hooks)
   Given I set environment variable "RUN_AT_EXIT_HOOKS" to "1"
-  When I run "Resque.enqueue(ResqueWorker, %(xyz), [7, 8, 9], a: 4, b: 5)" with the rails runner
-  And I run "timeout --signal QUIT 5 bundle exec rake resque:work" in the rails app
+  And I start the rails service
+  And I run the "resque:work" rake task in the rails app in the background
+  When I run the "fixture:queue_resque_job" rake task in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -110,20 +114,22 @@ Scenario: Resque (with on_exit hooks)
   And the event "metaData.config.delivery_method" equals "thread_queue"
   And the event "metaData.context" equals "ResqueWorker@crash"
   And the event "metaData.payload.class" equals "ResqueWorker"
-  And the event "metaData.payload.args.0" equals "xyz"
-  And the event "metaData.payload.args.1.0" equals 7
-  And the event "metaData.payload.args.1.1" equals 8
-  And the event "metaData.payload.args.1.2" equals 9
-  And the event "metaData.payload.args.2.a" equals 4
-  And the event "metaData.payload.args.2.b" equals 5
+  And the event "metaData.payload.args.0" equals 123
+  And the event "metaData.payload.args.1" equals "abc"
+  And the event "metaData.payload.args.2.0" equals 7
+  And the event "metaData.payload.args.2.1" equals 8
+  And the event "metaData.payload.args.2.2" equals 9
+  And the event "metaData.payload.args.3.x" is true
+  And the event "metaData.payload.args.3.y" is false
   And the event "metaData.rake_task.name" equals "resque:work"
   And the event "metaData.rake_task.description" equals "Start a Resque worker"
   And the event "metaData.rake_task.arguments" is null
 
 @rails_integrations
 Scenario: Sidekiq
+  Given I start the rails service
+  And I run "bundle exec sidekiq" in the rails app in the background
   When I run "SidekiqWorker.perform_async" with the rails runner
-  And I run "timeout 5 bundle exec sidekiq" in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -140,8 +146,9 @@ Scenario: Sidekiq
 @rails_integrations
 Scenario: Using Sidekiq as the Active Job queue adapter for a job that raises
   Given I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "sidekiq"
-  When I run "UnhandledJob.perform_later(1, yes: true)" with the rails runner
-  And I run "timeout 5 bundle exec sidekiq" in the rails app
+  And I start the rails service
+  And I run "bundle exec sidekiq" in the rails app in the background
+  When I run the "fixture:queue_unhandled_job" rake task in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -162,8 +169,9 @@ Scenario: Using Sidekiq as the Active Job queue adapter for a job that raises
 @rails_integrations
 Scenario: Using Resque as the Active Job queue adapter for a job that raises
   Given I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "resque"
-  When I run "UnhandledJob.perform_later(1, yes: true)" with the rails runner
-  And I run "timeout --signal QUIT 5 bundle exec rake resque:work" in the rails app
+  And I start the rails service
+  And I run the "resque:work" rake task in the rails app in the background
+  When I run the "fixture:queue_unhandled_job" rake task in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -183,8 +191,9 @@ Scenario: Using Resque as the Active Job queue adapter for a job that raises
 @rails_integrations
 Scenario: Using Que as the Active Job queue adapter for a job that raises
   Given I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "que"
-  When I run "UnhandledJob.perform_later(1, yes: true)" with the rails runner
-  And I run "timeout 5 bundle exec que -q default ./config/environment.rb" in the rails app
+  And I start the rails service with the database
+  And I run "bundle exec que -q default ./config/environment.rb" in the rails app in the background
+  When I run the "fixture:queue_unhandled_job" rake task in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -204,8 +213,9 @@ Scenario: Using Que as the Active Job queue adapter for a job that raises
 @rails_integrations
 Scenario: Using Delayed Job as the Active Job queue adapter for a job that raises
   Given I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "delayed_job"
-  And I run "UnhandledJob.perform_later(1, yes: true)" with the rails runner
-  And I run the "jobs:workoff" rake task in the rails app
+  And I start the rails service with the database
+  And I run the "jobs:work" rake task in the rails app in the background
+  When I run the "fixture:queue_unhandled_job" rake task in the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -225,27 +235,31 @@ Scenario: Using Delayed Job as the Active Job queue adapter for a job that raise
 @rails_integrations
 Scenario: Using Sidekiq as the Active Job queue adapter for a job that works
   Given I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "sidekiq"
-  And I run "WorkingJob.perform_later" with the rails runner
-  And I run "timeout 5 bundle exec sidekiq" in the rails app
+  And I start the rails service
+  And I run "bundle exec sidekiq" in the rails app in the background
+  When I run the "fixture:queue_working_job" rake task in the rails app
   Then I should receive no requests
 
 @rails_integrations
 Scenario: Using Resque as the Active Job queue adapter for a job that works
   Given I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "resque"
-  And I run "WorkingJob.perform_later" with the rails runner
-  And I run "timeout --signal QUIT 5 bundle exec rake resque:work" in the rails app
+  And I start the rails service
+  And I run "bundle exec rake resque:work" in the rails app in the background
+  When I run the "fixture:queue_working_job" rake task in the rails app
   Then I should receive no requests
 
 @rails_integrations
 Scenario: Using Que as the Active Job queue adapter for a job that works
   Given I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "que"
-  And I run "WorkingJob.perform_later" with the rails runner
-  And I run "timeout 5 bundle exec que -q default ./config/environment.rb" in the rails app
+  And I start the rails service with the database
+  And I run "bundle exec que -q default ./config/environment.rb" in the rails app in the background
+  When I run the "fixture:queue_working_job" rake task in the rails app
   Then I should receive no requests
 
 @rails_integrations
 Scenario: Using Delayed Job as the Active Job queue adapter for a job that works
   Given I set environment variable "ACTIVE_JOB_QUEUE_ADAPTER" to "delayed_job"
-  And I run "WorkingJob.perform_later" with the rails runner
-  And I run the "jobs:workoff" rake task in the rails app
+  And I start the rails service with the database
+  And I run the "jobs:work" rake task in the rails app in the background
+  When I run the "fixture:queue_working_job" rake task in the rails app
   Then I should receive no requests
