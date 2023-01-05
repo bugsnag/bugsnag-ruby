@@ -48,7 +48,9 @@ module Bugsnag
 
         # Strip common gem path prefixes
         if defined?(Gem)
-          file = Gem.path.inject(file) {|line, path| line.sub(/#{path}\//, "") }
+          Gem.path.each do |path|
+            file.sub!("#{path}/", "")
+          end
         end
 
         trace_hash[:file] = file

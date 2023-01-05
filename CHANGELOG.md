@@ -1,7 +1,19 @@
 Changelog
 =========
 
-## v6.26.0 (1 December 2022)
+## v6.25.1 (5 January 2023)
+
+### Fixes
+
+* Allow Gem paths to be stripped from file names in stacktraces when they contain a Regexp special character
+  | [#764](https://github.com/bugsnag/bugsnag-ruby/pull/764)
+
+### Enhancements
+
+* Use `Exception#detailed_message` instead of `Exception#message` when available
+  | [#761](https://github.com/bugsnag/bugsnag-ruby/pull/761)
+
+## v6.25.0 (1 December 2022)
 
 ### Enhancements
 

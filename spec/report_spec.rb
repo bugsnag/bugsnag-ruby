@@ -28,6 +28,18 @@ class JRubyException
   end
 end
 
+if RUBY_VERSION >= '2.0.0'
+  require_relative './support/exception_with_detailed_message'
+else
+  require_relative './support/exception_with_detailed_message_ruby_1'
+end
+
+class ExceptionWithDetailedMessageButNoHighlight < Exception
+  def detailed_message
+    "detail about '#{self}'"
+  end
+end
+
 shared_examples "Report or Event tests" do |class_to_test|
   context "metadata" do
     include_examples(
@@ -96,6 +108,17 @@ shared_examples "Report or Event tests" do |class_to_test|
         :error_class => "Timeout::Error",
         :message => "Timeout::Error",
         :severity => "warning"
+      })
+    end
+
+    it "uses Exception#detailed_message if available" do
+      exception = ExceptionWithDetailedMessage.new("some message")
+      report_or_event = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report_or_event.summary).to eq({
+        error_class: "ExceptionWithDetailedMessage",
+        message: "some message with some extra detail",
+        severity: "warning"
       })
     end
 
@@ -287,6 +310,17 @@ shared_examples "Report or Event tests" do |class_to_test|
           ]
         )
       })
+    end
+
+    it "uses Exception#detailed_message if available" do
+      exception = ExceptionWithDetailedMessage.new("some message")
+      report_or_event = class_to_test.new(exception, Bugsnag.configuration)
+
+      expect(report_or_event.errors.length).to eq(1)
+
+      message = report_or_event.errors.first.error_message
+
+      expect(message).to eq("some message with some extra detail")
     end
   end
 
@@ -1399,7 +1433,6 @@ describe Bugsnag::Report do
   end
 
   it "does not unwrap more than 5 exceptions" do
-
     first_ex = ex = NestedException.new("Deep exception")
     10.times do |idx|
       ex = ex.original_exception = NestedException.new("Deep exception #{idx}")
@@ -1429,6 +1462,26 @@ describe Bugsnag::Report do
       exception = get_exception_from_payload(payload)
       expect(exception["errorClass"]).to eq("RuntimeError")
       expect(exception["message"]).to eq("test message")
+    }
+  end
+
+  it "uses Exception#detailed_message if available" do
+    Bugsnag.notify(ExceptionWithDetailedMessage.new("some message"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      exception = get_exception_from_payload(payload)
+      expect(exception["errorClass"]).to eq("ExceptionWithDetailedMessage")
+      expect(exception["message"]).to eq("some message with some extra detail")
+    }
+  end
+
+  it "handles implementations of Exception#detailed_message with no 'highlight' parameter" do
+    Bugsnag.notify(ExceptionWithDetailedMessageButNoHighlight.new("some message"))
+
+    expect(Bugsnag).to have_sent_notification{ |payload, headers|
+      exception = get_exception_from_payload(payload)
+      expect(exception["errorClass"]).to eq("ExceptionWithDetailedMessageButNoHighlight")
+      expect(exception["message"]).to eq("detail about 'some message'")
     }
   end
 

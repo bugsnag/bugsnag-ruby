@@ -428,9 +428,11 @@ module Bugsnag
 
     def generate_exception_list
       raw_exceptions.map do |exception|
+        class_name = error_class(exception)
+
         {
-          errorClass: error_class(exception),
-          message: exception.message,
+          errorClass: class_name,
+          message: error_message(exception, class_name),
           stacktrace: Stacktrace.process(exception.backtrace, configuration)
         }
       end
@@ -446,6 +448,26 @@ module Bugsnag
       # The "Class" check is for some strange exceptions like Timeout::Error
       # which throw the error class instead of an instance
       (exception.is_a? Class) ? exception.name : exception.class.name
+    end
+
+    def error_message(exception, class_name)
+      # Ruby 3.2 added Exception#detailed_message for Gems like "Did you mean"
+      # to annotate an exception's message
+      return exception.message unless exception.respond_to?(:detailed_message)
+
+      # the "highlight" argument may add terminal escape codes to the output,
+      # which we don't want to include
+      # it _should_ always be present but it's possible to forget to add it or
+      # to have implemented this method before Ruby 3.2
+      message =
+        begin
+          exception.detailed_message(highlight: false)
+        rescue ArgumentError
+          exception.detailed_message
+        end
+
+      # remove the class name to be consistent with Exception#message
+      message.sub(" (#{class_name})", '')
     end
 
     def generate_raw_exceptions(exception)
