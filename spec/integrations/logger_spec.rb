@@ -19,7 +19,7 @@ describe 'Configuration.logger' do
     def run_app(name)
       out_reader, out_writer = IO.pipe
       Dir.chdir(File.join(File.dirname(__FILE__), "../fixtures/apps/#{name}")) do
-        Bundler.with_clean_env do
+        Bundler.with_unbundled_env do
           pid = Process.spawn('bundle install',
                               out: out_writer.fileno,
                               err: out_writer.fileno)
@@ -85,7 +85,7 @@ describe 'Configuration.logger' do
     def run_app(name)
       output = ''
       Dir.chdir(File.join(File.dirname(__FILE__), "../fixtures/apps/scripts")) do
-        Bundler.with_clean_env do
+        Bundler.with_unbundled_env do
           IO.popen([@env, 'bundle', 'exec', 'ruby', "#{name}.rb", err: [:child, :out]]) do |io|
             output << io.read
           end
