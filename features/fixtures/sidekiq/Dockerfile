@@ -15,3 +15,5 @@ ENV SIDEKIQ_VERSION $SIDEKIQ_VERSION
 RUN bundle install
 
 COPY app/ /app/
+
+CMD bundle exec sidekiq -r ./app.rb
