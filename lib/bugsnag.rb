@@ -78,7 +78,7 @@ module Bugsnag
     #
     # Optionally accepts a block to append metadata to the yielded report.
     def notify(exception, auto_notify=false, &block)
-      unless auto_notify.is_a? TrueClass or auto_notify.is_a? FalseClass
+      unless false.equal? auto_notify or true.equal? auto_notify
         configuration.warn("Adding metadata/severity using a hash is no longer supported, please use block syntax instead")
         auto_notify = false
       end
