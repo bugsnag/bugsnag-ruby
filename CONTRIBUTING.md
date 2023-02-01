@@ -17,12 +17,14 @@ Thank you!
 
 * Install the test dependencies
     ```
-    bundle install --with test sidekiq --binstubs
+    bundle config set --local with 'test sidekiq'
+    bundle install
+    bundle binstubs --all
     ```
 
 * Run the tests with and make sure they all pass
     ```
-    bundle exec rake
+    bin/rake
     ```
     
 * Further information on installing and running the tests can be found in [the testing guide](TESTING.md)
@@ -32,7 +34,7 @@ Thank you!
 * Write API docs for your contributions using [YARD](https://yardoc.org/)
 * Generate the API documentation locally
     ```
-    bundle exec rake yard
+    bin/rake yard
     ```
 * Review your changes by opening `doc/index.html`
 
