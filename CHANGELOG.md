@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## v6.25.2 (7 February 2023)
 
 ### Enhancements
 
