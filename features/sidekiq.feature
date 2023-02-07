@@ -1,7 +1,8 @@
 Feature: Bugsnag raises errors in Sidekiq workers
 
 Scenario: An unhandled RuntimeError sends a report
-  Given I run the service "sidekiq" with the command "timeout 5 bundle exec rake sidekiq_tests:unhandled_error"
+  Given I start the service "sidekiq"
+  And I execute the command "bundle exec ruby initializers/UnhandledError.rb" in the service "sidekiq"
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -19,7 +20,8 @@ Scenario: An unhandled RuntimeError sends a report
   And the event "metaData.config.delivery_method" equals "thread_queue"
 
 Scenario: A handled RuntimeError can be notified
-  Given I run the service "sidekiq" with the command "timeout 5 bundle exec rake sidekiq_tests:handled_error"
+  Given I start the service "sidekiq"
+  And I execute the command "bundle exec ruby initializers/HandledError.rb" in the service "sidekiq"
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is false
@@ -35,7 +37,8 @@ Scenario: A handled RuntimeError can be notified
 
 Scenario: Synchronous delivery can be used
   Given I set environment variable "BUGSNAG_DELIVERY_METHOD" to "synchronous"
-  And I run the service "sidekiq" with the command "timeout 5 bundle exec rake sidekiq_tests:handled_error"
+  And I start the service "sidekiq"
+  And I execute the command "bundle exec ruby initializers/HandledError.rb" in the service "sidekiq"
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is false

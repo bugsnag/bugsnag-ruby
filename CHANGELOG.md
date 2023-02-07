@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## v6.25.2 (7 February 2023)
+
+### Enhancements
+
+* Improve performance of `Bugsnag.notify`
+  | [#774](https://github.com/bugsnag/bugsnag-ruby/pull/774)
+  | [sambostock](https://github.com/sambostock)
+
 ## v6.25.1 (5 January 2023)
 
 ### Fixes
