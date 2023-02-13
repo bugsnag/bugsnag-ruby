@@ -128,7 +128,7 @@ module Bugsnag
         config.meta_data_filters += ::Rails.configuration.filter_parameters.map do |filter|
           case filter
           when String, Symbol
-            /\A#{filter}\z/
+            /#{filter}/i
           else
             filter
           end
