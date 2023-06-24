@@ -1,5 +1,5 @@
 # Bugsnag error monitoring & exception reporter for Ruby
-[![build status](https://travis-ci.com/bugsnag/bugsnag-ruby.svg?branch=master)](https://travis-ci.com/bugsnag/bugsnag-ruby)
+[![build status](https://github.com/bugsnag/bugsnag-ruby/actions/workflows/test-package.yml/badge.svg)](https://github.com/bugsnag/bugsnag-ruby/actions/workflows/test-package.yml?query=branch%3Amaster)
 
 
 The Bugsnag exception reporter for Ruby gives you instant notification of exceptions thrown from your **[Rails](https://www.bugsnag.com/platforms/rails)**, **Sinatra**, **Rack** or **plain Ruby** app. Any uncaught exceptions will trigger a notification to be sent to your Bugsnag project.
