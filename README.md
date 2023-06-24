@@ -22,7 +22,6 @@ The Bugsnag exception reporter for Ruby gives you instant notification of except
     * [Rake](https://docs.bugsnag.com/platforms/ruby/rake)
     * [Sidekiq](https://docs.bugsnag.com/platforms/ruby/sidekiq)
     * [Other Ruby apps](https://docs.bugsnag.com/platforms/ruby/other)
-    * For [EventMachine](https://rubyeventmachine.com) integration, see [`bugsnag-em`](https://github.com/bugsnag/bugsnag-em)
 3. Relax!
 
 ## Support
