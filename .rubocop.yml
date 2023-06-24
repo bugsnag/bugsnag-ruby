@@ -1,6 +1,8 @@
 inherit_from: .rubocop_todo.yml
 
 AllCops:
+  NewCops: disable
+  SuggestExtensions: false
   Exclude:
     - 'bin/**/*'
     - 'example/**/*'
@@ -16,8 +18,11 @@ Metrics/AbcSize:
     - 'lib/bugsnag/configuration.rb'
 
 Metrics/ClassLength:
+  Max: 150
   Exclude:
+    - 'lib/bugsnag.rb'
     - 'lib/bugsnag/configuration.rb'
+    - 'lib/bugsnag/report.rb'
 
 Style/RescueModifier:
   Enabled: false
