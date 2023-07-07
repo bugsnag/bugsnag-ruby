@@ -4,6 +4,7 @@ module Bugsnag
   ##
   # Extracts and attaches Sidekiq job and queue information to an error report
   class Sidekiq
+    include ::Sidekiq::ServerMiddleware if defined?(::Sidekiq::ServerMiddleware)
 
     unless const_defined?(:FRAMEWORK_ATTRIBUTES)
       FRAMEWORK_ATTRIBUTES = {

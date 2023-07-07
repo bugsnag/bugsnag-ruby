@@ -74,7 +74,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby-version: ['2.5']
-        sidekiq-version: ['2', '3', '4', '5', '6']
+        sidekiq-version: ['2', '3', '4', '5', '6', '7']
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
