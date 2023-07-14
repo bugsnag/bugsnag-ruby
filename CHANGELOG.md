@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Support Sidekiq v7
+  | [#785](https://github.com/bugsnag/bugsnag-ruby/pull/785)
+  | [stevenharman](https://github.com/stevenharman)
+
 ## v6.25.2 (7 February 2023)
 
 ### Enhancements
