@@ -15,3 +15,6 @@ gem 'bugsnag', path: '/bugsnag'
 gem 'rack-cache', '~> 1.9.0'
 
 gem "warden"
+
+# Install a compatible Loofah version on Ruby <2.5
+gem 'loofah', '2.20.0' if RUBY_VERSION < '2.5'
