@@ -44,3 +44,6 @@ gem 'devise'
 gem "mongoid", '~> 5.4.0'
 
 gem "nokogiri", "1.6.8"
+
+# Install a compatible Loofah version
+gem 'loofah', '2.20.0'

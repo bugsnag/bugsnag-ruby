@@ -50,3 +50,6 @@ gem "clearance",  ruby_version < Gem::Version.new('2.3.0') ? '1.16.1' : '~> 1.16
 gem "mongoid"
 
 gem "nokogiri", "1.6.8"
+
+# Install a compatible Loofah version
+gem 'loofah', '2.20.0'
