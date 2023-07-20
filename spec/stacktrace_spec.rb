@@ -480,6 +480,34 @@ describe Bugsnag::Stacktrace do
       expect(out_project_trace(stacktrace)).to eq(["abc_xyz/lib/dont.rb"])
     end
   end
+  context "with configurable ignored_in_project_file_paths" do
+    let(:configuration) do
+      configuration = Bugsnag::Configuration.new
+      configuration.project_root = "/foo/bar"
+      configuration
+    end
+
+    let(:backtrace) do
+      [
+        "/foo/bar/app/models/user.rb:1:in `something'",
+        "/foo/bar/abc_xyz/lib/dont.rb:1:in `to_s'",
+        "/foo/bar/abc/other_lib/ignore_me.rb:1:in `to_s'",
+        "/foo/bar/abc/lib/ignore_me.rb:1:in `to_s'",
+        "/foo/bar/xyz/lib/ignore_me.rb:1:in `to_s'",
+      ]
+    end
+
+    it "with ignored_in_project_file_paths set to ['abc/other_lib/ignore_me.rb', 'abc/lib/ignore_me.rb', 'xyz/lib/ignore_me.rb']" do
+      configuration.ignored_in_project_file_paths = ["abc/other_lib/ignore_me.rb", "abc/lib/ignore_me.rb", "xyz/lib/ignore_me.rb"]
+      stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
+
+      expect(out_project_trace(stacktrace)).to eq([
+        "abc/other_lib/ignore_me.rb",
+        "abc/lib/ignore_me.rb",
+        "xyz/lib/ignore_me.rb",
+      ])
+    end
+  end
 
   private
 

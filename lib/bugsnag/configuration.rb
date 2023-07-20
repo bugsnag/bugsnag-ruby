@@ -168,6 +168,15 @@ module Bugsnag
     # @return [Array<String>]
     attr_accessor :vendor_paths
 
+    # A set of file paths within the {project_root} that should not be considered
+    # as "in project"
+    #
+    # These paths should be relative to the {project_root} and will only match
+    # exact file paths
+    #
+    # @return [Array<String>]
+    attr_reader :ignored_in_project_file_paths
+
     # The default context for all future events
     # Setting this will disable automatic context setting
     # @return [String, nil]
@@ -269,6 +278,7 @@ module Bugsnag
       # will only appear in the full trace.
       self.vendor_path = DEFAULT_VENDOR_PATH
       @vendor_paths = []
+      @ignored_in_project_file_paths = Set.new
 
       # Set up logging
       self.logger = Logger.new(STDOUT)
@@ -719,6 +729,10 @@ module Bugsnag
     # @return [void]
     def auto_track_sessions=(track_sessions)
       @auto_capture_sessions = track_sessions
+    end
+
+    def ignored_in_project_file_paths=(ignored_file_paths)
+      @ignored_in_project_file_paths = ignored_file_paths.to_set
     end
 
     private

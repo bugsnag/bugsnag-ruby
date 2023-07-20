@@ -43,7 +43,7 @@ module Bugsnag
         if defined?(configuration.project_root) && configuration.project_root.to_s != ''
           trace_hash[:inProject] = true if file.start_with?(configuration.project_root.to_s)
           file.sub!(/#{configuration.project_root}\//, "")
-          trace_hash.delete(:inProject) if vendor_path?(configuration, file)
+          trace_hash.delete(:inProject) if out_of_project?(configuration, file)
         end
 
         # Strip common gem path prefixes
@@ -71,12 +71,22 @@ module Bugsnag
     end
 
     # @api private
+    def self.out_of_project?(configuration, file_path)
+      vendor_path?(configuration, file_path) || ignored_in_project_file?(configuration, file_path)
+    end
+
+    # @api private
     def self.vendor_path?(configuration, file_path)
       return true if configuration.vendor_path && file_path.match(configuration.vendor_path)
 
       configuration.vendor_paths.any? do |vendor_path|
         file_path.start_with?("#{vendor_path.sub(/\/$/, '')}/")
       end
+    end
+
+    # @api private
+    def self.ignored_in_project_file?(configuration, file_path)
+      configuration.ignored_in_project_file_paths.include?(file_path)
     end
   end
 end
