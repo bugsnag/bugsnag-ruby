@@ -418,12 +418,6 @@ describe Bugsnag::Stacktrace do
       ]
     end
 
-    def out_project_trace(stacktrace)
-      stacktrace.map do |trace_line|
-        trace_line[:file] unless trace_line[:inProject]
-      end.compact
-    end
-
     it "marks vendor/ and .bundle/ as out-project by default" do
       stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
 
@@ -458,12 +452,6 @@ describe Bugsnag::Stacktrace do
       ]
     end
 
-    def out_project_trace(stacktrace)
-      stacktrace.map do |trace_line|
-        trace_line[:file] unless trace_line[:inProject]
-      end.compact
-    end
-
     it "with vendor_paths set to ['abc', 'xyz']" do
       configuration.vendor_paths = ['abc', 'xyz']
       stacktrace = Bugsnag::Stacktrace.process(backtrace, configuration)
@@ -491,5 +479,13 @@ describe Bugsnag::Stacktrace do
 
       expect(out_project_trace(stacktrace)).to eq(["abc_xyz/lib/dont.rb"])
     end
+  end
+
+  private
+
+  def out_project_trace(stacktrace)
+    stacktrace.map do |trace_line|
+      trace_line[:file] unless trace_line[:inProject]
+    end.compact
   end
 end
