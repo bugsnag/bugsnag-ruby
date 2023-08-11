@@ -12,3 +12,6 @@ gem 'rack', '~> 1.6.11'
 
 # Install a compatible FFI version on Ruby <2.3
 gem 'ffi', '< 1.13.0' if RUBY_VERSION < '2.3.0'
+
+# Install a compatible mini_mime version on Ruby <2.6
+gem 'mini_mime', '< 1.1.4' if RUBY_VERSION < '2.6.0'
