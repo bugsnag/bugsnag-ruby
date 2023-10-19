@@ -87,7 +87,7 @@ module Bugsnag
     # @param value [Object] the filter value
     # @param depth [Integer] the current filter depth
     #
-    # @return [Array, Hash, String] the sanitized value
+    # @return [Array, Hash, String, nil] the sanitized value
     def sanitize_filter_value(value, depth)
       depth += 1
       if depth >= MAX_FILTER_DEPTH
@@ -100,6 +100,8 @@ module Bugsnag
         end
       elsif value.is_a?(Hash)
         sanitize_filter_hash(value, depth)
+      elsif value.nil?
+        nil
       else
         '?'
       end

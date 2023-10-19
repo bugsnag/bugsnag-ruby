@@ -155,7 +155,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
         end
 
         it "adds a JSON string of filter data" do
-          command["filter"] = {"a" => 1, "b" => 2, "$or" => [{"c" => 3}, {"d" => 4}]}
+          command["filter"] = {"a" => 1, "b" => 2, "$or" => [{"c" => 3}, {"d" => nil}]}
           expect(subscriber).to receive(:pop_command).with("123456").and_return(command)
           expect(Bugsnag).to receive(:leave_breadcrumb).with(
             "Mongo query #{event_name}",
@@ -167,7 +167,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
               :request_id => "123456",
               :duration => "123.456",
               :collection => "collection_name_command",
-              :filter => '{"a":"?","b":"?","$or":[{"c":"?"},{"d":"?"}]}'
+              :filter => '{"a":"?","b":"?","$or":[{"c":"?"},{"d":null}]}'
             },
             "process",
             :auto
@@ -209,11 +209,11 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
         expect(subscriber.send(:sanitize_filter_value, 523, 0)).to eq('?')
         expect(subscriber.send(:sanitize_filter_value, "string", 0)).to eq('?')
         expect(subscriber.send(:sanitize_filter_value, true, 0)).to eq('?')
-        expect(subscriber.send(:sanitize_filter_value, nil, 0)).to eq('?')
+        expect(subscriber.send(:sanitize_filter_value, nil, 0)).to eq(nil)
       end
 
       it "is recursive and iterative for array values" do
-        expect(subscriber.send(:sanitize_filter_value, [1, [2, [3]]], 0)).to eq(['?', ['?', ['?']]])
+        expect(subscriber.send(:sanitize_filter_value, [1, [2, [3], nil]], 0)).to eq(['?', ['?', ['?'], nil]])
       end
 
       it "returns LENGTH= for long arrays" do
