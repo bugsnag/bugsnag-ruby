@@ -216,6 +216,12 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
         expect(subscriber.send(:sanitize_filter_value, [1, [2, [3]]], 0)).to eq(['?', ['?', ['?']]])
       end
 
+      it "returns LENGTH= for long arrays" do
+        actual = subscriber.send(:sanitize_filter_value, [1, [2, 2, 2], 3, 4, [5, 5, 5, 5], 6], 0)
+        expected = ['?', %w[? ? ?], '?', '?', ['LENGTH=4'], '?']
+        expect(actual).to eq(expected)
+      end
+
       it "calls #sanitize_filter_hash for hash values" do
         expect(subscriber).to receive(:sanitize_filter_hash).with({:a => 1}, 1)
         subscriber.send(:sanitize_filter_value, {:a => 1}, 0)
