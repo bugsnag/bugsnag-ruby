@@ -174,6 +174,27 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
           )
           subscriber.send(:leave_mongo_breadcrumb, event_name, event)
         end
+
+        it "adds a JSON string of sort data" do
+          command["sort"] = {"a" => 1, "b" => -1}
+          expect(subscriber).to receive(:pop_command).with("123456").and_return(command)
+          expect(Bugsnag).to receive(:leave_breadcrumb).with(
+            "Mongo query #{event_name}",
+            {
+              :event_name => "mongo.#{event_name}",
+              :command_name => "command",
+              :database_name => "database",
+              :operation_id => "1234567890",
+              :request_id => "123456",
+              :duration => "123.456",
+              :collection => "collection_name_command",
+              :sort => '{"a":1,"b":-1}'
+            },
+            "process",
+            :auto
+          )
+          subscriber.send(:leave_mongo_breadcrumb, event_name, event)
+        end
       end
     end
 
