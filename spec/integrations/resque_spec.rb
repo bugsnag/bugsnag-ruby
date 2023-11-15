@@ -31,7 +31,7 @@ describe 'Bugsnag::Resque', :order => :defined do
     #Auto-load failure backend
     backend = double('backend')
     allow(::Resque::Failure).to receive(:backend).and_return(backend)
-    expect(backend).to receive(:<).and_return(nil)
+    expect(backend).to receive(:<=).and_return(nil)
     expect(::Resque::Failure).to receive(:backend=).with(::Resque::Failure::Multiple)
     classes = double('classes')
     allow(backend).to receive(:classes).and_return(classes)
