@@ -11,6 +11,8 @@ Changelog
 * Fix Resque integration when failure backend is already `Resque::Failure::Multiple`
   | [#803](https://github.com/bugsnag/bugsnag-ruby/pull/803)
   | [sj26](https://github.com/sj26)
+* Redact URLs in automatic Rails breadcrumbs
+  | [#806](https://github.com/bugsnag/bugsnag-ruby/pull/806)
 
 ## v6.26.0 (19 July 2023)
 

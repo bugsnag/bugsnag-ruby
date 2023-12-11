@@ -6,7 +6,7 @@
         "controller": "BreadcrumbsController",
         "action": "handled",
         "method": "GET",
-        "path": "/breadcrumbs/handled",
+        "path": "/breadcrumbs/handled?password=[FILTERED]&abc=xyz",
         "event_name": "start_processing.action_controller",
         "event_id": ".*"
     }
