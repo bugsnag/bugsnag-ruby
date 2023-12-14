@@ -2,7 +2,7 @@ Feature: Errors are delivered to Bugsnag from Que
 
 Scenario: Que will deliver unhandled errors
   Given I start the service "que"
-  When I execute the command "bundle exec ruby app.rb unhandled" in the service "que"
+  When I execute the command "bundle exec ruby enqueue-job.rb unhandled" in the service "que"
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -15,7 +15,7 @@ Scenario: Que will deliver unhandled errors
 
 Scenario: Que will deliver handled errors
   Given I start the service "que"
-  When I execute the command "bundle exec ruby app.rb handled" in the service "que"
+  When I execute the command "bundle exec ruby enqueue-job.rb handled" in the service "que"
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is false
