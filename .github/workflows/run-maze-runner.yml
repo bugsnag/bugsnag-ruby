@@ -42,6 +42,7 @@ jobs:
         with:
           ruby-version: 2.7
           bundler-cache: true
+          cache-version: ${{ inputs.ruby-version }}-${{ inputs.rack-version }}-${{ inputs.que-version }}-${{ inputs.rails-version }}-${{ inputs.sidekiq-version }}
 
       - run: bundle exec maze-runner ${{ inputs.features }} --no-source
         env:
