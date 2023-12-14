@@ -2,7 +2,6 @@ require 'pg'
 require 'que'
 require 'socket'
 require 'bugsnag'
-require 'active_record'
 
 QUE_VERSION = ENV.fetch("QUE_VERSION")
 
@@ -30,19 +29,18 @@ end
 
 raise 'postgres was not ready in time!' unless postgres_ready
 
-ActiveRecord::Base.establish_connection(
-  adapter: 'postgresql',
-  database: 'postgres',
-  username: 'postgres',
+$connection = PG::Connection.open(
+  host: 'postgres',
+  user: 'postgres',
   password: 'test_password',
-  host: 'postgres'
+  dbname: 'postgres'
 )
 
-Que.connection = ActiveRecord
-
-# Workaround a bug in que/pg
-# see https://github.com/que-rb/que/issues/247
 if QUE_VERSION == '0.14'
+  Que.connection = $connection
+
+  # Workaround a bug in que/pg
+  # see https://github.com/que-rb/que/issues/247
   Que::Adapters::Base::CAST_PROCS[1184] = lambda do |value|
     case value
     when Time then value
@@ -50,6 +48,8 @@ if QUE_VERSION == '0.14'
     else raise "Unexpected time class: #{value.class} (#{value.inspect})"
     end
   end
+else
+  Que.connection_proc = ->(&block) { block.call($connection) }
 end
 
 class UnhandledJob < Que::Job
