@@ -5,6 +5,9 @@ Changelog
 
 ### Fixes
 
+* Fix deprecation warning from Sidekiq error handler
+  | [#796](https://github.com/bugsnag/bugsnag-ruby/pull/796)
+  | [fukayatsu](https://github.com/fukayatsu)
 * Fix Resque integration when failure backend is already `Resque::Failure::Multiple`
   | [#803](https://github.com/bugsnag/bugsnag-ruby/pull/803)
   | [sj26](https://github.com/sj26)
