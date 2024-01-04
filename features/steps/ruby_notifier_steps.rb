@@ -12,6 +12,21 @@ Then(/^the "(.+)" of the top non-bugsnag stackframe equals (\d+|".+")$/) do |ele
   }
 end
 
+Then(/^the "(.+)" of the first in-project stack frame equals (\d+|".+")$/) do |key, expected|
+  body = Maze::Server.errors.current[:body]
+  stacktrace = Maze::Helper.read_key_path(body, 'events.0.exceptions.0.stacktrace')
+
+  frame_index = stacktrace.find_index { |frame| frame["inProject"] == true }
+
+  if frame_index.nil?
+    raise "Unable to find an in-project stack frame in stacktrace: #{stacktrace.inspect}"
+  end
+
+  steps %Q{
+    the "#{key}" of stack frame #{frame_index} equals #{expected}
+  }
+end
+
 Then(/^the total sessionStarted count equals (\d+)$/) do |value|
   body = Maze::Server.sessions.current[:body]
   session_counts = Maze::Helper.read_key_path(body, "sessionCounts")

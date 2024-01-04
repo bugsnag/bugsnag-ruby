@@ -5,6 +5,7 @@ def configure_basics
   Bugsnag.configure do |conf|
     conf.api_key = ENV['BUGSNAG_API_KEY']
     conf.set_endpoints(ENV['BUGSNAG_ENDPOINT'], ENV["BUGSNAG_ENDPOINT"])
+    conf.project_root = File.dirname(File.realpath(__FILE__))
   end
 end
 
@@ -17,7 +18,7 @@ def configure_using_environment
     conf.ignore_classes << lambda { |ex| ex.class.to_s == ENV["BUGSNAG_IGNORE_CLASS"] } if ENV.include? "BUGSNAG_IGNORE_CLASS"
     conf.meta_data_filters << ENV["BUGSNAG_META_DATA_FILTERS"] if ENV.include? "BUGSNAG_META_DATA_FILTERS"
     conf.enabled_release_stages = [ENV["BUGSNAG_NOTIFY_RELEASE_STAGE"]] if ENV.include? "BUGSNAG_NOTIFY_RELEASE_STAGE"
-    conf.project_root = ENV["BUGSNAG_PROJECT_ROOT"] if ENV.include? "BUGSNAG_PROJECT_ROOT"
+    conf.project_root = File.dirname(File.realpath(__FILE__))
     conf.proxy_host = ENV["BUGSNAG_PROXY_HOST"] if ENV.include? "BUGSNAG_PROXY_HOST"
     conf.proxy_password = ENV["BUGSNAG_PROXY_PASSWORD"] if ENV.include? "BUGSNAG_PROXY_PASSWORD"
     conf.proxy_port = ENV["BUGSNAG_PROXY_PORT"] if ENV.include? "BUGSNAG_PROXY_PORT"
