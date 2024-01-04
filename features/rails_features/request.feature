@@ -8,7 +8,7 @@ Scenario: Request data is collected automatically
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
   And the exception "errorClass" equals "NameError"
-  And the exception "message" starts with "undefined local variable or method `generate_unhandled_error' for #<UnhandledController"
+  And the exception "message" matches "^undefined local variable or method `generate_unhandled_error' for (#<|an instance of )UnhandledController"
   And the event "app.type" equals "rails"
   And the event "metaData.request.clientIp" is not null
   And the event "metaData.request.headers.Host" is not null
@@ -33,7 +33,7 @@ Scenario: Request data can be modified in callbacks
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
   And the exception "errorClass" equals "NameError"
-  And the exception "message" starts with "undefined local variable or method `generate_unhandled_error' for #<UnhandledController"
+  And the exception "message" matches "^undefined local variable or method `generate_unhandled_error' for (#<|an instance of )UnhandledController"
   And the event "app.type" equals "rails"
   And the event "metaData.request.something" equals "hello"
   And the event "metaData.request.params.another_thing" equals "hi"
