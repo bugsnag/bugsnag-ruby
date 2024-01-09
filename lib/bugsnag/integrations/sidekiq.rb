@@ -50,7 +50,7 @@ module Bugsnag
 
     def self.configure_server(server)
       if Bugsnag::Sidekiq.sidekiq_supports_error_handlers
-        server.error_handlers << proc do |ex, _context|
+        server.error_handlers << proc do |ex, _context, _config = nil|
           Bugsnag::Sidekiq.notify(ex)
           Bugsnag.configuration.clear_request_data
         end

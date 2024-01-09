@@ -3,7 +3,7 @@ Feature: Rails automatic breadcrumbs
 @rails3 @rails4 @rails5 @rails6 @rails7
 Scenario: Request breadcrumb
   Given I start the rails service
-  When I navigate to the route "/breadcrumbs/handled" on the rails app
+  When I navigate to the route "/breadcrumbs/handled?password=secret&abc=xyz" on the rails app
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event contains a breadcrumb matching the JSON fixture in "features/fixtures/expected_breadcrumbs/request.json"

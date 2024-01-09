@@ -21,7 +21,7 @@ module Bugsnag
       return if ::Resque::Failure.backend == self
 
       # Ensure resque is using a "Multiple" failure backend
-      unless ::Resque::Failure.backend < ::Resque::Failure::Multiple
+      unless ::Resque::Failure.backend <= ::Resque::Failure::Multiple
         original_backend = ::Resque::Failure.backend
         ::Resque::Failure.backend = ::Resque::Failure::Multiple
         ::Resque::Failure.backend.classes ||= []

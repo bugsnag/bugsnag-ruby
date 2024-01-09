@@ -18,3 +18,6 @@ gem "warden"
 
 # Install a compatible Loofah version on Ruby <2.5
 gem 'loofah', '2.20.0' if RUBY_VERSION < '2.5'
+
+# Install a compatible Thor version on Ruby <2.6
+gem 'thor', '<1.3.0' if RUBY_VERSION < '2.6'
