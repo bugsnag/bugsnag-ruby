@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* Fix unhandled `URI::InvalidURIError` in `Cleaner#clean_url`
+  | [#811](https://github.com/bugsnag/bugsnag-ruby/pull/811)
+
 ## v6.26.1 (9 January 2024)
 
 ### Fixes
