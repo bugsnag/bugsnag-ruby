@@ -26,8 +26,16 @@ module Bugsnag
     # @return [String]
     def clean_url(url)
       return url if @configuration.meta_data_filters.empty? && @configuration.redacted_keys.empty?
+      return url unless url.include?('?')
 
-      uri = URI(url)
+      begin
+        uri = URI(url)
+      rescue URI::InvalidURIError
+        pre_query_string, _query_string = url.split('?', 2)
+
+        return "#{pre_query_string}?#{FILTERED}"
+      end
+
       return url unless uri.query
 
       query_params = uri.query.split('&').map { |pair| pair.split('=') }

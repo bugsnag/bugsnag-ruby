@@ -540,5 +540,17 @@ describe Bugsnag::Cleaner do
       let(:url) { "https://host.example/sessions?access_token=abc123" }
       it { should eq "https://host.example/sessions?access_token=[FILTERED]" }
     end
+
+    context "with an invalid URL" do
+      let(:filters) { [/token/] }
+      let(:url) { "https://host.example/a b c d e f g?access_token=abc123&password=secret&token2=xyz987" }
+      it { should eq "https://host.example/a b c d e f g?[FILTERED]" }
+    end
+
+    context "with an invalid URL and no query string" do
+      let(:filters) { [/token/] }
+      let(:url) { "https://host.example/a b c d e f g" }
+      it { should eq "https://host.example/a b c d e f g" }
+    end
   end
 end
