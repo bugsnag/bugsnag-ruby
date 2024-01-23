@@ -30,16 +30,18 @@ module Bugsnag
 
       begin
         uri = URI(url)
+
+        if uri.is_a?(URI::MailTo)
+          clean_mailto_url(url, uri)
+        else
+          clean_generic_url(url, uri)
+        end
       rescue URI::InvalidURIError
         pre_query_string, _query_string = url.split('?', 2)
 
-        return "#{pre_query_string}?#{FILTERED}"
-      end
-
-      if uri.is_a?(URI::MailTo)
-        clean_mailto_url(url, uri)
-      else
-        clean_generic_url(url, uri)
+        "#{pre_query_string}?#{FILTERED}"
+      rescue StandardError
+        FILTERED
       end
     end
 
