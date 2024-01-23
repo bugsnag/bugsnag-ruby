@@ -36,19 +36,11 @@ module Bugsnag
         return "#{pre_query_string}?#{FILTERED}"
       end
 
-      return url unless uri.query
-
-      query_params = uri.query.split('&').map { |pair| pair.split('=') }
-      query_params.map! do |key, val|
-        if filters_match?(key)
-          "#{key}=#{FILTERED}"
-        else
-          "#{key}=#{val}"
-        end
+      if uri.is_a?(URI::MailTo)
+        clean_mailto_url(url, uri)
+      else
+        clean_generic_url(url, uri)
       end
-
-      uri.query = query_params.join('&')
-      uri.to_s
     end
 
     ##
@@ -207,6 +199,34 @@ module Bugsnag
     def scope_should_be_filtered?(scope)
       @configuration.scopes_to_filter.any? do |scope_to_filter|
         scope.start_with?("#{scope_to_filter}.")
+      end
+    end
+
+    def clean_generic_url(original_url, uri)
+      return original_url unless uri.query
+
+      query_params = uri.query.split('&').map { |pair| pair.split('=') }
+
+      uri.query = filter_uri_parameter_array(query_params).join('&')
+      uri.to_s
+    end
+
+    def clean_mailto_url(original_url, uri)
+      return original_url unless uri.headers
+
+      # headers in mailto links can't contain square brackets so we replace
+      # filtered parameters with 'FILTERED' instead of '[FILTERED]'
+      uri.headers = filter_uri_parameter_array(uri.headers, 'FILTERED').join('&')
+      uri.to_s
+    end
+
+    def filter_uri_parameter_array(parameters, replacement = FILTERED)
+      parameters.map do |key, value|
+        if filters_match?(key)
+          "#{key}=#{replacement}"
+        else
+          "#{key}=#{value}"
+        end
       end
     end
   end

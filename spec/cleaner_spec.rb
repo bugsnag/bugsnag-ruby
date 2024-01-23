@@ -552,5 +552,29 @@ describe Bugsnag::Cleaner do
       let(:url) { "https://host.example/a b c d e f g" }
       it { should eq "https://host.example/a b c d e f g" }
     end
+
+    context "with a mailto URL" do
+      let(:filters) { [/token/] }
+      let(:url) { "mailto:hello@example.com?token=secret&subject=Hello" }
+      it { should eq "mailto:hello@example.com?token=FILTERED&subject=Hello" }
+    end
+
+    context "with a mailto URL without a to address" do
+      let(:filters) { [/token/] }
+      let(:url) { "mailto:?subject=Hello&token=password" }
+      it { should eq "mailto:?subject=Hello&token=FILTERED" }
+    end
+
+    context "with a websocket URL" do
+      let(:filters) { [/secret/] }
+      let(:url) { "ws://example.com?abc=xyz&secret=password" }
+      it { should eq "ws://example.com?abc=xyz&secret=[FILTERED]" }
+    end
+
+    context "with a websocket over TLS URL" do
+      let(:filters) { [/secret/] }
+      let(:url) { "wss://example.com?abc=xyz&secret=password" }
+      it { should eq "wss://example.com?abc=xyz&secret=[FILTERED]" }
+    end
   end
 end
