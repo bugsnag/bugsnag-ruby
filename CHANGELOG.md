@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## v6.26.3 (24 January 2024)
+
+* Handle mailto links in `Cleaner#clean_url`
+  | [#813](https://github.com/bugsnag/bugsnag-ruby/pull/813)
+
 ## v6.26.2 (17 January 2024)
 
 ### Fixes
