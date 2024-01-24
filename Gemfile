@@ -40,9 +40,9 @@ group :coverage, optional: true do
   gem 'coveralls'
 end
 
-if ruby_version >= Gem::Version.new('2.4.0')
+if ruby_version >= Gem::Version.new('2.6.0')
   group :rubocop, optional: true do
-    gem 'rubocop', '~> 1.0.0'
+    gem 'rubocop', '~> 1.50.0'
   end
 end
 
