@@ -60,8 +60,15 @@ if ruby_version >= Gem::Version.new('2.2.0')
       gem 'redis'
     end
 
-    # rack 2.2.0 dropped support for Ruby 2.2
-    gem 'rack', ruby_version < Gem::Version.new('2.3.0') ? '< 2.2.0' : '~> 2.2'
+    if ruby_version < Gem::Version.new('2.3.0')
+      # rack 2.2.0 dropped support for Ruby 2.2
+      gem 'rack', '< 2.2.0'
+    elsif ruby_version < Gem::Version.new('2.4.0')
+      # rack 3.0.0 dropped support for Ruby 2.3
+      gem 'rack', '~> 2.2'
+    else
+      gem 'rack', '~> 3.0'
+    end
 
     # rack-protection 3.0.0 requires Ruby 2.6+
     gem 'rack-protection', '< 3.0.0' if ruby_version < Gem::Version.new('2.6.0')
