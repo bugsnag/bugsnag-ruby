@@ -3,7 +3,7 @@ require_relative 'code_extractor'
 module Bugsnag
   module Stacktrace
     # e.g. "org/jruby/RubyKernel.java:1264:in `catch'"
-    BACKTRACE_LINE_REGEX = /^((?:[a-zA-Z]:)?[^:]+):(\d+)(?::in `([^']+)')?$/
+    BACKTRACE_LINE_REGEX = /^((?:[a-zA-Z]:)?[^:]+):(\d+)(?::in [`']([^']+)')?$/
 
     # e.g. "org.jruby.Ruby.runScript(Ruby.java:807)"
     JAVA_BACKTRACE_REGEX = /^(.*)\((.*)(?::([0-9]+))?\)$/
