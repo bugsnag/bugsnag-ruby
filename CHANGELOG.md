@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## TBD
+
+* Fix Unicode encoding issues when using `Exception#detailed_message` (Ruby 3.2+)
+  | [#817](https://github.com/bugsnag/bugsnag-ruby/pull/817)
+
 ## v6.26.3 (24 January 2024)
 
 * Handle mailto links in `Cleaner#clean_url`
