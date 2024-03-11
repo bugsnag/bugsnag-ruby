@@ -466,8 +466,15 @@ module Bugsnag
           exception.detailed_message
         end
 
+      # the string returned by 'detailed_message' defaults to 'ASCII_8BIT' but
+      # is actually UTF-8 encoded; we can't convert the encoding normally as its
+      # internal encoding doesn't match its actual encoding
+      message.force_encoding(::Encoding::UTF_8) if message.encoding == ::Encoding::ASCII_8BIT
+
       # remove the class name to be consistent with Exception#message
-      message.sub(" (#{class_name})", '')
+      message.sub!(" (#{class_name})".encode(message.encoding), "") rescue nil
+
+      message
     end
 
     def generate_raw_exceptions(exception)
