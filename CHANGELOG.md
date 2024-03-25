@@ -1,7 +1,19 @@
 Changelog
 =========
 
+## v6.26.4 (25 March 2024)
+
+### Fixes
+
+* Fix Unicode encoding issues when using `Exception#detailed_message` (Ruby 3.2+)
+  | [#817](https://github.com/bugsnag/bugsnag-ruby/pull/817)
+* Fix compatibility with Ruby 3.4-dev
+  | [#815](https://github.com/bugsnag/bugsnag-ruby/pull/815)
+  | [k0kubun](https://github.com/k0kubun)
+
 ## v6.26.3 (24 January 2024)
+
+### Fixes
 
 * Handle mailto links in `Cleaner#clean_url`
   | [#813](https://github.com/bugsnag/bugsnag-ruby/pull/813)

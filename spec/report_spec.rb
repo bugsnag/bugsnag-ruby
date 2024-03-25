@@ -40,6 +40,17 @@ class ExceptionWithDetailedMessageButNoHighlight < Exception
   end
 end
 
+class ExceptionWithDetailedMessageReturningEncodedString < Exception
+  def initialize(message, encoding)
+    super(message)
+    @encoding = encoding
+  end
+
+  def detailed_message
+    "abc #{self} xyz".encode(@encoding)
+  end
+end
+
 shared_examples "Report or Event tests" do |class_to_test|
   context "metadata" do
     include_examples(
@@ -1465,24 +1476,75 @@ describe Bugsnag::Report do
     }
   end
 
-  it "uses Exception#detailed_message if available" do
-    Bugsnag.notify(ExceptionWithDetailedMessage.new("some message"))
+  context "#detailed_message" do
+    it "uses Exception#detailed_message if available" do
+      Bugsnag.notify(ExceptionWithDetailedMessage.new("some message"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
-      exception = get_exception_from_payload(payload)
-      expect(exception["errorClass"]).to eq("ExceptionWithDetailedMessage")
-      expect(exception["message"]).to eq("some message with some extra detail")
-    }
-  end
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        exception = get_exception_from_payload(payload)
+        expect(exception["errorClass"]).to eq("ExceptionWithDetailedMessage")
+        expect(exception["message"]).to eq("some message with some extra detail")
+      }
+    end
 
-  it "handles implementations of Exception#detailed_message with no 'highlight' parameter" do
-    Bugsnag.notify(ExceptionWithDetailedMessageButNoHighlight.new("some message"))
+    it "handles implementations of Exception#detailed_message with no 'highlight' parameter" do
+      Bugsnag.notify(ExceptionWithDetailedMessageButNoHighlight.new("some message"))
 
-    expect(Bugsnag).to have_sent_notification{ |payload, headers|
-      exception = get_exception_from_payload(payload)
-      expect(exception["errorClass"]).to eq("ExceptionWithDetailedMessageButNoHighlight")
-      expect(exception["message"]).to eq("detail about 'some message'")
-    }
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        exception = get_exception_from_payload(payload)
+        expect(exception["errorClass"]).to eq("ExceptionWithDetailedMessageButNoHighlight")
+        expect(exception["message"]).to eq("detail about 'some message'")
+      }
+    end
+
+    it "converts ASCII_8BIT encoding to UTF-8" do
+      Bugsnag.notify(Exception.new("大好き\n大好き"))
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        exception = get_exception_from_payload(payload)
+        expect(exception["message"]).to eq("大好き\n大好き")
+      }
+    end
+
+    it "leaves UTF-8 strings as-is" do
+      exception = ExceptionWithDetailedMessageButNoHighlight.new("Обичам те\n大好き")
+      expect(exception.detailed_message.encoding).to be(Encoding::UTF_8)
+
+      Bugsnag.notify(exception)
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        exception = get_exception_from_payload(payload)
+        expect(exception["message"]).to eq("detail about 'Обичам те\n大好き'")
+      }
+    end
+
+    it "handles UTF-16 strings" do
+      exception = ExceptionWithDetailedMessageReturningEncodedString.new("Обичам те\n大好き", Encoding::UTF_16)
+      expect(exception.detailed_message.encoding).to be(Encoding::UTF_16)
+
+      Bugsnag.notify(exception)
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        exception = get_exception_from_payload(payload)
+
+        # the exception message is converted to UTF-8 by the Cleaner
+        expect(exception["message"]).to eq("abc Обичам те\n大好き xyz")
+      }
+    end
+
+    it "handles Shift JIS strings" do
+      exception = ExceptionWithDetailedMessageReturningEncodedString.new("大好き\n大好き", Encoding::Shift_JIS)
+      expect(exception.detailed_message.encoding).to be(Encoding::Shift_JIS)
+
+      Bugsnag.notify(exception)
+
+      expect(Bugsnag).to have_sent_notification{ |payload, headers|
+        exception = get_exception_from_payload(payload)
+
+        # the exception message is converted to UTF-8 by the Cleaner
+        expect(exception["message"]).to eq("abc 大好き\n大好き xyz")
+      }
+    end
   end
 
   it "supports unix-style paths in backtraces" do
