@@ -50,13 +50,16 @@ module Bugsnag
       begin
         response = @app.call(env)
       rescue Exception => raised
-        # Notify bugsnag of rack exceptions
-        Bugsnag.notify(raised, true) do |report|
-          report.severity = "error"
-          report.severity_reason = {
-            :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
-            :attributes => Bugsnag::Rack::FRAMEWORK_ATTRIBUTES
-          }
+
+        if notify?
+          # Notify bugsnag of rack exceptions
+          Bugsnag.notify(raised, true) do |report|
+            report.severity = "error"
+            report.severity_reason = {
+              :type => Bugsnag::Report::UNHANDLED_EXCEPTION_MIDDLEWARE,
+              :attributes => Bugsnag::Rack::FRAMEWORK_ATTRIBUTES
+            }
+          end
         end
 
         # Re-raise the exception
@@ -78,6 +81,15 @@ module Bugsnag
     ensure
       # Clear per-request data after processing the each request
       Bugsnag.configuration.clear_request_data
+    end
+
+    def notify?
+      return true unless defined?(ActionDispatch::ExceptionWrapper)
+
+      backtrace_cleaner = request.get_header("action_dispatch.backtrace_cleaner")
+      wrapper = ActionDispatch::ExceptionWrapper.new(backtrace_cleaner, raised)
+      # we only want to notify exceptions which are not rescued
+      wrapper.rescue_response?
     end
   end
 end
