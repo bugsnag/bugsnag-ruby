@@ -21,7 +21,7 @@ module Bugsnag::Middleware
           best_scope = warden_scopes.include?("user") ? "user" : warden_scopes.first
 
           # Extract useful user information
-          user = {}
+          user = { :warden_scope => best_scope }
           user_object = env["warden"].user({:scope => best_scope, :run_callbacks => false}) rescue nil
           if user_object
             # Build the user info for this scope
