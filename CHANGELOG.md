@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Include the Warden scope in user metadata
+  | [#821](https://github.com/bugsnag/bugsnag-ruby/pull/821)
+  | [javierjulio](https://github.com/javierjulio)
+
 ## v6.26.4 (25 March 2024)
 
 ### Fixes
