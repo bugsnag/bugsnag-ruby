@@ -21,9 +21,12 @@ module Bugsnag::Middleware
           best_scope = warden_scopes.include?("user") ? "user" : warden_scopes.first
 
           # Extract useful user information
-          user = { :warden_scope => best_scope }
+          user = {}
           user_object = env["warden"].user({:scope => best_scope, :run_callbacks => false}) rescue nil
+
           if user_object
+            user[:warden_scope] = best_scope
+
             # Build the user info for this scope
             COMMON_USER_FIELDS.each do |field|
               user[field] = user_object.send(field) if user_object.respond_to?(field)
