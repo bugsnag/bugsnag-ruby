@@ -127,7 +127,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.7', '3.3']
+        ruby-version: ['2.7', '3.3.0'] # TODO: change back to '3.3' after https://github.com/ruby/ruby/pull/10619 is released
         rails-version: ['6', '7', '_integrations']
         include:
           - ruby-version: '2.5'
@@ -135,7 +135,7 @@ jobs:
         exclude:
           - ruby-version: '2.7'
             rails-version: '6'
-          - ruby-version: '3.3'
+          - ruby-version: '3.3.0' # TODO: change back to '3.3' after https://github.com/ruby/ruby/pull/10619 is released
             rails-version: '_integrations'
 
     uses: ./.github/workflows/run-maze-runner.yml
