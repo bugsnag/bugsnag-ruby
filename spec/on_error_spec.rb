@@ -18,6 +18,20 @@ describe "on_error callbacks" do
     end)
   end
 
+  it "accepts a block" do
+    Bugsnag.on_error {|report| report.add_tab(:important, { hello: "world" }) }
+    Bugsnag.on_error {|report| report.add_tab(:significant, { hey: "earth" }) }
+
+    Bugsnag.notify(RuntimeError.new("Oh no!"))
+
+    expect(Bugsnag).to(have_sent_notification do |payload, _headers|
+      event = get_event_from_payload(payload)
+
+      expect(event["metaData"]["important"]).to eq({ "hello" => "world" })
+      expect(event["metaData"]["significant"]).to eq({ "hey" => "earth" })
+    end)
+  end
+
   it "can add callbacks in a configure block" do
     callback1 = proc {|report| report.add_tab(:important, { hello: "world" }) }
     callback2 = proc {|report| report.add_tab(:significant, { hey: "earth" }) }
@@ -25,6 +39,9 @@ describe "on_error callbacks" do
     Bugsnag.configure do |config|
       config.add_on_error(callback1)
       config.add_on_error(callback2)
+      config.on_error do |report|
+        report.add_tab(:critical, { hi: "planet" })
+      end
     end
 
     Bugsnag.notify(RuntimeError.new("Oh no!"))
@@ -34,6 +51,7 @@ describe "on_error callbacks" do
 
       expect(event["metaData"]["important"]).to eq({ "hello" => "world" })
       expect(event["metaData"]["significant"]).to eq({ "hey" => "earth" })
+      expect(event["metaData"]["critical"]).to eq({ "hi" => "planet" })
     end)
   end
 
@@ -53,6 +71,27 @@ describe "on_error callbacks" do
 
       expect(event["metaData"]["important"]).to be_nil
       expect(event["metaData"]["significant"]).to eq({ "hey" => "earth" })
+    end)
+  end
+
+  it "can remove an already registered block" do
+    callback1 = proc {|report| report.add_tab(:important, { hello: "world" }) }
+    callback2 = proc {|report| report.add_tab(:significant, { hey: "earth" }) }
+
+    Bugsnag.add_on_error(callback1)
+
+    # pass callback2 as a block so that it can be removed
+    Bugsnag.on_error(&callback2)
+
+    Bugsnag.remove_on_error(callback2)
+
+    Bugsnag.notify(RuntimeError.new("Oh no!"))
+
+    expect(Bugsnag).to(have_sent_notification do |payload, _headers|
+      event = get_event_from_payload(payload)
+
+      expect(event["metaData"]["important"]).to eq({ "hello" => "world" })
+      expect(event["metaData"]["significant"]).to be_nil
     end)
   end
 
