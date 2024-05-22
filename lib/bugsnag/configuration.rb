@@ -570,6 +570,20 @@ module Bugsnag
     end
 
     ##
+    # Add the given block to the list of on_error callbacks
+    #
+    # The on_error callbacks will be called when an error is captured or reported
+    # and are passed a {Bugsnag::Report} object
+    #
+    # Returning false from an on_error callback will cause the error to be ignored
+    # and will prevent any remaining callbacks from being called
+    #
+    # @return [void]
+    def on_error(&block)
+      middleware.use(block)
+    end
+
+    ##
     # Add the given callback to the list of on_error callbacks
     #
     # The on_error callbacks will be called when an error is captured or reported
