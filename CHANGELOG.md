@@ -1,6 +1,16 @@
 Changelog
 =========
 
+## v6.27.0 (23 May 2024)
+
+### Enhancements
+
+* Include the Warden scope in user metadata
+  | [#821](https://github.com/bugsnag/bugsnag-ruby/pull/821)
+  | [javierjulio](https://github.com/javierjulio)
+* Add a block variant of `add_on_error`
+  | [#824](https://github.com/bugsnag/bugsnag-ruby/pull/824)
+
 ## v6.26.4 (25 March 2024)
 
 ### Fixes
