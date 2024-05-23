@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## v6.27.0 (23 May 2024)
 
 ### Enhancements
 
