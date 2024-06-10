@@ -11,6 +11,8 @@ gem "sprockets-rails"
 # Install a compatible sqlite version on Ruby <3.0
 gem "sqlite3", RUBY_VERSION >= '3.0' ? "~> 1.7" : "< 1.7"
 
+gem 'ffi', RUBY_VERSION >= '3.3' ? '~> 1.17' : '< 1.17'
+
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
 
