@@ -1,5 +1,3 @@
-require "json"
-
 module Bugsnag::Middleware
   ##
   # Extracts and attaches rack data to an error report

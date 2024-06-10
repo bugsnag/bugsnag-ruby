@@ -1,10 +1,6 @@
 # Rails 3.x hooks
 
-require "json"
 require "rails"
-require "bugsnag"
-require "bugsnag/middleware/rails3_request"
-require "bugsnag/middleware/rack_request"
 require "bugsnag/integrations/rails/rails_breadcrumbs"
 
 module Bugsnag

@@ -1,20 +1,28 @@
-require "set"
-require "socket"
-require "logger"
-require "bugsnag/middleware_stack"
+require "bugsnag/breadcrumbs/on_breadcrumb_callback_list"
+
+require "bugsnag/endpoint_configuration"
+require "bugsnag/endpoint_validator"
+
+require "bugsnag/middleware/breadcrumbs"
 require "bugsnag/middleware/callbacks"
+require "bugsnag/middleware/classify_error"
+require "bugsnag/middleware/clearance_user"
+require "bugsnag/middleware/delayed_job"
 require "bugsnag/middleware/discard_error_class"
 require "bugsnag/middleware/exception_meta_data"
 require "bugsnag/middleware/ignore_error_class"
-require "bugsnag/middleware/suggestion_data"
-require "bugsnag/middleware/classify_error"
+require "bugsnag/middleware/mailman"
+require "bugsnag/middleware/rack_request"
+require "bugsnag/middleware/rails3_request"
+require "bugsnag/middleware/rake"
 require "bugsnag/middleware/session_data"
-require "bugsnag/middleware/breadcrumbs"
+require "bugsnag/middleware/sidekiq"
+require "bugsnag/middleware/suggestion_data"
+require "bugsnag/middleware/warden_user"
+
+require "bugsnag/middleware_stack"
+
 require "bugsnag/utility/circular_buffer"
-require "bugsnag/breadcrumbs/breadcrumbs"
-require "bugsnag/breadcrumbs/on_breadcrumb_callback_list"
-require "bugsnag/endpoint_configuration"
-require "bugsnag/endpoint_validator"
 
 module Bugsnag
   class Configuration
