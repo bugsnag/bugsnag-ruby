@@ -1,5 +1,3 @@
-require 'bugsnag/breadcrumbs/breadcrumbs'
-
 module Bugsnag::Breadcrumbs
   ##
   # Validates a given breadcrumb before it is stored

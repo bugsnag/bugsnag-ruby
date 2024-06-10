@@ -1,5 +1,3 @@
-require "thread"
-
 module Bugsnag
   module Delivery
     class ThreadQueue < Synchronous

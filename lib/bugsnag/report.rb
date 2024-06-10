@@ -1,4 +1,3 @@
-require "json"
 require "pathname"
 require "bugsnag/error"
 require "bugsnag/stacktrace"

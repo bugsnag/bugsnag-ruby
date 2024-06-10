@@ -1,5 +1,3 @@
-require 'set'
-
 module Bugsnag::Rails
   module ActiveJob
     SEVERITY = 'error'
