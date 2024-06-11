@@ -71,4 +71,12 @@ class BugsnagTests
   end
 end
 
-Rack::Server.start(app: Bugsnag::Rack.new(BugsnagTests.new), Host: '0.0.0.0', Port: 3000)
+Server =
+  if defined?(Rack::Server)
+    Rack::Server
+  else
+    require 'rackup'
+    Rackup::Server
+  end
+
+Server.start(app: Bugsnag::Rack.new(BugsnagTests.new), Host: '0.0.0.0', Port: 3000)
