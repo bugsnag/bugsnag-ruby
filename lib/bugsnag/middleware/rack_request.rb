@@ -15,7 +15,15 @@ module Bugsnag::Middleware
 
         request = ::Rack::Request.new(env)
 
-        params = request.params rescue {}
+        params =
+          # if the request body isn't rewindable then we can't read request.POST
+          # which is used internally by request.params
+          if request.body.respond_to?(:rewind)
+            request.params rescue {}
+          else
+            request.GET rescue {}
+          end
+
         client_ip = request.ip.to_s rescue SPOOF
         session = env["rack.session"]
 
@@ -104,7 +112,11 @@ module Bugsnag::Middleware
     end
 
     def add_request_body(report, request, env)
-      body = parsed_request_body(request, env)
+      begin
+        body = parsed_request_body(request, env)
+      rescue StandardError
+        return nil
+      end
 
       # this request may not have a body
       return unless body.is_a?(Hash) && !body.empty?
@@ -113,26 +125,34 @@ module Bugsnag::Middleware
     end
 
     def parsed_request_body(request, env)
-      return request.POST rescue nil if request.form_data?
+      # if the request is not rewindable then either:
+      # - it's been read already and so is impossible to read
+      # - it hasn't been read yet and us reading it will prevent the user from
+      #   reading it themselves
+      # in either case we should avoid attempting to
+      return nil unless request.body.respond_to?(:rewind)
+
+      if request.form_data?
+        begin
+          return request.POST
+        ensure
+          request.body.rewind
+        end
+      end
 
       content_type = env["CONTENT_TYPE"]
 
       return nil if content_type.nil?
+      return nil unless content_type.include?('/json') || content_type.include?('+json')
 
-      if content_type.include?('/json') || content_type.include?('+json')
-        begin
-          body = request.body
+      begin
+        body = request.body
 
-          return JSON.parse(body.read)
-        rescue StandardError
-          return nil
-        ensure
-          # the body must be rewound so other things can read it after we do
-          body.rewind
-        end
+        JSON.parse(body.read)
+      ensure
+        # the body must be rewound so other things can read it after we do
+        body.rewind
       end
-
-      nil
     end
 
     def add_cookies(report, request)
