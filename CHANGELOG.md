@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* Only read Rack request body if it's rewindable
+  | [#829](https://github.com/bugsnag/bugsnag-ruby/pull/829)
+
 ## v6.27.0 (23 May 2024)
 
 ### Enhancements
