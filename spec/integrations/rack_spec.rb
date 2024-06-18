@@ -104,7 +104,10 @@ describe Bugsnag::Rack do
       }
 
       rack_request = double
+      rack_request_body = double
+
       allow(rack_request).to receive_messages(
+        body: rack_request_body,
         params: { param: 'test', param2: 'test2' },
         ip: "rack_ip",
         request_method: "TEST",
@@ -118,6 +121,9 @@ describe Bugsnag::Rack do
         POST: { param: 'test' },
         cookies: { session_id: 12345 }
       )
+
+      allow(rack_request_body).to receive(:respond_to?).with(:rewind).and_return(true)
+      allow(rack_request_body).to receive(:rewind)
 
       expect(::Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
 
@@ -160,7 +166,10 @@ describe Bugsnag::Rack do
       }
 
       rack_request = double
+      rack_request_body = double
+
       allow(rack_request).to receive_messages(
+        body: rack_request_body,
         params: { param: 'test', param2: 'test2' },
         ip: "rack_ip",
         request_method: "TEST",
@@ -174,6 +183,9 @@ describe Bugsnag::Rack do
         POST: { param: 'test' },
         cookies: { session_id: 12345 }
       )
+
+      allow(rack_request_body).to receive(:respond_to?).with(:rewind).and_return(true)
+      allow(rack_request_body).to receive(:rewind)
 
       expect(::Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
 
@@ -218,7 +230,10 @@ describe Bugsnag::Rack do
       }
 
       rack_request = double
+      rack_request_body = double
+
       allow(rack_request).to receive_messages(
+        body: rack_request_body,
         params: { param: 'test', param2: 'test2' },
         ip: "rack_ip",
         request_method: "TEST",
@@ -232,6 +247,9 @@ describe Bugsnag::Rack do
         POST: { param: 'test' },
         cookies: { session_id: 12345 }
       )
+
+      allow(rack_request_body).to receive(:respond_to?).with(:rewind).and_return(true)
+      allow(rack_request_body).to receive(:rewind)
 
       expect(Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
 
@@ -274,7 +292,10 @@ describe Bugsnag::Rack do
       }
 
       rack_request = double
+      rack_request_body = double
+
       allow(rack_request).to receive_messages(
+        body: rack_request_body,
         params: { param: 'test', param2: 'test2' },
         ip: "rack_ip",
         request_method: "TEST",
@@ -289,6 +310,9 @@ describe Bugsnag::Rack do
         POST: {},
         cookies: {}
       )
+
+      allow(rack_request_body).to receive(:respond_to?).with(:rewind).and_return(true)
+      allow(rack_request_body).to receive(:rewind)
 
       expect(Rack::Request).to receive(:new).with(rack_env).and_return(rack_request)
 

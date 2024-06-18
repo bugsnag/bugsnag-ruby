@@ -1,5 +1,3 @@
-require 'uri'
-
 module Bugsnag
   # @api private
   class Cleaner

@@ -1,5 +1,4 @@
 require "net/https"
-require "uri"
 
 module Bugsnag
   module Delivery

@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## v6.27.1 (18 June 2024)
+
+### Fixes
+
+* Only read Rack request body if it's rewindable
+  | [#829](https://github.com/bugsnag/bugsnag-ruby/pull/829)
+* Fix circular require warning
+  | [#828](https://github.com/bugsnag/bugsnag-ruby/pull/828)
+
 ## v6.27.0 (23 May 2024)
 
 ### Enhancements

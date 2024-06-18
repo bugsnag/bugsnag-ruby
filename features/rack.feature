@@ -64,6 +64,9 @@ Scenario: A POST request with form data sends a report with the parsed request b
   And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
   And the event "metaData.request.params.a" equals "123"
   And the event "metaData.request.params.b" equals "456"
+  And the event "metaData.request.params.name" equals "baba"
+  And the event "metaData.request.params.favourite_letter" equals "z"
+  And the event "metaData.request.params.password" equals "[FILTERED]"
   And the event "metaData.request.referer" is null
   And the event "metaData.request.url" ends with "/unhandled?a=123&b=456"
 
@@ -86,6 +89,9 @@ Scenario: A POST request with JSON sends a report with the parsed request body a
   And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
   And the event "metaData.request.params.a" equals "123"
   And the event "metaData.request.params.b" equals "456"
+  And the event "metaData.request.params.name" is null
+  And the event "metaData.request.params.favourite_letter" is null
+  And the event "metaData.request.params.password" is null
   And the event "metaData.request.referer" is null
   And the event "metaData.request.url" ends with "/unhandled?a=123&b=456"
 
@@ -172,3 +178,55 @@ Scenario: clearing feature flags for an unhandled error
   And I wait to receive an error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event has no feature flags
+
+@not-rack-1
+@not-rack-2
+Scenario: An unrewindable POST request with form data does not attach request body
+  Given I set environment variable "BUGSNAG_RACK_NO_REWIND" to "true"
+  And I start the rack service
+  When I send a POST request to "/unhandled?a=123&b=456" in the rack app with the following form data:
+    | name             | baba      |
+    | favourite_letter | z         |
+    | password         | password1 |
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
+  And the event "metaData.request.body" is null
+  And the event "metaData.request.clientIp" is not null
+  And the event "metaData.request.cookies" is null
+  And the event "metaData.request.headers.Host" is not null
+  And the event "metaData.request.headers.User-Agent" is not null
+  And the event "metaData.request.httpMethod" equals "POST"
+  And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
+  And the event "metaData.request.params.a" equals "123"
+  And the event "metaData.request.params.b" equals "456"
+  And the event "metaData.request.params.name" is null
+  And the event "metaData.request.params.favourite_letter" is null
+  And the event "metaData.request.params.password" is null
+  And the event "metaData.request.referer" is null
+  And the event "metaData.request.url" ends with "/unhandled?a=123&b=456"
+
+@not-rack-1
+@not-rack-2
+Scenario: An unrewindable POST request with JSON does not attach request body
+  Given I set environment variable "BUGSNAG_RACK_NO_REWIND" to "true"
+  And I start the rack service
+  When I send a POST request to "/unhandled?a=123&b=456" in the rack app with the following JSON:
+    | name             | baba      |
+    | favourite_letter | z         |
+    | password         | password1 |
+  And I wait to receive an error
+  Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
+  And the event "metaData.request.body" is null
+  And the event "metaData.request.clientIp" is not null
+  And the event "metaData.request.cookies" is null
+  And the event "metaData.request.headers.Host" is not null
+  And the event "metaData.request.headers.User-Agent" is not null
+  And the event "metaData.request.httpMethod" equals "POST"
+  And the event "metaData.request.httpVersion" matches "^HTTP/\d\.\d$"
+  And the event "metaData.request.params.a" equals "123"
+  And the event "metaData.request.params.b" equals "456"
+  And the event "metaData.request.params.name" is null
+  And the event "metaData.request.params.favourite_letter" is null
+  And the event "metaData.request.params.password" is null
+  And the event "metaData.request.referer" is null
+  And the event "metaData.request.url" ends with "/unhandled?a=123&b=456"

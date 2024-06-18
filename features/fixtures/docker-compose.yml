@@ -88,6 +88,7 @@ services:
       - BUGSNAG_API_KEY
       - BUGSNAG_ENDPOINT
       - BUGSNAG_METADATA_FILTERS
+      - BUGSNAG_RACK_NO_REWIND
     restart: "no"
     ports:
       - target: 3000
