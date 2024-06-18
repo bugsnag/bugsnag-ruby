@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## v6.27.1 (18 June 2024)
 
 ### Fixes
 
