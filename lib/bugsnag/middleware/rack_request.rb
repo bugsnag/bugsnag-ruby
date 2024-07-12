@@ -119,7 +119,7 @@ module Bugsnag::Middleware
       end
 
       # this request may not have a body
-      return unless body.is_a?(Hash) && !body.empty?
+      return if body.nil?
 
       report.add_metadata(:request, :body, body)
     end
