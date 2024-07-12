@@ -23,6 +23,8 @@ jobs:
             os: 'ubuntu-20.04'
           - ruby-version: 'jruby'
             optional-groups: 'test'
+    env:
+      BUNDLE_WITH: ${{ matrix.optional-groups }}
 
     steps:
       - uses: actions/checkout@v3
@@ -32,9 +34,9 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
 
-      - run: bundle install --with "${{ matrix.optional-groups }}" --binstubs
+      - run: bundle install
 
-      - run: ./bin/rake spec
+      - run: bundle exec rake spec
 
   linting:
     runs-on: ubuntu-latest
