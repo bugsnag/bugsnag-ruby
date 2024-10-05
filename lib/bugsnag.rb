@@ -542,6 +542,11 @@ module Bugsnag
     # @return [String]
     def report_to_json(report)
       cleaned = cleaner.clean_object(report.as_json)
+
+      if Bugsnag::Helpers.payload_too_long?(cleaned)
+        configuration.warn("The notify payload is too large and will be truncated.")
+      end
+
       trimmed = Bugsnag::Helpers.trim_if_needed(cleaned)
 
       ::JSON.dump(trimmed)

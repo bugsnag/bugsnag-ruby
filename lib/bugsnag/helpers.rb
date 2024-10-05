@@ -66,6 +66,13 @@ module Bugsnag
       end
     end
 
+    ##
+    # Validate that the serialized JSON string value is below maximum payload
+    # length
+    def self.payload_too_long?(value)
+      get_payload_length(value) >= MAX_PAYLOAD_LENGTH
+    end
+
     private
 
     TRUNCATION_INFO = '[TRUNCATED]'
@@ -149,13 +156,6 @@ module Bugsnag
       else
         trim_as_string(value)
       end
-    end
-
-    ##
-    # Validate that the serialized JSON string value is below maximum payload
-    # length
-    def self.payload_too_long?(value)
-      get_payload_length(value) >= MAX_PAYLOAD_LENGTH
     end
 
     def self.get_payload_length(value)
