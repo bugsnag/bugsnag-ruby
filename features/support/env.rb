@@ -56,6 +56,7 @@ Maze.hooks.before_all do
 end
 
 Maze.hooks.before do
+  $api_key = ENV["MAZE_REPEATER_API_KEY"] if ENV["MAZE_REPEATER_API_KEY"]
   Maze::Runner.environment["BUGSNAG_API_KEY"] = $api_key
 
   host = running_in_docker? ? "maze-runner" : current_ip
