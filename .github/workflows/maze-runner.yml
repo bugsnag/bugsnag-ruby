@@ -62,6 +62,12 @@ jobs:
             que-version: '1'
           - ruby-version: '2.7'
             que-version: '1'
+          - ruby-version: '2.7'
+            que-version: '2'
+          - ruby-version: '3.0'
+            que-version: '2'
+          - ruby-version: '3.3'
+            que-version: '2'
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
@@ -93,7 +99,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.5']
+        ruby-version: ['2.5', '3.3']
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
@@ -123,18 +129,34 @@ jobs:
       ruby-version: ${{ matrix.ruby-version }}
       rails-version: ${{ matrix.rails-version }}
 
-  rails-6-7-integrations-maze-runner:
+  rails-6-7-maze-runner:
     strategy:
       fail-fast: false
       matrix:
         ruby-version: ['2.7', '3.3']
-        rails-version: ['6', '7', '_integrations']
+        rails-version: ['6', '7']
         include:
           - ruby-version: '2.5'
             rails-version: '6'
         exclude:
           - ruby-version: '2.7'
             rails-version: '6'
+
+    uses: ./.github/workflows/run-maze-runner.yml
+    with:
+      features: features/rails_features/ --tags @rails${{ matrix.rails-version }}
+      ruby-version: ${{ matrix.ruby-version }}
+      rails-version: ${{ matrix.rails-version }}
+
+  rails-8-integrations-maze-runner:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.7', '3.3']
+        rails-version: ['8', '_integrations']
+        exclude:
+          - ruby-version: '2.7'
+            rails-version: '8'
           - ruby-version: '3.3'
             rails-version: '_integrations'
 
