@@ -1,6 +1,6 @@
 Feature: Request data
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Request data is collected automatically
   Given I start the rails service
   When I navigate to the route "/unhandled/error?a=123&b=456" on the rails app
@@ -24,7 +24,7 @@ Scenario: Request data is collected automatically
   And the event "metaData.request.requestId" is not null
   And the event "metaData.request.url" ends with "/unhandled/error?a=123&b=456"
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Request data can be modified in callbacks
   Given I set environment variable "ADD_REQUEST_ON_ERROR" to "true"
   And I start the rails service

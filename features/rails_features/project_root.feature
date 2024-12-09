@@ -1,6 +1,6 @@
 Feature: Project root configuration
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Project_root should default to Rails.root
   Given I start the rails service
   When I navigate to the route "/project_root/default" on the rails app
@@ -11,7 +11,7 @@ Scenario: Project_root should default to Rails.root
   And the event "metaData.request.url" ends with "/project_root/default"
   And the "file" of the top non-bugsnag stackframe equals "app/controllers/project_root_controller.rb"
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Project_root can be set in an initializer
   Given I set environment variable "BUGSNAG_PROJECT_ROOT" to "/foo/bar"
   And I start the rails service
@@ -23,7 +23,7 @@ Scenario: Project_root can be set in an initializer
   And the event "metaData.request.url" ends with "/project_root/initializer"
   And the "file" of the top non-bugsnag stackframe equals "/usr/src/app/controllers/project_root_controller.rb"
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Project_root can be set after an initializer
   Given I start the rails service
   When I navigate to the route "/project_root/after" on the rails app

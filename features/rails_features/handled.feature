@@ -1,6 +1,6 @@
 Feature: Rails handled errors
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Unhandled RuntimeError
   Given I start the rails service
   When I navigate to the route "/handled/unthrown" on the rails app
@@ -14,7 +14,7 @@ Scenario: Unhandled RuntimeError
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Thrown handled NameError
   Given I start the rails service
   When I navigate to the route "/handled/thrown" on the rails app
@@ -28,7 +28,7 @@ Scenario: Thrown handled NameError
   And the event "severity" equals "warning"
   And the event "severityReason.type" equals "handledException"
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Manual string notify
   Given I start the rails service
   When I navigate to the route "/handled/string_notify" on the rails app

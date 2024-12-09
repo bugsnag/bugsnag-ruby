@@ -1,6 +1,6 @@
 Feature: App type configuration
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Setting app_type in initializer works
   Given I set environment variable "BUGSNAG_APP_TYPE" to "custom_app_type"
   And I start the rails service
@@ -12,7 +12,7 @@ Scenario: Setting app_type in initializer works
   And the event "metaData.request.url" ends with "/app_type/initializer"
   And the event "app.type" equals "custom_app_type"
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Changing app_type after initializer works
   Given I start the rails service
   When I navigate to the route "/app_type/after?type=maze_after_initializer" on the rails app
@@ -23,7 +23,7 @@ Scenario: Changing app_type after initializer works
   And the event "metaData.request.url" ends with "/app_type/after?type=maze_after_initializer"
   And the event "app.type" equals "maze_after_initializer"
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Should default to "rails" for handled errors
   Given I start the rails service
   When I navigate to the route "/app_type/handled" on the rails app
@@ -32,7 +32,7 @@ Scenario: Should default to "rails" for handled errors
   And the event "metaData.request.url" ends with "/app_type/handled"
   And the event "app.type" equals "rails"
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Should default to "rails" for unhandled errors
   Given I start the rails service
   When I navigate to the route "/app_type/unhandled" on the rails app

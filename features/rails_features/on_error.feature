@@ -1,6 +1,6 @@
 Feature: On error callbacks
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Rails on_error works on handled errors
   Given I set environment variable "ADD_ON_ERROR" to "true"
   And I start the rails service
@@ -14,7 +14,7 @@ Scenario: Rails on_error works on handled errors
   And the event "metaData.request.url" ends with "/handled/unthrown"
   And the event "metaData.on_error.source" equals "on_error handled"
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Rails on_error works on unhandled errors
   Given I set environment variable "ADD_ON_ERROR" to "true"
   And I start the rails service
