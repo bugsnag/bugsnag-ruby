@@ -176,6 +176,19 @@ Then("in Rails versions {string} {int} the event {string} is a timestamp") do |o
   end
 end
 
+Then("in Rails versions {string} {int} except {int} the event {string} is a timestamp") do |operator, version, exception, path|
+  skip if RAILS_FIXTURE.version_matches('==', exception)
+  if RAILS_FIXTURE.version_matches?(operator, version)
+    steps %Q{
+      And the event "#{path}" is a timestamp
+    }
+  else
+    steps %Q{
+      And the event "#{path}" is null
+    }
+  end
+end
+
 Then("the event {string} matches the current Que version") do |path|
   # append a '.' to make this assertion stricter, e.g. if QUE_VERSION is '1'
   # we'll use '1.'
