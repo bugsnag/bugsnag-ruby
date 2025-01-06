@@ -71,4 +71,4 @@ Scenario: An unhandled error will be delivered
   And in Rails versions ">=" 5 the event "metaData.active_job.provider_job_id" matches "^[0-9a-f-]{36}$"
   And in Rails versions ">=" 5 the event "metaData.active_job.executions" equals 2
   And in Rails versions ">=" 6 the event "metaData.active_job.timezone" equals "UTC"
-  And in Rails versions ">=" 6 except 8 the event  "metaData.active_job.enqueued_at" is a timestamp
+  And in Rails versions ">=" 6 except 8 the event "metaData.active_job.enqueued_at" is a timestamp
