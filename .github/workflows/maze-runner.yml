@@ -133,7 +133,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.7', '3.4']
+        ruby-version: ['2.7', '3.3']
         rails-version: ['6', '7']
         include:
           - ruby-version: '2.5'
@@ -152,12 +152,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.7', '3.4']
+        ruby-version: ['2.7', '3.3']
         rails-version: ['8', '_integrations']
         exclude:
           - ruby-version: '2.7'
             rails-version: '8'
-          - ruby-version: '3.4'
+          - ruby-version: '3.3'
             rails-version: '_integrations'
 
     uses: ./.github/workflows/run-maze-runner.yml
