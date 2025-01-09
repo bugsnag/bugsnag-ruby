@@ -177,8 +177,9 @@ Then("in Rails versions {string} {int} the event {string} is a timestamp") do |o
 end
 
 Then("in Rails versions {string} {int} except {int} the event {string} is a timestamp") do |operator, version, exception, path|
-  skip if RAILS_FIXTURE.version_matches?('==', exception)
-  if RAILS_FIXTURE.version_matches?(operator, version)
+  if RAILS_FIXTURE.version_matches?('==', exception)
+    true
+  elsif RAILS_FIXTURE.version_matches?(operator, version)
     steps %Q{
       And the event "#{path}" is a timestamp
     }
