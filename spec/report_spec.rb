@@ -2089,9 +2089,13 @@ describe Bugsnag::Report do
 
     it "works with java.lang.Throwables" do
       begin
+        pp "I'm failing!"
         JRubyException.raise!
-      rescue
+        pp "I've failed"
+      rescue => e
+        pp "I'm notifying! #{e.message}"
         Bugsnag.notify $!
+        pp "I've notified!"
       end
 
       expect(Bugsnag).to have_sent_notification{ |payload, headers|

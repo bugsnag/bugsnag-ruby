@@ -13,6 +13,7 @@ jobs:
         optional-groups: ['test sidekiq']
         include:
           - ruby-version: '1.9'
+            os: 'ubuntu-20.04'
             optional-groups: 'test'
           - ruby-version: '2.0'
             optional-groups: 'test'
