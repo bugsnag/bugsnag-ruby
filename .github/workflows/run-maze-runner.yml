@@ -25,6 +25,7 @@ on:
 jobs:
   maze-runner:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     env:
       BUNDLE_GEMFILE: Gemfile-maze-runner
