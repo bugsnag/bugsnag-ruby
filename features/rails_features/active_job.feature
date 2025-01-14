@@ -24,7 +24,7 @@ Scenario: A handled error will be delivered
   And in Rails versions ">=" 5 the event "metaData.active_job.provider_job_id" matches "^[0-9a-f-]{36}$"
   And in Rails versions ">=" 5 the event "metaData.active_job.executions" equals 1
   And in Rails versions ">=" 6 the event "metaData.active_job.timezone" equals "UTC"
-  And in Rails versions ">=" 6 except 8 the event "metaData.active_job.enqueued_at" is a timestamp
+  And in Rails versions ">=" 6 the event "metaData.active_job.enqueued_at" is a timestamp
 
 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: An unhandled error will be delivered
@@ -50,7 +50,7 @@ Scenario: An unhandled error will be delivered
   And in Rails versions ">=" 5 the event "metaData.active_job.provider_job_id" matches "^[0-9a-f-]{36}$"
   And in Rails versions ">=" 5 the event "metaData.active_job.executions" equals 1
   And in Rails versions ">=" 6 the event "metaData.active_job.timezone" equals "UTC"
-  And in Rails versions ">=" 6 except 8 the event "metaData.active_job.enqueued_at" is a timestamp
+  And in Rails versions ">=" 6 the event "metaData.active_job.enqueued_at" is a timestamp
   When I discard the oldest error
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
@@ -71,4 +71,4 @@ Scenario: An unhandled error will be delivered
   And in Rails versions ">=" 5 the event "metaData.active_job.provider_job_id" matches "^[0-9a-f-]{36}$"
   And in Rails versions ">=" 5 the event "metaData.active_job.executions" equals 2
   And in Rails versions ">=" 6 the event "metaData.active_job.timezone" equals "UTC"
-  And in Rails versions ">=" 6 except 8 the event "metaData.active_job.enqueued_at" is a timestamp
+  And in Rails versions ">=" 6 the event "metaData.active_job.enqueued_at" is a timestamp
