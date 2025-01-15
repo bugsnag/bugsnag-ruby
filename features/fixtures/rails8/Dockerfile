@@ -25,4 +25,6 @@ RUN mv /usr/src/app/bin-copy /usr/src/app/bin
 
 # RUN bundle exec rake rails:update:bin
 
+ENV RUBYOPT='--disable-did_you_mean'
+
 CMD ["bundle", "exec", "bin/rails", "s", "-b", "0.0.0.0"]
