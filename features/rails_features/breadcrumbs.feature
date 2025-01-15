@@ -8,7 +8,7 @@ Scenario: Request breadcrumb
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event contains a breadcrumb matching the JSON fixture in "features/fixtures/expected_breadcrumbs/request.json"
 
-@rails3 @rails4
+@rails3 @rails4 @rails8
 Scenario: SQL Breadcrumb without bindings
   Given I set environment variable "SQL_ONLY_BREADCRUMBS" to "true"
   And I start the rails service
@@ -17,7 +17,7 @@ Scenario: SQL Breadcrumb without bindings
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event contains a breadcrumb matching the JSON fixture in "features/fixtures/expected_breadcrumbs/sql_without_bindings.json"
 
-@rails5 @rails6 @rails7 @rails8
+@rails5 @rails6 @rails7
 Scenario: SQL Breadcrumb with bindings
   Given I set environment variable "SQL_ONLY_BREADCRUMBS" to "true"
   And I start the rails service
