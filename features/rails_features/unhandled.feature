@@ -8,7 +8,7 @@ Scenario: Unhandled RuntimeError
   Then the error is valid for the error reporting API version "4.0" for the "Ruby Bugsnag Notifier" notifier
   And the event "unhandled" is true
   And the exception "errorClass" equals "NameError"
-  And the exception "message" matches "^undefined local variable or method `generate_unhandled_error' for (#<|an instance of )UnhandledController"
+  And the exception "message" matches "^undefined local variable or method ('|`)generate_unhandled_error' for (#<|an instance of )UnhandledController"
   And the event "app.type" equals "rails"
   And the event "metaData.request.url" ends with "/unhandled/error"
   And the event "severity" equals "error"

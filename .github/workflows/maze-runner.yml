@@ -133,7 +133,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.7', '3.4']
+        ruby-version: ['2.7', '3.3']
         rails-version: ['6', '7']
         include:
           - ruby-version: '2.5'
