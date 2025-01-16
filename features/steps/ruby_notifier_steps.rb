@@ -166,9 +166,9 @@ end
 
 Then("in Rails versions {string} {int} the event {string} is a timestamp") do |operator, version, path|
   if RAILS_FIXTURE.version_matches?(operator, version)
-    steps %Q{
-      And the event "#{path}" is a timestamp
-    }
+    RAILS_TS_REGEX = /^\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:[\d\.]+( UTC)?$/
+    value = Maze::Helper.read_key_path(Maze::Server.errors.current[:body], path)
+    [TIMESTAMP_REGEX, RAILS_TS_REGEX].any? { |regex| regex.match?(value) }
   else
     steps %Q{
       And the event "#{path}" is null

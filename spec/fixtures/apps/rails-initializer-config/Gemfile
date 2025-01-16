@@ -1,6 +1,12 @@
 source 'https://rubygems.org'
 
 ruby_version = Gem::Version.new(RUBY_VERSION.dup)
+if ruby_version >= Gem::Version.new('3.4')
+    gem 'mutex_m', '0.3.0'
+    gem 'base64', '0.2.0'
+    gem 'logger', '1.6.5'
+    gem 'bigdecimal', '3.1.9'
+end
 
 gem 'railties', ruby_version <= Gem::Version.new('2.6') ? '4.2.10' : '~> 6.0.2', require: %w(action_controller rails)
 gem 'rake', ruby_version <= Gem::Version.new('1.9.3') ? '~> 11.3.0' : '~> 12.3.0'
