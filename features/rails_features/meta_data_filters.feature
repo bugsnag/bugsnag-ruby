@@ -1,6 +1,6 @@
 Feature: Metadata filters
 
-@rails3 @rails4 @rails5 @rails6 @rails7
+@rails3 @rails4 @rails5 @rails6 @rails7 @rails8
 Scenario: Meta_data_filters should include Rails.configuration.filter_parameters
   Given I start the rails service
   When I navigate to the route "/metadata_filters/filter?filtered_parameter=foo&other_parameter=bar" on the rails app

@@ -1,3 +1,14 @@
+# reproduce #803 by setting Resque's backend to 'Multiple' before our Resque
+# integration runs
+# see https://github.com/bugsnag/bugsnag-ruby/pull/803
+require "resque"
+require "resque/failure/redis"
+require "resque/failure/multiple"
+
+Resque::Failure::Multiple.classes = [Resque::Failure::Redis]
+Resque::Failure.backend = Resque::Failure::Multiple
+# end #803 reproduction
+
 require_relative 'boot'
 
 require "rails"

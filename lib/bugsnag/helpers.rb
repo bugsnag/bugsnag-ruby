@@ -1,8 +1,3 @@
-require 'uri'
-require 'set'
-require 'json'
-
-
 module Bugsnag
   module Helpers # rubocop:todo Metrics/ModuleLength
     MAX_STRING_LENGTH = 3072

@@ -19,8 +19,7 @@ describe Bugsnag::FeatureFlag do
     [123, "123"],
     [true, "true"],
     [false, "false"],
-    [[1, 2, 3], "[1, 2, 3]"],
-    [{ a: 1, b: 2 }, "{:a=>1, :b=>2}"],
+    [[1, 2, 3], "[1, 2, 3]"]
   ].each do |variant, expected|
     it "converts the variant to a string if given '#{variant.class}'" do
       flag = Bugsnag::FeatureFlag.new("abc", variant)
@@ -28,6 +27,18 @@ describe Bugsnag::FeatureFlag do
       expect(flag.name).to eq("abc")
       expect(flag.variant).to eq(expected)
     end
+  end
+
+  it "converts the variant to a string if given 'Hash'" do
+    expected = if ruby_version_greater_equal?("3.4.0")
+      "{a: 1, b: 2}"
+    else
+      "{:a=>1, :b=>2}"
+    end
+    flag = Bugsnag::FeatureFlag.new("abc", {a: 1, b: 2})
+
+    expect(flag.name).to eq("abc")
+    expect(flag.variant).to eq(expected)
   end
 
   it "sets variant to 'nil' if variant cannot be converted to a string" do

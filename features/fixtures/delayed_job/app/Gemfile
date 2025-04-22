@@ -10,6 +10,8 @@ gem 'delayed_job'
 gem 'delayed_job_active_record'
 gem 'mini_racer'
 
+gem 'ffi', RUBY_VERSION >= '3.3' ? '~> 1.17' : '< 1.17'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.0.7'
 # Use sqlite3 as the database for Active Record

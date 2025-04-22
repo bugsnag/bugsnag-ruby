@@ -1,5 +1,4 @@
 require 'mongo'
-require 'bugsnag/breadcrumbs/breadcrumbs'
 
 module Bugsnag
   ##

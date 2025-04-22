@@ -1,10 +1,6 @@
 # Rails 3.x hooks
 
-require "json"
 require "rails"
-require "bugsnag"
-require "bugsnag/middleware/rails3_request"
-require "bugsnag/middleware/rack_request"
 require "bugsnag/integrations/rails/rails_breadcrumbs"
 
 module Bugsnag
@@ -24,7 +20,8 @@ module Bugsnag
         filtered_data[:event_name] = event[:id]
         filtered_data[:event_id] = event_id
 
-        if event[:id] == "sql.active_record"
+        case event[:id]
+        when "sql.active_record"
           if data.key?(:binds)
             binds = data[:binds].each_with_object({}) { |bind, output| output[bind.name] = '?' if defined?(bind.name) }
             filtered_data[:binds] = JSON.dump(binds) unless binds.empty?
@@ -36,6 +33,12 @@ module Bugsnag
             # the connection ID is the object_id of the connection object
             filtered_data[:connection_id] = data[:connection].object_id
           end
+
+        when "start_processing.action_controller"
+          filtered_data[:path] = Bugsnag.cleaner.clean_url(data[:path]) if data.key?(:path)
+
+        when "redirect_to.action_controller"
+          filtered_data[:location] = Bugsnag.cleaner.clean_url(data[:location]) if data.key?(:location)
         end
 
         Bugsnag.leave_breadcrumb(

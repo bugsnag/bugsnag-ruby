@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
 
   if s.respond_to?(:metadata=)
     s.metadata = {
-      "changelog_uri" => "https://github.com/bugsnag/bugsnag-ruby/blob/HEAD/CHANGELOG.md",
+      "changelog_uri" => "https://github.com/bugsnag/bugsnag-ruby/blob/v#{File.read("VERSION").strip}/CHANGELOG.md",
       "documentation_uri" => "https://docs.bugsnag.com/platforms/ruby/",
       "source_code_uri" => "https://github.com/bugsnag/bugsnag-ruby/",
       "rubygems_mfa_required" => "true"

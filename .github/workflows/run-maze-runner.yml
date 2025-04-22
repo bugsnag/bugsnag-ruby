@@ -25,6 +25,7 @@ on:
 jobs:
   maze-runner:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     env:
       BUNDLE_GEMFILE: Gemfile-maze-runner
@@ -42,6 +43,7 @@ jobs:
         with:
           ruby-version: 2.7
           bundler-cache: true
+          cache-version: ${{ inputs.ruby-version }}-${{ inputs.rack-version }}-${{ inputs.que-version }}-${{ inputs.rails-version }}-${{ inputs.sidekiq-version }}
 
       - run: bundle exec maze-runner ${{ inputs.features }} --no-source
         env:

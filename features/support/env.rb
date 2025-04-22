@@ -63,3 +63,11 @@ Maze.hooks.before do
   Maze::Runner.environment["BUGSNAG_ENDPOINT"] = "http://#{host}:#{Maze.config.port}/notify"
   Maze::Runner.environment["BUGSNAG_SESSION_ENDPOINT"] = "http://#{host}:#{Maze.config.port}/sessions"
 end
+
+Before("@not-rack-1") do
+  skip_this_scenario if ENV["RACK_VERSION"] == "1"
+end
+
+Before("@not-rack-2") do
+  skip_this_scenario if ENV["RACK_VERSION"] == "2"
+end

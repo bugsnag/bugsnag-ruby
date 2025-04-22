@@ -16,4 +16,4 @@ Scenario: Does notify in the correct release stage
   And the event "severity" equals "error"
   And the event "severityReason.type" equals "unhandledException"
   And the exception "errorClass" equals "RuntimeError"
-  And the "file" of stack frame 0 equals "/usr/src/app/configuration/send_unhandled.rb"
+  And the "file" of stack frame 0 equals "configuration/send_unhandled.rb"

@@ -1,5 +1,10 @@
 require "rubygems"
 require "thread"
+require "set"
+require "json"
+require "uri"
+require "socket"
+require "logger"
 
 require "bugsnag/version"
 require "bugsnag/utility/feature_data_store"
@@ -21,21 +26,9 @@ require "bugsnag/feature_flag"
 # as it doesn't auto-configure when loaded
 require "bugsnag/integrations/rack"
 
-require "bugsnag/middleware/rack_request"
-require "bugsnag/middleware/warden_user"
-require "bugsnag/middleware/clearance_user"
-require "bugsnag/middleware/callbacks"
-require "bugsnag/middleware/rails3_request"
-require "bugsnag/middleware/sidekiq"
-require "bugsnag/middleware/mailman"
-require "bugsnag/middleware/rake"
-require "bugsnag/middleware/classify_error"
-require "bugsnag/middleware/delayed_job"
-
 require "bugsnag/breadcrumb_type"
 require "bugsnag/breadcrumbs/validator"
 require "bugsnag/breadcrumbs/breadcrumb"
-require "bugsnag/breadcrumbs/breadcrumbs"
 
 require "bugsnag/utility/duplicator"
 require "bugsnag/utility/metadata_delegate"
@@ -307,6 +300,20 @@ module Bugsnag
 
       # Add to breadcrumbs buffer if still valid
       configuration.breadcrumbs << breadcrumb unless breadcrumb.ignore?
+    end
+
+    ##
+    # Add the given block to the list of on_error callbacks
+    #
+    # The on_error callbacks will be called when an error is captured or reported
+    # and are passed a {Bugsnag::Report} object
+    #
+    # Returning false from an on_error callback will cause the error to be ignored
+    # and will prevent any remaining callbacks from being called
+    #
+    # @return [void]
+    def on_error(&block)
+      configuration.on_error(&block)
     end
 
     ##

@@ -1,6 +1,62 @@
 Changelog
 =========
 
+## v6.27.1 (18 June 2024)
+
+### Fixes
+
+* Only read Rack request body if it's rewindable
+  | [#829](https://github.com/bugsnag/bugsnag-ruby/pull/829)
+* Fix circular require warning
+  | [#828](https://github.com/bugsnag/bugsnag-ruby/pull/828)
+
+## v6.27.0 (23 May 2024)
+
+### Enhancements
+
+* Include the Warden scope in user metadata
+  | [#821](https://github.com/bugsnag/bugsnag-ruby/pull/821)
+  | [javierjulio](https://github.com/javierjulio)
+* Add a block variant of `add_on_error`
+  | [#824](https://github.com/bugsnag/bugsnag-ruby/pull/824)
+
+## v6.26.4 (25 March 2024)
+
+### Fixes
+
+* Fix Unicode encoding issues when using `Exception#detailed_message` (Ruby 3.2+)
+  | [#817](https://github.com/bugsnag/bugsnag-ruby/pull/817)
+* Fix compatibility with Ruby 3.4-dev
+  | [#815](https://github.com/bugsnag/bugsnag-ruby/pull/815)
+  | [k0kubun](https://github.com/k0kubun)
+
+## v6.26.3 (24 January 2024)
+
+### Fixes
+
+* Handle mailto links in `Cleaner#clean_url`
+  | [#813](https://github.com/bugsnag/bugsnag-ruby/pull/813)
+
+## v6.26.2 (17 January 2024)
+
+### Fixes
+
+* Fix unhandled `URI::InvalidURIError` in `Cleaner#clean_url`
+  | [#811](https://github.com/bugsnag/bugsnag-ruby/pull/811)
+
+## v6.26.1 (9 January 2024)
+
+### Fixes
+
+* Fix deprecation warning from Sidekiq error handler
+  | [#796](https://github.com/bugsnag/bugsnag-ruby/pull/796)
+  | [fukayatsu](https://github.com/fukayatsu)
+* Fix Resque integration when failure backend is already `Resque::Failure::Multiple`
+  | [#803](https://github.com/bugsnag/bugsnag-ruby/pull/803)
+  | [sj26](https://github.com/sj26)
+* Redact URLs in automatic Rails breadcrumbs
+  | [#806](https://github.com/bugsnag/bugsnag-ruby/pull/806)
+
 ## v6.26.0 (19 July 2023)
 
 ### Enhancements

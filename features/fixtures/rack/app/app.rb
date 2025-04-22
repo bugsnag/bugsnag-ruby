@@ -71,4 +71,17 @@ class BugsnagTests
   end
 end
 
-Rack::Server.start(app: Bugsnag::Rack.new(BugsnagTests.new), Host: '0.0.0.0', Port: 3000)
+app = Bugsnag::Rack.new(BugsnagTests.new)
+
+Server =
+  if defined?(Rack::Server)
+    Rack::Server
+  else
+    require 'rackup'
+
+    app = Rack::RewindableInput::Middleware.new(app) unless ENV["BUGSNAG_RACK_NO_REWIND"] == "true"
+
+    Rackup::Server
+  end
+
+Server.start(app: app, Host: '0.0.0.0', Port: 3000)

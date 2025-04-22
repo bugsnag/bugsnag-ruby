@@ -1,5 +1,3 @@
-require "set"
-
 module Bugsnag::Breadcrumbs
   class OnBreadcrumbCallbackList
     def initialize(configuration)

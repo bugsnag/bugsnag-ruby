@@ -1,5 +1,3 @@
-require "bugsnag/breadcrumbs/breadcrumbs"
-
 module Bugsnag::Rails
   DEFAULT_RAILS_BREADCRUMBS = [
     {

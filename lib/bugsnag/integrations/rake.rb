@@ -1,4 +1,7 @@
-require 'bugsnag'
+# this file can either be required manually by a user, in which case 'bugsnag'
+# needs to be required, or it can be required automatically in the railtie,
+# in which case 'bugsnag' has already been required
+require 'bugsnag' unless defined?(Bugsnag)
 
 Rake::TaskManager.record_task_metadata = true
 

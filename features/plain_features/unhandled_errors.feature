@@ -9,8 +9,8 @@ Scenario Outline: An unhandled error sends a report
   And the event "severityReason.type" equals "unhandledException"
   And the event "device.time" is a timestamp
   And the exception "errorClass" equals "<error>"
-  And the "file" of stack frame 0 equals "/usr/src/app/unhandled/<file>.rb"
-  And the "lineNumber" of stack frame 0 equals <lineNumber>
+  And the "file" of the first in-project stack frame equals "unhandled/<file>.rb"
+  And the "lineNumber" of the first in-project stack frame equals <lineNumber>
 
   Examples:
   | file              | error          | lineNumber | command          |
