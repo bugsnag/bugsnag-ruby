@@ -166,6 +166,9 @@ jobs:
             rails-version: '8'
           - ruby-version: '3.4'
             rails-version: '_integrations'
+          # 2.7 integrations skipped pending PLAT-14389
+          - ruby-version: '2.7'
+            rails-version: '_integrations'
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
