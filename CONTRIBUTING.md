@@ -54,7 +54,7 @@ If you're a member of the core team, follow these instructions for releasing bug
 ### Every time
 
 * Create a new release branch named in the format `release/v1.x.x`
-* Update the version number in [`lib/bugsnag/version.rb`](./lib/bugsnag_performance/version.rb)
+* Update the version number in [`VERSION`](./VERSION)
 * Update [`CHANGELOG.md`](./CHANGELOG.md) with any changes
 * Open a pull request into `master` and get it approved
 * Merge the pull request using the message "Release v1.x.x"
