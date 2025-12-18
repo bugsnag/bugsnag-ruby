@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## v6.28.1 (19 December 2025)
+
+### Fixes
+
+* Amend secondary instance URL to bugsnag.smartbear.com
+  | [#836](https://github.com/bugsnag/bugsnag-ruby/pull/836)
+
 ## v6.28.0 (8 July 2025)
 
 ### Enhancements
