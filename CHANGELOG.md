@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## v6.28.1 (19 December 2025)
+## v6.28.1 (TBD)
 
 ### Fixes
 
