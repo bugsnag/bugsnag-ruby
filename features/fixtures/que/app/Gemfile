@@ -5,7 +5,18 @@ gem "bugsnag", path: "/bugsnag"
 que_version = ENV.fetch("QUE_VERSION")
 gem "que", "~> #{que_version}"
 
-gem "pg", RUBY_VERSION < "2.2.0" ? "0.21.0" : "> 0.21.0"
+pg_version = if RUBY_VERSION < "2.2.0"
+               "0.21.0"
+             elsif RUBY_VERSION < "2.7.0"
+               # pg 1.6.0 on Linux needs Ruby 2.7
+               "1.5.0"
+             elsif RUBY_VERSION < "3.0.0"
+               # pg 1.6.1 on Linux needs Ruby 3
+               "1.6.0"
+             else
+               "> 1.6.0"
+             end
+gem "pg", pg_version
 
 # Install a compatible Minitest version on Ruby <2.3
 gem 'minitest', '5.11.3' if RUBY_VERSION < '2.3.0'

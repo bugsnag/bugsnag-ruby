@@ -1,4 +1,3 @@
-version: '3.6'
 services:
   # dep for job systems
   redis:
