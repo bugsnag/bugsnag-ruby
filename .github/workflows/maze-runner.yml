@@ -142,9 +142,6 @@ jobs:
       matrix:
         ruby-version: ['2.7', '3.3']
         rails-version: ['6', '7']
-        include:
-          - ruby-version: '2.5'
-            rails-version: '6'
         exclude:
           - ruby-version: '2.7'
             rails-version: '6'
