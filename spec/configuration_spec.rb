@@ -445,8 +445,8 @@ describe Bugsnag::Configuration do
           Bugsnag.configure do |config|
             config.api_key = '00000472bd130ac0ab0f52715bbdc600'
           end
-          expect(Bugsnag.configuration.endpoints.notify).to eq(Bugsnag::Configuration::HUB_NOTIFY_ENDPOINT)
-          expect(Bugsnag.configuration.endpoints.sessions).to eq(Bugsnag::Configuration::HUB_SESSION_ENDPOINT)
+          expect(Bugsnag.configuration.endpoints.notify).to eq(Bugsnag::Configuration::SECONDARY_NOTIFY_ENDPOINT)
+          expect(Bugsnag.configuration.endpoints.sessions).to eq(Bugsnag::Configuration::SECONDARY_SESSION_ENDPOINT)
         end
       end
     end
