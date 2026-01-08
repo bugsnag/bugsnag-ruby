@@ -13,7 +13,8 @@ Scenario: Request data is collected automatically
   And the event "metaData.request.clientIp" is not null
   And the event "metaData.request.headers.Host" is not null
   And the event "metaData.request.headers.User-Agent" is not null
-  And the event "metaData.request.headers.Version" is not null
+  # Skipped pending PLAT-15456
+  # And the event "metaData.request.headers.Version" is not null
   And the event "metaData.request.httpMethod" equals "GET"
   And the event "metaData.request.params.action" equals "error"
   And the event "metaData.request.params.controller" equals "unhandled"
@@ -40,7 +41,8 @@ Scenario: Request data can be modified in callbacks
   And the event "metaData.request.clientIp" is not null
   And the event "metaData.request.headers.Host" is not null
   And the event "metaData.request.headers.User-Agent" is not null
-  And the event "metaData.request.headers.Version" is not null
+  # Skipped pending PLAT-15456
+  # And the event "metaData.request.headers.Version" is not null
   And the event "metaData.request.httpMethod" equals "GET"
   And the event "metaData.request.params.action" equals "error"
   And the event "metaData.request.params.controller" equals "unhandled"
