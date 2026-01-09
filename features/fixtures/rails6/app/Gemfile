@@ -58,3 +58,10 @@ gem 'bugsnag', path: '/bugsnag'
 gem "mongoid"
 
 gem "clearance", "~> 1.16"
+
+if RUBY_VERSION >= "3.4.0"
+  gem "bigdecimal"
+  gem "mutex_m"
+  gem "benchmark"
+  gem "ostruct"
+end
