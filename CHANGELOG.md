@@ -1,7 +1,12 @@
 Changelog
 =========
 
-## v6.28.1 (TBD)
+## v6.29.0 (TBD)
+
+### Enhancements
+
+* Support for Ruby 4
+  | [#849](https://github.com/bugsnag/bugsnag-ruby/pull/849)
 
 ### Fixes
 

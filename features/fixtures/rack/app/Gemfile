@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'bugsnag', path: '/bugsnag'
 gem 'rack', "~> #{ENV['RACK_VERSION']}"
 gem 'webrick' if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('3.0.0')
+gem 'ostruct' if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('4.0.0')
 
 # Some functionality provided by Rack was moved to the 'rackup' gem in Rack v3
 # Specifically the test app uses Rack::Server, which is now Rackup::Server

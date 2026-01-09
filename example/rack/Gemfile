@@ -1,10 +1,14 @@
 source 'https://rubygems.org'
 
-if ENV['INTEGRATION_LANGUAGE']
-  gem 'bugsnag', path: '../../'
-else
-  gem 'bugsnag'
+gem 'bugsnag', path: '../../'
+
+gem 'rack', '~> 2.2'
+gem 'redcarpet'
+
+if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('3.0.0')
+  gem 'webrick', '~> 1.9.0'
 end
 
-gem 'rack', '~> 2.0'
-gem 'redcarpet'
+if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('4.0.0')
+  gem 'ostruct', '~> 0.6.0'
+end

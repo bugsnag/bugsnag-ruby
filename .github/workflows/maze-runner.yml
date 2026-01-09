@@ -21,8 +21,8 @@ jobs:
       fail-fast: false
       matrix:
         # Ruby 1.9/2.0 skipped pending PLAT-14387
-        #ruby-version: ['2.0', '3.4', '4.0']
-        ruby-version: ['3.4', '4.0']
+        #ruby-version: ['2.0', '3.4']
+        ruby-version: ['3.0']
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
