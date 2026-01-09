@@ -93,21 +93,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.5', '2.7']
+        ruby-version: ['2.5', '2.7', '3.4', '4.0']
         sidekiq-version: ['2', '3', '4', '5', '6', '7', '8']
-        include:
-          - ruby-version: '3.4'
-            sidekiq-version: '7'
-          - ruby-version: '4.0'
-            sidekiq-version: '7'
-          - ruby-version: '3.4'
-            sidekiq-version: '8'
-          - ruby-version: '4.0'
-            sidekiq-version: '8'
         exclude:
           # 2.7 is the minimum ruby version that sidekiq 7 supports
           - ruby-version: '2.5'
             sidekiq-version: '7'
+          # 3.2 is the minimum ruby version that sidekiq 8 supports
+          - ruby-version: '2.5'
+            sidekiq-version: '8'
+          - ruby-version: '2.7'
+            sidekiq-version: '8'
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
