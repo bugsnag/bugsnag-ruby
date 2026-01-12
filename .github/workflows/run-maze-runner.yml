@@ -47,7 +47,6 @@ jobs:
 
       - run: bundle exec maze-runner ${{ inputs.features }} --no-source
         env:
-          DEBUG: 1
           NETWORK_NAME: notwerk
           RUBY_TEST_VERSION: ${{ inputs.ruby-version }}
           RACK_VERSION: ${{ inputs.rack-version }}
