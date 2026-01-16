@@ -155,6 +155,8 @@ jobs:
         exclude:
           - ruby-version: '2.7'
             rails-version: '6'
+          - ruby-version: '4.0'
+            rails-version: '6'
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
@@ -171,7 +173,11 @@ jobs:
         exclude:
           - ruby-version: '2.7'
             rails-version: '8'
-          # 2.7 integrations skipped pending PLAT-14389
+          - ruby-version: '3.4'
+            rails-version: '_integrations'
+          - ruby-version: '4.0'
+            rails-version: '_integrations'
+            # 2.7 integrations skipped pending PLAT-14389
           - ruby-version: '2.7'
             rails-version: '_integrations'
 
