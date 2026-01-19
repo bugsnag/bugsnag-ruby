@@ -6,6 +6,10 @@ gem 'bugsnag', path: '/bugsnag'
 gem 'rake', '~> 12.3.0'
 gem 'sidekiq', "~> #{sidekiq_version}"
 
+if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("4.0") # not shipped by default in Ruby 4+
+  gem 'ostruct' 
+end
+
 if sidekiq_version == '2'
   gem 'hitimes', '~> 1.2.6'
   gem 'redis', '~> 3.3.5'
