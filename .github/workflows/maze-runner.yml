@@ -8,8 +8,8 @@ jobs:
       fail-fast: false
       matrix:
         # Ruby 1.9/2.0 skipped pending PLAT-14387
-        #ruby-version: ['1.9', '3.4']
-        ruby-version: ['3.4']
+        #ruby-version: ['1.9', '3.4', '4.0']
+        ruby-version: ['3.4', '4.0']
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         # Ruby 1.9/2.0 skipped pending PLAT-14387
-        #ruby-version: ['2.0', '3.0']
+        #ruby-version: ['2.0', '3.4']
         ruby-version: ['3.0']
 
     uses: ./.github/workflows/run-maze-runner.yml
@@ -37,15 +37,21 @@ jobs:
           # Ruby 1.9/2.0 skipped pending PLAT-14387
           #- ruby-version: '1.9'
           #  rack-version: '1'
-          - ruby-version: '3.0'
+          - ruby-version: '3.4'
             rack-version: '1'
-          - ruby-version: '2.2'
+          - ruby-version: '4.0'
+            rack-version: '1'
+          - ruby-version: '2.7'
             rack-version: '2'
-          - ruby-version: '3.3'
+          - ruby-version: '3.4'
             rack-version: '2'
-          - ruby-version: '2.4'
+          - ruby-version: '4.0'
+            rack-version: '2'
+          - ruby-version: '2.7'
             rack-version: '3'
           - ruby-version: '3.4'
+            rack-version: '3'
+          - ruby-version: '4.0'
             rack-version: '3'
 
     uses: ./.github/workflows/run-maze-runner.yml
@@ -74,6 +80,8 @@ jobs:
             que-version: '2'
           - ruby-version: '3.4'
             que-version: '2'
+          - ruby-version: '4.0'
+            que-version: '2'
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
@@ -88,8 +96,16 @@ jobs:
         ruby-version: ['2.5', '2.7']
         sidekiq-version: ['2', '3', '4', '5', '6', '7']
         include:
+          - ruby-version: '3.2'
+            sidekiq-version: '8' # Sidekiq 8 requires Ruby 3.2+
           - ruby-version: '3.4'
             sidekiq-version: '7'
+          - ruby-version: '3.4'
+            sidekiq-version: '8'
+          - ruby-version: '4.0'
+            sidekiq-version: '7'
+          - ruby-version: '4.0'
+            sidekiq-version: '8'
         exclude:
           # 2.7 is the minimum ruby version that sidekiq 7 supports
           - ruby-version: '2.5'
@@ -105,7 +121,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.5', '3.4']
+        ruby-version: ['2.5', '3.4', '4.0']
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
@@ -140,10 +156,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.7', '3.4']
+        ruby-version: ['2.7', '3.4', '4.0']
         rails-version: ['6', '7']
         exclude:
           - ruby-version: '2.7'
+            rails-version: '6'
+          - ruby-version: '4.0'
             rails-version: '6'
 
     uses: ./.github/workflows/run-maze-runner.yml
@@ -156,14 +174,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.7', '3.4']
+        ruby-version: ['2.7', '3.4', '4.0']
         rails-version: ['8', '_integrations']
         exclude:
           - ruby-version: '2.7'
             rails-version: '8'
           - ruby-version: '3.4'
             rails-version: '_integrations'
-          # 2.7 integrations skipped pending PLAT-14389
+          - ruby-version: '4.0'
+            rails-version: '_integrations'
+            # 2.7 integrations skipped pending PLAT-14389
           - ruby-version: '2.7'
             rails-version: '_integrations'
 
@@ -178,8 +198,8 @@ jobs:
       fail-fast: false
       matrix:
         # Ruby 1.9/2.0 skipped pending PLAT-14387
-        #ruby-version: ['1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4']
-        ruby-version: ['2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4']
+        #ruby-version: ['1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', '4.0]
+        ruby-version: ['2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', '4.0']
 
     uses: ./.github/workflows/run-maze-runner.yml
     with:
