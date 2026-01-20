@@ -7,6 +7,11 @@ module Bugsnag
         ##
         # Attempts to deliver a payload to the given endpoint synchronously.
         def deliver(url, body, configuration, options={})
+          if url.nil?
+            configuration.warn("Request to deliver Bugsnag payload before configure was called. Unable to send information to Bugsnag.")
+            return
+          end
+
           begin
             response = request(url, body, configuration, options)
             configuration.debug("Request to #{url} completed, status: #{response.code}")
@@ -19,6 +24,8 @@ module Bugsnag
 
             configuration.error("Unable to send information to Bugsnag (#{url}), #{e.inspect}")
             configuration.error(e.backtrace)
+          rescue URI::InvalidURIError => e
+            configuration.error("The configured Bugsnag endpoint URL (#{url}) is invalid, #{e.inspect}")
           end
         end
 
