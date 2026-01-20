@@ -96,9 +96,15 @@ jobs:
         ruby-version: ['2.5', '2.7']
         sidekiq-version: ['2', '3', '4', '5', '6', '7']
         include:
+          - ruby-version: '3.2'
+            sidekiq-version: '8' # Sidekiq 8 requires Ruby 3.2+
           - ruby-version: '3.4'
             sidekiq-version: '7'
           - ruby-version: '3.4'
+            sidekiq-version: '8'
+          - ruby-version: '4.0'
+            sidekiq-version: '7'
+          - ruby-version: '4.0'
             sidekiq-version: '8'
         exclude:
           # 2.7 is the minimum ruby version that sidekiq 7 supports
