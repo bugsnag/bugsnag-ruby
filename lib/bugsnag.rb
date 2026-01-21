@@ -526,10 +526,10 @@ module Bugsnag
     def check_endpoint_setup
       notify_set = configuration.notify_endpoint &&
                    configuration.notify_endpoint != Bugsnag::Configuration::DEFAULT_NOTIFY_ENDPOINT &&
-                   configuration.notify_endpoint != Bugsnag::Configuration::HUB_NOTIFY_ENDPOINT
+                   configuration.notify_endpoint != Bugsnag::Configuration::SECONDARY_NOTIFY_ENDPOINT
       session_set = configuration.session_endpoint &&
                     configuration.session_endpoint != Bugsnag::Configuration::DEFAULT_SESSION_ENDPOINT &&
-                    configuration.session_endpoint != Bugsnag::Configuration::HUB_SESSION_ENDPOINT
+                    configuration.session_endpoint != Bugsnag::Configuration::SECONDARY_SESSION_ENDPOINT
       if notify_set && !session_set
         configuration.warn("The session endpoint has not been set, all further session capturing will be disabled")
         configuration.disable_sessions

@@ -28,6 +28,10 @@ Gem::Specification.new do |s|
     s.add_runtime_dependency 'concurrent-ruby', '~> 1.0'
   end
 
+  if ruby_version >= Gem::Version.new('4.0.0')
+    s.add_runtime_dependency 'logger', '~> 1.7'
+  end
+
   if s.respond_to?(:metadata=)
     s.metadata = {
       "changelog_uri" => "https://github.com/bugsnag/bugsnag-ruby/blob/v#{File.read("VERSION").strip}/CHANGELOG.md",

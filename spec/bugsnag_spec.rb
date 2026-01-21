@@ -209,6 +209,18 @@ describe Bugsnag do
 
       expect(Bugsnag).not_to have_sent_sessions
     end
+    it "does not send requests when the endpoints are nil" do
+      Bugsnag.configuration.endpoints = Bugsnag::EndpointConfiguration.new(nil, nil)
+
+      expect(Bugsnag.configuration).not_to receive(:debug)
+      expect(Bugsnag.configuration).not_to receive(:info)
+      expect(Bugsnag.configuration).not_to receive(:warn)
+      expect(Bugsnag.configuration).not_to receive(:error)
+
+      Bugsnag.notify(RuntimeError.new("abc"))
+
+      expect(Bugsnag).not_to have_sent_notification
+    end
   end
 
   describe "add_exit_handler" do

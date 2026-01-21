@@ -1,6 +1,21 @@
 Changelog
 =========
 
+## v6.29.0 (21 January 2026)
+
+### Enhancements
+
+* Support for Ruby 4
+  | [#849](https://github.com/bugsnag/bugsnag-ruby/pull/849)
+
+### Fixes
+
+* Amend secondary instance URL to bugsnag.smartbear.com
+  | [#845](https://github.com/bugsnag/bugsnag-ruby/pull/845)
+
+* Guard against nil URI errors in synchronous delivery
+  | [#851](https://github.com/bugsnag/bugsnag-ruby/pull/851)
+
 ## v6.28.0 (8 July 2025)
 
 ### Enhancements

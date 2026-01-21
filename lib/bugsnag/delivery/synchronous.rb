@@ -7,12 +7,19 @@ module Bugsnag
         ##
         # Attempts to deliver a payload to the given endpoint synchronously.
         def deliver(url, body, configuration, options={})
+          if url.nil?
+            configuration.warn("Request to deliver Bugsnag payload before configure was called. Unable to send information to Bugsnag.")
+            return
+          end
+
           begin
             response = request(url, body, configuration, options)
             configuration.debug("Request to #{url} completed, status: #{response.code}")
             if response.code[0] != "2"
               configuration.warn("Notifications to #{url} was reported unsuccessful with code #{response.code}")
             end
+          rescue URI::InvalidURIError => e
+            configuration.error("The configured Bugsnag endpoint URL (#{url}) is invalid, #{e.inspect}")
           rescue StandardError => e
             # KLUDGE: Since we don't re-raise http exceptions, this breaks rspec
             raise if e.class.to_s == "RSpec::Expectations::ExpectationNotMetError"
