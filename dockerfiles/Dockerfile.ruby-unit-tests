@@ -7,6 +7,7 @@ COPY . .
 ARG BUNDLE_VERSION
 ARG GEMSETS
 RUN gem install bundler -v ${BUNDLE_VERSION}
-RUN bundle _${BUNDLE_VERSION}_ install --with "$GEMSETS" --binstubs
+RUN bundle _${BUNDLE_VERSION}_ config set with "$GEMSETS"
+RUN bundle _${BUNDLE_VERSION}_ install
 
 CMD ["bundle", "exec", "./bin/rake", "spec"]
