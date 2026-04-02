@@ -12,7 +12,7 @@ if ruby_version >= Gem::Version.new('3.4')
     else
       gem 'logger', '>= 1.7', '< 2.0'
       gem 'bigdecimal', '>= 4.0.0', '< 5.0.0'
-      gem 'ostruct' 
+      gem 'ostruct'
       gem 'benchmark'
     end
 end

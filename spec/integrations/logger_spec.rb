@@ -74,6 +74,16 @@ describe 'Configuration.logger' do
                           err: out_writer.fileno)
       sleep(2)
       Process.kill('TERM', pid)
+      begin
+        # Wait up to 5 seconds for the process to exit
+        Timeout.timeout(5) { Process.waitpid(pid) }
+      rescue Timeout::Error
+        # If still running, force kill
+        Process.kill('KILL', pid) rescue nil
+        Process.waitpid(pid) rescue nil
+      rescue Errno::ECHILD
+        # Already exited
+      end
     end
     context 'sets an API key using the BUGSNAG_API_KEY env var' do
       it 'does not log a warning' do
@@ -145,10 +155,9 @@ describe 'Configuration.logger' do
     private
 
     def execute_script(name, output)
-      # Run Ruby script with environment variables
-      # Quote environment variable values to handle spaces and special characters
-      env_str = @env.map { |k, v| "#{k}='#{v}'" }.join(' ')
-      IO.popen("#{env_str} bundle exec ruby #{name}.rb 2>&1") do |io|
+      # Run Ruby script with environment variables, avoiding shell interpolation
+      # Use the env-hash + array form so Ruby bypasses the shell and handles escaping
+      IO.popen(@env, ['bundle', 'exec', 'ruby', "#{name}.rb"], err: [:child, :out]) do |io|
         output << io.read
       end
     end
