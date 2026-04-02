@@ -75,7 +75,7 @@ if ruby_version >= Gem::Version.new('2.2.0')
   end
 end
 
-if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("4.0") # not shipped by default in Ruby 4+
+if ruby_version >= Gem::Version.new("4.0") # not shipped by default in Ruby 4+
   gem 'ostruct' 
 end
 gemspec

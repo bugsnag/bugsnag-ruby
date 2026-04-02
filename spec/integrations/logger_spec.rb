@@ -19,22 +19,61 @@ describe 'Configuration.logger' do
     def run_app(name)
       out_reader, out_writer = IO.pipe
       Dir.chdir(File.join(File.dirname(__FILE__), "../fixtures/apps/#{name}")) do
-        Bundler.with_clean_env do
-          pid = Process.spawn('bundle install',
-                              out: out_writer.fileno,
-                              err: out_writer.fileno)
-          Process.waitpid(pid, 0)
-          pid = Process.spawn(@env, 'bundle exec rackup config.ru',
-                              out: out_writer.fileno,
-                              err: out_writer.fileno)
-          sleep(2)
-          Process.kill(1, pid)
+        # Determine which Bundler env method to use based on availability
+        # Ruby 4.0+ uses with_unbundled_env, Ruby 2-3.x uses with_clean_env, Ruby 1.9.2 has no env isolation
+        if Bundler.respond_to?(:with_unbundled_env)
+          Bundler.with_unbundled_env do
+            execute_bundle_and_app(name, out_writer)
+          end
+        elsif Bundler.respond_to?(:with_clean_env)
+          Bundler.with_clean_env do
+            execute_bundle_and_app(name, out_writer)
+          end
+        else
+          # Ruby 1.9.2: No env isolation available
+          execute_bundle_and_app(name, out_writer)
         end
       end
       out_writer.close
       output = ""
       output << out_reader.gets until out_reader.eof?
       output
+    end
+
+    private
+
+    def execute_bundle_and_app(name, out_writer)
+      # Handle Bundler install for different Ruby versions
+      ruby_version = Gem::Version.new(RUBY_VERSION.dup)
+      
+      if ruby_version >= Gem::Version.new('3.4')
+        # Ruby 3.4+: New Bundler syntax with separate steps
+        pid = Process.spawn('bundle config set with "test"',
+                            out: out_writer.fileno,
+                            err: out_writer.fileno)
+        Process.waitpid(pid, 0)
+        pid = Process.spawn('bundle install',
+                            out: out_writer.fileno,
+                            err: out_writer.fileno)
+        Process.waitpid(pid, 0)
+        pid = Process.spawn('bundle binstubs --all',
+                            out: out_writer.fileno,
+                            err: out_writer.fileno)
+        Process.waitpid(pid, 0)
+      else
+        # Ruby < 3.4: Legacy Bundler syntax (works for 1.9.2+)
+        pid = Process.spawn('bundle install --with test --binstubs',
+                            out: out_writer.fileno,
+                            err: out_writer.fileno)
+        Process.waitpid(pid, 0)
+      end
+
+      # Run the Rails app
+      pid = Process.spawn(@env, 'bundle exec rackup config.ru',
+                          out: out_writer.fileno,
+                          err: out_writer.fileno)
+      sleep(2)
+      Process.kill('TERM', pid)
     end
     context 'sets an API key using the BUGSNAG_API_KEY env var' do
       it 'does not log a warning' do
@@ -81,17 +120,37 @@ describe 'Configuration.logger' do
 
   context 'in a script' do
     key_warning = /\[Bugsnag\] .* No valid API key has been set, notifications will not be sent/
-
+    
     def run_app(name)
       output = ''
       Dir.chdir(File.join(File.dirname(__FILE__), "../fixtures/apps/scripts")) do
-        Bundler.with_clean_env do
-          IO.popen([@env, 'bundle', 'exec', 'ruby', "#{name}.rb", err: [:child, :out]]) do |io|
-            output << io.read
+        # Determine which Bundler env method to use based on availability
+        # Ruby 4.0+ uses with_unbundled_env, Ruby 2-3.x uses with_clean_env, Ruby 1.9.2 has no env isolation
+        if Bundler.respond_to?(:with_unbundled_env)
+          Bundler.with_unbundled_env do
+            execute_script(name, output)
           end
+        elsif Bundler.respond_to?(:with_clean_env)
+          Bundler.with_clean_env do
+            execute_script(name, output)
+          end
+        else
+          # Ruby 1.9.2: No env isolation available
+          execute_script(name, output)
         end
       end
       output
+    end
+
+    private
+
+    def execute_script(name, output)
+      # Run Ruby script with environment variables
+      # Quote environment variable values to handle spaces and special characters
+      env_str = @env.map { |k, v| "#{k}='#{v}'" }.join(' ')
+      IO.popen("#{env_str} bundle exec ruby #{name}.rb 2>&1") do |io|
+        output << io.read
+      end
     end
 
     context 'sets an API key using the BUGSNAG_API_KEY env var' do

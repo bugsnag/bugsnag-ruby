@@ -30,7 +30,19 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
 
-      - run: bundle install --with "${{ matrix.optional-groups }}" --binstubs
+      # For Ruby 3.4+ (Bundler ≥ 2.4.0), use bundle config set with and bundle binstubs --all,
+      # since the --with and --binstubs flags have been removed from modern Bundler versions
+      - name: Install dependencies (Ruby >= 3.4)
+        if: ${{ startsWith(matrix.ruby-version, '3.4') || startsWith(matrix.ruby-version, '4.') }}
+        run: |
+          bundle config set with "${{ matrix.optional-groups }}"
+          bundle install
+          bundle binstubs --all
+
+      # For Ruby < 3.4, use the legacy flags which are still supported
+      - name: Install dependencies (Ruby < 3.4)
+        if: ${{ !startsWith(matrix.ruby-version, '3.4') && !startsWith(matrix.ruby-version, '4.') }}
+        run: bundle install --with "${{ matrix.optional-groups }}" --binstubs      
 
       - run: ./bin/rake spec
 
