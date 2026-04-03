@@ -155,10 +155,17 @@ describe 'Configuration.logger' do
     private
 
     def execute_script(name, output)
-      # Run Ruby script with environment variables, avoiding shell interpolation
-      # Use the env-hash + array form so Ruby bypasses the shell and handles escaping
-      IO.popen(@env, ['bundle', 'exec', 'ruby', "#{name}.rb"], err: [:child, :out]) do |io|
-        output << io.read
+      if RUBY_VERSION < '2.0.0'
+        # Ruby 1.9.x: Use shell string with environment variables
+        env_str = @env.map { |k, v| "#{k}='#{v}'" }.join(' ')
+        IO.popen("#{env_str} bundle exec ruby #{name}.rb 2>&1") do |io|
+          output << io.read
+        end
+      else
+        # Ruby 2.0+: Use array form with env hash and stderr redirection
+        IO.popen([@env, 'bundle', 'exec', 'ruby', "#{name}.rb", err: [:child, :out]]) do |io|
+          output << io.read
+        end
       end
     end
 
