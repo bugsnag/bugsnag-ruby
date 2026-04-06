@@ -1,9 +1,11 @@
 Changelog
 =========
+## TBD
+
 ### Enhancements
 
-* Add Ruby 4.0 to the unit test matrix for CI
-  | [PLAT-15923](https://smartbear.atlassian.net/browse/PLAT-15923)
+* Add Ruby 4 to the unit test matrix
+  | [#855](https://github.com/bugsnag/bugsnag-ruby/pull/855)
 
 ## v6.29.0 (21 January 2026)
 

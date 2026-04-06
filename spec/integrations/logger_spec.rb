@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'timeout'
 
 describe 'Configuration.logger' do
 
@@ -23,15 +24,15 @@ describe 'Configuration.logger' do
         # Ruby 4.0+ uses with_unbundled_env, Ruby 2-3.x uses with_clean_env, Ruby 1.9.2 has no env isolation
         if Bundler.respond_to?(:with_unbundled_env)
           Bundler.with_unbundled_env do
-            execute_bundle_and_app(name, out_writer)
+            execute_bundle_and_app(out_writer)
           end
         elsif Bundler.respond_to?(:with_clean_env)
           Bundler.with_clean_env do
-            execute_bundle_and_app(name, out_writer)
+            execute_bundle_and_app(out_writer)
           end
         else
           # Ruby 1.9.2: No env isolation available
-          execute_bundle_and_app(name, out_writer)
+          execute_bundle_and_app(out_writer)
         end
       end
       out_writer.close
@@ -42,7 +43,7 @@ describe 'Configuration.logger' do
 
     private
 
-    def execute_bundle_and_app(name, out_writer)
+    def execute_bundle_and_app(out_writer)
       # Handle Bundler install for different Ruby versions
       ruby_version = Gem::Version.new(RUBY_VERSION.dup)
       
