@@ -27,6 +27,9 @@ group :test, optional: true do
   # WEBrick is no longer in the stdlib in Ruby 3.0
   gem 'webrick' if ruby_version >= Gem::Version.new('3.0.0')
 
+  # OpenStruct removed from default gems in Ruby 4.0+
+  gem 'ostruct' if ruby_version >= Gem::Version.new('4.0')
+
   gem 'rexml', '< 3.2.5' if ruby_version == Gem::Version.new('2.0.0')
 
   if ruby_version >= Gem::Version.new('2.2.0') && ruby_version < Gem::Version.new('2.4.0')
@@ -75,7 +78,4 @@ if ruby_version >= Gem::Version.new('2.2.0')
   end
 end
 
-if ruby_version >= Gem::Version.new('4.0') # not shipped by default in Ruby 4+
-  gem 'ostruct'
-end
 gemspec
