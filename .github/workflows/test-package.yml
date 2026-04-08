@@ -21,7 +21,12 @@ jobs:
             optional-groups: 'test'
           - ruby-version: 'jruby'
             optional-groups: 'test'
-
+          # Mark Ruby versions >= 3.4 as using modern bundler
+          - ruby-version: '3.4'
+            modern-bundler: true
+          - ruby-version: '4.0'
+            modern-bundler: true 
+    
     steps:
       - uses: actions/checkout@v3
 
@@ -33,7 +38,7 @@ jobs:
       # For Ruby 3.4+ (Bundler ≥ 2.4.0), use bundle config set with and bundle binstubs --all,
       # since the --with and --binstubs flags have been removed from modern Bundler versions
       - name: Install dependencies (Ruby >= 3.4)
-        if: ${{ startsWith(matrix.ruby-version, '3.4') || startsWith(matrix.ruby-version, '4.') }}
+        if: ${{ matrix.modern-bundler == true }}
         run: |
           bundle config set with "${{ matrix.optional-groups }}"
           bundle install
@@ -41,7 +46,7 @@ jobs:
 
       # For Ruby < 3.4, use the legacy flags which are still supported
       - name: Install dependencies (Ruby < 3.4)
-        if: ${{ !startsWith(matrix.ruby-version, '3.4') && !startsWith(matrix.ruby-version, '4.') }}
+        if: ${{ matrix.modern-bundler != true }}
         run: bundle install --with "${{ matrix.optional-groups }}" --binstubs
       
       - run: ./bin/rake spec
