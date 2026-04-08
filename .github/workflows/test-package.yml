@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby-version: ['2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4']
+        ruby-version: ['2.3', '2.4', '2.5', '2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', '4.0']
         optional-groups: ['test sidekiq']
         include:
           - ruby-version: '1.9'
@@ -21,7 +21,12 @@ jobs:
             optional-groups: 'test'
           - ruby-version: 'jruby'
             optional-groups: 'test'
-
+          # Mark Ruby versions >= 3.4 as using modern bundler
+          - ruby-version: '3.4'
+            modern-bundler: true
+          - ruby-version: '4.0'
+            modern-bundler: true 
+    
     steps:
       - uses: actions/checkout@v3
 
@@ -30,8 +35,20 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
 
-      - run: bundle install --with "${{ matrix.optional-groups }}" --binstubs
+      # For Ruby 3.4+ (Bundler ≥ 2.4.0), use bundle config set with and bundle binstubs --all,
+      # since the --with and --binstubs flags have been removed from modern Bundler versions
+      - name: Install dependencies (Ruby >= 3.4)
+        if: ${{ matrix.modern-bundler == true }}
+        run: |
+          bundle config set with "${{ matrix.optional-groups }}"
+          bundle install
+          bundle binstubs --all
 
+      # For Ruby < 3.4, use the legacy flags which are still supported
+      - name: Install dependencies (Ruby < 3.4)
+        if: ${{ matrix.modern-bundler != true }}
+        run: bundle install --with "${{ matrix.optional-groups }}" --binstubs
+      
       - run: ./bin/rake spec
 
   linting:
