@@ -15,7 +15,9 @@ module Bugsnag
     # @api private
     # @param event [Hash] details of the event to subscribe to
     def event_subscription(event)
-      ActiveSupport::Notifications.monotonic_subscribe(event[:id]) do |*, event_id, data|
+      # monotonic_subscribe was introduced in Rails 6.1+, check if it exists
+      subscription_method = ActiveSupport::Notifications.respond_to?(:monotonic_subscribe) ? :monotonic_subscribe : :subscribe
+      ActiveSupport::Notifications.send(subscription_method, event[:id]) do |*, event_id, data|
         filtered_data = data.slice(*event[:allowed_data])
         filtered_data[:event_name] = event[:id]
         filtered_data[:event_id] = event_id
