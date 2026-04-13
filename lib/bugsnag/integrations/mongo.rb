@@ -59,6 +59,7 @@ module Bugsnag
           filter = sanitize_filter_hash(command["filter"])
           meta_data[:filter] = JSON.dump(filter)
         end
+        meta_data[:sort] = JSON.dump(command["sort"]) unless command["sort"].nil?
       end
       meta_data[:message] = event.message if defined?(event.message)
 
