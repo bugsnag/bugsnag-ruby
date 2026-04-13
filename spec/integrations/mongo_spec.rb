@@ -155,7 +155,7 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
         end
 
         it "adds a JSON string of filter data" do
-          command["filter"] = {"a" => 1, "b" => 2, "$or" => [{"c" => 3}, {"d" => 4}]}
+          command["filter"] = {"a" => 1, "b" => 2, "$or" => [{"c" => 3}, {"d" => nil}]}
           expect(subscriber).to receive(:pop_command).with("123456").and_return(command)
           expect(Bugsnag).to receive(:leave_breadcrumb).with(
             "Mongo query #{event_name}",
@@ -167,7 +167,28 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
               :request_id => "123456",
               :duration => "123.456",
               :collection => "collection_name_command",
-              :filter => '{"a":"?","b":"?","$or":[{"c":"?"},{"d":"?"}]}'
+              :filter => '{"a":"?","b":"?","$or":[{"c":"?"},{"d":null}]}'
+            },
+            "process",
+            :auto
+          )
+          subscriber.send(:leave_mongo_breadcrumb, event_name, event)
+        end
+
+        it "adds a JSON string of sort data" do
+          command["sort"] = {"a" => 1, "b" => -1}
+          expect(subscriber).to receive(:pop_command).with("123456").and_return(command)
+          expect(Bugsnag).to receive(:leave_breadcrumb).with(
+            "Mongo query #{event_name}",
+            {
+              :event_name => "mongo.#{event_name}",
+              :command_name => "command",
+              :database_name => "database",
+              :operation_id => "1234567890",
+              :request_id => "123456",
+              :duration => "123.456",
+              :collection => "collection_name_command",
+              :sort => '{"a":1,"b":-1}'
             },
             "process",
             :auto
@@ -188,11 +209,17 @@ describe 'Bugsnag::MongoBreadcrumbSubscriber', :order => :defined do
         expect(subscriber.send(:sanitize_filter_value, 523, 0)).to eq('?')
         expect(subscriber.send(:sanitize_filter_value, "string", 0)).to eq('?')
         expect(subscriber.send(:sanitize_filter_value, true, 0)).to eq('?')
-        expect(subscriber.send(:sanitize_filter_value, nil, 0)).to eq('?')
+        expect(subscriber.send(:sanitize_filter_value, nil, 0)).to eq(nil)
       end
 
       it "is recursive and iterative for array values" do
-        expect(subscriber.send(:sanitize_filter_value, [1, [2, [3]]], 0)).to eq(['?', ['?', ['?']]])
+        expect(subscriber.send(:sanitize_filter_value, [1, [2, [3], nil]], 0)).to eq(['?', ['?', ['?'], nil]])
+      end
+
+      it "returns LENGTH= for long arrays" do
+        actual = subscriber.send(:sanitize_filter_value, [1, [2, 2, 2], 3, 4, [5, 5, 5, 5], 6], 0)
+        expected = ['?', %w[? ? ?], '?', '?', ['LENGTH=4'], '?']
+        expect(actual).to eq(expected)
       end
 
       it "calls #sanitize_filter_hash for hash values" do

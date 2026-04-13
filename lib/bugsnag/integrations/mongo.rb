@@ -10,6 +10,7 @@ module Bugsnag
     MONGO_EVENT_PREFIX = "mongo."
     MONGO_COMMAND_KEY = :bugsnag_mongo_commands
     MAX_FILTER_DEPTH = 5
+    MAX_ARRAY_LENGTH = 3
 
     ##
     # Listens to the 'started' event, storing the command for later usage
@@ -59,6 +60,7 @@ module Bugsnag
           filter = sanitize_filter_hash(command["filter"])
           meta_data[:filter] = JSON.dump(filter)
         end
+        meta_data[:sort] = JSON.dump(command["sort"]) unless command["sort"].nil?
       end
       meta_data[:message] = event.message if defined?(event.message)
 
@@ -84,15 +86,21 @@ module Bugsnag
     # @param value [Object] the filter value
     # @param depth [Integer] the current filter depth
     #
-    # @return [Array, Hash, String] the sanitized value
+    # @return [Array, Hash, String, nil] the sanitized value
     def sanitize_filter_value(value, depth)
       depth += 1
       if depth >= MAX_FILTER_DEPTH
         '[MAX_FILTER_DEPTH_REACHED]'
       elsif value.is_a?(Array)
-        value.map { |array_value| sanitize_filter_value(array_value, depth) }
+        if value.size > MAX_ARRAY_LENGTH && value.none? { |v| v.is_a?(Hash) || v.is_a?(Array) }
+          ["LENGTH=#{value.size}"]
+        else
+          value.map { |array_value| sanitize_filter_value(array_value, depth) }
+        end
       elsif value.is_a?(Hash)
         sanitize_filter_hash(value, depth)
+      elsif value.nil?
+        nil
       else
         '?'
       end
