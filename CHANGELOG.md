@@ -5,7 +5,7 @@ Changelog
 
 ### Enhancements
 
-* Use `ActiveSupport::Notifications.monotonic_subscribe` on compatible Rails versions
+* Use `ActiveSupport::Notifications.monotonic_subscribe` for performance improvement on compatible Rails versions
   | [#856](https://github.com/bugsnag/bugsnag-ruby/pull/856)
 
 ## v6.29.0 (21 January 2026)
