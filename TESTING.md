@@ -5,7 +5,8 @@
 To run locally:
 
 ```
-bundle install --with test sidekiq --binstubs
+bundle config set with "test sidekiq"
+bundle install
 bundle exec rake
 ```
 
