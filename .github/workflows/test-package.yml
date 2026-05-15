@@ -21,6 +21,7 @@ jobs:
             optional-groups: 'test'
           - ruby-version: 'jruby'
             optional-groups: 'test'
+            modern-bundler: true
           # Mark Ruby versions >= 3.4 as using modern bundler
           - ruby-version: '3.4'
             modern-bundler: true
