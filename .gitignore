@@ -47,4 +47,7 @@ bin
 
 # For Bugsnag-Maze-Runner:
 maze_output
-maze-runner.log
+*.log
+.gitleaks.toml
+.pre-commit-config.yaml
+.gitleaks-baseline.json
