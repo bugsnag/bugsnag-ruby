@@ -47,4 +47,18 @@ bin
 
 # For Bugsnag-Maze-Runner:
 maze_output
-maze-runner.log
+
+#logs
+*.log
+
+# VS Code workspace settings
+.vscode/
+
+# Environment & secrets
+.env
+.env.*
+
+# Gitleaks
+.gitleaks.toml
+.pre-commit-config.yaml
+.gitleaks-baseline.json
