@@ -22,6 +22,9 @@ on:
         required: false
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   maze-runner:
     runs-on: ubuntu-latest

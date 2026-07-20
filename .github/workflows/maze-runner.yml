@@ -2,6 +2,9 @@ name: maze-runner
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   rake-maze-runner:
     strategy:
