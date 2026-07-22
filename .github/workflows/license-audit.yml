@@ -2,6 +2,9 @@ name: license audit
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   license-audit:
     runs-on: ubuntu-latest
