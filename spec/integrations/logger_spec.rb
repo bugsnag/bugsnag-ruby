@@ -8,7 +8,7 @@ describe 'Configuration.logger' do
   end
 
   context 'in a Rails app' do
-    key_warning = '[Bugsnag]: No valid API key has been set, notifications will not be sent'
+    key_warning = '[Bugsnag] No valid API key has been set, notifications will not be sent'
     is_jruby = defined?(RUBY_ENGINE) && RUBY_ENGINE == 'jruby'
     incompatible = (RUBY_VERSION < '2.0.0') || is_jruby
 

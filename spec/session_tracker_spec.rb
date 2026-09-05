@@ -117,6 +117,21 @@ describe Bugsnag::SessionTracker do
     expect(payload["sessionCounts"].size).to eq(1)
   end
 
+  it 'attributes invalid API key delivery failures to Bugsnag' do
+    output = StringIO.new
+    logger = Logger.new(output)
+    logger.formatter = proc do |_severity, _datetime, _progname, message|
+      message
+    end
+    Bugsnag.configuration.logger = logger
+    allow(Bugsnag.configuration).to receive(:valid_api_key?).and_return(false)
+
+    Bugsnag.start_session
+    Bugsnag.session_tracker.send_sessions
+
+    expect(output.string).to eq('[Bugsnag] Not delivering sessions due to an invalid api_key')
+  end
+
   it 'sets details from config' do
     Bugsnag.configure do |conf|
       conf.auto_capture_sessions = true

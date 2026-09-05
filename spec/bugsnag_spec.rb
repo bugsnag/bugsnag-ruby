@@ -64,11 +64,11 @@ describe Bugsnag do
       end
 
       expected_messages = [
-        /^Error in notify block: This is the error message$/,
-        /^Error in notify block stacktrace: \[/
+        /^\[Bugsnag\] Error in notify block: This is the error message$/,
+        /^\[Bugsnag\] Error in notify block stacktrace: \[/
       ].each
 
-      expect(Bugsnag.configuration.logger).to have_received(:warn).with('[Bugsnag]').twice do |&block|
+      expect(Bugsnag.configuration.logger).to have_received(:warn).with(nil).twice do |&block|
         expect(block.call).to match(expected_messages.next)
       end
 
@@ -84,11 +84,11 @@ describe Bugsnag do
       end
 
       expected_messages = [
-        /^Error in internal notify block: This is an auto_notify error$/,
-        /^Error in internal notify block stacktrace: \[/
+        /^\[Bugsnag\] Error in internal notify block: This is an auto_notify error$/,
+        /^\[Bugsnag\] Error in internal notify block stacktrace: \[/
       ].each
 
-      expect(Bugsnag.configuration.logger).to have_received(:warn).with('[Bugsnag]').twice do |&block|
+      expect(Bugsnag.configuration.logger).to have_received(:warn).with(nil).twice do |&block|
         expect(block.call).to match(expected_messages.next)
       end
 
