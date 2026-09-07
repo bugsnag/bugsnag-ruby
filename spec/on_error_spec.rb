@@ -199,7 +199,7 @@ describe "on_error callbacks" do
     expect(called_count).to be(2)
 
     expect(logger).to have_received(:debug).with("[Bugsnag]") do |&block|
-      expect(block.call).to eq("Not notifying RuntimeError due to ignore being signified in user provided middleware")
+      expect(block.call).to eq("[Bugsnag] Not notifying RuntimeError due to ignore being signified in user provided middleware")
     end
   end
 
@@ -257,8 +257,8 @@ describe "on_error callbacks" do
 
     message_index = 0
     expected_messages = [
-      /^Error occurred in on_error callback: 'bad things'$/,
-      /^on_error callback stacktrace:/
+      /^\[Bugsnag\] Error occurred in on_error callback: 'bad things'$/,
+      /^\[Bugsnag\] on_error callback stacktrace:/
     ]
 
     expect(logger).to have_received(:warn).with("[Bugsnag]").twice do |&block|

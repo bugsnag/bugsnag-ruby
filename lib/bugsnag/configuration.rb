@@ -283,8 +283,10 @@ module Bugsnag
       # Set up logging
       self.logger = Logger.new(STDOUT)
       self.logger.level = Logger::INFO
-      self.logger.formatter = proc do |severity, datetime, progname, msg|
-        "** #{progname} #{datetime}: #{msg}\n"
+      self.logger.formatter = proc do |_severity, datetime, _progname, msg|
+        message = msg.to_s
+        message = message[PROG_NAME.length..-1].sub(/\A:?\s*/, "") if message.start_with?(PROG_NAME)
+        "** #{PROG_NAME} #{datetime}: #{message}\n"
       end
 
       # Configure the bugsnag middleware stack
@@ -440,7 +442,7 @@ module Bugsnag
     #
     # @param message [String, #to_s] The message to log
     def info(message)
-      logger.info(PROG_NAME) { message }
+      logger.info(PROG_NAME) { format_log_message(message) }
     end
 
     ##
@@ -448,7 +450,7 @@ module Bugsnag
     #
     # @param message [String, #to_s] The message to log
     def warn(message)
-      logger.warn(PROG_NAME) { message }
+      logger.warn(PROG_NAME) { format_log_message(message) }
     end
 
     ##
@@ -456,7 +458,7 @@ module Bugsnag
     #
     # @param message [String, #to_s] The message to log
     def error(message)
-      logger.error(PROG_NAME) { message }
+      logger.error(PROG_NAME) { format_log_message(message) }
     end
 
     ##
@@ -464,7 +466,7 @@ module Bugsnag
     #
     # @param message [String, #to_s] The message to log
     def debug(message)
-      logger.debug(PROG_NAME) { message }
+      logger.debug(PROG_NAME) { format_log_message(message) }
     end
 
     ##
@@ -763,6 +765,14 @@ module Bugsnag
     attr_writer :scopes_to_filter
 
     PROG_NAME = "[Bugsnag]"
+
+    def format_log_message(message)
+      message = message.to_s
+      return message if message.start_with?(PROG_NAME)
+      return PROG_NAME if message.empty?
+
+      "#{PROG_NAME} #{message}"
+    end
 
     def default_hostname
       # Send the heroku dyno name instead of hostname if available

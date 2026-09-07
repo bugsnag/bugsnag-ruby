@@ -246,8 +246,8 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
 
     message_index = 0
     expected_messages = [
-      /^Error occurred in on_breadcrumb callback: 'Oh no!'$/,
-      /^on_breadcrumb callback stacktrace:/
+      /^\[Bugsnag\] Error occurred in on_breadcrumb callback: 'Oh no!'$/,
+      /^\[Bugsnag\] on_breadcrumb callback stacktrace:/
     ]
 
     expect(logger).to have_received(:warn).with("[Bugsnag]").twice do |&block|

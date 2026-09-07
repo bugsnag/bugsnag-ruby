@@ -364,8 +364,8 @@ describe Bugsnag::Configuration do
   describe "logger" do
     before do
       @output = StringIO.new
-      @formatter = proc do |severity, _datetime, progname, message|
-        "#{progname} #{severity}: #{message}"
+      @formatter = proc do |severity, _datetime, _progname, message|
+        "#{severity}: #{message}"
       end
 
       logger = Logger.new(@output)
@@ -377,6 +377,47 @@ describe Bugsnag::Configuration do
     def output_lines
       @output.rewind # always read from the start of output
       @output.readlines.map(&:chomp) # old rubies don't support `readlines(chomp: true)`
+    end
+
+    it "preserves the default log format" do
+      datetime = Time.utc(2026, 9, 6)
+      output = subject.logger.formatter.call(
+        "INFO", datetime, nil, "[Bugsnag] Info message"
+      )
+
+      expect(output).to eq("** [Bugsnag] #{datetime}: Info message\n")
+      expect(subject.logger.formatter.call("INFO", datetime, nil, "[Bugsnag]: Info message")).to eq(
+        "** [Bugsnag] #{datetime}: Info message\n"
+      )
+      expect(subject.logger.formatter.call("INFO", datetime, nil, "[Bugsnag]")).to eq(
+        "** [Bugsnag] #{datetime}: \n"
+      )
+    end
+
+    it "sets the Bugsnag progname on the logger as well as the message" do
+      logger = double("logger")
+      subject.logger = logger
+
+      %i[info warn error debug].each do |level|
+        expect(logger).to receive(level).with("[Bugsnag]") do |_progname, &block|
+          expect(block.call).to eq("[Bugsnag] #{level} message")
+        end
+
+        subject.public_send(level, "#{level} message")
+      end
+    end
+
+    it "does not leave a trailing space when the message is empty" do
+      logger = double("logger")
+      subject.logger = logger
+
+      [nil, ""].each do |message|
+        expect(logger).to receive(:info).with("[Bugsnag]") do |_progname, &block|
+          expect(block.call).to eq("[Bugsnag]")
+        end
+
+        subject.info(message)
+      end
     end
 
     context "using configure" do
@@ -398,7 +439,7 @@ describe Bugsnag::Configuration do
 
           expect(output_lines.length).to be(1)
           expect(output_lines.first).to eq(
-            '[Bugsnag] WARN: No valid API key has been set, notifications will not be sent'
+            'WARN: [Bugsnag] No valid API key has been set, notifications will not be sent'
           )
         end
 
@@ -407,7 +448,7 @@ describe Bugsnag::Configuration do
 
           expect(output_lines.length).to be(1)
           expect(output_lines.first).to eq(
-            '[Bugsnag] WARN: No valid API key has been set, notifications will not be sent'
+            'WARN: [Bugsnag] No valid API key has been set, notifications will not be sent'
           )
         end
       end
@@ -428,7 +469,7 @@ describe Bugsnag::Configuration do
 
           expect(output_lines.length).to be(1)
           expect(output_lines.first).to eq(
-            '[Bugsnag] WARN: No valid API key has been set, notifications will not be sent'
+            'WARN: [Bugsnag] No valid API key has been set, notifications will not be sent'
           )
         end
 
@@ -457,7 +498,7 @@ describe Bugsnag::Configuration do
       Bugsnag.configuration.info("Info message")
 
       expect(output_lines.length).to be(1)
-      expect(output_lines.first).to eq('[Bugsnag] INFO: Info message')
+      expect(output_lines.first).to eq('INFO: [Bugsnag] Info message')
     end
 
     it "should log warning messages to the set logger" do
@@ -466,7 +507,7 @@ describe Bugsnag::Configuration do
       Bugsnag.configuration.warn("Warning message")
 
       expect(output_lines.length).to be(1)
-      expect(output_lines.first).to eq('[Bugsnag] WARN: Warning message')
+      expect(output_lines.first).to eq('WARN: [Bugsnag] Warning message')
     end
 
     it "should log error messages to the set logger" do
@@ -475,7 +516,7 @@ describe Bugsnag::Configuration do
       Bugsnag.configuration.error("Error message")
 
       expect(output_lines.length).to be(1)
-      expect(output_lines.first).to eq('[Bugsnag] ERROR: Error message')
+      expect(output_lines.first).to eq('ERROR: [Bugsnag] Error message')
     end
 
     it "should log debug messages to the set logger" do
@@ -484,7 +525,14 @@ describe Bugsnag::Configuration do
       Bugsnag.configuration.debug("Debug message")
 
       expect(output_lines.length).to be(1)
-      expect(output_lines.first).to eq('[Bugsnag] DEBUG: Debug message')
+      expect(output_lines.first).to eq('DEBUG: [Bugsnag] Debug message')
+    end
+
+    it "does not duplicate an existing Bugsnag prefix" do
+      Bugsnag.configuration.info("[Bugsnag] Info message")
+
+      expect(output_lines.length).to be(1)
+      expect(output_lines.first).to eq('INFO: [Bugsnag] Info message')
     end
   end
 
