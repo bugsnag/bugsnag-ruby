@@ -198,7 +198,7 @@ describe "on_error callbacks" do
     expect(Bugsnag).not_to have_sent_notification
     expect(called_count).to be(2)
 
-    expect(logger).to have_received(:debug).with(nil) do |&block|
+    expect(logger).to have_received(:debug).with("[Bugsnag]") do |&block|
       expect(block.call).to eq("[Bugsnag] Not notifying RuntimeError due to ignore being signified in user provided middleware")
     end
   end
@@ -261,7 +261,7 @@ describe "on_error callbacks" do
       /^\[Bugsnag\] on_error callback stacktrace:/
     ]
 
-    expect(logger).to have_received(:warn).with(nil).twice do |&block|
+    expect(logger).to have_received(:warn).with("[Bugsnag]").twice do |&block|
       expect(block.call).to match(expected_messages[message_index])
       message_index += 1
     end

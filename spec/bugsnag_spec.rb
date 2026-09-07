@@ -68,7 +68,7 @@ describe Bugsnag do
         /^\[Bugsnag\] Error in notify block stacktrace: \[/
       ].each
 
-      expect(Bugsnag.configuration.logger).to have_received(:warn).with(nil).twice do |&block|
+      expect(Bugsnag.configuration.logger).to have_received(:warn).with("[Bugsnag]").twice do |&block|
         expect(block.call).to match(expected_messages.next)
       end
 
@@ -88,7 +88,7 @@ describe Bugsnag do
         /^\[Bugsnag\] Error in internal notify block stacktrace: \[/
       ].each
 
-      expect(Bugsnag.configuration.logger).to have_received(:warn).with(nil).twice do |&block|
+      expect(Bugsnag.configuration.logger).to have_received(:warn).with("[Bugsnag]").twice do |&block|
         expect(block.call).to match(expected_messages.next)
       end
 

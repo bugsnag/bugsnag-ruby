@@ -250,7 +250,7 @@ RSpec.describe Bugsnag::Breadcrumbs::OnBreadcrumbCallbackList do
       /^\[Bugsnag\] on_breadcrumb callback stacktrace:/
     ]
 
-    expect(logger).to have_received(:warn).with(nil).twice do |&block|
+    expect(logger).to have_received(:warn).with("[Bugsnag]").twice do |&block|
       expect(block.call).to match(expected_messages[message_index])
       message_index += 1
     end

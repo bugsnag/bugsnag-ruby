@@ -442,7 +442,7 @@ module Bugsnag
     #
     # @param message [String, #to_s] The message to log
     def info(message)
-      logger.info(nil) { format_log_message(message) }
+      logger.info(PROG_NAME) { format_log_message(message) }
     end
 
     ##
@@ -450,7 +450,7 @@ module Bugsnag
     #
     # @param message [String, #to_s] The message to log
     def warn(message)
-      logger.warn(nil) { format_log_message(message) }
+      logger.warn(PROG_NAME) { format_log_message(message) }
     end
 
     ##
@@ -458,7 +458,7 @@ module Bugsnag
     #
     # @param message [String, #to_s] The message to log
     def error(message)
-      logger.error(nil) { format_log_message(message) }
+      logger.error(PROG_NAME) { format_log_message(message) }
     end
 
     ##
@@ -466,7 +466,7 @@ module Bugsnag
     #
     # @param message [String, #to_s] The message to log
     def debug(message)
-      logger.debug(nil) { format_log_message(message) }
+      logger.debug(PROG_NAME) { format_log_message(message) }
     end
 
     ##
@@ -769,6 +769,7 @@ module Bugsnag
     def format_log_message(message)
       message = message.to_s
       return message if message.start_with?(PROG_NAME)
+      return PROG_NAME if message.empty?
 
       "#{PROG_NAME} #{message}"
     end

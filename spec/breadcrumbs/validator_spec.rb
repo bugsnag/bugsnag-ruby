@@ -49,7 +49,7 @@ RSpec.describe Bugsnag::Breadcrumbs::Validator do
 
         expect(breadcrumb.ignore?).to eq(true)
 
-        expect(Bugsnag.configuration.logger).to have_received(:debug).with(nil) do |&block|
+        expect(Bugsnag.configuration.logger).to have_received(:debug).with("[Bugsnag]") do |&block|
           expect(block.call).to eq("[Bugsnag] Automatic breadcrumb of type #{type} ignored: #{name}")
         end
       end

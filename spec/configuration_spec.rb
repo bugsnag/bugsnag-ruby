@@ -394,6 +394,32 @@ describe Bugsnag::Configuration do
       )
     end
 
+    it "sets the Bugsnag progname on the logger as well as the message" do
+      logger = double("logger")
+      subject.logger = logger
+
+      %i[info warn error debug].each do |level|
+        expect(logger).to receive(level).with("[Bugsnag]") do |_progname, &block|
+          expect(block.call).to eq("[Bugsnag] #{level} message")
+        end
+
+        subject.public_send(level, "#{level} message")
+      end
+    end
+
+    it "does not leave a trailing space when the message is empty" do
+      logger = double("logger")
+      subject.logger = logger
+
+      [nil, ""].each do |message|
+        expect(logger).to receive(:info).with("[Bugsnag]") do |_progname, &block|
+          expect(block.call).to eq("[Bugsnag]")
+        end
+
+        subject.info(message)
+      end
+    end
+
     context "using configure" do
       before do
         Bugsnag.configuration.api_key = nil
